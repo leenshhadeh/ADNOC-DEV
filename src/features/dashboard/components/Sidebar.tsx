@@ -60,7 +60,7 @@ const Sidebar = () => {
         {isCollapsed ? <ChevronRight className="size-6" /> : <ChevronLeft className="size-6" />}
       </button>
 
-      <div className={cn('pt-20', isCollapsed ? 'px-2' : 'px-5')}>
+      <div className={cn('pt-20')}>
         <div className={cn('mb-8', isCollapsed ? 'flex justify-center' : '')}>
           <img src={sidebarIcon} alt="ADNOC" className="h-20 w-20 object-contain" />
         </div>
