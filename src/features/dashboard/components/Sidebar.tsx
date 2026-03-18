@@ -44,8 +44,8 @@ const Sidebar = () => {
   return (
     <aside
       className={cn(
-        'relative flex h-full shrink-0 flex-col rounded-[2rem] border border-border bg-sidebar transition-all duration-300',
-        isCollapsed ? 'w-24' : 'w-[320px]'
+        'relative flex h-full shrink-0 flex-col rounded-2xl border border-border bg-sidebar transition-all duration-300',
+        isCollapsed ? 'w-14' : 'w-[320px]'
       )}
     >
       <button
@@ -74,14 +74,14 @@ const Sidebar = () => {
                 key={to}
                 to={to}
                 className={cn(
-                  'flex h-12 items-center rounded-none px-4 text-lg transition-colors',
+                  'flex h-12 items-center rounded-none px-4  transition-colors',
                   isCollapsed && 'justify-center px-0',
                   active
                     ? 'bg-sidebar-primary text-sidebar-primary-foreground'
                     : 'text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                 )}
               >
-                <Icon className="size-6 shrink-0" />
+                <Icon className="size-4 shrink-0" />
                 {!isCollapsed && <span className="ml-3">{label}</span>}
               </NavLink>
             )
@@ -94,7 +94,7 @@ const Sidebar = () => {
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground">
             MA
           </div>
-          {!isCollapsed && <span className="ml-3 self-center text-3xl/none text-foreground">Maryam Al Shamsi</span>}
+          {!isCollapsed && <span className="ml-3 self-center text-md/none text-foreground">Maryam Al Shamsi</span>}
         </div>
 
         <nav className="space-y-1 pb-4">
@@ -126,7 +126,7 @@ const Sidebar = () => {
             )}
           >
             <Sparkles className="size-8 text-primary" />
-            {!isCollapsed && <span className="ml-3 text-4xl/none text-foreground">Ask AI</span>}
+            {!isCollapsed && <span className="ml-3 text-lg/none text-foreground">Ask AI</span>}
           </div>
         </div>
       </div>
