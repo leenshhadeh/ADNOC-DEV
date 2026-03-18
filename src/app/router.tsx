@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { Dashboard } from '@features/dashboard'
+import AGGrid from '../AGGrid'
 
 const PlaceholderPage = ({ title }: { title: string }) => {
   return <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
@@ -43,6 +44,10 @@ export const router = createBrowserRouter([
         element: <PlaceholderPage title="Log out" />,
       },
     ],
+  },
+  {
+    path: '/ag-grid',
+    element: <AGGrid />,
   },
   {
     path: '*',
