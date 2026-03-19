@@ -1,7 +1,9 @@
-import { useMemo } from "react";
+import { useMemo ,useState} from "react";
 import { AgGridReact } from "ag-grid-react";
 
 export default function RowSpanning() {
+    const [selectedColumn, setSelectedColumn] = useState("");
+  
   const rowData = useMemo(() => {
     return [
       {
@@ -50,11 +52,25 @@ export default function RowSpanning() {
         field: "level1",
         spanRows: true,
         width: 350,
+        checkboxSelection: true,
+
+        // ✅ optional: select all from header
+        headerCheckboxSelection: true,
+      
+        // optional: only show checkbox for first column
+        headerCheckboxSelectionFilteredOnly: true,
       },
       {
         headerName: "Level 2",
         field: "level2",
         spanRows: true,
+        checkboxSelection: true,
+
+        // ✅ optional: select all from header
+        headerCheckboxSelection: true,
+      
+        // optional: only show checkbox for first column
+        headerCheckboxSelectionFilteredOnly: true,
       },
       {
         headerName: "Level 3",
@@ -100,6 +116,7 @@ export default function RowSpanning() {
         defaultColDef={defaultColDef}
         enableCellSpan={true}
         rowHeight={56}
+         rowSelection="multiple"
       />
     </div>
     </>
