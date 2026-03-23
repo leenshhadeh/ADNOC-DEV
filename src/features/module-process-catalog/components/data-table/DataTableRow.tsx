@@ -22,7 +22,7 @@ const DataTableRow = <TData,>({
 
   return (
     <Fragment>
-      <TableRow>
+      <TableRow className={row.getIsSelected() ? 'bg-orange-50/50 ring-1 ring-inset ring-primary/30' : undefined}>
         {cells.map((cell, index) => (
           <DataTableCell
             key={cell.id}

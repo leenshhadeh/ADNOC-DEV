@@ -57,12 +57,12 @@ const Sidebar = () => {
         )}
         aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
-        {isCollapsed ? <ChevronRight className="size-6" /> : <ChevronLeft className="size-6" />}
+        {isCollapsed ? <ChevronRight className="size-5" /> : <ChevronLeft className="size-5" />}
       </button>
 
       <div className={cn('pt-20')}>
         <div className={cn('mb-8', isCollapsed ? 'flex justify-center' : '')}>
-          <img src={sidebarIcon} alt="ADNOC" className="h-20 w-20 object-contain" />
+          <img src={sidebarIcon} alt="ADNOC" className="h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 object-contain" />
         </div>
 
         <nav className="space-y-1">
@@ -81,7 +81,7 @@ const Sidebar = () => {
                     : 'text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                 )}
               >
-                <Icon className="size-4 shrink-0" />
+                <Icon className="size-5 shrink-0" />
                 {!isCollapsed && <span className="ml-3">{label}</span>}
               </NavLink>
             )
@@ -112,7 +112,7 @@ const Sidebar = () => {
                 )
               }
             >
-              <Icon className="size-6 shrink-0" />
+              <Icon className="size-5 shrink-0" />
               {!isCollapsed && <span className="ml-3">{label}</span>}
             </NavLink>
           ))}
@@ -125,7 +125,7 @@ const Sidebar = () => {
               isCollapsed ? 'justify-center' : 'px-4'
             )}
           >
-            <Sparkles className="size-8 text-primary" />
+            <Sparkles className="size-5 text-primary" />
             {!isCollapsed && <span className="ml-3 text-lg/none text-foreground">Ask AI</span>}
           </div>
         </div>
