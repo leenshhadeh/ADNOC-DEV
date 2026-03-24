@@ -33,20 +33,20 @@ const SharedServiceToggle = ({ defaultValue }: { defaultValue: boolean }) => {
         type="button"
         role="switch"
         aria-checked={enabled}
-        onClick={() => setEnabled(v => !v)}
+        onClick={() => setEnabled((v) => !v)}
         className={cn(
-          'relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+          'focus-visible:ring-ring relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:ring-2 focus-visible:outline-none',
           enabled ? 'bg-primary' : 'bg-input',
         )}
       >
         <span
           className={cn(
-            'pointer-events-none block h-4 w-4 rounded-full bg-background shadow-md ring-0 transition-transform',
+            'bg-background pointer-events-none block h-4 w-4 rounded-full shadow-md ring-0 transition-transform',
             enabled ? 'translate-x-4' : 'translate-x-0',
           )}
         />
       </button>
-      <span className="text-sm text-foreground">{enabled ? 'Yes' : 'No'}</span>
+      <span className="text-foreground text-sm">{enabled ? 'Yes' : 'No'}</span>
     </div>
   )
 }
@@ -61,10 +61,10 @@ const EntitySiteCell = ({ initialValue }: { initialValue: YesNo }) => {
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="inline-flex h-7 min-w-[52px] items-center justify-between gap-1 rounded-md px-1.5 text-sm text-foreground outline-none hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring"
+            className="text-foreground hover:bg-muted/60 focus-visible:ring-ring inline-flex h-7 min-w-[52px] items-center justify-between gap-1 rounded-md px-1.5 text-sm outline-none focus-visible:ring-2"
           >
             <span>{value}</span>
-            <ChevronDown className="size-3 text-muted-foreground" />
+            <ChevronDown className="text-muted-foreground size-3" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -72,11 +72,14 @@ const EntitySiteCell = ({ initialValue }: { initialValue: YesNo }) => {
           sideOffset={4}
           className="w-24 overflow-hidden rounded-xl border p-0 shadow-md"
         >
-          {(['Yes', 'No'] as const).map(opt => (
+          {(['Yes', 'No'] as const).map((opt) => (
             <DropdownMenuItem
               key={opt}
               onSelect={() => setValue(opt)}
-              className={cn('rounded-none px-3 py-2 text-sm font-normal', value === opt && 'bg-accent')}
+              className={cn(
+                'rounded-none px-3 py-2 text-sm font-normal',
+                value === opt && 'bg-accent',
+              )}
             >
               {opt}
             </DropdownMenuItem>
@@ -84,7 +87,10 @@ const EntitySiteCell = ({ initialValue }: { initialValue: YesNo }) => {
         </DropdownMenuContent>
       </DropdownMenu>
       {value === 'Yes' && (
-        <button type="button" className="whitespace-nowrap text-xs font-medium text-primary hover:underline">
+        <button
+          type="button"
+          className="text-primary text-xs font-medium whitespace-nowrap hover:underline"
+        >
           Edit L4s
         </button>
       )}
@@ -107,7 +113,7 @@ const CellRowActions = ({ item, actions }: { item: ProcessItem; actions: Catalog
         type="button"
         variant="ghost"
         size="icon-xs"
-        className="ml-auto shrink-0 opacity-0 transition-opacity group-hover/cell:opacity-100 text-muted-foreground"
+        className="text-muted-foreground ml-auto shrink-0 opacity-0 transition-opacity group-hover/cell:opacity-100"
         aria-label="Row actions"
       >
         <MoreHorizontal className="size-4" />
@@ -118,7 +124,7 @@ const CellRowActions = ({ item, actions }: { item: ProcessItem; actions: Catalog
       sideOffset={4}
       className="w-52 overflow-hidden rounded-2xl border p-0 shadow-lg"
     >
-      {actions.map(a => (
+      {actions.map((a) => (
         <DropdownMenuItem
           key={a.id}
           onSelect={() => a.onSelect(item)}
@@ -134,11 +140,11 @@ const CellRowActions = ({ item, actions }: { item: ProcessItem; actions: Catalog
 // ─── Entity matrix column group builder ──────────────────────────────────────
 
 function buildEntityColumns(): ColumnDef<ProcessItem, unknown>[] {
-  return ENTITY_CONFIG.map(entity => ({
+  return ENTITY_CONFIG.map((entity) => ({
     id: `entity__${entity.name}`,
     header: entity.name,
     meta: { isEntityGroup: true },
-    columns: entity.sites.map(site => ({
+    columns: entity.sites.map((site) => ({
       id: `entity__${entity.name}__${site}`,
       header: site,
       size: 200,
@@ -155,7 +161,6 @@ function buildEntityColumns(): ColumnDef<ProcessItem, unknown>[] {
 
 export type CatalogColumnActions = {
   onAddL2: (item: ProcessItem) => void
-  onViewChanges: (item: ProcessItem) => void
   onRename: (item: ProcessItem) => void
 }
 
@@ -179,11 +184,12 @@ function wrap<T>(leaf: ColumnDef<T, unknown>): ColumnDef<T, unknown> {
   }
 }
 
-export function buildCatalogColumns(rowActions?: CatalogColumnActions): ColumnDef<ProcessItem, unknown>[] {
+export function buildCatalogColumns(
+  rowActions?: CatalogColumnActions,
+): ColumnDef<ProcessItem, unknown>[] {
   const actions: CatalogRowAction[] = rowActions
     ? [
         { id: 'add-l2', label: 'Add L2 processes', onSelect: rowActions.onAddL2 },
-        { id: 'view-changes', label: 'View recorded changes', onSelect: rowActions.onViewChanges },
         { id: 'rename', label: 'Rename', onSelect: rowActions.onRename },
       ]
     : []
@@ -201,7 +207,7 @@ export function buildCatalogColumns(rowActions?: CatalogColumnActions): ColumnDe
       if (prev?.original.domain === info.row.original.domain) return null
       return (
         <div className="flex w-full min-w-0 items-center gap-1">
-          <span className="flex-1 truncate text-sm font-medium text-foreground">
+          <span className="text-foreground flex-1 truncate text-sm font-medium">
             {info.row.original.domain}
           </span>
           {actions.length > 0 && <CellRowActions item={info.row.original} actions={actions} />}
@@ -224,11 +230,14 @@ export function buildCatalogColumns(rowActions?: CatalogColumnActions): ColumnDe
       )
         return null
       return (
-        <div className="flex flex-col gap-0.5">
-          <span className="truncate text-sm font-medium text-foreground leading-tight">
-            {info.row.original.level1Name}
-          </span>
-          <span className="text-xs text-muted-foreground">{info.row.original.level1Code}</span>
+        <div className="flex w-full min-w-0 items-center gap-1">
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="text-foreground truncate text-sm leading-tight font-medium">
+              {info.row.original.level1Name}
+            </span>
+            <span className="text-muted-foreground text-xs">{info.row.original.level1Code}</span>
+          </div>
+          {actions.length > 0 && <CellRowActions item={info.row.original} actions={actions} />}
         </div>
       )
     },
@@ -248,11 +257,14 @@ export function buildCatalogColumns(rowActions?: CatalogColumnActions): ColumnDe
       )
         return null
       return (
-        <div className="flex flex-col gap-0.5">
-          <span className="truncate text-sm font-medium text-foreground leading-tight">
-            {info.row.original.level2Name}
-          </span>
-          <span className="text-xs text-muted-foreground">{info.row.original.level2Code}</span>
+        <div className="flex w-full min-w-0 items-center gap-1">
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="text-foreground truncate text-sm leading-tight font-medium">
+              {info.row.original.level2Name}
+            </span>
+            <span className="text-muted-foreground text-xs">{info.row.original.level2Code}</span>
+          </div>
+          {actions.length > 0 && <CellRowActions item={info.row.original} actions={actions} />}
         </div>
       )
     },
@@ -269,18 +281,21 @@ export function buildCatalogColumns(rowActions?: CatalogColumnActions): ColumnDe
       return (
         <div className="flex w-full items-center gap-2">
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-            <span className="truncate text-sm font-medium text-foreground leading-tight">
+            <span className="text-foreground truncate text-sm leading-tight font-medium">
               {info.row.original.level3Name}
             </span>
-            <span className="text-xs text-muted-foreground">{info.row.original.level3Code}</span>
+            <span className="text-muted-foreground text-xs">{info.row.original.level3Code}</span>
           </div>
+          {actions.length > 0 && !isBulkMode && (
+            <CellRowActions item={info.row.original} actions={actions} />
+          )}
           {isBulkMode && (
             <Checkbox
               checked={isSelected}
-              onCheckedChange={checked => info.row.toggleSelected(!!checked)}
+              onCheckedChange={(checked) => info.row.toggleSelected(!!checked)}
               aria-label={`Select ${info.row.original.level3Name}`}
               className="ms-auto shrink-0"
-              onClick={e => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
             />
           )}
         </div>
@@ -306,7 +321,7 @@ export function buildCatalogColumns(rowActions?: CatalogColumnActions): ColumnDe
     size: 480,
     enableSorting: false,
     cell: (info: CellContext<ProcessItem, unknown>) => (
-      <span className="line-clamp-3 whitespace-normal text-sm text-foreground">
+      <span className="text-foreground line-clamp-3 text-sm whitespace-normal">
         {String(info.getValue())}
       </span>
     ),

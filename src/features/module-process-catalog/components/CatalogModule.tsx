@@ -36,9 +36,6 @@ const CatalogModule = () => {
       setTargetRowName(item.level2Name)
       setIsAddL2ModalOpen(true)
     },
-    onViewChanges: (item) => {
-      console.log('View recorded changes', item.id)
-    },
     onRename: (item) => {
       console.log('Rename', item.id)
     },
@@ -107,6 +104,7 @@ const CatalogModule = () => {
                 size="icon-sm"
                 variant="ghost"
                 className="text-muted-foreground"
+                aria-label="Close"
                 onClick={() => setIsAddL2ModalOpen(false)}
               >
                 <X className="size-5" />
