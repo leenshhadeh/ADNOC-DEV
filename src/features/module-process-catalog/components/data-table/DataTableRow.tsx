@@ -13,7 +13,7 @@ const DataTableRow = <TData,>({
   density = 'compact',
   getRowActions,
 }: DataTableRowProps<TData>) => {
-  const [expanded, setExpanded] = useState(true)
+  const [expanded, setExpanded] = useState(false)
 
   const cells = row.getVisibleCells()
   const subRows = row.subRows
@@ -22,7 +22,11 @@ const DataTableRow = <TData,>({
 
   return (
     <Fragment>
-      <TableRow className={row.getIsSelected() ? 'bg-orange-50/50 ring-1 ring-inset ring-primary/30' : undefined}>
+      <TableRow
+        className={
+          row.getIsSelected() ? 'ring-primary/30 bg-orange-50/50 ring-1 ring-inset' : undefined
+        }
+      >
         {cells.map((cell, index) => (
           <DataTableCell
             key={cell.id}
@@ -39,10 +43,14 @@ const DataTableRow = <TData,>({
                   variant="ghost"
                   size="icon-xs"
                   className="text-muted-foreground hover:text-foreground"
-                  onClick={() => setExpanded(current => !current)}
+                  onClick={() => setExpanded((current) => !current)}
                   aria-label={expanded ? 'Collapse row' : 'Expand row'}
                 >
-                  {expanded ? <ChevronDown className="size-3.5" /> : <ChevronRight className="size-3.5" />}
+                  {expanded ? (
+                    <ChevronDown className="size-3.5" />
+                  ) : (
+                    <ChevronRight className="size-3.5" />
+                  )}
                 </Button>
               ) : undefined
             }
@@ -51,7 +59,7 @@ const DataTableRow = <TData,>({
       </TableRow>
 
       {expanded && hasSubRows
-        ? subRows.map(subRow => (
+        ? subRows.map((subRow) => (
             <DataTableRow
               key={subRow.id}
               row={subRow}

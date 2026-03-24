@@ -1,7 +1,6 @@
-import { ArrowUpDown } from 'lucide-react'
-
 import { TableHead } from '@/shared/components/ui/table'
 import { cn } from '@/shared/lib/utils'
+import FilterIcon from '@/assets/Shape.svg?react'
 
 /**
  * Reusable column header <th> for any module table.
@@ -46,7 +45,7 @@ const ColHead = ({
   >
     <div className="flex items-center gap-1">
       <span className="truncate">{label}</span>
-      {showSort && <ArrowUpDown className="size-3 shrink-0 opacity-50" />}
+      {showSort && <FilterIcon className="size-3 shrink-0 opacity-50" />}
     </div>
   </TableHead>
 )

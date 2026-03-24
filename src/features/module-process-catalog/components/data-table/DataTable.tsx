@@ -26,7 +26,6 @@ import {
 } from '@tanstack/react-table'
 
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/shared/components/ui/table'
-import { cn } from '@/shared/lib/utils'
 import { TableShell } from '@/shared/components/table-primitives'
 
 import DataTableHeader from './DataTableHeader'

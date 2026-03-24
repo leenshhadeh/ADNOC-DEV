@@ -8,7 +8,9 @@
  */
 
 import type { LucideProps } from 'lucide-react'
-import { ChevronDown, Filter, Layers, Search, X } from 'lucide-react'
+import { ChevronDown, Layers, Search, X } from 'lucide-react'
+
+import ShapeIcon from '@/assets/Shape.svg?react'
 
 import { Button } from './ui/button'
 import { Input } from './ui/input'
@@ -71,104 +73,101 @@ const ModuleToolbar = ({
   actions = [],
 }: ModuleToolbarProps) => {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="flex justify-between">
+      <div className="flex flex-wrap items-center gap-3">
+        {/* ── Left: pill tabs ──────────────────────────────────────────────── */}
+        <Tabs value={activeTab} onValueChange={onTabChange} className="gap-0">
+          <TabsList className="h-11 rounded-2xl px-1.5">
+            {tabs.map((tab) => (
+              <TabsTrigger key={tab.value} value={tab.value} className="h-8 rounded-xl px-4">
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
 
-      {/* ── Left: pill tabs ──────────────────────────────────────────────── */}
-      <Tabs value={activeTab} onValueChange={onTabChange} className="gap-0">
-        <TabsList className="h-11 rounded-2xl px-1.5">
-          {tabs.map(tab => (
-            <TabsTrigger key={tab.value} value={tab.value} className="h-8 rounded-xl px-4">
-              {tab.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
-
-      {/* ── Middle: search + filter ──────────────────────────────────────── */}
-      <div className="relative w-full sm:w-[340px]">
-        <Search className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder={searchPlaceholder}
-          value={searchValue ?? ''}
-          onChange={e => onSearchChange?.(e.target.value)}
-          className="h-11 rounded-2xl ps-9 pe-3"
-        />
+        {/* ── Middle: search + filter ──────────────────────────────────────── */}
+        <div className="relative w-full sm:w-[340px]">
+          <Search className="text-muted-foreground pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2" />
+          <Input
+            placeholder={searchPlaceholder}
+            value={searchValue ?? ''}
+            onChange={(e) => onSearchChange?.(e.target.value)}
+            className="h-11 rounded-2xl ps-9 pe-3"
+          />
+        </div>
+        <Button type="button" variant="ghost" size="icon" className="h-11 w-11">
+          <ShapeIcon className="size-4" />
+        </Button>
       </div>
-
-      <Button type="button" variant="ghost" size="icon" className="h-11 w-11">
-        <Filter className="size-4" />
-      </Button>
-
-      {/* ── Right: bulk action + other actions ──────────────────────────── */}
       <div className="flex items-center">
-
-        {/* Bulk action — active pill or default button */}
-        {bulkMode && (
-          <>
-            {bulkMode.isActive ? (
-              <div className="flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3 py-1.5">
-                <span className="text-sm font-medium text-primary">
-                  {bulkMode.selectedCount} selected
-                </span>
-                <Separator orientation="vertical" className="h-5" />
+        {/* ── Right: bulk action + other actions ──────────────────────────── */}
+        <div className="flex items-center">
+          {/* Bulk action — active pill or default button */}
+          {bulkMode && (
+            <>
+              {bulkMode.isActive ? (
+                <div className="border-primary/30 bg-primary/5 flex items-center gap-2 rounded-xl border px-3 py-1.5">
+                  <span className="text-primary text-sm font-medium">
+                    {bulkMode.selectedCount} selected
+                  </span>
+                  <Separator orientation="vertical" className="h-5" />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-primary hover:bg-primary/10 h-7 px-2 text-xs font-medium disabled:opacity-40"
+                    disabled={bulkMode.selectedCount === 0}
+                    onClick={bulkMode.onAction}
+                  >
+                    {bulkMode.actionLabel ?? 'Add multiple'}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-xs"
+                    className="text-muted-foreground hover:text-foreground"
+                    aria-label="Exit bulk selection"
+                    onClick={bulkMode.onToggle}
+                  >
+                    <X className="size-3.5" />
+                  </Button>
+                </div>
+              ) : (
                 <Button
                   type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 px-2 text-xs font-medium text-primary hover:bg-primary/10 disabled:opacity-40"
-                  disabled={bulkMode.selectedCount === 0}
-                  onClick={bulkMode.onAction}
-                >
-                  {bulkMode.actionLabel ?? 'Add multiple'}
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  className="text-muted-foreground hover:text-foreground"
-                  aria-label="Exit bulk selection"
+                  className="h-9 bg-transparent px-3 text-[#0047BA]"
                   onClick={bulkMode.onToggle}
                 >
-                  <X className="size-3.5" />
+                  <Layers className="size-4" />
+                  Bulk Action
+                  <ChevronDown className="size-4" />
                 </Button>
-              </div>
-            ) : (
+              )}
+
+              {actions.length > 0 && (
+                <Separator orientation="vertical" className="hidden h-8 sm:block" />
+              )}
+            </>
+          )}
+
+          {/* Remaining actions with separators between them */}
+          {actions.map((action, index) => (
+            <div key={action.id} className="flex items-center">
+              {index > 0 && <Separator orientation="vertical" className="hidden h-8 sm:block" />}
               <Button
                 type="button"
-                className="bg-transparent h-9 px-3 text-[#0047BA]"
-                onClick={bulkMode.onToggle}
+                className="h-9 bg-transparent px-3 text-[#0047BA]"
+                disabled={action.disabled}
+                onClick={action.onClick}
               >
-                <Layers className="size-4" />
-                Bulk Action
-                <ChevronDown className="size-4" />
+                <action.icon className="size-4" />
+                {action.label}
               </Button>
-            )}
-
-            {actions.length > 0 && (
-              <Separator orientation="vertical" className="hidden h-8 sm:block" />
-            )}
-          </>
-        )}
-
-        {/* Remaining actions with separators between them */}
-        {actions.map((action, index) => (
-          <div key={action.id} className="flex items-center">
-            {index > 0 && (
-              <Separator orientation="vertical" className="hidden h-8 sm:block" />
-            )}
-            <Button
-              type="button"
-              className="bg-transparent h-9 px-3 text-[#0047BA]"
-              disabled={action.disabled}
-              onClick={action.onClick}
-            >
-              <action.icon className="size-4" />
-              {action.label}
-            </Button>
-          </div>
-        ))}
+            </div>
+          ))}
+        </div>
       </div>
-
     </div>
   )
 }
