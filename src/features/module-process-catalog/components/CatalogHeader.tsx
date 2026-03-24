@@ -7,7 +7,10 @@ import {
   BreadcrumbSeparator,
 } from '@/shared/components/ui/breadcrumb'
 import ModuleToolbar, { type BulkModeState } from '@/shared/components/ModuleToolbar'
-import { CATALOG_ACTIONS, CATALOG_TABS } from '../constants/catalog-toolbar'
+import {
+  CATALOG_ACTIONS,
+  CATALOG_TABS,
+} from '@features/module-process-catalog/constants/catalog-toolbar'
 
 export type CatalogTabValue = 'processes' | 'myTasks' | 'submittedRequests'
 

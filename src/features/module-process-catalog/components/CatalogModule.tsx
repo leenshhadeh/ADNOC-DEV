@@ -12,7 +12,7 @@ import {
 } from './catalog-columns'
 import MyTasksTable from './tables/MyTasksTable'
 import SubmittedRequestsTable from './tables/SubmittedRequestsTable'
-import { CATALOG_DATA } from '../constants/catalog-data'
+import { CATALOG_DATA } from '@features/module-process-catalog/constants/catalog-data'
 
 const CatalogModule = () => {
   const [activeTab, setActiveTab] = useState<CatalogTabValue>('processes')
@@ -41,6 +41,7 @@ const CatalogModule = () => {
     },
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const columns = useMemo(() => buildCatalogColumns(rowActions), [])
 
   const pinnedColumns = useMemo(() => ({ left: [...CATALOG_PINNED_LEFT] }), [])

@@ -12,8 +12,8 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu'
 import StatusBadgeCell, { type CatalogStatus } from './cells/StatusBadgeCell'
-import type { ProcessItem, YesNo } from '../types'
-import { ENTITY_CONFIG } from '../types'
+import type { ProcessItem, YesNo } from '@features/module-process-catalog/types'
+import { ENTITY_CONFIG } from '@features/module-process-catalog/types'
 
 // Augment TanStack Table meta so isBulkMode is type-safe.
 declare module '@tanstack/react-table' {

@@ -1,4 +1,4 @@
-import type { ProcessItem } from '../types'
+import type { ProcessItem } from '@features/module-process-catalog/types'
 
 export const CATALOG_DATA: ProcessItem[] = [
   {
