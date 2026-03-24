@@ -21,6 +21,7 @@ interface CatalogHeaderProps {
   onToggleBulkMode?: () => void
   selectedCount?: number
   onBulkAddProcesses?: () => void
+  onFilterClick?: () => void
 }
 
 const CatalogHeader = ({
@@ -30,6 +31,7 @@ const CatalogHeader = ({
   onToggleBulkMode,
   selectedCount = 0,
   onBulkAddProcesses,
+  onFilterClick,
 }: CatalogHeaderProps) => {
   const bulkMode: BulkModeState = {
     isActive: isBulkMode,
@@ -63,6 +65,7 @@ const CatalogHeader = ({
         tabs={CATALOG_TABS}
         activeTab={activeTab}
         onTabChange={(value) => onTabChange(value as CatalogTabValue)}
+        onFilterClick={onFilterClick}
         bulkMode={bulkMode}
         actions={CATALOG_ACTIONS}
       />

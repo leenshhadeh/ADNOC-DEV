@@ -12,7 +12,10 @@ import {
 } from './catalog-columns'
 import MyTasksTable from './tables/MyTasksTable'
 import SubmittedRequestsTable from './tables/SubmittedRequestsTable'
+import ProcessFilterSheet from './ProcessFilterSheet'
 import { CATALOG_DATA } from '@features/module-process-catalog/constants/catalog-data'
+import { PROCESS_FILTER_DEFINITIONS } from '@features/module-process-catalog/constants/filter-definitions'
+import { useProcessFilters } from '@features/module-process-catalog/hooks/useProcessFilters'
 
 const CatalogModule = () => {
   const [activeTab, setActiveTab] = useState<CatalogTabValue>('processes')
@@ -21,6 +24,10 @@ const CatalogModule = () => {
   const [targetRowName, setTargetRowName] = useState('')
   const [isBulkMode, setIsBulkMode] = useState(false)
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
+
+  const filterSectionIds = PROCESS_FILTER_DEFINITIONS.map((f) => f.id)
+  const { pending, applied: _applied, toggle, apply, reset } = useProcessFilters(filterSectionIds)
 
   const selectedCount = Object.values(rowSelection).filter(Boolean).length
 
@@ -55,6 +62,7 @@ const CatalogModule = () => {
         onToggleBulkMode={handleToggleBulkMode}
         selectedCount={selectedCount}
         onBulkAddProcesses={() => setIsAddL2ModalOpen(true)}
+        onFilterClick={() => setIsFilterOpen(true)}
       />
 
       {activeTab === 'processes' ? (
@@ -156,6 +164,16 @@ const CatalogModule = () => {
           </div>
         </div>
       ) : null}
+
+      <ProcessFilterSheet
+        open={isFilterOpen}
+        onOpenChange={setIsFilterOpen}
+        filters={PROCESS_FILTER_DEFINITIONS}
+        pending={pending}
+        onToggle={toggle}
+        onApply={apply}
+        onReset={reset}
+      />
     </section>
   )
 }

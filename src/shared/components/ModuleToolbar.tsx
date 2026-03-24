@@ -16,6 +16,7 @@ import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Separator } from './ui/separator'
 import { Tabs, TabsList, TabsTrigger } from './ui/tabs'
+import { cn } from '../lib/utils'
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -53,6 +54,10 @@ export interface ModuleToolbarProps {
   onSearchChange?: (value: string) => void
   searchPlaceholder?: string
 
+  // ── Filter ────────────────────────────────────────────────────────────────
+  /** Called when the filter icon button is clicked */
+  onFilterClick?: () => void
+
   // ── Actions ───────────────────────────────────────────────────────────────
   /** Optional: renders the Bulk Action button (or active-selection pill) */
   bulkMode?: BulkModeState
@@ -69,6 +74,7 @@ const ModuleToolbar = ({
   searchValue,
   onSearchChange,
   searchPlaceholder = 'Search',
+  onFilterClick,
   bulkMode,
   actions = [],
 }: ModuleToolbarProps) => {
@@ -77,9 +83,17 @@ const ModuleToolbar = ({
       <div className="flex flex-wrap items-center gap-3">
         {/* ── Left: pill tabs ──────────────────────────────────────────────── */}
         <Tabs value={activeTab} onValueChange={onTabChange} className="gap-0">
-          <TabsList className="h-11 rounded-2xl px-1.5">
+          <TabsList className="font-small h-11 px-1.5">
             {tabs.map((tab) => (
-              <TabsTrigger key={tab.value} value={tab.value} className="h-8 rounded-xl px-4">
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className={cn(
+                  'h-8 rounded-xl px-4',
+                  'font-light', // Default: 300
+                  'data-[state=active]:font-medium', // Active: 500
+                )}
+              >
                 {tab.label}
               </TabsTrigger>
             ))}
@@ -96,7 +110,14 @@ const ModuleToolbar = ({
             className="h-11 rounded-2xl ps-9 pe-3"
           />
         </div>
-        <Button type="button" variant="ghost" size="icon" className="h-11 w-11">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-11 w-11"
+          aria-label="Open filters"
+          onClick={onFilterClick}
+        >
           <ShapeIcon className="size-4" />
         </Button>
       </div>
