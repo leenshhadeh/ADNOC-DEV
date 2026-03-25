@@ -189,14 +189,22 @@ const MyTasksTable = () => {
       },
       {
         id: 'goToAffect',
-        header: 'Go To',
-        size: 60,
+        header: 'Go To Affected Record',
+        size: 120,
+        meta: { multiline: true },
         cell: (info) => {
-          if (info.row.depth === 0) return null
+          if (info.row.depth > 0) return null
           return (
-            <Button type="button" variant="ghost" size="icon-sm" className="text-primary">
-              <Eye className="size-4" />
-            </Button>
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="text-muted-foreground rounded-full"
+              >
+                <Eye className="size-4" />
+              </Button>
+            </div>
           )
         },
       },
