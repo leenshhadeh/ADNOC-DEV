@@ -53,6 +53,7 @@ export interface ModuleToolbarProps {
   searchValue?: string
   onSearchChange?: (value: string) => void
   searchPlaceholder?: string
+  showFilter?:boolean
 
   // ── Filter ────────────────────────────────────────────────────────────────
   /** Called when the filter icon button is clicked */
@@ -77,6 +78,7 @@ const ModuleToolbar = ({
   onFilterClick,
   bulkMode,
   actions = [],
+  showFilter=true
 }: ModuleToolbarProps) => {
   return (
     <div className="flex justify-between">
@@ -110,7 +112,8 @@ const ModuleToolbar = ({
             className="h-11 rounded-2xl ps-9 pe-3"
           />
         </div>
-        <Button
+
+       {showFilter && <Button
           type="button"
           variant="ghost"
           size="icon"
@@ -119,7 +122,8 @@ const ModuleToolbar = ({
           onClick={onFilterClick}
         >
           <ShapeIcon className="size-4" />
-        </Button>
+        </Button> }
+        
       </div>
       <div className="flex items-center">
         {/* ── Right: bulk action + other actions ──────────────────────────── */}

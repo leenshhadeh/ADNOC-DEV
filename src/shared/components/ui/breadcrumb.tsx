@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ChevronRight } from "lucide-react"
+import {Slash} from "lucide-react"
 
 import { cn } from "@/shared/lib/utils"
 
@@ -16,11 +16,11 @@ function BreadcrumbItem({ className, ...props }: React.ComponentProps<"li">) {
 }
 
 function BreadcrumbLink({ className, ...props }: React.ComponentProps<"a">) {
-  return <a data-slot="breadcrumb-link" className={cn("transition-colors hover:text-foreground", className)} {...props} />
+  return <a data-slot="breadcrumb-link" className={cn("transition-colors text-primary font-bold hover:text-foreground", className)} {...props} />
 }
 
 function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
-  return <span data-slot="breadcrumb-page" role="link" aria-disabled="true" aria-current="page" className={cn("font-medium text-foreground", className)} {...props} />
+  return <span data-slot="breadcrumb-page" role="link" aria-disabled="true" aria-current="page" className={cn(className)} {...props} />
 }
 
 function BreadcrumbSeparator({ children, className, ...props }: React.ComponentProps<"li">) {
@@ -32,7 +32,7 @@ function BreadcrumbSeparator({ children, className, ...props }: React.ComponentP
       className={cn("text-muted-foreground/60", className)}
       {...props}
     >
-      {children ?? <ChevronRight className="size-3.5" />}
+      {children ?? <Slash className="size-3 rotate-[160deg] text-[#DFE3E6]" />}
     </li>
   )
 }
