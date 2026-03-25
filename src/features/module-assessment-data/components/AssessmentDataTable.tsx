@@ -168,14 +168,14 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
           <thead>
             {/* Row 1 — actual column labels with sort icons */}
             <tr>
-              {HIERARCHY_COLUMNS.map((col) => (
+              {HIERARCHY_COLUMNS.filter((c) => c.pinned).map((col) => (
                 <ColHead
                   key={col.id}
                   label={col.label}
                   size={col.size}
-                  isSticky={col.pinned}
+                  isSticky
                   leftOffset={stickyOffsets[col.id]}
-                  className={'bg-white'}
+                  className={col.id === 'level3' ? 'border-r-0 bg-white' : 'bg-white'}
                 />
               ))}
               {/* Group Company */}
