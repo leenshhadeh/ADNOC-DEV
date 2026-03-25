@@ -1,4 +1,11 @@
-import type { ColumnDef, ColumnPinningState, Header, Row, Cell, RowSelectionState } from '@tanstack/react-table'
+import type {
+  ColumnDef,
+  ColumnPinningState,
+  Header,
+  Row,
+  Cell,
+  RowSelectionState,
+} from '@tanstack/react-table'
 import type { ReactNode } from 'react'
 
 export interface RowAction<TData> {
@@ -22,6 +29,7 @@ export interface DataTableCellProps<TData, TValue> {
   level?: number
   isFirstCell?: boolean
   density?: 'compact' | 'comfortable'
+  rowDividers?: boolean
   leading?: ReactNode
   actions?: RowAction<TData>[]
 }
@@ -30,6 +38,7 @@ export interface DataTableRowProps<TData> {
   row: Row<TData>
   level: number
   density?: 'compact' | 'comfortable'
+  rowDividers?: boolean
   getRowActions?: (row: Row<TData>) => RowAction<TData>[]
 }
 
@@ -49,8 +58,13 @@ export interface DataTableProps<TData> {
   /** Controlled row selection state for bulk-action mode. */
   rowSelection?: RowSelectionState
   /** Called when the user toggles a row's selection. */
-  onRowSelectionChange?: (updater: RowSelectionState | ((prev: RowSelectionState) => RowSelectionState)) => void
+  onRowSelectionChange?: (
+    updater: RowSelectionState | ((prev: RowSelectionState) => RowSelectionState),
+  ) => void
   /** Returns a stable string ID for each row. Required when rowSelection is used. */
-  getRowId?: (row: TData) => string  /** Arbitrary metadata forwarded to table.options.meta (e.g. { isBulkMode }). */
+  getRowId?: (
+    row: TData,
+  ) => string /** Arbitrary metadata forwarded to table.options.meta (e.g. { isBulkMode }). */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  tableMeta?: Record<string, any>}
+  tableMeta?: Record<string, any>
+}

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Eye } from 'lucide-react'
 import type { ColumnDef } from '@tanstack/react-table'
+import LevelsIcon from '@/assets/Levels.svg?react'
 
 import { Button } from '@/shared/components/ui/button'
 import DataTable from '@features/module-process-catalog/components/data-table/DataTable'
@@ -18,12 +19,8 @@ import { SUBMITTED_REQUESTS } from '@features/module-process-catalog/constants/s
 
 const LevelCell = ({ level }: { level: string }) => {
   return (
-    <div className="text-foreground flex items-center gap-2 text-start text-[1.02rem] font-medium">
-      <span className="text-muted-foreground inline-flex h-5 items-end gap-0.5" aria-hidden="true">
-        <span className="h-4 w-1 rounded-sm bg-current" />
-        <span className="h-5 w-1 rounded-sm bg-current" />
-        <span className="h-3 w-1 rounded-sm bg-current" />
-      </span>
+    <div className="text-foreground flex items-center gap-1 text-start text-sm font-medium">
+      <LevelsIcon />
       {level}
     </div>
   )
@@ -44,6 +41,8 @@ const SubmittedRequestsTable = () => {
         id: 'processName',
         accessorKey: 'processName',
         header: 'Process Name',
+        size: 200,
+        meta: { isDivider: true },
         cell: (info) => {
           const row = info.row.original
           return (
@@ -61,29 +60,34 @@ const SubmittedRequestsTable = () => {
         id: 'level',
         accessorKey: 'level',
         header: 'Level',
+        size: 80,
         cell: (info) => <LevelCell level={String(info.getValue())} />,
       },
       {
         id: 'requester',
         accessorKey: 'requester',
         header: 'Requester',
+        size: 160,
         cell: (info) => <UserBadgeCell name={String(info.getValue())} />,
       },
       {
         id: 'approver',
         accessorKey: 'approver',
         header: 'Approver',
+        size: 160,
         cell: (info) => <UserBadgeCell name={String(info.getValue())} />,
       },
       {
         id: 'status',
         accessorKey: 'status',
         header: 'Status',
+        size: 155,
         cell: (info) => <StatusBadgeCell status={info.getValue() as CatalogStatus} />,
       },
       {
         id: 'stage',
         header: 'Process Stage',
+        size: 280,
         cell: (info) => {
           const row = info.row.original
           return (
@@ -100,21 +104,21 @@ const SubmittedRequestsTable = () => {
         id: 'submittedOn',
         accessorKey: 'submittedOn',
         header: 'Submitted On',
+        size: 130,
       },
       {
         id: 'publishedOn',
         accessorKey: 'publishedOn',
         header: 'Published On',
+        size: 130,
       },
       {
         id: 'actions',
-        header: () => (
-          <div className="text-muted-foreground w-[132px] text-center text-xs leading-5 font-medium tracking-wide whitespace-normal uppercase">
-            Go To Affected Record
-          </div>
-        ),
+        size: 120,
+        meta: { multiline: true },
+        header: 'Go To Affected Record',
         cell: () => (
-          <div className="flex w-[132px] justify-center">
+          <div className="flex justify-center">
             <Button
               type="button"
               size="icon-xs"
@@ -138,6 +142,8 @@ const SubmittedRequestsTable = () => {
         data={SUBMITTED_REQUESTS}
         density="comfortable"
         className="overflow-x-auto"
+        initialColumnPinning={{ left: ['processName'] }}
+        tableMeta={{ rowDividers: true }}
       />
       <RequestDetailsSheet
         request={selectedRequest}

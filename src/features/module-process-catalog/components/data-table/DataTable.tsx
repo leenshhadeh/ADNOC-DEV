@@ -81,6 +81,7 @@ const DataTable = <TData,>({
     data,
     columns,
     meta: tableMeta,
+    defaultColumn: { size: 250, minSize: 50 },
     state: {
       sorting,
       columnOrder,
@@ -158,6 +159,7 @@ const DataTable = <TData,>({
                     row={row}
                     level={0}
                     density={density}
+                    rowDividers={!!tableMeta?.rowDividers}
                     getRowActions={getRowActions}
                   />
                 ))

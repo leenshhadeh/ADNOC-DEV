@@ -32,7 +32,8 @@ const MyTasksTable = () => {
         id: 'processName',
         accessorKey: 'processName',
         header: 'Process Name',
-        size: 240,
+        size: 200,
+        meta: { isDivider: true },
         cell: (info) => {
           if (info.row.depth > 0) return null
           const row = info.row.original
@@ -43,6 +44,7 @@ const MyTasksTable = () => {
         id: 'level',
         accessorKey: 'level',
         header: 'Level',
+        size: 80,
         cell: (info) => {
           if (info.row.depth > 0) return null
           return <LevelCell level={String(info.getValue())} />
@@ -52,14 +54,22 @@ const MyTasksTable = () => {
         id: 'domain',
         accessorKey: 'domain',
         header: 'Domain',
+        size: 150,
         cell: (info) => {
           if (info.row.depth > 0) return null
-          return <span className="text-foreground text-[1.02rem]">{String(info.getValue())}</span>
+          return (
+            <div className="flex min-h-[40px] flex-col justify-center">
+              <span className="block max-w-[120px] font-normal break-words whitespace-normal text-[#687076]">
+                {String(info.getValue())}
+              </span>
+            </div>
+          )
         },
       },
       {
         id: 'stage',
         header: 'Process Stage',
+        size: 280,
         cell: (info) => {
           if (info.row.depth > 0) return null
           const row = info.row.original
@@ -77,6 +87,7 @@ const MyTasksTable = () => {
         id: 'requester',
         accessorKey: 'requester',
         header: 'Requester',
+        size: 160,
         cell: (info) => {
           if (info.row.depth > 0) return null
           return <UserBadgeCell name={String(info.getValue())} />
@@ -86,6 +97,7 @@ const MyTasksTable = () => {
         id: 'status',
         accessorKey: 'status',
         header: 'Status',
+        size: 150,
         cell: (info) => {
           if (info.row.depth > 0) return null
           return <StatusBadgeCell status={info.getValue() as CatalogStatus} />
@@ -95,7 +107,7 @@ const MyTasksTable = () => {
         id: 'returnComment',
         accessorKey: 'returnComment',
         header: 'Return Comment',
-        size: 200,
+        size: 180,
         cell: (info) => {
           if (info.row.depth > 0) return null
           return <span className="text-foreground text-sm">{String(info.getValue() ?? '—')}</span>
@@ -105,6 +117,7 @@ const MyTasksTable = () => {
         id: 'returnedBy',
         accessorKey: 'returnedBy',
         header: 'Returned By',
+        size: 160,
         cell: (info) => {
           if (info.row.depth > 0) return null
           return info.getValue() ? (
@@ -118,7 +131,7 @@ const MyTasksTable = () => {
         id: 'actionRequired',
         accessorKey: 'actionRequired',
         header: 'Action Required',
-        size: 200,
+        size: 180,
         cell: (info) => {
           if (info.row.depth > 0) return null
           return <span className="text-foreground text-sm">{String(info.getValue() ?? '—')}</span>
@@ -127,7 +140,7 @@ const MyTasksTable = () => {
       {
         id: 'changeName',
         header: 'Name',
-        size: 200,
+        size: 180,
         cell: (info) => {
           if (info.row.depth === 0) return null
           const change = info.row.original.changes?.[0]
@@ -137,7 +150,7 @@ const MyTasksTable = () => {
       {
         id: 'changeType',
         header: 'Change Type',
-        size: 120,
+        size: 110,
         cell: (info) => {
           if (info.row.depth === 0) return null
           const change = info.row.original.changes?.[0]
@@ -147,7 +160,7 @@ const MyTasksTable = () => {
       {
         id: 'oldValue',
         header: 'Old Value',
-        size: 140,
+        size: 130,
         cell: (info) => {
           if (info.row.depth === 0) return null
           const change = info.row.original.changes?.[0]
@@ -168,7 +181,7 @@ const MyTasksTable = () => {
         id: 'submittedOn',
         accessorKey: 'submittedOn',
         header: 'Submitted On',
-        size: 140,
+        size: 130,
         cell: (info) => {
           if (info.row.depth > 0) return null
           return <span className="text-foreground text-sm">{String(info.getValue() ?? '—')}</span>
@@ -177,7 +190,7 @@ const MyTasksTable = () => {
       {
         id: 'goToAffect',
         header: 'Go To',
-        size: 80,
+        size: 60,
         cell: (info) => {
           if (info.row.depth === 0) return null
           return (
@@ -198,7 +211,9 @@ const MyTasksTable = () => {
       density="comfortable"
       enableColumnDnd={false}
       enableSorting={false}
+      initialColumnPinning={{ left: ['processName'] }}
       getSubRows={(row) => row.subRows}
+      tableMeta={{ rowDividers: true }}
     />
   )
 }

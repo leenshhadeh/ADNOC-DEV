@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { TableBody, TableHead } from '@/shared/components/ui/table'
+import { TableBody } from '@/shared/components/ui/table'
 import {
   ColHead,
   EditableCell,
@@ -9,12 +9,7 @@ import {
 } from '@/shared/components/table-primitives'
 
 import Level4Cell from './cells/Level4Cell'
-import {
-  buildAssessmentColumns,
-  buildEntityLeafColumns,
-  getEntityGroups,
-  HIERARCHY_COLUMNS,
-} from '../constants/assessment-columns'
+import { buildEntityLeafColumns, HIERARCHY_COLUMNS } from '../constants/assessment-columns'
 import type { AssessmentDomain, EntityConfig, Level4Row } from '../types'
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -122,9 +117,7 @@ function flattenDomains(domains: AssessmentDomain[]): FlatRow[] {
 type CellState = Record<string, string>
 
 const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) => {
-  const columns = buildAssessmentColumns(entityConfig)
   const entityLeafs = buildEntityLeafColumns(entityConfig)
-  const entityGroups = getEntityGroups(columns)
 
   // Compute left offsets for sticky hierarchy columns
   const stickyOffsets = HIERARCHY_COLUMNS.filter((c) => c.pinned).reduce<Record<string, number>>(
@@ -174,8 +167,6 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
         >
           {/* ── Two-tier header ──────────────────────────────────────────── */}
           <thead>
-          
-
             {/* Row 1 — actual column labels with sort icons */}
             <tr>
               {HIERARCHY_COLUMNS.filter((c) => c.pinned).map((col) => (
@@ -189,10 +180,14 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
                 />
               ))}
               {/* Level 4 column header (last pinned-looking col, not actually sticky) */}
-              <ColHead label="Level 4" size={250} className="border-r-border/60 border-r-2 bg-white" />
+              <ColHead
+                label="Level 4"
+                size={250}
+                className="border-r-border/60 border-r-2 bg-white"
+              />
               {/* Site sub-headers */}
               {entityLeafs.map((col) => (
-                <ColHead key={col.id} label={col.siteName} size={col.size}  className='bg-white'/>
+                <ColHead key={col.id} label={col.siteName} size={col.size} className="bg-white" />
               ))}
             </tr>
           </thead>
