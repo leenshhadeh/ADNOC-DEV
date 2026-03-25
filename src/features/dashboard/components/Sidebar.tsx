@@ -1,27 +1,26 @@
 import { useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import {
-  BriefcaseBusiness,
-  ChevronLeft,
-  ChevronRight,
-  Files,
-  LayoutGrid,
+  ChevronsLeft,
+  ChevronsRight,
   LogOut,
   Settings,
   Sparkles,
-  Table2,
-  Target,
 } from 'lucide-react'
-
 import { cn } from '@/shared/lib/utils'
-import sidebarIcon from '@/assets/SidebarIcon.svg'
+import sidebarIcon from '@/assets/Logo.svg'
+import dashboardIcon from '@/assets/icons/dashboard.svg';
+import assessmentDataIcon from '@/assets/icons/assesment.svg';
+import automationTargetsIcon from '@/assets/icons/target.svg';
+import processCatalogIcon from '@/assets/icons/paper.svg';
+import opportunitiesIcon from '@/assets/icons/bag.svg';
 
 const menuItems = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutGrid },
-  { to: '/assessment-data', label: 'Assessment Data', icon: Table2 },
-  { to: '/automation-targets', label: 'Automation Targets', icon: Target },
-  { to: '/process-catalog', label: 'Process Catalog', icon: Files },
-  { to: '/opportunities', label: 'Opportunities', icon: BriefcaseBusiness },
+  { to: '/dashboard', label: 'Dashboard', icon: dashboardIcon },
+  { to: '/assessment-data', label: 'Assessment Data', icon: assessmentDataIcon },
+  { to: '/automation-targets', label: 'Automation Targets', icon: automationTargetsIcon },
+  { to: '/process-catalog', label: 'Process Catalog', icon: processCatalogIcon },
+  { to: '/opportunities', label: 'Opportunities', icon: opportunitiesIcon },
 ]
 
 const bottomItems = [
@@ -44,7 +43,8 @@ const Sidebar = () => {
   return (
     <aside
       className={cn(
-        'relative flex h-full shrink-0 flex-col rounded-2xl border border-border bg-sidebar transition-all duration-300',
+        'relative flex h-[95vh] shrink-0 flex-col rounded-2xl  bg-white transition-all duration-300 mb-32 ',
+        'shadow-[0px_4px_8px_0px_rgba(0,0,0,0.1)]',
         isCollapsed ? 'w-14' : 'w-[320px]'
       )}
     >
@@ -57,10 +57,11 @@ const Sidebar = () => {
         )}
         aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
-        {isCollapsed ? <ChevronRight className="size-5" /> : <ChevronLeft className="size-5" />}
+        {isCollapsed ? <ChevronsRight className="size-9"strokeWidth={1}  /> : <ChevronsLeft className="size-7" strokeWidth={1} />}
       </button>
-
-      <div className={cn('pt-20')}>
+ 
+ {/* Dashboard and modules */}
+      <div className={cn('pt-20 mb-5')}>
         <div className={cn('mb-8', isCollapsed ? 'flex justify-center' : '')}>
           <img src={sidebarIcon} alt="ADNOC" className="h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 object-contain" />
         </div>
@@ -81,7 +82,10 @@ const Sidebar = () => {
                     : 'text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                 )}
               >
-                <Icon className="size-5 shrink-0" />
+                <img src={Icon} alt={`${label} icon`} className="size-5 shrink-0" 
+                  style={{ filter: active ? 'brightness(0) invert(1)' : 'none' }}
+                
+                />
                 {!isCollapsed && <span className="ml-3">{label}</span>}
               </NavLink>
             )
@@ -89,13 +93,22 @@ const Sidebar = () => {
         </nav>
       </div>
 
-      <div className={cn('mt-auto', isCollapsed ? 'px-2' : 'px-5')}>
-        <div className={cn('mb-4', isCollapsed ? 'flex justify-center' : 'px-2')}>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground">
-            MA
-          </div>
+      
+
+{/* profile and settings */}
+      <div className={cn('mt-auto', isCollapsed ? 'px-2' : 'px-0')}>
+
+
+        {/* profile: */}
+        <div className={cn('mb-4', isCollapsed ? 'flex justify-center' : 'px-4 inline-flex items-center')}>
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
+            alt="Profile"
+            className="h-5 w-5 rounded-full object-cover"
+          />
           {!isCollapsed && <span className="ml-3 self-center text-md/none text-foreground">Maryam Al Shamsi</span>}
-        </div>
+        </div>    
+
 
         <nav className="space-y-1 pb-4">
           {bottomItems.map(({ to, label, icon: Icon }) => (

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { TableBody, TableHead } from '@/shared/components/ui/table'
+import { TableBody } from '@/shared/components/ui/table'
 import {
   ColHead,
   EditableCell,
@@ -12,7 +12,6 @@ import Level4Cell from './cells/Level4Cell'
 import {
   buildAssessmentColumns,
   buildEntityLeafColumns,
-  getEntityGroups,
   HIERARCHY_COLUMNS,
 } from '../constants/assessment-columns'
 import type { AssessmentDomain, EntityConfig, Level4Row } from '../types'
@@ -124,7 +123,6 @@ type CellState = Record<string, string>
 const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) => {
   const columns = buildAssessmentColumns(entityConfig)
   const entityLeafs = buildEntityLeafColumns(entityConfig)
-  const entityGroups = getEntityGroups(columns)
 
   // Compute left offsets for sticky hierarchy columns
   const stickyOffsets = HIERARCHY_COLUMNS.filter((c) => c.pinned).reduce<Record<string, number>>(
@@ -172,10 +170,7 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
           className="w-full caption-bottom border-separate border-spacing-0 text-sm"
           style={{ minWidth: 'max-content' }}
         >
-          {/* ── Two-tier header ──────────────────────────────────────────── */}
           <thead>
-          
-
             {/* Row 1 — actual column labels with sort icons */}
             <tr>
               {HIERARCHY_COLUMNS.filter((c) => c.pinned).map((col) => (
