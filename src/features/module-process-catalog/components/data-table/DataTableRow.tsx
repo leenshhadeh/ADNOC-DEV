@@ -3,6 +3,7 @@ import { ChevronDown, ChevronRight } from 'lucide-react'
 
 import { Button } from '@/shared/components/ui/button'
 import { TableRow } from '@/shared/components/ui/table'
+import { cn } from '@/shared/lib/utils'
 
 import DataTableCell from './DataTableCell'
 import type { DataTableRowProps } from './interfaces'
@@ -11,6 +12,7 @@ const DataTableRow = <TData,>({
   row,
   level,
   density = 'compact',
+  rowDividers = false,
   getRowActions,
 }: DataTableRowProps<TData>) => {
   const [expanded, setExpanded] = useState(false)
@@ -19,13 +21,12 @@ const DataTableRow = <TData,>({
   const subRows = row.subRows
   const hasSubRows = subRows.length > 0
   const actions = getRowActions ? getRowActions(row) : []
-
   return (
     <Fragment>
       <TableRow
-        className={
-          row.getIsSelected() ? 'ring-primary/30 bg-orange-50/50 ring-1 ring-inset' : undefined
-        }
+        className={cn(
+          row.getIsSelected() ? 'ring-primary/30 bg-orange-50/50 ring-1 ring-inset' : undefined,
+        )}
       >
         {cells.map((cell, index) => (
           <DataTableCell
@@ -35,6 +36,7 @@ const DataTableRow = <TData,>({
             level={level}
             isFirstCell={index === 0}
             density={density}
+            rowDividers={rowDividers}
             actions={actions}
             leading={
               index === 0 && hasSubRows ? (
@@ -65,6 +67,7 @@ const DataTableRow = <TData,>({
               row={subRow}
               level={level + 1}
               density={density}
+              rowDividers={rowDividers}
               getRowActions={getRowActions}
             />
           ))
