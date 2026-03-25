@@ -11,18 +11,15 @@ import {
   type CatalogStatus,
   UserBadgeCell,
 } from '@features/module-process-catalog/components/cells'
+import LevelsIcon from '@/assets/Levels.svg?react'
 
 import type { TaskItem } from '@features/module-process-catalog/types/my-tasks'
 import { MY_TASKS } from '@features/module-process-catalog/constants/my-tasks'
 
 const LevelCell = ({ level }: { level: string }) => {
   return (
-    <div className="text-foreground flex items-center gap-2 text-start text-[1.02rem] font-medium">
-      <span className="text-muted-foreground inline-flex h-5 items-end gap-0.5" aria-hidden="true">
-        <span className="h-4 w-1 rounded-sm bg-current" />
-        <span className="h-5 w-1 rounded-sm bg-current" />
-        <span className="h-3 w-1 rounded-sm bg-current" />
-      </span>
+    <div className="text-foreground flex items-center gap-1 text-start text-sm font-medium">
+      <LevelsIcon />
       {level}
     </div>
   )

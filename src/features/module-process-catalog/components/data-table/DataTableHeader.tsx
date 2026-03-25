@@ -1,7 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { flexRender } from '@tanstack/react-table'
-import { ArrowDown, ArrowUp, GripVertical } from 'lucide-react'
+import { GripVertical } from 'lucide-react'
 
 import { Button } from '@/shared/components/ui/button'
 import { TableHead } from '@/shared/components/ui/table'
@@ -101,30 +101,7 @@ const DataTableHeader = <TData, TValue>({
           'border-r-border/60 border-r-2',
       )}
     >
-      <div className="flex items-center gap-1">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="h-7 px-1.5 text-xs font-semibold tracking-wide uppercase"
-          onClick={
-            enableSorting && column.getCanSort() ? column.getToggleSortingHandler() : undefined
-          }
-          aria-label={enableSorting && column.getCanSort() ? `Sort by ${column.id}` : undefined}
-        >
-          <span className="truncate">
-            {flexRender(column.columnDef.header, header.getContext())}
-          </span>
-          {enableSorting && column.getCanSort() && sortedState === 'asc' && (
-            <ArrowUp className="size-3.5" />
-          )}
-          {enableSorting && column.getCanSort() && sortedState === 'desc' && (
-            <ArrowDown className="size-3.5" />
-          )}
-          {enableSorting && column.getCanSort() && !sortedState && (
-            <FilterIcon className="size-3.5 opacity-70" />
-          )}
-        </Button>
+      <div className="flex items-center">
         {enableColumnDnd && isPinned === false && (
           <Button
             type="button"
@@ -138,6 +115,29 @@ const DataTableHeader = <TData, TValue>({
             <GripVertical className="size-3.5" />
           </Button>
         )}
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-7 px-1.5 text-xs font-normal tracking-wide uppercase"
+          onClick={
+            enableSorting && column.getCanSort() ? column.getToggleSortingHandler() : undefined
+          }
+          aria-label={enableSorting && column.getCanSort() ? `Sort by ${column.id}` : undefined}
+        >
+          <span className="truncate pr-1">
+            {flexRender(column.columnDef.header, header.getContext())}
+          </span>
+          {/* {enableSorting && column.getCanSort() && sortedState === 'asc' && (
+            <ArrowUp className="size-3.5" />
+          )}
+          {enableSorting && column.getCanSort() && sortedState === 'desc' && (
+            <ArrowDown className="size-3.5" />
+          )} */}
+          {/* {enableSorting && column.getCanSort() && !sortedState && ( */}
+          <FilterIcon className="size-3.5 opacity-70" />
+          {/* )} */}
+        </Button>
       </div>
     </TableHead>
   )
