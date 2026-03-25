@@ -8,7 +8,7 @@
  */
 
 import type { LucideProps } from 'lucide-react'
-import { ChevronDown, Layers, Search, X } from 'lucide-react'
+import { Layers, Search, X } from 'lucide-react'
 
 import ShapeIcon from '@/assets/Shape.svg?react'
 
@@ -162,20 +162,17 @@ const ModuleToolbar = ({
                 >
                   <Layers className="size-4" />
                   Bulk Action
-                  <ChevronDown className="size-4" />
                 </Button>
               )}
 
-              {actions.length > 0 && (
-                <Separator orientation="vertical" className="hidden h-8 sm:block" />
-              )}
+              {actions.length > 0 && <Separator orientation="vertical" className="h-8!" />}
             </>
           )}
 
           {/* Remaining actions with separators between them */}
           {actions.map((action, index) => (
             <div key={action.id} className="flex items-center">
-              {index > 0 && <Separator orientation="vertical" className="hidden h-8 sm:block" />}
+              {index > 0 && <Separator orientation="vertical" className="h-8!" />}
               <Button
                 type="button"
                 className="h-9 bg-transparent px-3 text-[#0047BA]"
