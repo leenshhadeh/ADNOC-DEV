@@ -174,32 +174,7 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
         >
           {/* ── Two-tier header ──────────────────────────────────────────── */}
           <thead>
-            {/* Row 0 — empty spacers for hierarchy, entity group names for matrix */}
-            <tr>
-              {HIERARCHY_COLUMNS.filter((c) => c.pinned).map((col) => (
-                <ColHead
-                  key={col.id}
-                  label=""
-                  size={col.size}
-                  isSticky
-                  leftOffset={stickyOffsets[col.id]}
-                  showSort={false}
-                  className="h-8 border-b-0 py-0"
-                />
-              ))}
-              {/* level4 — empty spacer */}
-              <ColHead label="" size={250} showSort={false} className="h-8 border-b-0 py-0" />
-              {/* Entity group headers */}
-              {entityGroups.map((group) => (
-                <TableHead
-                  key={group.entityName}
-                  colSpan={group.colSpan}
-                  className="border-border/60 sticky top-0 z-10 h-8 border-b bg-[#F1F3F5] py-1 text-center text-xs font-semibold tracking-wide uppercase"
-                >
-                  <span className="truncate">{group.entityName}</span>
-                </TableHead>
-              ))}
-            </tr>
+          
 
             {/* Row 1 — actual column labels with sort icons */}
             <tr>
@@ -210,14 +185,14 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
                   size={col.size}
                   isSticky
                   leftOffset={stickyOffsets[col.id]}
-                  className={col.id === 'level3' ? 'border-r-0' : ''}
+                  className={col.id === 'level3' ? 'border-r-0 bg-white' : 'bg-white'}
                 />
               ))}
               {/* Level 4 column header (last pinned-looking col, not actually sticky) */}
-              <ColHead label="Level 4" size={250} className="border-r-border/60 border-r-2" />
+              <ColHead label="Level 4" size={250} className="border-r-border/60 border-r-2 bg-white" />
               {/* Site sub-headers */}
               {entityLeafs.map((col) => (
-                <ColHead key={col.id} label={col.siteName} size={col.size} />
+                <ColHead key={col.id} label={col.siteName} size={col.size}  className='bg-white'/>
               ))}
             </tr>
           </thead>
