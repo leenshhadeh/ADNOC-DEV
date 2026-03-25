@@ -52,6 +52,7 @@ export interface ModuleToolbarProps {
   searchValue?: string
   onSearchChange?: (value: string) => void
   searchPlaceholder?: string
+  showFilter?:boolean
 
   // ── Actions ───────────────────────────────────────────────────────────────
   /** Optional: renders the Bulk Action button (or active-selection pill) */
@@ -71,6 +72,7 @@ const ModuleToolbar = ({
   searchPlaceholder = 'Search',
   bulkMode,
   actions = [],
+  showFilter=true
 }: ModuleToolbarProps) => {
   return (
     <div className="flex justify-between">
@@ -96,9 +98,9 @@ const ModuleToolbar = ({
             className="h-11 rounded-2xl ps-9 pe-3"
           />
         </div>
-        <Button type="button" variant="ghost" size="icon" className="h-11 w-11">
+        {showFilter && <Button type="button" variant="ghost" size="icon" className="h-11 w-11">
           <ShapeIcon className="size-4" />
-        </Button>
+        </Button> }
       </div>
       <div className="flex items-center">
         {/* ── Right: bulk action + other actions ──────────────────────────── */}
