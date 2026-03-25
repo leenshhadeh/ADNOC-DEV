@@ -8,7 +8,7 @@
  */
 
 import type { LucideProps } from 'lucide-react'
-import { ChevronDown, Layers, Search, X } from 'lucide-react'
+import { Layers, Search, X } from 'lucide-react'
 
 import ShapeIcon from '@/assets/Shape.svg?react'
 
@@ -16,6 +16,7 @@ import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Separator } from './ui/separator'
 import { Tabs, TabsList, TabsTrigger } from './ui/tabs'
+import { cn } from '../lib/utils'
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -54,6 +55,10 @@ export interface ModuleToolbarProps {
   searchPlaceholder?: string
   showFilter?:boolean
 
+  // ── Filter ────────────────────────────────────────────────────────────────
+  /** Called when the filter icon button is clicked */
+  onFilterClick?: () => void
+
   // ── Actions ───────────────────────────────────────────────────────────────
   /** Optional: renders the Bulk Action button (or active-selection pill) */
   bulkMode?: BulkModeState
@@ -70,6 +75,7 @@ const ModuleToolbar = ({
   searchValue,
   onSearchChange,
   searchPlaceholder = 'Search',
+  onFilterClick,
   bulkMode,
   actions = [],
   showFilter=true
@@ -79,9 +85,17 @@ const ModuleToolbar = ({
       <div className="flex flex-wrap items-center gap-3">
         {/* ── Left: pill tabs ──────────────────────────────────────────────── */}
         <Tabs value={activeTab} onValueChange={onTabChange} className="gap-0">
-          <TabsList className="h-11 rounded-2xl px-1.5">
+          <TabsList className="font-small h-11 px-1.5">
             {tabs.map((tab) => (
-              <TabsTrigger key={tab.value} value={tab.value} className="h-8 rounded-xl px-4">
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className={cn(
+                  'h-8 rounded-xl px-4',
+                  'font-light', // Default: 300
+                  'data-[state=active]:font-medium', // Active: 500
+                )}
+              >
                 {tab.label}
               </TabsTrigger>
             ))}
@@ -98,9 +112,18 @@ const ModuleToolbar = ({
             className="h-11 rounded-2xl ps-9 pe-3"
           />
         </div>
-        {showFilter && <Button type="button" variant="ghost" size="icon" className="h-11 w-11">
+
+       {showFilter && <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-11 w-11"
+          aria-label="Open filters"
+          onClick={onFilterClick}
+        >
           <ShapeIcon className="size-4" />
         </Button> }
+        
       </div>
       <div className="flex items-center">
         {/* ── Right: bulk action + other actions ──────────────────────────── */}
@@ -143,20 +166,17 @@ const ModuleToolbar = ({
                 >
                   <Layers className="size-4" />
                   Bulk Action
-                  <ChevronDown className="size-4" />
                 </Button>
               )}
 
-              {actions.length > 0 && (
-                <Separator orientation="vertical" className="hidden h-8 sm:block" />
-              )}
+              {actions.length > 0 && <Separator orientation="vertical" className="h-8!" />}
             </>
           )}
 
           {/* Remaining actions with separators between them */}
           {actions.map((action, index) => (
             <div key={action.id} className="flex items-center">
-              {index > 0 && <Separator orientation="vertical" className="hidden h-8 sm:block" />}
+              {index > 0 && <Separator orientation="vertical" className="h-8!" />}
               <Button
                 type="button"
                 className="h-9 bg-transparent px-3 text-[#0047BA]"

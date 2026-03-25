@@ -3,195 +3,17 @@ import { Eye } from 'lucide-react'
 import type { ColumnDef } from '@tanstack/react-table'
 
 import { Button } from '@/shared/components/ui/button'
-import DataTable from '../data-table/DataTable'
+import DataTable from '@features/module-process-catalog/components/data-table/DataTable'
 import {
   ProcessInfoCell,
   StageProgressCell,
   StatusBadgeCell,
   type CatalogStatus,
   UserBadgeCell,
-} from '../cells'
+} from '@features/module-process-catalog/components/cells'
 
-export interface ChangeRecord {
-  name: string
-  changeType: string
-  oldValue: string
-  newValue: string
-}
-
-export interface TaskItem {
-  id: string
-  processName: string
-  requestId: string
-  level: string
-  domain: string
-  stageCurrent: number
-  stageTotal: number
-  stageText: string
-  requester: string
-  status: CatalogStatus
-  returnComment?: string
-  returnedBy?: string
-  actionRequired?: string
-  changes?: ChangeRecord[]
-  submittedOn?: string
-  /** Derived from `changes` — drives TanStack sub-row expansion. */
-  subRows?: TaskItem[]
-}
-
-function makeChangeSubRow(parentId: string, change: ChangeRecord, index: number): TaskItem {
-  return {
-    id: `${parentId}-c${index}`,
-    processName: '',
-    requestId: '',
-    level: '',
-    domain: '',
-    stageCurrent: 0,
-    stageTotal: 0,
-    stageText: '',
-    requester: '',
-    status: 'Published',
-    changes: [change],
-  }
-}
-
-function withSubRows(item: Omit<TaskItem, 'subRows'>): TaskItem {
-  return {
-    ...item,
-    subRows: (item.changes ?? []).map((c, i) => makeChangeSubRow(item.id, c, i)),
-  }
-}
-
-const taskItems: TaskItem[] = [
-  withSubRows({
-    id: 'task-1',
-    processName: 'Regional studies',
-    requestId: '9377353',
-    level: 'L 3',
-    domain: 'Corporate Communications',
-    stageCurrent: 1,
-    stageTotal: 3,
-    stageText: 'Pending updates',
-    requester: 'Maryam Al Shamsi',
-    status: 'Returned draft',
-    returnComment: 'Please revise section 2',
-    returnedBy: 'Ahmed Al Mansoori',
-    actionRequired: 'Review and update',
-    submittedOn: '08 Apr 2024',
-    changes: [
-      { name: 'Process creation', changeType: 'Create', oldValue: '-', newValue: 'L3 created' },
-      {
-        name: 'Process name',
-        changeType: 'Update',
-        oldValue: '-',
-        newValue: 'Play-based exploration (concept) 2 (Dashboard)',
-      },
-      {
-        name: 'Process hierarchy',
-        changeType: 'Update',
-        oldValue: '-',
-        newValue: 'Domain / Exploration & Planning',
-      },
-      {
-        name: 'Process hierarchy',
-        changeType: 'Update',
-        oldValue: '-',
-        newValue: 'L1 / Exploration',
-      },
-      {
-        name: 'Process hierarchy',
-        changeType: 'Update',
-        oldValue: '-',
-        newValue: 'L2 / Regional studies',
-      },
-      {
-        name: 'Process description',
-        changeType: 'Update',
-        oldValue: '-',
-        newValue: 'Creating a comprehensive Basin Modeling concept i...',
-      },
-      {
-        name: 'Process parent name (L2)',
-        changeType: 'Update',
-        oldValue: 'Regional studies',
-        newValue: 'Studies',
-      },
-    ],
-  }),
-  withSubRows({
-    id: 'task-2',
-    processName: 'Define Budget and Schedule',
-    requestId: '9377354',
-    level: 'L 3',
-    domain: 'Corporate Communications',
-    stageCurrent: 1,
-    stageTotal: 3,
-    stageText: 'Pending updates',
-    requester: 'Maryam Al Shamsi',
-    status: 'Returned draft',
-    returnComment: 'Budget figures need review',
-    returnedBy: 'Sara Al Mazrouei',
-    actionRequired: 'Re-submit with corrections',
-    submittedOn: '14 Jan 2026',
-    changes: [
-      { name: 'Budget Plan', changeType: 'Edit', oldValue: '1,200,000', newValue: '1,500,000' },
-      { name: 'Schedule', changeType: 'Update', oldValue: 'Q1 2026', newValue: 'Q2 2026' },
-    ],
-  }),
-  withSubRows({
-    id: 'task-3',
-    processName: 'Develop external communication',
-    requestId: '9377355',
-    level: 'L 3',
-    domain: 'Corporate Communications',
-    stageCurrent: 1,
-    stageTotal: 3,
-    stageText: 'Pending updates',
-    requester: 'Maryam Al Shamsi',
-    status: 'Returned draft',
-    returnComment: 'Tone needs adjustment',
-    returnedBy: 'Khalid Al Hamadi',
-    actionRequired: 'Revise communication plan',
-    submittedOn: '15 Jan 2026',
-    changes: [{ name: 'Comm. Plan', changeType: 'Edit', oldValue: 'V1', newValue: 'V2' }],
-  }),
-  withSubRows({
-    id: 'task-4',
-    processName: 'Prepare media materials',
-    requestId: '9377356',
-    level: 'L 3',
-    domain: 'Corporate Communications',
-    stageCurrent: 1,
-    stageTotal: 3,
-    stageText: 'Pending updates',
-    requester: 'Maryam Al Shamsi',
-    status: 'Returned draft',
-    returnComment: 'Missing brand guidelines',
-    returnedBy: 'Noura Al Dhaheri',
-    actionRequired: 'Attach brand assets',
-    submittedOn: '16 Jan 2026',
-    changes: [{ name: 'Media Pack', changeType: 'Addition', oldValue: '—', newValue: 'Attached' }],
-  }),
-  withSubRows({
-    id: 'task-5',
-    processName: 'Defining brand performance',
-    requestId: '9377357',
-    level: 'L 3',
-    domain: 'Corporate Communications',
-    stageCurrent: 1,
-    stageTotal: 3,
-    stageText: 'Pending updates',
-    requester: 'Maryam Al Shamsi',
-    status: 'Returned draft',
-    returnComment: 'KPIs not aligned',
-    returnedBy: 'Omar Al Ketbi',
-    actionRequired: 'Align KPIs with strategy',
-    submittedOn: '17 Jan 2026',
-    changes: [
-      { name: 'KPI Dashboard', changeType: 'Edit', oldValue: 'Q3 Target', newValue: 'Q4 Target' },
-    ],
-  }),
-]
+import type { TaskItem } from '@features/module-process-catalog/types/my-tasks'
+import { MY_TASKS } from '@features/module-process-catalog/constants/my-tasks'
 
 const LevelCell = ({ level }: { level: string }) => {
   return (
@@ -375,7 +197,7 @@ const MyTasksTable = () => {
   return (
     <DataTable
       columns={columns}
-      data={taskItems}
+      data={MY_TASKS}
       density="comfortable"
       enableColumnDnd={false}
       enableSorting={false}

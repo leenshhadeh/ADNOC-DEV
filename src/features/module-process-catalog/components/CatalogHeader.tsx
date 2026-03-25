@@ -7,7 +7,10 @@ import {
   BreadcrumbSeparator,
 } from '@/shared/components/ui/breadcrumb'
 import ModuleToolbar, { type BulkModeState } from '@/shared/components/ModuleToolbar'
-import { CATALOG_ACTIONS, CATALOG_TABS } from '../constants/catalog-toolbar'
+import {
+  CATALOG_ACTIONS,
+  CATALOG_TABS,
+} from '@features/module-process-catalog/constants/catalog-toolbar'
 
 export type CatalogTabValue = 'processes' | 'myTasks' | 'submittedRequests'
 
@@ -18,6 +21,7 @@ interface CatalogHeaderProps {
   onToggleBulkMode?: () => void
   selectedCount?: number
   onBulkAddProcesses?: () => void
+  onFilterClick?: () => void
 }
 
 const CatalogHeader = ({
@@ -27,6 +31,7 @@ const CatalogHeader = ({
   onToggleBulkMode,
   selectedCount = 0,
   onBulkAddProcesses,
+  onFilterClick,
 }: CatalogHeaderProps) => {
   const bulkMode: BulkModeState = {
     isActive: isBulkMode,
@@ -60,6 +65,7 @@ const CatalogHeader = ({
         tabs={CATALOG_TABS}
         activeTab={activeTab}
         onTabChange={(value) => onTabChange(value as CatalogTabValue)}
+        onFilterClick={onFilterClick}
         bulkMode={bulkMode}
         actions={CATALOG_ACTIONS}
       />
