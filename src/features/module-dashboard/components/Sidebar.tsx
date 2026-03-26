@@ -96,7 +96,7 @@ const Sidebar = () => {
       
 
 {/* profile and settings */}
-      <div className={cn('mt-auto', isCollapsed ? 'px-2' : 'px-0')}>
+      <div className={'mt-auto'}>
 
 
         {/* profile: */}
