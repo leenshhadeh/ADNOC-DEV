@@ -10,6 +10,8 @@ import {
 import Level4Cell from './cells/Level4Cell'
 import { buildEntityLeafColumns, HIERARCHY_COLUMNS } from '../constants/assessment-columns'
 import type { AssessmentDomain, EntityConfig, Level4Row } from '../types'
+import { cn } from '@/shared/lib/utils'
+import { StatusBadgeCell } from '@/features/module-process-catalog/components/cells'
 
 // ── Main component ────────────────────────────────────────────────────────────
 
@@ -35,7 +37,7 @@ interface FlatRow {
   domainCell?: CellDesc<{ value: string }>
   level1Cell?: CellDesc<{ name: string; code: string }>
   level2Cell?: CellDesc<{ name: string; code: string }>
-  level3Cell?: CellDesc<{ name: string; code: string }>
+  level3Cell?: CellDesc<{ name: string; code: string; groupCompany?: string; status?: string }>
 }
 
 function flattenDomains(domains: AssessmentDomain[]): FlatRow[] {
@@ -97,7 +99,12 @@ function flattenDomains(domains: AssessmentDomain[]): FlatRow[] {
             }
             if (l3First) {
               row.level3Cell = {
-                data: { name: l3.level3Name, code: l3.level3Code },
+                data: {
+                  name: l3.level3Name,
+                  code: l3.level3Code,
+                  groupCompany: l3.groupCompany,
+                  status: l3.status,
+                },
                 rowSpan: l3Span,
               }
               l3First = false
@@ -151,11 +158,20 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
     return init
   })
 
-  const getCellValue = (l4Id: string, entityName: string, site: string) =>
-    cellValues[`${l4Id}__${entityName}__${site}`] ?? ''
+  const getCellValue = (l4Id?: string, entityName?: string, col?: string, l3Status?: any) => {
+    if (col == 'status') {
+      console.log('l3Status', l3Status)
+      const status: any = cellValues[`${l4Id}__${entityName}__${col}`]
+      return status || l3Status
+    }
+    return cellValues[`${l4Id}__${entityName}__${col}`] ?? ''
+  }
 
   const setCellValue = (l4Id: string, entityName: string, site: string, val: string) =>
     setCellValues((prev) => ({ ...prev, [`${l4Id}__${entityName}__${site}`]: val }))
+
+  let lastGroupCompany = ''
+  let lastStatus = ''
 
   return (
     <TableShell>
@@ -164,11 +180,12 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
           className="w-full caption-bottom border-separate border-spacing-0 text-sm"
           style={{ minWidth: 'max-content' }}
         >
-          {/* ── Two-tier header ──────────────────────────────────────────── */}
+          {/* Columns ─────────────────────────────────────────────────────── */}
+
           <thead>
             {/* Row 1 — actual column labels with sort icons */}
             <tr>
-              {HIERARCHY_COLUMNS.filter((c) => c.pinned).map((col) => (
+              {HIERARCHY_COLUMNS.map((col) => (
                 <ColHead
                   key={col.id}
                   label={col.label}
@@ -178,14 +195,9 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
                   className={col.id === 'level3' ? 'border-r-0 bg-white' : 'bg-white'}
                 />
               ))}
-              {/* Level 4 column header */}
-              <ColHead label="Level 4" size={250} className="bg-white" />
-              {/* Group Company column header */}
-              <ColHead
-                label="Group Company"
-                size={250}
-                className="border-r-border/60 border-r-2 bg-white"
-              />
+              {/* Group Company */}
+              <ColHead label="Group Company" size={250} className="bg-white" />
+
               {/* Site sub-headers */}
               {entityLeafs.map((col) => (
                 <ColHead key={col.id} label={col.siteName} size={col.size} className="bg-white" />
@@ -195,115 +207,149 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
 
           {/* ── Body with rowSpan ────────────────────────────────────────── */}
           <TableBody>
-            {flatRows.map((row) => (
-              <tr
-                key={row.key}
-                className="group/row border-border hover:bg-muted/20 border-b transition-colors"
-              >
-                {/* Domain — rendered only on its first row */}
-                {row.domainCell && (
-                  <HierarchyTd
-                    rowSpan={row.domainCell.rowSpan}
-                    size={HIERARCHY_COLUMNS[0].size}
-                    leftOffset={stickyOffsets['domain']}
-                  >
-                    <span className="text-foreground text-sm font-medium">
-                      {row.domainCell.data.value}
-                    </span>
-                  </HierarchyTd>
-                )}
+            {flatRows.map((row) => {
+              const currentGroupCompany = row.level3Cell?.data.groupCompany
+              const currentStatus = row.level3Cell?.data?.status
 
-                {/* Level 1 — rendered only on its first row */}
-                {row.level1Cell && (
-                  <HierarchyTd
-                    rowSpan={row.level1Cell.rowSpan}
-                    size={HIERARCHY_COLUMNS[1].size}
-                    leftOffset={stickyOffsets['level1']}
-                  >
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-foreground text-sm font-medium">
-                        {row.level1Cell.data.name}
-                      </span>
-                      <span className="text-muted-foreground text-xs">
-                        {row.level1Cell.data.code}
-                      </span>
-                    </div>
-                  </HierarchyTd>
-                )}
+              if (currentGroupCompany) {
+                lastGroupCompany = currentGroupCompany
+              }
+              if (currentStatus) {
+                lastStatus = currentStatus
+              }
 
-                {/* Level 2 — rendered only on its first row */}
-                {row.level2Cell && (
-                  <HierarchyTd
-                    rowSpan={row.level2Cell.rowSpan}
-                    size={HIERARCHY_COLUMNS[2].size}
-                    leftOffset={stickyOffsets['level2']}
-                  >
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-foreground text-sm font-medium">
-                        {row.level2Cell.data.name}
-                      </span>
-                      <span className="text-muted-foreground text-xs">
-                        {row.level2Cell.data.code}
-                      </span>
-                    </div>
-                  </HierarchyTd>
-                )}
-
-                {/* Level 3 — rendered only on its first row */}
-                {row.level3Cell && (
-                  <HierarchyTd
-                    rowSpan={row.level3Cell.rowSpan}
-                    size={HIERARCHY_COLUMNS[3].size}
-                    leftOffset={stickyOffsets['level3']}
-                    isLast
-                  >
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-foreground text-sm font-medium">
-                        {row.level3Cell.data.name}
-                      </span>
-                      <span className="text-muted-foreground text-xs">
-                        {row.level3Cell.data.code}
-                      </span>
-                    </div>
-                  </HierarchyTd>
-                )}
-
-                {/* ── Level 4 cell ─────────────────────────────────── */}
-                <td
-                  className="border-r-border/60 border-border border-r-2 border-b px-3 py-2 align-middle"
-                  style={{ width: 250, minWidth: 250 }}
+              return (
+                <tr
+                  key={row.key}
+                  className="group/row border-border hover:bg-muted/20 border-b transition-colors"
                 >
-                  <Level4Cell item={row.l4Item} />
-                </td>
-                {/* groupCompany */}
-                <td
-                  className="border-r-border/60 border-border border-r-2 border-b px-3 py-2 align-middle"
-                  style={{ width: 250, minWidth: 250 }}
-                >
-                  <span className="text-muted-foreground text-xs">{row.l4Item?.groupCompany}</span>
-                </td>
+                  {/* Domain — rendered only on its first row */}
+                  {row.domainCell && (
+                    <HierarchyTd
+                      rowSpan={row.domainCell.rowSpan}
+                      size={HIERARCHY_COLUMNS[0].size}
+                      leftOffset={stickyOffsets['domain']}
+                    >
+                      <span className="text-foreground text-sm font-medium">
+                        {row.domainCell.data.value}
+                      </span>
+                    </HierarchyTd>
+                  )}
 
-                {/* ── Entity/site editable cells ────────────────────── */}
-                {entityLeafs.map((col) => (
+                  {/* Level 1 — rendered only on its first row */}
+                  {row.level1Cell && (
+                    <HierarchyTd
+                      rowSpan={row.level1Cell.rowSpan}
+                      size={HIERARCHY_COLUMNS[1].size}
+                      leftOffset={stickyOffsets['level1']}
+                    >
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-foreground text-sm font-medium">
+                          {row.level1Cell.data.name}
+                        </span>
+                        <span className="text-muted-foreground text-xs">
+                          {row.level1Cell.data.code}
+                        </span>
+                      </div>
+                    </HierarchyTd>
+                  )}
+
+                  {/* Level 2 — rendered only on its first row */}
+                  {row.level2Cell && (
+                    <HierarchyTd
+                      rowSpan={row.level2Cell.rowSpan}
+                      size={HIERARCHY_COLUMNS[2].size}
+                      leftOffset={stickyOffsets['level2']}
+                    >
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-foreground text-sm font-medium">
+                          {row.level2Cell.data.name}
+                        </span>
+                        <span className="text-muted-foreground text-xs">
+                          {row.level2Cell.data.code}
+                        </span>
+                      </div>
+                    </HierarchyTd>
+                  )}
+
+                  {/* Level 3 — ((pinned col))*/}
+                  {row.level3Cell && (
+                    <HierarchyTd
+                      rowSpan={row.level3Cell.rowSpan}
+                      size={HIERARCHY_COLUMNS[3].size}
+                      leftOffset={stickyOffsets['level3']}
+                      isLast={false}
+                    >
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-foreground text-sm font-medium">
+                          {row.level3Cell.data.name}
+                        </span>
+                        <span className="text-muted-foreground text-xs">
+                          {row.level3Cell.data.code}
+                        </span>
+                      </div>
+                    </HierarchyTd>
+                  )}
+
+                  {/* ── Level 4 cell ((pinned col))───────────────────────────────── */}
                   <td
-                    key={col.id}
-                    className="border-border border-b px-1 py-1 align-middle"
-                    style={{ width: col.size, minWidth: col.size }}
-                  >
-                    {row.l4Item ? (
-                      <EditableCell
-                        value={getCellValue(row.l4Item.id, col.entityName, col.siteName)}
-                        onChange={(v) =>
-                          setCellValue(row.l4Item!.id, col.entityName, col.siteName, v)
-                        }
-                      />
-                    ) : (
-                      <div className="text-muted-foreground px-2 py-1 text-sm">—</div>
+                    style={{
+                      width: HIERARCHY_COLUMNS[4].size,
+                      minWidth: HIERARCHY_COLUMNS[4].size,
+                      position: 'sticky',
+                      left: stickyOffsets['level4'],
+                      zIndex: 10,
+                    }}
+                    className={cn(
+                      'bg-card border-border border-b px-3 py-2 align-top text-sm',
+                      'border-r-border/60 border-r-2 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.07)]',
                     )}
+                  >
+                    <Level4Cell item={row.l4Item} />
                   </td>
-                ))}
-              </tr>
-            ))}
+
+                  {/* groupCompany */}
+                  <td
+                    className="border-r-border/60 border-border border-r-2 border-b px-3 py-2 align-middle"
+                    style={{ width: 250, minWidth: 250 }}
+                  >
+                    <span className="text-muted-foreground text-xs">
+                      {row.level3Cell?.data.groupCompany || lastGroupCompany}
+                      {/* if there is no data , then bring the last one aded  */}
+                    </span>
+                  </td>
+
+                  {/* ── Entity/site editable cells ────────────────────── */}
+                  {entityLeafs.map((col) => (
+                    <td
+                      key={col.id}
+                      className="border-border border-b px-1 py-1 align-middle"
+                      style={{ width: col.size, minWidth: col.size }}
+                    >
+                    
+                  {col.siteName == 'status' ? (
+                          <StatusBadgeCell
+                            status={getCellValue(
+                              row.l4Item?.id,
+                              col.entityName,
+                              col.siteName,
+                              lastStatus,
+                            )}
+                          />
+                        ) : (
+                          <EditableCell
+                            value={getCellValue(row.l4Item?.id, col.entityName, col.siteName)}
+                            onChange={(v) =>
+                              setCellValue(row.l4Item!.id, col.entityName, col.siteName, v)
+                            }
+                          />
+                        )
+                       }
+                    </td>
+                  ))}
+                </tr>
+              )
+            })}
           </TableBody>
         </table>
       </div>
