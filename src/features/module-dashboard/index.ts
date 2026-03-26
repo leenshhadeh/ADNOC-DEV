@@ -1,0 +1,6 @@
+export { default as Dashboard } from './components/Dashboard'
+export { default as AccessCard } from './components/AccessCard'
+export { default as DashboardModule } from './DashboardModule'
+export { default as Tag } from './components/Tag'
+export { default as ProcessesSummary } from './components/ProcessesSummary'
+export { default as MyTasks } from './components/MyTasks'

@@ -1,8 +1,8 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
-import { Dashboard } from '@features/dashboard'
+import { Dashboard } from '@/features/module-dashboard'
 
 const PlaceholderPage = ({ title }: { title: string }) => {
-  return <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
+  return <h1 className="text-foreground text-2xl font-semibold">{title}</h1>
 }
 
 export const router = createBrowserRouter([
@@ -16,11 +16,14 @@ export const router = createBrowserRouter([
       },
       {
         path: 'assessment-data',
-        lazy: () => import('@features/module-assessment-data').then(m => ({ Component: m.AssessmentDataModule })),
+        lazy: () =>
+          import('@features/module-assessment-data').then((m) => ({
+            Component: m.AssessmentDataModule,
+          })),
       },
       {
         path: 'dashboard',
-        element: <PlaceholderPage title="Dashboard" />,
+        lazy: () => import('@/features/module-dashboard').then((m) => ({ Component: m.DashboardModule })),
       },
       {
         path: 'automation-targets',
@@ -28,7 +31,8 @@ export const router = createBrowserRouter([
       },
       {
         path: 'process-catalog',
-        lazy: () => import('@features/module-process-catalog').then(m => ({ Component: m.CatalogModule })),
+        lazy: () =>
+          import('@features/module-process-catalog').then((m) => ({ Component: m.CatalogModule })),
       },
       {
         path: 'opportunities',

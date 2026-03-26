@@ -7,7 +7,6 @@ import {
   HierarchyTd,
   TableShell,
 } from '@/shared/components/table-primitives'
-
 import Level4Cell from './cells/Level4Cell'
 import { buildEntityLeafColumns, HIERARCHY_COLUMNS } from '../constants/assessment-columns'
 import type { AssessmentDomain, EntityConfig, Level4Row } from '../types'
@@ -165,7 +164,6 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
           className="w-full caption-bottom border-separate border-spacing-0 text-sm"
           style={{ minWidth: 'max-content' }}
         >
-          {/* ── Two-tier header ──────────────────────────────────────────── */}
           <thead>
             {/* Row 1 — actual column labels with sort icons */}
             <tr>
