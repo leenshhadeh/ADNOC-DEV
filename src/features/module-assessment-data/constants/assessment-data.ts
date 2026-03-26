@@ -19,31 +19,32 @@ export const ASSESSMENT_DATA: AssessmentDomain[] = [
                 id: 'l3-1',
                 level3Name: 'Basin Modeling',
                 level3Code: 'EXP.1.1.3',
+                groupCompany: 'ADNOC SA',
+                status:'Pending approval',
                 level4Items: [
                   {
                     id: 'l4-1-1',
                     level4Name: 'Define basin framework',
                     level4Code: 'EXP.1.1.3.1',
-                    groupCompany: 'ADNOC HQ',
-                    entities: { 'ADNOC HQ': { General: 'R', 'Status': 'published', 'Site': 'A' } },
+                    entities: { 'ADNOC HQ': { General: 'R', 'status': 'Published', 'Site': 'A' } },
                   },
                   {
                     id: 'l4-1-2',
                     level4Name: 'Thermal history modeling',
                     level4Code: 'EXP.1.1.3.2',
-                    entities: { 'ADNOC HQ': { General: 'A', 'Status': 'published', 'Site': 'A' } },
+                    entities: { 'ADNOC HQ': { General: 'A', 'status': 'Published', 'Site': 'A' } },
                   },
                   {
                     id: 'l4-1-3',
                     level4Name: 'Source rock maturity assessment',
-                    level4Code: 'EXP.1.1.3.3',
+                    level4Code: 'EXP.1.1.3.3', 
                     entities: {},
                   },
                   {
                     id: 'l4-1-4',
                     level4Name: 'Charge and migration modeling',
                     level4Code: 'EXP.1.1.3.4',
-                    entities: {},
+                    entities: { 'ADNOC HQ': { General: 'A', 'status': 'Published', 'Site': 'General' } },
                   },
                 ],
               },
@@ -51,9 +52,9 @@ export const ASSESSMENT_DATA: AssessmentDomain[] = [
                 id: 'l3-2',
                 level3Name: 'Geophysical Data Interpretation',
                 level3Code: 'EXP.1.1.4',
-                level4Items: [
-                  
-                ],
+                groupCompany: 'ADNOC HQ',
+                status:'Pending approval',
+                level4Items: [],
               },
             ],
           },
@@ -66,12 +67,16 @@ export const ASSESSMENT_DATA: AssessmentDomain[] = [
                 id: 'l3-3',
                 level3Name: 'Dashboard Exploration Test',
                 level3Code: 'EXP.1.2.1',
+                groupCompany: 'ADNOC HQ',
+                status:'Pending approval',
                 level4Items: [],
               },
               {
                 id: 'l3-4',
                 level3Name: 'Project & Workflow Strategy (PA-01)',
                 level3Code: 'EXP.1.2.2',
+                groupCompany: 'ADNOC HQ',
+                status:'Pending approval',
                 level4Items: [
                   {
                     id: 'l4-4-1',
@@ -85,6 +90,8 @@ export const ASSESSMENT_DATA: AssessmentDomain[] = [
                 id: 'l3-5',
                 level3Name: 'Regional Data Gathering & QC (PA-02)',
                 level3Code: 'EXP.1.2.3',
+                groupCompany: 'ADNOC HQ',
+                status:'Pending approval',
                 level4Items: [
                   {
                     id: 'l4-5-1',
@@ -104,6 +111,8 @@ export const ASSESSMENT_DATA: AssessmentDomain[] = [
                 id: 'l3-6',
                 level3Name: 'Regional Subsurface Interpretation',
                 level3Code: 'EXP.1.2.4',
+                groupCompany:'ADNOC HQ',
+                status:'Pending approval',
                 level4Items: [],
               },
             ],
@@ -124,6 +133,8 @@ export const ASSESSMENT_DATA: AssessmentDomain[] = [
                 id: 'l3-7',
                 level3Name: 'Static Model Construction',
                 level3Code: 'EXP.2.1.1',
+                groupCompany: 'ADNOC HQ',
+                status:'Pending approval',
                 level4Items: [
                   {
                     id: 'l4-7-1',
@@ -143,6 +154,8 @@ export const ASSESSMENT_DATA: AssessmentDomain[] = [
                 id: 'l3-8',
                 level3Name: 'Play Fairway Evaluation & Risk Assessment',
                 level3Code: 'EXP.2.1.2',
+                groupCompany: 'ADNOC HQ',
+                status:'Pending approval',
                 level4Items: [],
               },
             ],

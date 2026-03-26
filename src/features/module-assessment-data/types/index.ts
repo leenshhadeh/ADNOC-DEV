@@ -4,7 +4,7 @@ export interface Level4Row {
   level4Code: string
   /** Per-entity-site editable values for this L4 process. */
   entities: Record<string, Record<string, string>>
-  groupCompany?: string
+
 }
 
 export interface AssessmentLevel3 {
@@ -12,6 +12,8 @@ export interface AssessmentLevel3 {
   level3Name: string
   level3Code: string
   level4Items: Level4Row[]
+  groupCompany?: string
+  status?:string
 }
 
 export interface AssessmentLevel2 {
@@ -42,6 +44,6 @@ export interface EntityConfig {
 }
 
 export const ASSESSMENT_ENTITY_CONFIG: EntityConfig[] = [
-  { name: 'ADNOC HQ', sites: ['General', 'Site A', 'Site B'] },
-  { name: 'ADNOC AL DHAFRA AND AL YASAT', sites: ['General', 'Site A'] },
+  { name: 'ADNOC HQ', sites: ['Site', 'status', 'Describtion','Centrally Governed Process','Shared Service','Business Unit','Process Criticality'] },
+  // { name: 'ADNOC AL DHAFRA AND AL YASAT', sites: ['General', 'Site A'] },
 ]
