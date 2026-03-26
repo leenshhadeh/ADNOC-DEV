@@ -24,13 +24,14 @@ export const ASSESSMENT_DATA: AssessmentDomain[] = [
                     id: 'l4-1-1',
                     level4Name: 'Define basin framework',
                     level4Code: 'EXP.1.1.3.1',
-                    entities: { 'ADNOC HQ': { General: 'R', 'Site A': '', 'Site B': 'A' } },
+                    groupCompany: 'ADNOC HQ',
+                    entities: { 'ADNOC HQ': { General: 'R', 'Status': 'published', 'Site': 'A' } },
                   },
                   {
                     id: 'l4-1-2',
                     level4Name: 'Thermal history modeling',
                     level4Code: 'EXP.1.1.3.2',
-                    entities: {},
+                    entities: { 'ADNOC HQ': { General: 'A', 'Status': 'published', 'Site': 'A' } },
                   },
                   {
                     id: 'l4-1-3',
@@ -50,7 +51,9 @@ export const ASSESSMENT_DATA: AssessmentDomain[] = [
                 id: 'l3-2',
                 level3Name: 'Geophysical Data Interpretation',
                 level3Code: 'EXP.1.1.4',
-                level4Items: [],
+                level4Items: [
+                  
+                ],
               },
             ],
           },

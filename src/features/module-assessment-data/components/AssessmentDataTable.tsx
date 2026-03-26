@@ -164,25 +164,27 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
           className="w-full caption-bottom border-separate border-spacing-0 text-sm"
           style={{ minWidth: 'max-content' }}
         >
+          {/* Columns ─────────────────────────────────────────────────────── */}
           <thead>
             {/* Row 1 — actual column labels with sort icons */}
             <tr>
-              {HIERARCHY_COLUMNS.filter((c) => c.pinned).map((col) => (
+              {HIERARCHY_COLUMNS.map((col) => (
                 <ColHead
                   key={col.id}
                   label={col.label}
                   size={col.size}
-                  isSticky
+                  isSticky={col.pinned}
                   leftOffset={stickyOffsets[col.id]}
-                  className={col.id === 'level3' ? 'border-r-0 bg-white' : 'bg-white'}
+                  className={'bg-white'}
                 />
               ))}
-              {/* Level 4 column header (last pinned-looking col, not actually sticky) */}
+              {/* Group Company */}
               <ColHead
-                label="Level 4"
+                label="Group Company"
                 size={250}
                 className="border-r-border/60 border-r-2 bg-white"
               />
+
               {/* Site sub-headers */}
               {entityLeafs.map((col) => (
                 <ColHead key={col.id} label={col.siteName} size={col.size} className="bg-white" />
@@ -271,6 +273,13 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
                   style={{ width: 250, minWidth: 250 }}
                 >
                   <Level4Cell item={row.l4Item} />
+                </td>
+                {/* groupCompany */}
+                <td
+                  className="border-r-border/60 border-border border-r-2 border-b px-3 py-2 align-middle"
+                  style={{ width: 250, minWidth: 250 }}
+                >
+                  <span className="text-muted-foreground text-xs">{row.l4Item?.groupCompany}</span>
                 </td>
 
                 {/* ── Entity/site editable cells ────────────────────── */}
