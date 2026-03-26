@@ -1,15 +1,10 @@
 import { useMemo, useState } from 'react'
 import { X } from 'lucide-react'
 import type { RowSelectionState } from '@tanstack/react-table'
-
 import { Button } from '@/shared/components/ui/button'
 import CatalogHeader, { type CatalogTabValue } from './CatalogHeader'
 import DataTable from './data-table/DataTable'
-import {
-  buildCatalogColumns,
-  CATALOG_PINNED_LEFT,
-  type CatalogColumnActions,
-} from './catalog-columns'
+import { buildCatalogColumns, type CatalogColumnActions } from './catalog-columns'
 import MyTasksTable from './tables/MyTasksTable'
 import SubmittedRequestsTable from './tables/SubmittedRequestsTable'
 import ProcessFilterSheet from './ProcessFilterSheet'
@@ -51,8 +46,6 @@ const CatalogModule = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const columns = useMemo(() => buildCatalogColumns(rowActions), [])
 
-  const pinnedColumns = useMemo(() => ({ left: [...CATALOG_PINNED_LEFT] }), [])
-
   return (
     <section className="space-y-4">
       <CatalogHeader
@@ -70,13 +63,12 @@ const CatalogModule = () => {
           columns={columns}
           data={CATALOG_DATA}
           density="compact"
-          initialColumnPinning={pinnedColumns}
           enableColumnDnd={false}
           enableSorting={false}
           rowSelection={rowSelection}
           onRowSelectionChange={setRowSelection}
           getRowId={(row) => row.id}
-          tableMeta={{ isBulkMode }}
+          tableMeta={{ isBulkMode, rowDividers: true }}
         />
       ) : activeTab === 'myTasks' ? (
         <MyTasksTable />

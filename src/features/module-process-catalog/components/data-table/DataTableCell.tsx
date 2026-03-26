@@ -12,6 +12,7 @@ const DataTableCell = <TData, TValue>({
   level = 0,
   isFirstCell = false,
   density = 'compact',
+  rowDividers = false,
   leading,
   actions = [],
 }: DataTableCellProps<TData, TValue>) => {
@@ -35,18 +36,22 @@ const DataTableCell = <TData, TValue>({
     <TableCell
       style={cellStyle}
       className={cn(
-        'ps-3 pe-3 align-middle overflow-hidden',
+        'overflow-hidden align-middle',
         density === 'compact' ? 'py-1.5 text-sm' : 'py-2.5 text-sm',
         'text-foreground',
+        rowDividers && 'border-border/50 border-b',
         isPinned === 'left' && 'bg-card',
-        isLastLeftPinned && 'border-r-2 border-r-border/60 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.07)]',
-        isDivider && 'border-r-2 border-r-border/60',
+        isLastLeftPinned &&
+          'border-r-border/60 border-r-2 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.07)]',
+        isDivider && 'border-r-border/60 border-r-2',
       )}
     >
       <div className="group/cell flex items-center gap-2 overflow-hidden">
         {leading}
         {/* Flexible wrapper — lets cell renderers flow naturally (multi-line, custom layouts) */}
-        <div className="min-w-0 flex-1">{flexRender(cell.column.columnDef.cell, cell.getContext())}</div>
+        <div className="min-w-0 flex-1">
+          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        </div>
         {actions.length > 0 ? (
           <div className="ms-auto opacity-0 transition-opacity group-hover/cell:opacity-100">
             <RowActions rowData={rowData} actions={actions} />

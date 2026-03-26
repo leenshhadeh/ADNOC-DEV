@@ -7,13 +7,8 @@ import {
   HierarchyTd,
   TableShell,
 } from '@/shared/components/table-primitives'
-
 import Level4Cell from './cells/Level4Cell'
-import {
-  buildAssessmentColumns,
-  buildEntityLeafColumns,
-  HIERARCHY_COLUMNS,
-} from '../constants/assessment-columns'
+import { buildEntityLeafColumns, HIERARCHY_COLUMNS } from '../constants/assessment-columns'
 import type { AssessmentDomain, EntityConfig, Level4Row } from '../types'
 import { cn } from '@/shared/lib/utils'
 import { StatusBadgeCell } from '@/features/module-process-catalog/components/cells'
@@ -186,17 +181,18 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
           style={{ minWidth: 'max-content' }}
         >
           {/* Columns ─────────────────────────────────────────────────────── */}
+
           <thead>
             {/* Row 1 — actual column labels with sort icons */}
             <tr>
-              {HIERARCHY_COLUMNS.map((col) => (
+              {HIERARCHY_COLUMNS.filter((c) => c.pinned).map((col) => (
                 <ColHead
                   key={col.id}
                   label={col.label}
                   size={col.size}
-                  isSticky={col.pinned}
+                  isSticky
                   leftOffset={stickyOffsets[col.id]}
-                  className={'bg-white'}
+                  className={col.id === 'level3' ? 'border-r-0 bg-white' : 'bg-white'}
                 />
               ))}
               {/* Group Company */}

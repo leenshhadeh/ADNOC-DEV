@@ -67,7 +67,7 @@ const ViewAll = ({ open, onOpenChange, taskGroups }: ViewAllProps) => {
               <NoTasks />
             </div>
           ) : (
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-8 px-6 py-5">
               {taskGroups.map((group, groupIndex) => (
                 <div key={group.module.title}>
                   <div className="flex items-center justify-between pb-4">
@@ -94,8 +94,6 @@ const ViewAll = ({ open, onOpenChange, taskGroups }: ViewAllProps) => {
 
                   <div className="flex flex-col gap-6">
                     {group.items.map((item, index) => {
-                      const isLastItem = index === group.items.length - 1
-
                       return (
                         <div
                           key={`${group.module.title}-${index}`}
@@ -103,9 +101,7 @@ const ViewAll = ({ open, onOpenChange, taskGroups }: ViewAllProps) => {
                         >
                           <div className="flex flex-col items-center self-stretch">
                             <div className="mt-1 h-3 w-3 rounded-full bg-[#336CC8]" />
-                            {!isLastItem && (
-                              <div className="mt-2 w-[1px] flex-1 bg-gradient-to-t from-[#7D40FF12] via-[#7D40FF] to-[#02A4FF]" />
-                            )}
+                            <div className="mt-2 w-[1px] flex-1 bg-gradient-to-t from-[#7D40FF12] via-[#7D40FF] to-[#02A4FF]" />
                           </div>
 
                           <div className="min-w-0 flex-1">

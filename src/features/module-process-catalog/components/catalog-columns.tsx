@@ -2,6 +2,8 @@ import { useState } from 'react'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import { ChevronDown, MoreHorizontal } from 'lucide-react'
 
+import { EditLevel4sModal } from './EditLevel4sModal'
+
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/components/ui/button'
 import { Checkbox } from '@/shared/components/ui/checkbox'
@@ -53,8 +55,20 @@ const SharedServiceToggle = ({ defaultValue }: { defaultValue: boolean }) => {
 
 // ─── Entity Site Cell ─────────────────────────────────────────────────────────
 
-const EntitySiteCell = ({ initialValue }: { initialValue: YesNo }) => {
+const EntitySiteCell = ({
+  initialValue,
+  entityName,
+  siteName,
+  parentCode,
+}: {
+  initialValue: YesNo
+  entityName: string
+  siteName: string
+  parentCode: string
+}) => {
   const [value, setValue] = useState<YesNo>(initialValue)
+  const [editOpen, setEditOpen] = useState(false)
+
   return (
     <div className="flex items-center gap-1.5">
       <DropdownMenu modal={false}>
@@ -86,13 +100,24 @@ const EntitySiteCell = ({ initialValue }: { initialValue: YesNo }) => {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
+
       {value === 'Yes' && (
-        <button
-          type="button"
-          className="text-primary text-xs font-medium whitespace-nowrap hover:underline"
-        >
-          Edit L4s
-        </button>
+        <>
+          <button
+            type="button"
+            className="text-primary text-xs font-medium whitespace-nowrap hover:underline"
+            onClick={() => setEditOpen(true)}
+          >
+            Edit L4s
+          </button>
+
+          <EditLevel4sModal
+            open={editOpen}
+            onOpenChange={setEditOpen}
+            parentLabel={`${entityName} - ${siteName}`}
+            parentCode={parentCode}
+          />
+        </>
       )}
     </div>
   )
@@ -150,8 +175,18 @@ function buildEntityColumns(): ColumnDef<ProcessItem, unknown>[] {
       size: 200,
       enableSorting: false,
       cell: (info: CellContext<ProcessItem, unknown>) => {
-        const siteValue = (info.row.original.entities[entity.name]?.[site] ?? 'No') as YesNo
-        return <EntitySiteCell initialValue={siteValue} />
+        const row = info.row.original
+        const siteValue = (row.entities[entity.name]?.[site] ?? 'No') as YesNo
+        // Use the row's level3Code as the parent code for Level 4 generation.
+        // E.g. level3Code "EXP.1.1.1" → new L4 rows get "EXP.1.1.1.1", "EXP.1.1.1.2", …
+        return (
+          <EntitySiteCell
+            initialValue={siteValue}
+            entityName={entity.name}
+            siteName={site}
+            parentCode={row.level3Code}
+          />
+        )
       },
     })),
   }))

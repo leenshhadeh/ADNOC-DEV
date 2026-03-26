@@ -53,7 +53,7 @@ export interface ModuleToolbarProps {
   searchValue?: string
   onSearchChange?: (value: string) => void
   searchPlaceholder?: string
-  showFilter?:boolean
+  showFilter?: boolean
 
   // ── Filter ────────────────────────────────────────────────────────────────
   /** Called when the filter icon button is clicked */
@@ -78,13 +78,29 @@ const ModuleToolbar = ({
   onFilterClick,
   bulkMode,
   actions = [],
-  showFilter=true
+  showFilter = true,
 }: ModuleToolbarProps) => {
   return (
-    <div className="flex justify-between">
-      <div className="flex flex-wrap items-center gap-3">
-        {/* ── Left: pill tabs ──────────────────────────────────────────────── */}
-        <Tabs value={activeTab} onValueChange={onTabChange} className="gap-0">
+    /**
+     * Outer wrapper wraps naturally when the viewport is too narrow.
+     *
+     * Layout tiers:
+     *   sm+  — [Tabs] [Search  Filter]  ···  [Actions]  (single row)
+     *   <sm  — Row 1: [Tabs — full width, scrollable]
+     *          Row 2: [Search  Filter]  [Actions → right]
+     */
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+      {/* ── Tabs row ────────────────────────────────────────────────────────
+           On mobile (< sm): basis-full forces tabs onto their own dedicated
+           row so they never compete for space with search.
+           On sm+: shrinks back to content width and sits inline with search. */}
+      <div className="w-full overflow-x-auto sm:w-auto sm:shrink-0 [&::-webkit-scrollbar]:hidden">
+        {/*
+          w-fit is critical: Tabs renders as flex-col whose align-items:stretch would
+          otherwise force TabsList to fill the parent width, squishing all tab labels.
+          w-fit lets the list size to its natural content width → overflow → scroll works.
+        */}
+        <Tabs value={activeTab} onValueChange={onTabChange} className="w-fit gap-0">
           <TabsList className="font-small h-11 px-1.5">
             {tabs.map((tab) => (
               <TabsTrigger
@@ -92,8 +108,8 @@ const ModuleToolbar = ({
                 value={tab.value}
                 className={cn(
                   'h-8 rounded-xl px-4',
-                  'font-light', // Default: 300
-                  'data-[state=active]:font-medium', // Active: 500
+                  'font-light',
+                  'data-[state=active]:font-medium',
                 )}
               >
                 {tab.label}
@@ -101,9 +117,13 @@ const ModuleToolbar = ({
             ))}
           </TabsList>
         </Tabs>
+      </div>
 
-        {/* ── Middle: search + filter ──────────────────────────────────────── */}
-        <div className="relative w-full sm:w-[340px]">
+      {/* ── Search + filter ─────────────────────────────────────────────────
+           flex-1 + min-w-0 lets this row grow to fill remaining space on sm+;
+           on mobile it is already on its own row so w-full inside is enough. */}
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <div className="relative w-full sm:max-w-[340px] sm:min-w-[180px] sm:flex-1">
           <Search className="text-muted-foreground pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2" />
           <Input
             placeholder={searchPlaceholder}
@@ -113,82 +133,90 @@ const ModuleToolbar = ({
           />
         </div>
 
-       {showFilter && <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-11 w-11"
-          aria-label="Open filters"
-          onClick={onFilterClick}
-        >
-          <ShapeIcon className="size-4" />
-        </Button> }
-        
+        {showFilter && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-11 w-11 shrink-0"
+            aria-label="Open filters"
+            onClick={onFilterClick}
+          >
+            <ShapeIcon className="size-4" />
+          </Button>
+        )}
       </div>
-      <div className="flex items-center">
-        {/* ── Right: bulk action + other actions ──────────────────────────── */}
-        <div className="flex items-center">
-          {/* Bulk action — active pill or default button */}
-          {bulkMode && (
-            <>
-              {bulkMode.isActive ? (
-                <div className="border-primary/30 bg-primary/5 flex items-center gap-2 rounded-xl border px-3 py-1.5">
-                  <span className="text-primary text-sm font-medium">
-                    {bulkMode.selectedCount} selected
-                  </span>
-                  <Separator orientation="vertical" className="h-5" />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="text-primary hover:bg-primary/10 h-7 px-2 text-xs font-medium disabled:opacity-40"
-                    disabled={bulkMode.selectedCount === 0}
-                    onClick={bulkMode.onAction}
-                  >
-                    {bulkMode.actionLabel ?? 'Add multiple'}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-xs"
-                    className="text-muted-foreground hover:text-foreground"
-                    aria-label="Exit bulk selection"
-                    onClick={bulkMode.onToggle}
-                  >
-                    <X className="size-3.5" />
-                  </Button>
-                </div>
-              ) : (
+
+      {/* ── Right group: bulk action + extra actions ─────────────────────────
+           ms-auto keeps this group right-aligned even when it wraps to a new
+           line (e.g. on very narrow viewports).                               */}
+      <div className="ms-auto flex shrink-0 items-center">
+        {/* Bulk action — active pill or default trigger button */}
+        {bulkMode && (
+          <>
+            {bulkMode.isActive ? (
+              <div className="border-primary/30 bg-primary/5 flex items-center gap-2 rounded-xl border px-3 py-1.5">
+                <span className="text-primary text-sm font-medium">
+                  {/* Show count-only on mobile, full label on sm+ */}
+                  <span className="sm:hidden">{bulkMode.selectedCount}</span>
+                  <span className="hidden sm:inline">{bulkMode.selectedCount} selected</span>
+                </span>
+                <Separator orientation="vertical" className="h-5" />
                 <Button
                   type="button"
-                  className="h-9 bg-transparent px-3 text-[#0047BA]"
+                  variant="ghost"
+                  size="sm"
+                  className="text-primary hover:bg-primary/10 h-7 px-2 text-xs font-medium disabled:opacity-40"
+                  disabled={bulkMode.selectedCount === 0}
+                  onClick={bulkMode.onAction}
+                >
+                  {/* Label hidden on mobile — icon-only to save space */}
+                  <span className="hidden sm:inline">{bulkMode.actionLabel ?? 'Add multiple'}</span>
+                  <span className="sm:hidden">✓</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  className="text-muted-foreground hover:text-foreground"
+                  aria-label="Exit bulk selection"
                   onClick={bulkMode.onToggle}
                 >
-                  <Layers className="size-4" />
-                  Bulk Action
+                  <X className="size-3.5" />
                 </Button>
-              )}
-
-              {actions.length > 0 && <Separator orientation="vertical" className="h-8!" />}
-            </>
-          )}
-
-          {/* Remaining actions with separators between them */}
-          {actions.map((action, index) => (
-            <div key={action.id} className="flex items-center">
-              {index > 0 && <Separator orientation="vertical" className="h-8!" />}
+              </div>
+            ) : (
               <Button
                 type="button"
                 className="h-9 bg-transparent px-3 text-[#0047BA]"
-                disabled={action.disabled}
-                onClick={action.onClick}
+                onClick={bulkMode.onToggle}
               >
-                <action.icon className="size-4" />
-                {action.label}
+                <Layers className="size-4" />
+                {/* Label hidden on very small screens */}
+                <span className="hidden sm:inline">Bulk Action</span>
               </Button>
-            </div>
-          ))}
-        </div>
+            )}
+
+            {actions.length > 0 && <Separator orientation="vertical" className="h-8!" />}
+          </>
+        )}
+
+        {/* Extra action buttons — icon-only on mobile, icon+label on sm+ */}
+        {actions.map((action, index) => (
+          <div key={action.id} className="flex items-center">
+            {index > 0 && <Separator orientation="vertical" className="h-8!" />}
+            <Button
+              type="button"
+              className="h-9 bg-transparent px-3 text-[#0047BA]"
+              disabled={action.disabled}
+              onClick={action.onClick}
+              aria-label={action.label}
+            >
+              <action.icon className="size-4" />
+              <span className="hidden sm:inline">{action.label}</span>
+            </Button>
+          </div>
+        ))}
       </div>
     </div>
   )

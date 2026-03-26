@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Info } from 'lucide-react'
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,6 +11,7 @@ import {
 } from '@/shared/components/ui/breadcrumb'
 import ModuleToolbar from '@/shared/components/ModuleToolbar'
 import { ASSESSMENT_ACTIONS, ASSESSMENT_TABS } from '../constants/assessment-toolbar'
+
 import AssessmentDataTable from './AssessmentDataTable'
 import { ASSESSMENT_DATA } from '../constants/assessment-data'
 import { ASSESSMENT_ENTITY_CONFIG } from '../types'
@@ -43,8 +45,7 @@ const AssessmentDataModule = () => {
       <div className="flex items-center px-6 py-3">
         <h1 className="text-foreground text-2xl font-bold">Assessment Data Processes</h1>
 
-       <ProcessesMenu
-       options={options}/>
+        <ProcessesMenu options={options} />
       </div>
 
       {/* ── Tabs + search + filter + toolbar ──────────────────────────── */}
@@ -61,7 +62,7 @@ const AssessmentDataModule = () => {
         />
       </div>
       {/* ── Info bar ───────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-2  px-6 py-2 text-sm  dark:bg-blue-950/30 dark:text-blue-300">
+      <div className="flex items-center gap-2 px-6 py-2 text-sm">
         <Info className="size-4 shrink-0" />
         <span>
           You can edit values inline at the lowest level (L3 or L4) only. Editable cells are
