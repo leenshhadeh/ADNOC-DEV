@@ -12,7 +12,6 @@ const DataTableCell = <TData, TValue>({
   level = 0,
   isFirstCell = false,
   density = 'compact',
-  rowDividers = false,
   leading,
   actions = [],
 }: DataTableCellProps<TData, TValue>) => {
@@ -36,10 +35,9 @@ const DataTableCell = <TData, TValue>({
     <TableCell
       style={cellStyle}
       className={cn(
-        'overflow-hidden ps-3 pe-3 align-middle',
+        'overflow-hidden align-middle',
         density === 'compact' ? 'py-1.5 text-sm' : 'py-2.5 text-sm',
         'text-foreground',
-        rowDividers && 'border-border/50 border-b',
         isPinned === 'left' && 'bg-card',
         isLastLeftPinned &&
           'border-r-border/60 border-r-2 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.07)]',
