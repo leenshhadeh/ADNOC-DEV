@@ -3,7 +3,7 @@ import type { RequestItem } from '@features/module-process-catalog/types/submitt
 export const SUBMITTED_REQUESTS: RequestItem[] = [
   {
     id: 'request-1',
-    processName: 'Play-based exploration',
+    processName: 'Play-based exploration (concept) 2',
     requestId: '9377353',
     level: 'L 3',
     requester: 'Maryam Al Shamsi',
@@ -14,12 +14,66 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
     stageText: 'Pending custodian approval',
     submittedOn: '08 Apr 2024',
     publishedOn: '-',
+    // Detail-view fields
+    processCategory: 'Dashboard',
+    domain: 'Exploration & Planning',
+    processLevel: 'Level 3',
+    level1: 'Exploration',
+    level2: 'Regional studies',
+    businessFocalPoint: 'Mohammed Al Hajeri',
+    workflowHistory: [
+      {
+        id: 'wh-1',
+        action: 'Submitted',
+        date: '22 Apr 2025 at 10:14 AM',
+        userName: 'Fatma Al Shamsi',
+        userRole: 'Opportunity Manager',
+      },
+      {
+        id: 'wh-2',
+        action: 'Reviewed',
+        date: '23 Apr 2025 at 02:30 PM',
+        userName: 'Sara Al Tameemi',
+        userRole: 'Opportunity Evaluator',
+      },
+      {
+        id: 'wh-3',
+        action: 'Returned',
+        date: '24 Apr 2025 at 09:15 AM',
+        userName: 'Sara Al Tameemi',
+        userRole: 'Opportunity Evaluator',
+        reason:
+          'Phasellus accumsan imperdiet tempor. Cras tincidunt, arcu nec eleifend porttitor, orci est vehicula.',
+      },
+      {
+        id: 'wh-4',
+        action: 'Resubmitted',
+        date: '25 Apr 2025 at 11:45 AM',
+        userName: 'Fatma Al Shamsi',
+        userRole: 'Opportunity Manager',
+      },
+      {
+        id: 'wh-5',
+        action: 'Reviewed',
+        date: '26 Apr 2025 at 03:20 PM',
+        userName: 'Mohammed Al Hajeri',
+        userRole: 'BPA Program Manager',
+      },
+      {
+        id: 'wh-6',
+        action: 'Approved',
+        date: '27 Apr 2025 at 04:00 PM',
+        userName: 'Mohammed Al Hajeri',
+        userRole: 'BPA Program Manager',
+      },
+    ],
     changes: [
       {
         id: 'description',
         label: 'Process description',
         oldValue: '-',
-        newValue: 'Creating a communication plan',
+        newValue:
+          'Creating a comprehensive Basin Modeling concept involves several key steps. First, define the modeling objectives, like understanding hydrological cycles or basin-scale modeling.',
       },
       {
         id: 'parent-name',
@@ -30,8 +84,8 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
       {
         id: 'applicability',
         label: 'Applicability',
-        oldValue: 'ADNOC - Onshore',
-        newValue: 'ADNOC - Offshore',
+        oldValue: 'Regional studies',
+        newValue: 'ADNOC – Offshore',
       },
       { id: 'shared-service', label: 'Shared service', oldValue: 'No', newValue: 'Yes' },
     ],

@@ -7,7 +7,6 @@ import {
   HierarchyTd,
   TableShell,
 } from '@/shared/components/table-primitives'
-
 import Level4Cell from './cells/Level4Cell'
 import { buildEntityLeafColumns, HIERARCHY_COLUMNS } from '../constants/assessment-columns'
 import type { AssessmentDomain, EntityConfig, Level4Row } from '../types'
@@ -179,9 +178,11 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
                   className={col.id === 'level3' ? 'border-r-0 bg-white' : 'bg-white'}
                 />
               ))}
-              {/* Level 4 column header (last pinned-looking col, not actually sticky) */}
+              {/* Level 4 column header */}
+              <ColHead label="Level 4" size={250} className="bg-white" />
+              {/* Group Company column header */}
               <ColHead
-                label="Level 4"
+                label="Group Company"
                 size={250}
                 className="border-r-border/60 border-r-2 bg-white"
               />
@@ -273,6 +274,13 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
                   style={{ width: 250, minWidth: 250 }}
                 >
                   <Level4Cell item={row.l4Item} />
+                </td>
+                {/* groupCompany */}
+                <td
+                  className="border-r-border/60 border-border border-r-2 border-b px-3 py-2 align-middle"
+                  style={{ width: 250, minWidth: 250 }}
+                >
+                  <span className="text-muted-foreground text-xs">{row.l4Item?.groupCompany}</span>
                 </td>
 
                 {/* ── Entity/site editable cells ────────────────────── */}

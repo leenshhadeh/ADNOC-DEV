@@ -36,7 +36,7 @@ const DataTableCell = <TData, TValue>({
     <TableCell
       style={cellStyle}
       className={cn(
-        'overflow-hidden ps-3 pe-3 align-middle',
+        'overflow-hidden align-middle',
         density === 'compact' ? 'py-1.5 text-sm' : 'py-2.5 text-sm',
         'text-foreground',
         rowDividers && 'border-border/50 border-b',

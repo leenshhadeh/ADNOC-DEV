@@ -62,7 +62,7 @@ const AssessmentDataModule = () => {
         />
       </div>
       {/* ── Info bar ───────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-2 px-6 py-2 text-sm dark:bg-blue-950/30 dark:text-blue-300">
+      <div className="flex items-center gap-2 px-6 py-2 text-sm">
         <Info className="size-4 shrink-0" />
         <span>
           You can edit values inline at the lowest level (L3 or L4) only. Editable cells are

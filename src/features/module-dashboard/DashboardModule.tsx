@@ -1,4 +1,4 @@
-import { BookOpen, FolderOpen, Bell, Moon } from 'lucide-react'
+import { BookOpen, FolderOpen } from 'lucide-react'
 import cards from '../../assets/cards.svg'
 import AccessCard from './components/AccessCard'
 import Tag from './components/Tag'
