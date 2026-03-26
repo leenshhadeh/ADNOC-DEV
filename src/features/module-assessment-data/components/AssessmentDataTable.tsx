@@ -185,7 +185,7 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
           <thead>
             {/* Row 1 — actual column labels with sort icons */}
             <tr>
-              {HIERARCHY_COLUMNS.filter((c) => c.pinned).map((col) => (
+              {HIERARCHY_COLUMNS.map((col) => (
                 <ColHead
                   key={col.id}
                   label={col.label}
