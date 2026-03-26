@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { X } from 'lucide-react'
 import type { RowSelectionState } from '@tanstack/react-table'
-
 import { Button } from '@/shared/components/ui/button'
 import CatalogHeader, { type CatalogTabValue } from './CatalogHeader'
 import DataTable from './data-table/DataTable'
