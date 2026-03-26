@@ -4,6 +4,7 @@ export interface Level4Row {
   level4Code: string
   /** Per-entity-site editable values for this L4 process. */
   entities: Record<string, Record<string, string>>
+  groupCompany?: string
 }
 
 export interface AssessmentLevel3 {
@@ -25,6 +26,7 @@ export interface AssessmentLevel1 {
   level1Name: string
   level1Code: string
   level2Items: AssessmentLevel2[]
+
 }
 
 export interface AssessmentDomain {

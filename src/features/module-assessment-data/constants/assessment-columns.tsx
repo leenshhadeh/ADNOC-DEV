@@ -34,11 +34,11 @@ export type AssessmentColumnConfig = HierarchyColumnConfig | EntityColumnConfig
 // ── Hierarchy columns ────────────────────────────────────────────────────────
 
 export const HIERARCHY_COLUMNS: HierarchyColumnConfig[] = [
-  { kind: 'hierarchy', id: 'domain',  label: 'Domain',   size: 180, pinned: true },
-  { kind: 'hierarchy', id: 'level1',  label: 'Level 1',  size: 200, pinned: true },
-  { kind: 'hierarchy', id: 'level2',  label: 'Level 2',  size: 200, pinned: true },
+  { kind: 'hierarchy', id: 'domain',  label: 'Domain',   size: 180},
+  { kind: 'hierarchy', id: 'level1',  label: 'Level 1',  size: 200},
+  { kind: 'hierarchy', id: 'level2',  label: 'Level 2',  size: 200},
   { kind: 'hierarchy', id: 'level3',  label: 'Level 3',  size: 240, pinned: true },
-  { kind: 'hierarchy', id: 'level4',  label: 'Level 4',  size: 250 },
+  { kind: 'hierarchy', id: 'level4',  label: 'Level 4',  size: 250 , pinned: true },
 ]
 
 // ── Entity matrix columns (flat list of all entity×site combinations) ────────
