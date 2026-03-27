@@ -8,6 +8,13 @@ import { cn } from '@/shared/lib/utils'
 import DataTableCell from './DataTableCell'
 import type { DataTableRowProps } from './interfaces'
 
+// DataTableRow is generic — we reach into row.original to detect Draft status.
+// The cast to `unknown` keeps the generic TData contract intact.
+function isDraftRow<TData>(row: { original: TData }): boolean {
+  const orig = row.original as Record<string, unknown>
+  return orig['level3Status'] === 'Draft'
+}
+
 const DataTableRow = <TData,>({
   row,
   level,
@@ -21,11 +28,13 @@ const DataTableRow = <TData,>({
   const subRows = row.subRows
   const hasSubRows = subRows.length > 0
   const actions = getRowActions ? getRowActions(row) : []
+  const isDraft = isDraftRow(row)
   return (
     <Fragment>
       <TableRow
         className={cn(
           row.getIsSelected() ? 'ring-primary/30 bg-orange-50/50 ring-1 ring-inset' : undefined,
+          isDraft ? 'bg-blue-50/30' : undefined,
         )}
       >
         {cells.map((cell, index) => (

@@ -1,8 +1,6 @@
 import { flexRender } from '@tanstack/react-table'
-
 import { TableCell } from '@/shared/components/ui/table'
 import { cn } from '@/shared/lib/utils'
-
 import RowActions from './RowActions'
 import type { DataTableCellProps } from './interfaces'
 
@@ -17,7 +15,6 @@ const DataTableCell = <TData, TValue>({
   actions = [],
 }: DataTableCellProps<TData, TValue>) => {
   const startPadding = isFirstCell && level > 0 ? `${level * 1.25 + 0.75}rem` : undefined
-
   const isPinned = cell.column.getIsPinned()
   const isLastLeftPinned = isPinned === 'left' && cell.column.getIsLastColumn('left')
   const leftOffset = isPinned === 'left' ? cell.column.getStart('left') : undefined

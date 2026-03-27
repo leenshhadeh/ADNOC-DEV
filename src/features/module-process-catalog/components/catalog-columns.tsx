@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import { ChevronDown, MoreHorizontal } from 'lucide-react'
 
@@ -22,9 +22,69 @@ declare module '@tanstack/react-table' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData> {
     isBulkMode?: boolean
+    onUpdateDraftRow?: (id: string, field: 'level3Name' | 'description', value: string) => void
+    draftRowIds?: Set<string>
+    firstDraftRowId?: string
   }
 }
+// ─── DraftNameInput ──────────────────────────────────────────────────────────
+const DraftNameInput = ({
+  rowId,
+  autoFocus,
+  onUpdate,
+}: {
+  rowId: string
+  autoFocus: boolean
+  onUpdate: (id: string, field: 'level3Name' | 'description', value: string) => void
+}) => {
+  const [value, setValue] = useState('')
+  const ref = useRef<HTMLInputElement>(null)
 
+  useEffect(() => {
+    if (autoFocus) {
+      // slight delay so the row is painted before focusing
+      const t = setTimeout(() => ref.current?.focus(), 50)
+      return () => clearTimeout(t)
+    }
+  }, [autoFocus])
+
+  return (
+    <input
+      ref={ref}
+      type="text"
+      value={value}
+      placeholder="Enter process name"
+      onChange={(e) => {
+        setValue(e.target.value)
+        onUpdate(rowId, 'level3Name', e.target.value)
+      }}
+      className="text-foreground placeholder:text-muted-foreground/60 border-border focus:border-primary caret-primary w-full border-b bg-transparent text-sm outline-none"
+    />
+  )
+}
+
+// ─── DraftDescriptionInput ────────────────────────────────────────────────────
+const DraftDescriptionInput = ({
+  rowId,
+  onUpdate,
+}: {
+  rowId: string
+  onUpdate: (id: string, field: 'level3Name' | 'description', value: string) => void
+}) => {
+  const [value, setValue] = useState('')
+  return (
+    <textarea
+      rows={2}
+      value={value}
+      placeholder="Enter description"
+      onChange={(e) => {
+        setValue(e.target.value)
+        onUpdate(rowId, 'description', e.target.value)
+      }}
+      className="text-foreground placeholder:text-muted-foreground/60 border-border focus:border-primary caret-primary w-full resize-none border-b bg-transparent text-sm outline-none"
+    />
+  )
+}
 // ─── Shared Service Toggle ────────────────────────────────────────────────────
 
 const SharedServiceToggle = ({ defaultValue }: { defaultValue: boolean }) => {
@@ -224,7 +284,7 @@ export function buildCatalogColumns(
 ): ColumnDef<ProcessItem, unknown>[] {
   const actions: CatalogRowAction[] = rowActions
     ? [
-        { id: 'add-l2', label: 'Add L2 processes', onSelect: rowActions.onAddL2 },
+        { id: 'add-l3', label: 'Add L3 processes', onSelect: rowActions.onAddL2 },
         { id: 'rename', label: 'Rename', onSelect: rowActions.onRename },
       ]
     : []
@@ -313,6 +373,28 @@ export function buildCatalogColumns(
     cell: (info: CellContext<ProcessItem, unknown>) => {
       const isBulkMode = info.table.options.meta?.isBulkMode ?? false
       const isSelected = info.row.getIsSelected()
+      const isDraft = info.row.original.level3Status === 'Draft'
+      const isFirstDraft = info.table.options.meta?.firstDraftRowId === info.row.original.id
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+
+      if (isDraft && onUpdate) {
+        return (
+          <div className="flex w-full items-center gap-2">
+            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <DraftNameInput
+                rowId={info.row.original.id}
+                autoFocus={!!isFirstDraft}
+                onUpdate={onUpdate}
+              />
+              <span className="text-muted-foreground text-xs">{info.row.original.level3Code}</span>
+            </div>
+            {actions.length > 0 && !isBulkMode && (
+              <CellRowActions item={info.row.original} actions={actions} />
+            )}
+          </div>
+        )
+      }
+
       return (
         <div className="flex w-full items-center gap-2">
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -355,11 +437,18 @@ export function buildCatalogColumns(
     header: 'Description',
     size: 480,
     enableSorting: false,
-    cell: (info: CellContext<ProcessItem, unknown>) => (
-      <span className="text-foreground line-clamp-3 text-sm whitespace-normal">
-        {String(info.getValue())}
-      </span>
-    ),
+    cell: (info: CellContext<ProcessItem, unknown>) => {
+      const isDraft = info.row.original.level3Status === 'Draft'
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      if (isDraft && onUpdate) {
+        return <DraftDescriptionInput rowId={info.row.original.id} onUpdate={onUpdate} />
+      }
+      return (
+        <span className="text-foreground line-clamp-3 text-sm whitespace-normal">
+          {String(info.getValue())}
+        </span>
+      )
+    },
   }
 
   const sharedServiceCol: ColumnDef<ProcessItem, unknown> = {
