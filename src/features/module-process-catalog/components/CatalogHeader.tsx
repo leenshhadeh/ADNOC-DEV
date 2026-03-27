@@ -6,10 +6,14 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/shared/components/ui/breadcrumb'
-import ModuleToolbar, { type BulkModeState } from '@/shared/components/ModuleToolbar'
+import ModuleToolbar, {
+  type BulkModeState,
+  type ToolbarAction,
+} from '@/shared/components/ModuleToolbar'
 import {
   CATALOG_ACTIONS,
   CATALOG_TABS,
+  CATALOG_DRAFT_ACTIONS,
 } from '@features/module-process-catalog/constants/catalog-toolbar'
 
 export type CatalogTabValue = 'processes' | 'myTasks' | 'submittedRequests'
@@ -22,6 +26,9 @@ interface CatalogHeaderProps {
   selectedCount?: number
   onBulkAddProcesses?: () => void
   onFilterClick?: () => void
+  hasDraftRows?: boolean
+  onSave?: () => void
+  onValidate?: () => void
 }
 
 const CatalogHeader = ({
@@ -32,6 +39,9 @@ const CatalogHeader = ({
   selectedCount = 0,
   onBulkAddProcesses,
   onFilterClick,
+  hasDraftRows = false,
+  onSave,
+  onValidate,
 }: CatalogHeaderProps) => {
   const bulkMode: BulkModeState = {
     isActive: isBulkMode,
@@ -40,6 +50,10 @@ const CatalogHeader = ({
     actionLabel: 'Add multiple processes',
     onAction: onBulkAddProcesses,
   }
+
+  const draftActions: ToolbarAction[] = CATALOG_DRAFT_ACTIONS.map((a) =>
+    a.id === 'save' ? { ...a, onClick: onSave } : { ...a, onClick: onValidate },
+  )
 
   return (
     <header className="space-y-3">
@@ -66,8 +80,8 @@ const CatalogHeader = ({
         activeTab={activeTab}
         onTabChange={(value) => onTabChange(value as CatalogTabValue)}
         onFilterClick={onFilterClick}
-        bulkMode={bulkMode}
-        actions={CATALOG_ACTIONS}
+        bulkMode={hasDraftRows ? undefined : bulkMode}
+        actions={hasDraftRows ? draftActions : CATALOG_ACTIONS}
       />
     </header>
   )
