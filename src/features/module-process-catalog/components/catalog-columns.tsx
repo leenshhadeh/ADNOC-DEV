@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
-import { ChevronDown, MoreHorizontal } from 'lucide-react'
+import { ChevronDown, Eye, MoreHorizontal, Pencil, Plus, RotateCcw } from 'lucide-react'
 
 import { EditLevel4sModal } from './EditLevel4sModal'
 
@@ -183,7 +183,7 @@ const EntitySiteCell = ({
   )
 }
 
-// ─── Inline Row Actions ───────────────────────────────────────────────────────
+// ─── Inline Row Actions (L1/L2 columns) ──────────────────────────────────────
 
 type CatalogRowAction = {
   id: string
@@ -213,11 +213,77 @@ const CellRowActions = ({ item, actions }: { item: ProcessItem; actions: Catalog
         <DropdownMenuItem
           key={a.id}
           onSelect={() => a.onSelect(item)}
-          className="rounded-none px-4 py-2.5 text-sm"
+          className="rounded-none px-4 py-2.5 text-sm font-normal"
         >
           {a.label}
         </DropdownMenuItem>
       ))}
+    </DropdownMenuContent>
+  </DropdownMenu>
+)
+
+// ─── Level 3 Row Actions (with icons + bold Draft) ────────────────────────────
+
+const Level3RowActions = ({
+  item,
+  onViewRecordedChanges,
+  onSwitchToDraft,
+  onAddL4s,
+  onRename,
+}: {
+  item: ProcessItem
+  onViewRecordedChanges: (item: ProcessItem) => void
+  onSwitchToDraft: (item: ProcessItem) => void
+  onAddL4s: (item: ProcessItem) => void
+  onRename: (item: ProcessItem) => void
+}) => (
+  <DropdownMenu modal={false}>
+    <DropdownMenuTrigger asChild>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-xs"
+        className="text-muted-foreground ml-auto shrink-0 opacity-0 transition-opacity group-hover/cell:opacity-100"
+        aria-label="Row actions"
+      >
+        <MoreHorizontal className="size-4" />
+      </Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent
+      align="end"
+      sideOffset={4}
+      className="w-56 overflow-hidden rounded-2xl border p-0 shadow-lg"
+    >
+      <DropdownMenuItem
+        onSelect={() => onViewRecordedChanges(item)}
+        className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
+      >
+        <Eye className="text-muted-foreground size-4 shrink-0" />
+        View recorded changes
+      </DropdownMenuItem>
+      <DropdownMenuItem
+        onSelect={() => onSwitchToDraft(item)}
+        className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
+      >
+        <RotateCcw className="text-muted-foreground size-4 shrink-0" />
+        <span>
+          Switch to <strong className="font-semibold">Draft</strong> version
+        </span>
+      </DropdownMenuItem>
+      <DropdownMenuItem
+        onSelect={() => onAddL4s(item)}
+        className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
+      >
+        <Plus className="text-muted-foreground size-4 shrink-0" />
+        Add L4s
+      </DropdownMenuItem>
+      <DropdownMenuItem
+        onSelect={() => onRename(item)}
+        className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
+      >
+        <Pencil className="text-muted-foreground size-4 shrink-0" />
+        Rename
+      </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
 )
@@ -255,8 +321,13 @@ function buildEntityColumns(): ColumnDef<ProcessItem, unknown>[] {
 // ─── Public exports ───────────────────────────────────────────────────────────
 
 export type CatalogColumnActions = {
-  onAddL2: (item: ProcessItem) => void
+  /** Opens 'Add L3 processes' modal from L2 column context menu */
+  onAddL3: (item: ProcessItem) => void
   onRename: (item: ProcessItem) => void
+  // ── L3 column context menu ──
+  onViewRecordedChanges: (item: ProcessItem) => void
+  onSwitchToDraft: (item: ProcessItem) => void
+  onAddL4s: (item: ProcessItem) => void
 }
 
 /** Column IDs to pin to the left — pass directly to DataTable's initialColumnPinning. */
@@ -282,9 +353,10 @@ function wrap<T>(leaf: ColumnDef<T, unknown>): ColumnDef<T, unknown> {
 export function buildCatalogColumns(
   rowActions?: CatalogColumnActions,
 ): ColumnDef<ProcessItem, unknown>[] {
-  const actions: CatalogRowAction[] = rowActions
+  // Actions for domain/level1/level2 column context menus
+  const l2Actions: CatalogRowAction[] = rowActions
     ? [
-        { id: 'add-l3', label: 'Add L3 processes', onSelect: rowActions.onAddL2 },
+        { id: 'add-l3', label: 'Add L3 processes', onSelect: rowActions.onAddL3 },
         { id: 'rename', label: 'Rename', onSelect: rowActions.onRename },
       ]
     : []
@@ -305,7 +377,7 @@ export function buildCatalogColumns(
           <span className="text-foreground flex-1 truncate text-sm font-medium">
             {info.row.original.domain}
           </span>
-          {actions.length > 0 && <CellRowActions item={info.row.original} actions={actions} />}
+          {l2Actions.length > 0 && <CellRowActions item={info.row.original} actions={l2Actions} />}
         </div>
       )
     },
@@ -332,7 +404,7 @@ export function buildCatalogColumns(
             </span>
             <span className="text-muted-foreground text-xs">{info.row.original.level1Code}</span>
           </div>
-          {actions.length > 0 && <CellRowActions item={info.row.original} actions={actions} />}
+          {l2Actions.length > 0 && <CellRowActions item={info.row.original} actions={l2Actions} />}
         </div>
       )
     },
@@ -359,7 +431,7 @@ export function buildCatalogColumns(
             </span>
             <span className="text-muted-foreground text-xs">{info.row.original.level2Code}</span>
           </div>
-          {actions.length > 0 && <CellRowActions item={info.row.original} actions={actions} />}
+          {l2Actions.length > 0 && <CellRowActions item={info.row.original} actions={l2Actions} />}
         </div>
       )
     },
@@ -388,8 +460,14 @@ export function buildCatalogColumns(
               />
               <span className="text-muted-foreground text-xs">{info.row.original.level3Code}</span>
             </div>
-            {actions.length > 0 && !isBulkMode && (
-              <CellRowActions item={info.row.original} actions={actions} />
+            {rowActions && !isBulkMode && (
+              <Level3RowActions
+                item={info.row.original}
+                onViewRecordedChanges={rowActions.onViewRecordedChanges}
+                onSwitchToDraft={rowActions.onSwitchToDraft}
+                onAddL4s={rowActions.onAddL4s}
+                onRename={rowActions.onRename}
+              />
             )}
           </div>
         )
@@ -403,8 +481,14 @@ export function buildCatalogColumns(
             </span>
             <span className="text-muted-foreground text-xs">{info.row.original.level3Code}</span>
           </div>
-          {actions.length > 0 && !isBulkMode && (
-            <CellRowActions item={info.row.original} actions={actions} />
+          {rowActions && !isBulkMode && (
+            <Level3RowActions
+              item={info.row.original}
+              onViewRecordedChanges={rowActions.onViewRecordedChanges}
+              onSwitchToDraft={rowActions.onSwitchToDraft}
+              onAddL4s={rowActions.onAddL4s}
+              onRename={rowActions.onRename}
+            />
           )}
           {isBulkMode && (
             <Checkbox

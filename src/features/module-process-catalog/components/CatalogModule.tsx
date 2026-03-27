@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { X } from 'lucide-react'
 import type { RowSelectionState } from '@tanstack/react-table'
 import { Button } from '@/shared/components/ui/button'
@@ -8,12 +9,14 @@ import { buildCatalogColumns, type CatalogColumnActions } from './catalog-column
 import MyTasksTable from './tables/MyTasksTable'
 import SubmittedRequestsTable from './tables/SubmittedRequestsTable'
 import ProcessFilterSheet from './ProcessFilterSheet'
+import AddLevel4sModal from './AddLevel4sModal'
 import { CATALOG_DATA } from '@features/module-process-catalog/constants/catalog-data'
 import { PROCESS_FILTER_DEFINITIONS } from '@features/module-process-catalog/constants/filter-definitions'
 import { useProcessFilters } from '@features/module-process-catalog/hooks/useProcessFilters'
 import type { ProcessItem } from '@features/module-process-catalog/types'
 
 const CatalogModule = () => {
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<CatalogTabValue>('processes')
   const [isAddL2ModalOpen, setIsAddL2ModalOpen] = useState(false)
   const [numberOfProcesses, setNumberOfProcesses] = useState('1')
@@ -21,6 +24,8 @@ const CatalogModule = () => {
   const [isBulkMode, setIsBulkMode] = useState(false)
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [isAddL4sModalOpen, setIsAddL4sModalOpen] = useState(false)
+  const [targetL3Item, setTargetL3Item] = useState<ProcessItem | null>(null)
 
   // Table data as mutable state so we can inject draft rows
   const [tableData, setTableData] = useState<ProcessItem[]>(CATALOG_DATA)
@@ -131,12 +136,24 @@ const CatalogModule = () => {
   }, [tableData])
 
   const rowActions: CatalogColumnActions = {
-    onAddL2: (item) => {
+    onAddL3: (item) => {
       setTargetItem(item)
       setIsAddL2ModalOpen(true)
     },
     onRename: (item) => {
       console.log('Rename', item.id)
+    },
+    onViewRecordedChanges: (item) => {
+      navigate(`/process-catalog/recorded-changes/${item.id}`)
+    },
+    onSwitchToDraft: (item) => {
+      setTableData((prev) =>
+        prev.map((row) => (row.id === item.id ? { ...row, level3Status: 'Draft' } : row)),
+      )
+    },
+    onAddL4s: (item) => {
+      setTargetL3Item(item)
+      setIsAddL4sModalOpen(true)
     },
   }
 
@@ -262,6 +279,19 @@ const CatalogModule = () => {
         onToggle={toggle}
         onApply={apply}
         onReset={reset}
+      />
+
+      <AddLevel4sModal
+        open={isAddL4sModalOpen}
+        onOpenChange={setIsAddL4sModalOpen}
+        parentItem={
+          targetL3Item
+            ? { level3Name: targetL3Item.level3Name, level3Code: targetL3Item.level3Code }
+            : null
+        }
+        onAdd={(groupCompany, items) => {
+          console.log('Add L4s', { groupCompany, items, parent: targetL3Item?.level3Code })
+        }}
       />
     </section>
   )

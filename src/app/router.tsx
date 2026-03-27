@@ -23,7 +23,8 @@ export const router = createBrowserRouter([
       },
       {
         path: 'dashboard',
-        lazy: () => import('@/features/module-dashboard').then((m) => ({ Component: m.DashboardModule })),
+        lazy: () =>
+          import('@/features/module-dashboard').then((m) => ({ Component: m.DashboardModule })),
       },
       {
         path: 'automation-targets',
@@ -33,6 +34,13 @@ export const router = createBrowserRouter([
         path: 'process-catalog',
         lazy: () =>
           import('@features/module-process-catalog').then((m) => ({ Component: m.CatalogModule })),
+      },
+      {
+        path: 'process-catalog/recorded-changes/:processId',
+        lazy: () =>
+          import('@features/module-process-catalog').then((m) => ({
+            Component: m.RecordedChangesPage,
+          })),
       },
       {
         path: 'opportunities',
