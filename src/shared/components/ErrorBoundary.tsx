@@ -26,7 +26,7 @@
  *   </ErrorBoundary>
  */
 
-import type { ReactNode } from 'react'
+import type { ReactNode, ErrorInfo } from 'react'
 import type { FallbackProps } from 'react-error-boundary'
 import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary'
 
@@ -66,7 +66,7 @@ interface ErrorBoundaryProps {
    * Callback fired before the fallback UI is shown.
    * Use to send the error to Sentry or another monitoring service.
    */
-  onError?: (error: Error, info: { componentStack: string }) => void
+  onError?: (error: unknown, info: ErrorInfo) => void
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -112,7 +112,7 @@ export function ErrorBoundary({
  *   Sentry:   Sentry.captureException(error, { extra: { componentStack: info.componentStack } })
  *   Internal: fetch('/api/logs', { method: 'POST', body: JSON.stringify({ error, ...info }) })
  */
-function logErrorToService(error: Error, info: { componentStack: string }) {
+function logErrorToService(error: unknown, info: ErrorInfo) {
   // TODO: integrate Sentry / internal ADNOC error-tracking service
   console.error('[ErrorBoundary] Caught error:', error)
   console.error('[ErrorBoundary] Component stack:', info.componentStack)

@@ -55,7 +55,7 @@ export function ErrorFallback({
         <p className="max-w-sm text-sm text-gray-500">{message}</p>
 
         {/* Dev-only error detail — stripped in production */}
-        {import.meta.env.DEV && error?.message && (
+        {import.meta.env.DEV && error instanceof Error && error.message && (
           <p className="mt-1 max-w-sm font-mono text-xs break-words text-red-400">
             {error.message}
           </p>
@@ -85,7 +85,7 @@ export function ErrorFallback({
  *   Sentry:   Sentry.captureException(error)
  *   Internal: fetch('/api/logs', { method: 'POST', body: JSON.stringify({ error }) })
  */
-function logErrorToService(error: Error) {
+function logErrorToService(error: unknown) {
   // TODO: integrate Sentry / internal ADNOC error-tracking service
   console.error('[ErrorBoundary] Reported error:', error)
 }

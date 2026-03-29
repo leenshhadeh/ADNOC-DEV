@@ -326,25 +326,23 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
                       className="border-border border-b px-1 py-1 align-middle"
                       style={{ width: col.size, minWidth: col.size }}
                     >
-                    
-                  {col.siteName == 'status' ? (
-                          <StatusBadgeCell
-                            status={getCellValue(
-                              row.l4Item?.id,
-                              col.entityName,
-                              col.siteName,
-                              lastStatus,
-                            )}
-                          />
-                        ) : (
-                          <EditableCell
-                            value={getCellValue(row.l4Item?.id, col.entityName, col.siteName)}
-                            onChange={(v) =>
-                              setCellValue(row.l4Item!.id, col.entityName, col.siteName, v)
-                            }
-                          />
-                        )
-                       }
+                      {col.siteName == 'status' ? (
+                        <StatusBadgeCell
+                          status={getCellValue(
+                            row.l4Item?.id,
+                            col.entityName,
+                            col.siteName,
+                            lastStatus,
+                          )}
+                        />
+                      ) : (
+                        <EditableCell
+                          value={getCellValue(row.l4Item?.id, col.entityName, col.siteName)}
+                          onChange={(v) =>
+                            setCellValue(row.l4Item!.id, col.entityName, col.siteName, v)
+                          }
+                        />
+                      )}
                     </td>
                   ))}
                 </tr>

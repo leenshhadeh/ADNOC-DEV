@@ -9,6 +9,7 @@
  *   - Level4Row        → single-row presentation (inputs + delete button)
  */
 
+import { useEffect } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -56,6 +57,9 @@ export interface EditLevel4sModalProps {
 
   /** Pre-populate the list with existing Level 4 rows. */
   initialRows?: Level4Row[]
+
+  /** Shows a loading skeleton while rows are being fetched. */
+  isLoading?: boolean
 
   /** Called with the final validated list when the user clicks Save. */
   onSave?: (rows: Level4Row[]) => void
@@ -150,12 +154,16 @@ export const EditLevel4sModal = ({
   parentLabel,
   parentCode,
   initialRows = [],
+  isLoading = false,
   onSave,
 }: EditLevel4sModalProps) => {
-  const defaultRows: Level4Row[] =
-    initialRows.length > 0
-      ? initialRows
-      : [{ processCode: `${parentCode}.1`, processName: '', processDescription: '' }]
+  const emptyRow: Level4Row = {
+    processCode: `${parentCode}.1`,
+    processName: '',
+    processDescription: '',
+  }
+
+  const defaultRows: Level4Row[] = initialRows.length > 0 ? initialRows : [emptyRow]
 
   const {
     register,
@@ -169,6 +177,19 @@ export const EditLevel4sModal = ({
   })
 
   const { fields, append, remove } = useFieldArray({ control, name: 'rows' })
+
+  // Sync fetched data into the form once it arrives
+  useEffect(() => {
+    if (open && !isLoading) {
+      reset({
+        rows:
+          initialRows.length > 0
+            ? initialRows
+            : [{ processCode: `${parentCode}.1`, processName: '', processDescription: '' }],
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, isLoading, initialRows.length])
 
   const handleAddRow = () => {
     append({
@@ -200,49 +221,64 @@ export const EditLevel4sModal = ({
 
         {/* Scrollable body */}
         <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
-          <table className="w-full table-fixed border-collapse">
-            {/* Column headers */}
-            <thead>
-              <tr className="border-border/60 border-b">
-                <th className="text-muted-foreground w-36 pe-3 pb-2 text-start text-xs font-medium tracking-wide uppercase">
-                  Process Code
-                </th>
-                <th className="text-muted-foreground pe-3 pb-2 text-start text-xs font-medium tracking-wide uppercase">
-                  Process Name
-                </th>
-                <th className="text-muted-foreground pe-3 pb-2 text-start text-xs font-medium tracking-wide uppercase">
-                  Process Description
-                </th>
-                {/* spacer for delete column */}
-                <th className="w-10 pb-2" />
-              </tr>
-            </thead>
-
-            <tbody>
-              {fields.map((field, index) => (
-                <Level4RowItem
-                  key={field.id}
-                  index={index}
-                  processCode={`${parentCode}.${index + 1}`}
-                  nameError={errors.rows?.[index]?.processName?.message}
-                  codeError={errors.rows?.[index]?.processCode?.message}
-                  register={register}
-                  onRemove={() => remove(index)}
-                  isOnly={fields.length === 1}
-                />
+          {isLoading ? (
+            // Skeleton rows while fetch is in-flight (800ms mock latency)
+            <div className="space-y-3 py-2">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="flex items-center gap-4">
+                  <div className="bg-muted h-4 w-24 animate-pulse rounded" />
+                  <div className="bg-muted h-4 flex-1 animate-pulse rounded" />
+                  <div className="bg-muted h-4 flex-1 animate-pulse rounded" />
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          ) : (
+            <table className="w-full table-fixed border-collapse">
+              {/* Column headers */}
+              <thead>
+                <tr className="border-border/60 border-b">
+                  <th className="text-muted-foreground w-36 pe-3 pb-2 text-start text-xs font-medium tracking-wide uppercase">
+                    Process Code
+                  </th>
+                  <th className="text-muted-foreground pe-3 pb-2 text-start text-xs font-medium tracking-wide uppercase">
+                    Process Name
+                  </th>
+                  <th className="text-muted-foreground pe-3 pb-2 text-start text-xs font-medium tracking-wide uppercase">
+                    Process Description
+                  </th>
+                  {/* spacer for delete column */}
+                  <th className="w-10 pb-2" />
+                </tr>
+              </thead>
 
-          {/* Add row trigger */}
-          <button
-            type="button"
-            onClick={handleAddRow}
-            className="text-primary mt-3 flex items-center gap-1.5 text-sm font-medium hover:underline focus-visible:underline focus-visible:outline-none"
-          >
-            <Plus className="size-4" />
-            Add Level 4
-          </button>
+              <tbody>
+                {fields.map((field, index) => (
+                  <Level4RowItem
+                    key={field.id}
+                    index={index}
+                    processCode={`${parentCode}.${index + 1}`}
+                    nameError={errors.rows?.[index]?.processName?.message}
+                    codeError={errors.rows?.[index]?.processCode?.message}
+                    register={register}
+                    onRemove={() => remove(index)}
+                    isOnly={fields.length === 1}
+                  />
+                ))}
+              </tbody>
+            </table>
+          )}
+
+          {/* Add row trigger — hidden while loading */}
+          {!isLoading && (
+            <button
+              type="button"
+              onClick={handleAddRow}
+              className="text-primary mt-3 flex items-center gap-1.5 text-sm font-medium hover:underline focus-visible:underline focus-visible:outline-none"
+            >
+              <Plus className="size-4" />
+              Add Level 4
+            </button>
+          )}
         </div>
 
         {/* Footer */}

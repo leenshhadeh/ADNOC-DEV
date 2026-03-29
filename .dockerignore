@@ -1,0 +1,41 @@
+# Dependencies
+node_modules
+
+# Build output (built inside Docker, not needed from host)
+dist
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE / OS
+.vscode
+.idea
+*.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Test artifacts
+coverage
+.nyc_output
+
+# Docker files themselves
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Env files (inject secrets at runtime instead)
+.env*
+!.env.example
+
+# CI
+.github
+
+# Misc
+README.md
+*.md

@@ -10,9 +10,11 @@ import MyTasksTable from './tables/MyTasksTable'
 import SubmittedRequestsTable from './tables/SubmittedRequestsTable'
 import ProcessFilterSheet from './ProcessFilterSheet'
 import AddLevel4sModal from './AddLevel4sModal'
+import { EditLevel4sModal } from './EditLevel4sModal'
 import { CATALOG_DATA } from '@features/module-process-catalog/constants/catalog-data'
 import { PROCESS_FILTER_DEFINITIONS } from '@features/module-process-catalog/constants/filter-definitions'
 import { useProcessFilters } from '@features/module-process-catalog/hooks/useProcessFilters'
+import { useGetLevel4s } from '@features/module-process-catalog/hooks/useGetLevel4s'
 import type { ProcessItem } from '@features/module-process-catalog/types'
 
 const CatalogModule = () => {
@@ -25,6 +27,7 @@ const CatalogModule = () => {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [isAddL4sModalOpen, setIsAddL4sModalOpen] = useState(false)
+  const [isEditL4sModalOpen, setIsEditL4sModalOpen] = useState(false)
   const [targetL3Item, setTargetL3Item] = useState<ProcessItem | null>(null)
 
   // Table data as mutable state so we can inject draft rows
@@ -34,6 +37,11 @@ const CatalogModule = () => {
 
   const filterSectionIds = PROCESS_FILTER_DEFINITIONS.map((f) => f.id)
   const { pending, applied: _applied, toggle, apply, reset } = useProcessFilters(filterSectionIds)
+
+  // Fetch existing L4s for the selected L3 row — only runs when Edit L4s modal is open
+  const { data: existingL4s, isLoading: isLoadingL4s } = useGetLevel4s(
+    isEditL4sModalOpen ? (targetL3Item?.id ?? undefined) : undefined,
+  )
 
   const selectedCount = Object.values(rowSelection).filter(Boolean).length
 
@@ -154,6 +162,10 @@ const CatalogModule = () => {
     onAddL4s: (item) => {
       setTargetL3Item(item)
       setIsAddL4sModalOpen(true)
+    },
+    onEditL4s: (item) => {
+      setTargetL3Item(item)
+      setIsEditL4sModalOpen(true)
     },
   }
 
@@ -281,6 +293,7 @@ const CatalogModule = () => {
         onReset={reset}
       />
 
+      {/* Entry A — triggered from L3 dropdown "Add L4s" */}
       <AddLevel4sModal
         open={isAddL4sModalOpen}
         onOpenChange={setIsAddL4sModalOpen}
@@ -289,8 +302,33 @@ const CatalogModule = () => {
             ? { level3Name: targetL3Item.level3Name, level3Code: targetL3Item.level3Code }
             : null
         }
-        onAdd={(groupCompany, items) => {
-          console.log('Add L4s', { groupCompany, items, parent: targetL3Item?.level3Code })
+        onSave={(groupCompany, items) => {
+          // State is scoped to the modal. Do NOT inject into tableData.
+          // Wire to a POST /api/level4s call here when the backend is ready.
+          console.log('Save L4s (Entry A)', {
+            groupCompany,
+            items,
+            parent: targetL3Item?.level3Code,
+          })
+        }}
+      />
+
+      {/* Entry B — triggered from "Edit L4s" cell action; rows live only inside the modal */}
+      <EditLevel4sModal
+        open={isEditL4sModalOpen}
+        onOpenChange={setIsEditL4sModalOpen}
+        parentLabel={targetL3Item?.level3Name ?? ''}
+        parentCode={targetL3Item?.level3Code ?? ''}
+        isLoading={isLoadingL4s}
+        initialRows={existingL4s?.map((l4) => ({
+          processCode: l4.processCode,
+          processName: l4.name,
+          processDescription: l4.description,
+        }))}
+        onSave={(rows) => {
+          // State is scoped to the modal. Do NOT inject into tableData.
+          // Wire to a PUT /api/level4s call here when the backend is ready.
+          console.log('Save L4s (Entry B)', { rows, parent: targetL3Item?.level3Code })
         }}
       />
     </section>
