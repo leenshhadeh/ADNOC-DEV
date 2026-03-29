@@ -14,6 +14,7 @@ export interface AssessmentLevel3 {
   level4Items: Level4Row[]
   groupCompany?: string
   status?:string
+
 }
 
 export interface AssessmentLevel2 {
@@ -44,6 +45,6 @@ export interface EntityConfig {
 }
 
 export const ASSESSMENT_ENTITY_CONFIG: EntityConfig[] = [
-  { name: 'ADNOC HQ', sites: ['Site', 'status', 'Describtion','Centrally Governed Process','Shared Service','Business Unit','Process Criticality'] },
+  { name: 'ADNOC HQ', sites: ['Site', 'status', 'describtion','centrallyGovernedProcess','shared service','business unit','Process Criticality'] },
   // { name: 'ADNOC AL DHAFRA AND AL YASAT', sites: ['General', 'Site A'] },
 ]
