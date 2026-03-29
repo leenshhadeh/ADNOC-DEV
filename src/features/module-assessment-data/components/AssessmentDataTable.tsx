@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 import { TableBody } from '@/shared/components/ui/table'
 import {
@@ -13,6 +13,7 @@ import { buildEntityLeafColumns, HIERARCHY_COLUMNS } from '../constants/assessme
 import type { AssessmentDomain, EntityConfig, Level4Row } from '../types'
 import { cn } from '@/shared/lib/utils'
 import { StatusBadgeCell } from '@/features/module-process-catalog/components/cells'
+import { ExpandIcon } from 'lucide-react'
 
 // ── Main component ────────────────────────────────────────────────────────────
 
@@ -161,19 +162,110 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
 
   const getCellValue = (l4Id?: string, entityName?: string, col?: string, l3Status?: any) => {
     if (col == 'status') {
-      console.log('l3Status', l3Status)
       const status: any = cellValues[`${l4Id}__${entityName}__${col}`]
       return status || l3Status
     }
+
     return cellValues[`${l4Id}__${entityName}__${col}`] ?? ''
+  }
+
+  const getSharedCellValue = (l4Id?: string, entityName?: string, col?: string) => {
+    let parsedValue: any
+    try {
+      parsedValue = cellValues[`${l4Id}__${entityName}__${col}`] || '{}'
+    } catch {
+      parsedValue = {}
+    }
+    if (parsedValue.services && parsedValue.shared) {
+      return (
+        <div className="inline-flex items-center">
+          <b className="pe-[10px]">{parsedValue.services}</b>
+          {/* <BreadcrumbSeparator/> */} /
+          <span className="px-[10px]">{parsedValue.shared} Shared</span>
+          {/* <BreadcrumbSeparator/> */} |
+          <ExpandIcon className="ms-[10px] size-4" strokeWidth={2} />
+        </div>
+      )
+    }
+    return ''
   }
 
   const setCellValue = (l4Id: string, entityName: string, site: string, val: string) =>
     setCellValues((prev) => ({ ...prev, [`${l4Id}__${entityName}__${site}`]: val }))
 
+  // entities columns data - render and configration
+  const entityCells = (row: any) => [
+    {
+      key: 'site',
+      content: (
+        <td style={{ width: entityLeafs[0].size, minWidth: entityLeafs[0].size }}>
+          <EditableCell
+            value={getCellValue(row.l4Item?.id, entityLeafs[0].entityName, entityLeafs[0].siteName)}
+            onChange={(v) =>
+              setCellValue(row.l4Item!.id, entityLeafs[0].entityName, entityLeafs[0].siteName, v)
+            }
+          />
+        </td>
+      ),
+    },
+    {
+      key: 'status',
+      content: (
+        <td style={{ width: entityLeafs[1].size, minWidth: entityLeafs[1].size }}>
+          <StatusBadgeCell
+            status={getCellValue(
+              row.l4Item?.id,
+              entityLeafs[1].entityName,
+              entityLeafs[1].siteName,
+              lastStatus,
+            )}
+          />
+        </td>
+      ),
+    },
+    {
+      key: 'desc',
+      content: (
+        <td style={{ width: entityLeafs[2].size, minWidth: entityLeafs[2].size }}>
+          <EditableCell
+            value={getCellValue(row.l4Item?.id, entityLeafs[2].entityName, entityLeafs[2].siteName)}
+            onChange={(v) =>
+              setCellValue(row.l4Item!.id, entityLeafs[2].entityName, entityLeafs[2].siteName, v)
+            }
+          />
+        </td>
+      ),
+    },
+    {
+      key: 'centrallyGovernedProcess',
+      content: (
+        <td style={{ width: entityLeafs[3].size, minWidth: entityLeafs[3].size }}>
+          <RadioCell
+            name={`${row.l4Item?.id}__${entityLeafs[3].entityName}__${entityLeafs[3].siteName}`}
+            value={getCellValue(row.l4Item?.id, entityLeafs[3].entityName, entityLeafs[3].siteName)}
+            options={[
+              { label: 'Yes', value: 'yes' },
+              { label: 'No', value: 'no' },
+            ]}
+            onChange={(v: any) =>
+              setCellValue(row.l4Item!.id, entityLeafs[3].entityName, entityLeafs[3].siteName, v)
+            }
+          />
+        </td>
+      ),
+    },
+    {
+      key: 'sharedService',
+      content: (
+        <td style={{ width: 200 }}>
+          {getSharedCellValue(row.l4Item?.id, entityLeafs[4].entityName, entityLeafs[4].siteName)}
+        </td>
+      ),
+    },
+  ]
+
   let lastGroupCompany = ''
   let lastStatus = ''
-
   return (
     <TableShell>
       <div className="relative w-full overflow-auto">
@@ -209,6 +301,7 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
           {/* ── Body with rowSpan ────────────────────────────────────────── */}
           <TableBody>
             {flatRows.map((row) => {
+              console.log('Rendering row:', row)
               const currentGroupCompany = row.level3Cell?.data.groupCompany
               const currentStatus = row.level3Cell?.data?.status
 
@@ -311,7 +404,7 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
 
                   {/* groupCompany */}
                   <td
-                    className="border-r-border/60 border-border  border-b px-3 py-2 align-middle"
+                    className="border-r-border/60 border-border border-b px-3 py-2 align-middle"
                     style={{ width: 250, minWidth: 250 }}
                   >
                     <span className="text-muted-foreground text-xs">
@@ -320,48 +413,14 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
                     </span>
                   </td>
 
-                  {/* ── Entity/site editable cells ────────────────────── */}
-                  {entityLeafs.map((col) => (
-                    <td
-                      key={col.id}
-                      className="border-border border-b px-1 py-1 align-middle"
-                      style={{ width: col.size, minWidth: col.size }}
-                    >
-                      {col.siteName == 'status' ? (
-                        <StatusBadgeCell
-                          status={getCellValue(
-                            row.l4Item?.id,
-                            col.entityName,
-                            col.siteName,
-                            lastStatus,
-                          )}
-                        />
-                      ) : 
-                      col.siteName == 'centrallyGovernedProcess' ? <RadioCell
-                        name={`${row.l4Item?.id}__${col.entityName}__${col.siteName}`}
-                        value={getCellValue(
-                          row.l4Item?.id,
-                          col.entityName,
-                          col.siteName,
-                        )}
-                        options={[
-                          { label: 'Yes', value: 'yes' },
-                          { label: 'No', value: 'no' },
-                        ]}
-                        onChange={(v:any) =>
-                          setCellValue(row.l4Item!.id, col.entityName, col.siteName, v)
-                        }
-                      /> :
-                      (
-                        <EditableCell
-                          value={getCellValue(row.l4Item?.id, col.entityName, col.siteName)}
-                          onChange={(v) =>
-                            setCellValue(row.l4Item!.id, col.entityName, col.siteName, v)
-                          }
-                        />
-                      )}
-                    </td>
-                  ))}
+                  {
+                    /* Entity cells — rendered on every row, but with values based on L4 ID + entity/site */
+                    entityCells(row).map((cell) => (
+                      <React.Fragment key={cell.key}>{cell.content}</React.Fragment>
+                    ))
+                  }
+
+                  {/*  end  */}
                 </tr>
               )
             })}

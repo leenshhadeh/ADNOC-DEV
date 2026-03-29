@@ -32,7 +32,7 @@ export const ASSESSMENT_DATA: AssessmentDomain[] = [
                       'Site': 'A',
                       "description": 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                       "centrallyGovernedProcess": 'Yes',
-                      "shared service": 'No',
+                      "sharedService": {services:12,shared:3},
                       "business unit": 'Exploration',
                       "process criticality": 'High',
                      } },
@@ -44,9 +44,10 @@ export const ASSESSMENT_DATA: AssessmentDomain[] = [
                     entities: { 'ADNOC HQ': { General: 'A', 'status': 'Published', 'Site': 'A' ,                       
                       "description": 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                       "centrallyGovernedProcess": 'Yes',
-                      "shared service": 'No',
+                      "sharedService": {services:12,shared:3},
                       "business unit": 'Exploration',
-                      "process criticality": 'High'                    } },
+                      "process criticality": 'High'                    
+                    } },
                   },
                   {
                     id: 'l4-1-3',
@@ -61,7 +62,7 @@ export const ASSESSMENT_DATA: AssessmentDomain[] = [
                     entities: { 'ADNOC HQ': { General: 'A', 'status': 'Published', 'Site': 'General',
                       "description": 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                       "centrallyGovernedProcess": 'Yes',
-                      "shared service": 'No',
+                      "sharedService": {services:12,shared:3},
                       "business unit": 'Exploration',
                       "process criticality": 'High',
                      } },
@@ -135,7 +136,7 @@ export const ASSESSMENT_DATA: AssessmentDomain[] = [
                 status:'Pending approval',
                 level4Items: [
                   {
-                    id: 'l4-5-1',
+                    id: 'l4-9-1',
                     level4Name: 'Define basin framework',
                     level4Code: 'EXP.1.5.3.1',
                     entities: { 'ADNOC HQ': { 
@@ -144,7 +145,7 @@ export const ASSESSMENT_DATA: AssessmentDomain[] = [
                       'Site': 'A',
                       "description": 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                       "centrallyGovernedProcess": 'Yes',
-                      "shared service": 'No',
+                      "sharedService": {services:12,shared:3},
                       "business unit": 'Exploration',
                       "process criticality": 'High',
                      } },
