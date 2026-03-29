@@ -3,6 +3,7 @@ import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import { ChevronDown, Eye, MoreHorizontal, Pencil, Plus, RotateCcw } from 'lucide-react'
 
 import { EditLevel4sModal } from './EditLevel4sModal'
+import { useGetLevel4s } from '@features/module-process-catalog/hooks/useGetLevel4s'
 
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/components/ui/button'
@@ -120,14 +121,26 @@ const EntitySiteCell = ({
   entityName,
   siteName,
   parentCode,
+  parentId,
 }: {
   initialValue: YesNo
   entityName: string
   siteName: string
   parentCode: string
+  /** The Level 3 row id — used to fetch scoped L4 records from the query cache. */
+  parentId: string
 }) => {
   const [value, setValue] = useState<YesNo>(initialValue)
   const [editOpen, setEditOpen] = useState(false)
+
+  // Fetch L4s scoped to this L3 row — only runs when the modal is open
+  const { data: level4s, isLoading: isLoadingL4s } = useGetLevel4s(editOpen ? parentId : undefined)
+
+  const initialRows = level4s?.map((l4) => ({
+    processCode: l4.processCode,
+    processName: l4.name,
+    processDescription: l4.description,
+  }))
 
   return (
     <div className="flex items-center gap-1.5">
@@ -176,6 +189,8 @@ const EntitySiteCell = ({
             onOpenChange={setEditOpen}
             parentLabel={`${entityName} - ${siteName}`}
             parentCode={parentCode}
+            initialRows={initialRows}
+            isLoading={isLoadingL4s}
           />
         </>
       )}
@@ -229,12 +244,14 @@ const Level3RowActions = ({
   onViewRecordedChanges,
   onSwitchToDraft,
   onAddL4s,
+  onEditL4s,
   onRename,
 }: {
   item: ProcessItem
   onViewRecordedChanges: (item: ProcessItem) => void
   onSwitchToDraft: (item: ProcessItem) => void
   onAddL4s: (item: ProcessItem) => void
+  onEditL4s?: (item: ProcessItem) => void
   onRename: (item: ProcessItem) => void
 }) => (
   <DropdownMenu modal={false}>
@@ -277,6 +294,15 @@ const Level3RowActions = ({
         <Plus className="text-muted-foreground size-4 shrink-0" />
         Add L4s
       </DropdownMenuItem>
+      {onEditL4s && (
+        <DropdownMenuItem
+          onSelect={() => onEditL4s(item)}
+          className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
+        >
+          <Pencil className="text-muted-foreground size-4 shrink-0" />
+          Edit L4s
+        </DropdownMenuItem>
+      )}
       <DropdownMenuItem
         onSelect={() => onRename(item)}
         className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
@@ -311,6 +337,7 @@ function buildEntityColumns(): ColumnDef<ProcessItem, unknown>[] {
             entityName={entity.name}
             siteName={site}
             parentCode={row.level3Code}
+            parentId={row.id}
           />
         )
       },
@@ -328,6 +355,8 @@ export type CatalogColumnActions = {
   onViewRecordedChanges: (item: ProcessItem) => void
   onSwitchToDraft: (item: ProcessItem) => void
   onAddL4s: (item: ProcessItem) => void
+  /** Opens EditLevel4sModal (Entry B) — optional, shown only when provided */
+  onEditL4s?: (item: ProcessItem) => void
 }
 
 /** Column IDs to pin to the left — pass directly to DataTable's initialColumnPinning. */
@@ -466,6 +495,7 @@ export function buildCatalogColumns(
                 onViewRecordedChanges={rowActions.onViewRecordedChanges}
                 onSwitchToDraft={rowActions.onSwitchToDraft}
                 onAddL4s={rowActions.onAddL4s}
+                onEditL4s={rowActions.onEditL4s}
                 onRename={rowActions.onRename}
               />
             )}
@@ -487,6 +517,7 @@ export function buildCatalogColumns(
               onViewRecordedChanges={rowActions.onViewRecordedChanges}
               onSwitchToDraft={rowActions.onSwitchToDraft}
               onAddL4s={rowActions.onAddL4s}
+              onEditL4s={rowActions.onEditL4s}
               onRename={rowActions.onRename}
             />
           )}

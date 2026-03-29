@@ -73,15 +73,24 @@ describe('buildCatalogColumns', () => {
     it('accepts rowActions without throwing', () => {
       expect(() =>
         buildCatalogColumns({
-          onAddL2: vi.fn(),
+          onAddL3: vi.fn(),
           onRename: vi.fn(),
+          onViewRecordedChanges: vi.fn(),
+          onSwitchToDraft: vi.fn(),
+          onAddL4s: vi.fn(),
         }),
       ).not.toThrow()
     })
 
     it('returns the same column structure as without rowActions', () => {
       const colsWithout = buildCatalogColumns()
-      const colsWith = buildCatalogColumns({ onAddL2: vi.fn(), onRename: vi.fn() })
+      const colsWith = buildCatalogColumns({
+        onAddL3: vi.fn(),
+        onRename: vi.fn(),
+        onViewRecordedChanges: vi.fn(),
+        onSwitchToDraft: vi.fn(),
+        onAddL4s: vi.fn(),
+      })
       expect(colsWith.map((c) => c.id)).toEqual(colsWithout.map((c) => c.id))
     })
   })
