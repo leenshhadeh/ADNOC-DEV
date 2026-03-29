@@ -45,6 +45,6 @@ export interface EntityConfig {
 }
 
 export const ASSESSMENT_ENTITY_CONFIG: EntityConfig[] = [
-  { name: 'ADNOC HQ', sites: ['Site', 'status', 'describtion','centrallyGovernedProcess','shared service','business unit','Process Criticality'] },
+  { name: 'ADNOC HQ', sites: ['Site', 'status', 'description','centrallyGovernedProcess','shared service','business unit','Process Criticality'] },
   // { name: 'ADNOC AL DHAFRA AND AL YASAT', sites: ['General', 'Site A'] },
 ]

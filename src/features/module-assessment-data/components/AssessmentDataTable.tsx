@@ -5,6 +5,7 @@ import {
   ColHead,
   EditableCell,
   HierarchyTd,
+  RadioCell,
   TableShell,
 } from '@/shared/components/table-primitives'
 import Level4Cell from './cells/Level4Cell'
@@ -302,7 +303,7 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
                     }}
                     className={cn(
                       'bg-card border-border border-b px-3 py-2 align-top text-sm',
-                      'border-r-border/60 border-r-2 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.07)]',
+                      'border-r-border/60 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.07)]',
                     )}
                   >
                     <Level4Cell item={row.l4Item} />
@@ -310,7 +311,7 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
 
                   {/* groupCompany */}
                   <td
-                    className="border-r-border/60 border-border border-r-2 border-b px-3 py-2 align-middle"
+                    className="border-r-border/60 border-border  border-b px-3 py-2 align-middle"
                     style={{ width: 250, minWidth: 250 }}
                   >
                     <span className="text-muted-foreground text-xs">
@@ -335,7 +336,23 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
                             lastStatus,
                           )}
                         />
-                      ) : (
+                      ) : 
+                      col.siteName == 'centrallyGovernedProcess' ? <RadioCell
+                        name={`${row.l4Item?.id}__${col.entityName}__${col.siteName}`}
+                        value={getCellValue(
+                          row.l4Item?.id,
+                          col.entityName,
+                          col.siteName,
+                        )}
+                        options={[
+                          { label: 'Yes', value: 'yes' },
+                          { label: 'No', value: 'no' },
+                        ]}
+                        onChange={(v:any) =>
+                          setCellValue(row.l4Item!.id, col.entityName, col.siteName, v)
+                        }
+                      /> :
+                      (
                         <EditableCell
                           value={getCellValue(row.l4Item?.id, col.entityName, col.siteName)}
                           onChange={(v) =>

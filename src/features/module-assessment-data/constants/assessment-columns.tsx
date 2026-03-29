@@ -50,7 +50,7 @@ export function buildEntityLeafColumns(config: EntityConfig[]): EntityColumnConf
       id: `entity__${entity.name}__${site}`,
       entityName: entity.name,
       siteName: site,
-      size: 160,
+      size: site=='description'?350: 160,
     })),
   )
 }
