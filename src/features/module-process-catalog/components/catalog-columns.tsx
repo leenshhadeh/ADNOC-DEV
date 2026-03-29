@@ -16,7 +16,7 @@ import {
 } from '@/shared/components/ui/dropdown-menu'
 import StatusBadgeCell, { type CatalogStatus } from './cells/StatusBadgeCell'
 import type { ProcessItem, YesNo } from '@features/module-process-catalog/types'
-import { ENTITY_CONFIG } from '@features/module-process-catalog/types'
+import type { GroupCompany } from '@features/module-process-catalog/types'
 
 // Augment TanStack Table meta so isBulkMode is type-safe.
 declare module '@tanstack/react-table' {
@@ -86,34 +86,6 @@ const DraftDescriptionInput = ({
     />
   )
 }
-// ─── Shared Service Toggle ────────────────────────────────────────────────────
-
-const SharedServiceToggle = ({ defaultValue }: { defaultValue: boolean }) => {
-  const [enabled, setEnabled] = useState(defaultValue)
-  return (
-    <div className="flex items-center gap-2">
-      <button
-        type="button"
-        role="switch"
-        aria-checked={enabled}
-        onClick={() => setEnabled((v) => !v)}
-        className={cn(
-          'focus-visible:ring-ring relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:ring-2 focus-visible:outline-none',
-          enabled ? 'bg-primary' : 'bg-input',
-        )}
-      >
-        <span
-          className={cn(
-            'bg-background pointer-events-none block h-4 w-4 rounded-full shadow-md ring-0 transition-transform',
-            enabled ? 'translate-x-4' : 'translate-x-0',
-          )}
-        />
-      </button>
-      <span className="text-foreground text-sm">{enabled ? 'Yes' : 'No'}</span>
-    </div>
-  )
-}
-
 // ─── Entity Site Cell ─────────────────────────────────────────────────────────
 
 const EntitySiteCell = ({
@@ -316,8 +288,8 @@ const Level3RowActions = ({
 
 // ─── Entity matrix column group builder ──────────────────────────────────────
 
-function buildEntityColumns(): ColumnDef<ProcessItem, unknown>[] {
-  return ENTITY_CONFIG.map((entity) => ({
+function buildEntityColumns(groupCompanies: GroupCompany[]): ColumnDef<ProcessItem, unknown>[] {
+  return groupCompanies.map((entity) => ({
     id: `entity__${entity.name}`,
     header: entity.name,
     meta: { isEntityGroup: true },
@@ -381,6 +353,7 @@ function wrap<T>(leaf: ColumnDef<T, unknown>): ColumnDef<T, unknown> {
 
 export function buildCatalogColumns(
   rowActions?: CatalogColumnActions,
+  groupCompanies: GroupCompany[] = [],
 ): ColumnDef<ProcessItem, unknown>[] {
   // Actions for domain/level1/level2 column context menus
   const l2Actions: CatalogRowAction[] = rowActions
@@ -552,6 +525,8 @@ export function buildCatalogColumns(
     header: 'Description',
     size: 480,
     enableSorting: false,
+    // Last static column — renders a right border divider before entity columns.
+    meta: { isDivider: true },
     cell: (info: CellContext<ProcessItem, unknown>) => {
       const isDraft = info.row.original.level3Status === 'Draft'
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
@@ -566,18 +541,6 @@ export function buildCatalogColumns(
     },
   }
 
-  const sharedServiceCol: ColumnDef<ProcessItem, unknown> = {
-    id: 'sharedService',
-    accessorKey: 'isSharedService',
-    header: 'Shared Service Process?',
-    size: 160,
-    enableSorting: false,
-    meta: { isDivider: true },
-    cell: (info: CellContext<ProcessItem, unknown>) => (
-      <SharedServiceToggle defaultValue={Boolean(info.getValue())} />
-    ),
-  }
-
   return [
     // Each flat column is wrapped so all columns participate in the same two-tier
     // header structure. The wrapper group emits an empty depth-0 header cell;
@@ -588,8 +551,8 @@ export function buildCatalogColumns(
     wrap(level3Col),
     wrap(level3StatusCol),
     wrap(descriptionCol),
-    wrap(sharedServiceCol),
-    // Entity matrix groups — top-tier shows entity name, bottom-tier shows site names.
-    ...buildEntityColumns(),
+    // Entity matrix groups — top-tier shows group company name, bottom-tier shows sites.
+    // Built dynamically from the user-scoped group companies lookup.
+    ...buildEntityColumns(groupCompanies),
   ]
 }

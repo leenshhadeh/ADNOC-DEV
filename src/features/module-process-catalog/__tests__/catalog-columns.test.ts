@@ -1,4 +1,9 @@
 import { buildCatalogColumns, CATALOG_PINNED_LEFT } from '../components/catalog-columns'
+import type { GroupCompany } from '../types'
+
+const MOCK_GROUP_COMPANIES: GroupCompany[] = [
+  { id: 'gc-001', name: 'ADNOC HQ', sites: ['General', 'Site A'] },
+]
 
 describe('CATALOG_PINNED_LEFT', () => {
   it('contains the four pinnable column IDs in order', () => {
@@ -22,16 +27,16 @@ describe('buildCatalogColumns', () => {
     expect(ids).toContain('grp__level3')
   })
 
-  it('includes wrapper groups for level3Status, description, and sharedService', () => {
+  it('includes wrapper groups for level3Status and description', () => {
     const cols = buildCatalogColumns()
     const ids = cols.map((c) => c.id)
     expect(ids).toContain('grp__level3Status')
     expect(ids).toContain('grp__description')
-    expect(ids).toContain('grp__sharedService')
+    expect(ids).not.toContain('grp__sharedService')
   })
 
-  it('includes entity column groups', () => {
-    const cols = buildCatalogColumns()
+  it('includes entity column groups when groupCompanies are provided', () => {
+    const cols = buildCatalogColumns(undefined, MOCK_GROUP_COMPANIES)
     const ids = cols.map((c) => c.id)
     expect(ids.some((id) => id?.startsWith('entity__'))).toBe(true)
   })
@@ -54,9 +59,9 @@ describe('buildCatalogColumns', () => {
     }
   })
 
-  it('sharedService leaf has isDivider meta', () => {
+  it('description leaf has isDivider meta', () => {
     const cols = buildCatalogColumns()
-    const grp = cols.find((c) => c.id === 'grp__sharedService') as {
+    const grp = cols.find((c) => c.id === 'grp__description') as {
       columns: { meta?: Record<string, unknown> }[]
     }
     expect(grp?.columns?.[0]?.meta?.isDivider).toBe(true)

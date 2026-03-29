@@ -13,11 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog'
-import { ENTITY_CONFIG } from '@features/module-process-catalog/types'
-
-// ── Options ───────────────────────────────────────────────────────────────────
-
-const GROUP_COMPANY_OPTIONS = ENTITY_CONFIG.flatMap((e) => e.sites.map((s) => `${e.name} - ${s}`))
+import { useGetGroupCompanies } from '@features/module-process-catalog/hooks/useGetGroupCompanies'
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
@@ -134,8 +130,14 @@ const Level4DraftRow = ({
 const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sModalProps) => {
   const parentCode = parentItem?.level3Code ?? ''
 
+  // Group companies from API lookup; select is empty until the query resolves.
+  const { data: groupCompanies } = useGetGroupCompanies()
+  const groupCompanyOptions = (groupCompanies ?? []).flatMap((e) =>
+    e.sites.map((s) => `${e.name} - ${s}`),
+  )
+
   const buildDefaults = (): FormValues => ({
-    groupCompany: GROUP_COMPANY_OPTIONS[0] ?? '',
+    groupCompany: groupCompanyOptions[0] ?? '',
     items: [{ processCode: `${parentCode}.1`, processName: '', processDescription: '' }],
   })
 
@@ -206,7 +208,7 @@ const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sM
                 {...register('groupCompany')}
                 className="border-border bg-background text-foreground focus-visible:ring-ring h-10 w-full appearance-none rounded-xl border ps-3 pe-9 text-sm outline-none focus-visible:ring-2"
               >
-                {GROUP_COMPANY_OPTIONS.map((opt) => (
+                {groupCompanyOptions.map((opt) => (
                   <option key={opt} value={opt}>
                     {opt}
                   </option>

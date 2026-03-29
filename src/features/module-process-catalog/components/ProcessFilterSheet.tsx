@@ -16,6 +16,8 @@ interface ProcessFilterSheetProps {
   onOpenChange: (open: boolean) => void
   filters: FilterDefinition[]
   pending: ProcessFilters
+  /** Count of committed (applied) selections per section — drives section badges */
+  activePerSection?: Record<string, number>
   onToggle: (sectionId: string, optionId: string) => void
   onApply: () => void
   onReset: () => void
@@ -26,6 +28,7 @@ const ProcessFilterSheet = ({
   onOpenChange,
   filters,
   pending,
+  activePerSection,
   onToggle,
   onApply,
   onReset,
@@ -44,38 +47,54 @@ const ProcessFilterSheet = ({
           defaultValue={filters.map((f) => f.id)}
           className="divide-border divide-y"
         >
-          {filters.map((filter) => (
-            <AccordionItem key={filter.id} value={filter.id} className="border-0">
-              <AccordionTrigger className="bg-muted/30 hover:bg-muted/50 px-6 py-4 text-base font-semibold hover:no-underline [&[data-state=open]>svg]:rotate-180">
-                {filter.label}
-              </AccordionTrigger>
-              <AccordionContent className="pb-2">
-                <ul>
-                  {filter.options.map((option) => {
-                    const checked = (pending[filter.id] ?? []).includes(option.id)
-                    const inputId = `filter-${filter.id}-${option.id}`
-                    return (
-                      <li key={option.id}>
-                        <label
-                          htmlFor={inputId}
-                          className="hover:bg-muted/40 flex cursor-pointer items-center gap-3 px-6 py-2.5"
-                        >
-                          <Checkbox
-                            id={inputId}
-                            checked={checked}
-                            onCheckedChange={() => onToggle(filter.id, option.id)}
-                          />
-                          <span className="text-foreground text-sm leading-none">
-                            {option.label}
-                          </span>
-                        </label>
-                      </li>
-                    )
-                  })}
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
+          {filters.map((filter) => {
+            const sectionActiveCount = (activePerSection ?? {})[filter.id] ?? 0
+            return (
+              <AccordionItem key={filter.id} value={filter.id} className="border-0">
+                <AccordionTrigger className="bg-muted/30 hover:bg-muted/50 gap-3 px-6 py-4 text-base font-semibold hover:no-underline [&[data-state=open]>svg]:rotate-180">
+                  <span className="flex flex-1 items-center gap-2">
+                    {filter.label}
+                    {sectionActiveCount > 0 && (
+                      <span className="bg-primary text-primary-foreground inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-semibold tabular-nums">
+                        {sectionActiveCount}
+                      </span>
+                    )}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="pb-2">
+                  {filter.options.length === 0 ? (
+                    <p className="text-muted-foreground px-6 py-3 text-sm italic">
+                      No options available yet.
+                    </p>
+                  ) : (
+                    <ul>
+                      {filter.options.map((option) => {
+                        const checked = (pending[filter.id] ?? []).includes(option.id)
+                        const inputId = `filter-${filter.id}-${option.id}`
+                        return (
+                          <li key={option.id}>
+                            <label
+                              htmlFor={inputId}
+                              className="hover:bg-muted/40 flex cursor-pointer items-center gap-3 px-6 py-2.5"
+                            >
+                              <Checkbox
+                                id={inputId}
+                                checked={checked}
+                                onCheckedChange={() => onToggle(filter.id, option.id)}
+                              />
+                              <span className="text-foreground text-sm leading-none">
+                                {option.label}
+                              </span>
+                            </label>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  )}
+                </AccordionContent>
+              </AccordionItem>
+            )
+          })}
         </Accordion>
       </div>
 

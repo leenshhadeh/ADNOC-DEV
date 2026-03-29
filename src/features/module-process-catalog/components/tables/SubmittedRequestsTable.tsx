@@ -15,7 +15,7 @@ import {
 import RequestDetailsSheet from './RequestDetailsSheet'
 
 import type { RequestItem } from '@features/module-process-catalog/types/submitted-requests'
-import { SUBMITTED_REQUESTS } from '@features/module-process-catalog/constants/submitted-requests'
+import { useGetSubmittedRequests } from '@features/module-process-catalog/hooks/useGetSubmittedRequests'
 
 const LevelCell = ({ level }: { level: string }) => {
   return (
@@ -27,6 +27,7 @@ const LevelCell = ({ level }: { level: string }) => {
 }
 
 const SubmittedRequestsTable = () => {
+  const { data: requests, isLoading, isError } = useGetSubmittedRequests()
   const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
@@ -135,11 +136,29 @@ const SubmittedRequestsTable = () => {
     [],
   )
 
+  if (isError) {
+    return (
+      <p className="text-destructive px-1 py-4 text-sm">
+        Failed to load submitted requests. Please refresh and try again.
+      </p>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div className="space-y-3 py-2">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="bg-muted h-14 w-full animate-pulse rounded-xl" />
+        ))}
+      </div>
+    )
+  }
+
   return (
     <>
       <DataTable
         columns={columns}
-        data={SUBMITTED_REQUESTS}
+        data={requests ?? []}
         density="comfortable"
         className="overflow-x-auto"
         initialColumnPinning={{ left: ['processName'] }}

@@ -58,6 +58,8 @@ export interface ModuleToolbarProps {
   // ── Filter ────────────────────────────────────────────────────────────────
   /** Called when the filter icon button is clicked */
   onFilterClick?: () => void
+  /** When >0, shows a pill badge on the filter icon button */
+  activeFilterCount?: number
 
   // ── Actions ───────────────────────────────────────────────────────────────
   /** Optional: renders the Bulk Action button (or active-selection pill) */
@@ -76,6 +78,7 @@ const ModuleToolbar = ({
   onSearchChange,
   searchPlaceholder = 'Search',
   onFilterClick,
+  activeFilterCount,
   bulkMode,
   actions = [],
   showFilter = true,
@@ -134,16 +137,23 @@ const ModuleToolbar = ({
         </div>
 
         {showFilter && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-11 w-11 shrink-0"
-            aria-label="Open filters"
-            onClick={onFilterClick}
-          >
-            <ShapeIcon className="size-4" />
-          </Button>
+          <div className="relative">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-11 w-11 shrink-0"
+              aria-label="Open filters"
+              onClick={onFilterClick}
+            >
+              <ShapeIcon className="size-4" />
+            </Button>
+            {activeFilterCount != null && activeFilterCount > 0 && (
+              <span className="bg-primary text-primary-foreground pointer-events-none absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] leading-none font-bold tabular-nums">
+                {activeFilterCount}
+              </span>
+            )}
+          </div>
         )}
       </div>
 

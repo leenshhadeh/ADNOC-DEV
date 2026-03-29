@@ -14,7 +14,7 @@ import {
 import LevelsIcon from '@/assets/Levels.svg?react'
 
 import type { TaskItem } from '@features/module-process-catalog/types/my-tasks'
-import { MY_TASKS } from '@features/module-process-catalog/constants/my-tasks'
+import { useGetMyTasks } from '@features/module-process-catalog/hooks/useGetMyTasks'
 
 const LevelCell = ({ level }: { level: string }) => {
   return (
@@ -26,6 +26,7 @@ const LevelCell = ({ level }: { level: string }) => {
 }
 
 const MyTasksTable = () => {
+  const { data: tasks, isLoading, isError } = useGetMyTasks()
   const columns = useMemo<ColumnDef<TaskItem, unknown>[]>(
     () => [
       {
@@ -212,10 +213,28 @@ const MyTasksTable = () => {
     [],
   )
 
+  if (isError) {
+    return (
+      <p className="text-destructive px-1 py-4 text-sm">
+        Failed to load tasks. Please refresh and try again.
+      </p>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div className="space-y-3 py-2">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="bg-muted h-14 w-full animate-pulse rounded-xl" />
+        ))}
+      </div>
+    )
+  }
+
   return (
     <DataTable
       columns={columns}
-      data={MY_TASKS}
+      data={tasks ?? []}
       density="comfortable"
       enableColumnDnd={false}
       enableSorting={false}
