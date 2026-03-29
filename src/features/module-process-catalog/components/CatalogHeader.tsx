@@ -26,6 +26,8 @@ interface CatalogHeaderProps {
   selectedCount?: number
   onBulkAddProcesses?: () => void
   onFilterClick?: () => void
+  /** Total active filter count — shown as a badge on the filter button */
+  activeFilterCount?: number
   hasDraftRows?: boolean
   onSave?: () => void
   onValidate?: () => void
@@ -39,6 +41,7 @@ const CatalogHeader = ({
   selectedCount = 0,
   onBulkAddProcesses,
   onFilterClick,
+  activeFilterCount,
   hasDraftRows = false,
   onSave,
   onValidate,
@@ -80,6 +83,7 @@ const CatalogHeader = ({
         activeTab={activeTab}
         onTabChange={(value) => onTabChange(value as CatalogTabValue)}
         onFilterClick={onFilterClick}
+        activeFilterCount={activeFilterCount}
         bulkMode={hasDraftRows ? undefined : bulkMode}
         actions={hasDraftRows ? draftActions : CATALOG_ACTIONS}
       />

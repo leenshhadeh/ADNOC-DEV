@@ -1,6 +1,14 @@
 export type YesNo = 'Yes' | 'No'
 
-export type ProcessStatus = 'Published' | 'Pending approval' | 'Draft'
+export type ProcessStatus =
+  | 'Published'
+  | 'Pending approval'
+  | 'Draft'
+  | 'Ready for Submission'
+  | 'Quality Review'
+  | 'Digital VP Review'
+  | 'Returned'
+  | 'Rejected'
 
 export interface ProcessItem {
   id: string
@@ -30,9 +38,15 @@ export interface Level4Item {
   parentId: string
 }
 
-// ── Entity config ─────────────────────────────────────────────────────────────
+// ── Group Company ─────────────────────────────────────────────────────────────
 
-export const ENTITY_CONFIG: Array<{ name: string; sites: string[] }> = [
-  { name: 'ADNOC HQ', sites: ['General', 'Site A', 'Site B'] },
-  { name: 'ADNOC AL DHAFRA AND AL YASAT', sites: ['General', 'Site A'] },
-]
+/**
+ * Represents a group company / subsidiary entity.
+ * The full list is fetched from the API as a lookup (getGroupCompanies).
+ * Each user sees only the companies they have access to.
+ */
+export interface GroupCompany {
+  id: string
+  name: string
+  sites: string[]
+}

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { X } from 'lucide-react'
 import type { RowSelectionState } from '@tanstack/react-table'
@@ -11,10 +11,15 @@ import SubmittedRequestsTable from './tables/SubmittedRequestsTable'
 import ProcessFilterSheet from './ProcessFilterSheet'
 import AddLevel4sModal from './AddLevel4sModal'
 import { EditLevel4sModal } from './EditLevel4sModal'
-import { CATALOG_DATA } from '@features/module-process-catalog/constants/catalog-data'
-import { PROCESS_FILTER_DEFINITIONS } from '@features/module-process-catalog/constants/filter-definitions'
-import { useProcessFilters } from '@features/module-process-catalog/hooks/useProcessFilters'
+import { FILTER_SECTION_IDS } from '@features/module-process-catalog/constants/filter-definitions'
+import {
+  useProcessFilters,
+  applyProcessFilters,
+} from '@features/module-process-catalog/hooks/useProcessFilters'
+import { useProcessFilterDefinitions } from '@features/module-process-catalog/hooks/useProcessFilterDefinitions'
 import { useGetLevel4s } from '@features/module-process-catalog/hooks/useGetLevel4s'
+import { useGetProcessCatalogRows } from '@features/module-process-catalog/hooks/useGetProcessCatalogRows'
+import { useGetGroupCompanies } from '@features/module-process-catalog/hooks/useGetGroupCompanies'
 import type { ProcessItem } from '@features/module-process-catalog/types'
 
 const CatalogModule = () => {
@@ -30,13 +35,28 @@ const CatalogModule = () => {
   const [isEditL4sModalOpen, setIsEditL4sModalOpen] = useState(false)
   const [targetL3Item, setTargetL3Item] = useState<ProcessItem | null>(null)
 
-  // Table data as mutable state so we can inject draft rows
-  const [tableData, setTableData] = useState<ProcessItem[]>(CATALOG_DATA)
+  // ── Server state ────────────────────────────────────────────────────────────
+  // Row data comes from API; group companies are a user-scoped lookup.
+  const { data: serverRows } = useGetProcessCatalogRows()
+  const { data: groupCompanies } = useGetGroupCompanies()
+
+  // Table data as mutable state so we can inject draft rows.
+  // Seeded from the server response; draft rows are injected locally.
+  const [tableData, setTableData] = useState<ProcessItem[]>([])
+
+  useEffect(() => {
+    if (serverRows) setTableData(serverRows)
+  }, [serverRows])
+
   const [firstDraftRowId, setFirstDraftRowId] = useState<string | undefined>()
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
-  const filterSectionIds = PROCESS_FILTER_DEFINITIONS.map((f) => f.id)
-  const { pending, applied: _applied, toggle, apply, reset } = useProcessFilters(filterSectionIds)
+  const filterDefs = useProcessFilterDefinitions(groupCompanies, serverRows)
+  const { pending, applied, activeCount, activePerSection, toggle, apply, reset } =
+    useProcessFilters(FILTER_SECTION_IDS)
+
+  // Computed filtered view — does not mutate tableData (draft injection is preserved)
+  const filteredData = useMemo(() => applyProcessFilters(tableData, applied), [tableData, applied])
 
   // Fetch existing L4s for the selected L3 row — only runs when Edit L4s modal is open
   const { data: existingL4s, isLoading: isLoadingL4s } = useGetLevel4s(
@@ -169,8 +189,13 @@ const CatalogModule = () => {
     },
   }
 
+  // Rebuild columns only when the group company structure changes (first API load
+  // or user permission change). rowActions callbacks are stable via closure.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const columns = useMemo(() => buildCatalogColumns(rowActions), [])
+  const columns = useMemo(
+    () => buildCatalogColumns(rowActions, groupCompanies ?? []),
+    [groupCompanies],
+  )
 
   return (
     <section className="space-y-4">
@@ -182,6 +207,7 @@ const CatalogModule = () => {
         selectedCount={selectedCount}
         onBulkAddProcesses={() => setIsAddL2ModalOpen(true)}
         onFilterClick={() => setIsFilterOpen(true)}
+        activeFilterCount={activeCount}
         hasDraftRows={hasDraftRows}
         onSave={handleSave}
         onValidate={handleValidate}
@@ -191,7 +217,7 @@ const CatalogModule = () => {
         <div ref={tableContainerRef} className="overflow-auto">
           <DataTable
             columns={columns}
-            data={tableData}
+            data={filteredData}
             density="compact"
             enableColumnDnd={false}
             enableSorting={false}
@@ -286,8 +312,9 @@ const CatalogModule = () => {
       <ProcessFilterSheet
         open={isFilterOpen}
         onOpenChange={setIsFilterOpen}
-        filters={PROCESS_FILTER_DEFINITIONS}
+        filters={filterDefs}
         pending={pending}
+        activePerSection={activePerSection}
         onToggle={toggle}
         onApply={apply}
         onReset={reset}
