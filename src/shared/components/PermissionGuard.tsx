@@ -19,7 +19,7 @@ type PermissionGuardProps = {
  *   <PermissionGuard action="ADD_LEVEL_4">…</PermissionGuard>
  *
  * Usage (inline role list, for one-off cases):
- *   <PermissionGuard allowedRoles={['BPA Program Manager']}>…</PermissionGuard>
+ *   <PermissionGuard allowedRoles={['BPA Process Catalog Custodian']}>…</PermissionGuard>
  */
 export function PermissionGuard({
   action,

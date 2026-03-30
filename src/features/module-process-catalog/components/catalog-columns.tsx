@@ -24,7 +24,7 @@ declare module '@tanstack/react-table' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData> {
     isBulkMode?: boolean
-    onUpdateDraftRow?: (id: string, field: 'level3Name' | 'description', value: string) => void
+    onUpdateDraftRow?: (id: string, field: 'level1Name' | 'level2Name' | 'level3Name' | 'description', value: string) => void
     draftRowIds?: Set<string>
     firstDraftRowId?: string
   }
@@ -32,12 +32,14 @@ declare module '@tanstack/react-table' {
 // ─── DraftNameInput ──────────────────────────────────────────────────────────
 const DraftNameInput = ({
   rowId,
+  field,
   autoFocus,
   onUpdate,
 }: {
   rowId: string
+  field: 'level1Name' | 'level2Name' | 'level3Name'
   autoFocus: boolean
-  onUpdate: (id: string, field: 'level3Name' | 'description', value: string) => void
+  onUpdate: (id: string, field: 'level1Name' | 'level2Name' | 'level3Name' | 'description', value: string) => void
 }) => {
   const [value, setValue] = useState('')
   const ref = useRef<HTMLInputElement>(null)
@@ -58,7 +60,7 @@ const DraftNameInput = ({
       placeholder="Enter process name"
       onChange={(e) => {
         setValue(e.target.value)
-        onUpdate(rowId, 'level3Name', e.target.value)
+        onUpdate(rowId, field, e.target.value)
       }}
       className="text-foreground placeholder:text-muted-foreground/60 border-border focus:border-primary caret-primary w-full border-b bg-transparent text-sm outline-none"
     />
@@ -325,6 +327,10 @@ function buildEntityColumns(groupCompanies: GroupCompany[]): ColumnDef<ProcessIt
 // ─── Public exports ───────────────────────────────────────────────────────────
 
 export type CatalogColumnActions = {
+  /** Opens modal to add L1 draft rows — triggered from Domain column context menu */
+  onAddL1: (item: ProcessItem) => void
+  /** Opens modal to add L2 draft rows — triggered from Level 1 column context menu */
+  onAddL2: (item: ProcessItem) => void
   /** Opens 'Add L3 processes' modal from L2 column context menu */
   onAddL3: (item: ProcessItem) => void
   onRename: (item: ProcessItem) => void
@@ -360,7 +366,23 @@ export function buildCatalogColumns(
   rowActions?: CatalogColumnActions,
   groupCompanies: GroupCompany[] = [],
 ): ColumnDef<ProcessItem, unknown>[] {
-  // Actions for domain/level1/level2 column context menus
+  // Actions for the Domain column context menu
+  const domainActions: CatalogRowAction[] = rowActions
+    ? [
+        { id: 'add-l1', label: 'Add L1 processes', onSelect: rowActions.onAddL1 },
+        { id: 'rename', label: 'Rename', onSelect: rowActions.onRename },
+      ]
+    : []
+
+  // Actions for the Level 1 column context menu
+  const l1Actions: CatalogRowAction[] = rowActions
+    ? [
+        { id: 'add-l2', label: 'Add L2 processes', onSelect: rowActions.onAddL2 },
+        { id: 'rename', label: 'Rename', onSelect: rowActions.onRename },
+      ]
+    : []
+
+  // Actions for the Level 2 column context menu
   const l2Actions: CatalogRowAction[] = rowActions
     ? [
         { id: 'add-l3', label: 'Add L3 processes', onSelect: rowActions.onAddL3 },
@@ -384,7 +406,7 @@ export function buildCatalogColumns(
           <span className="text-foreground flex-1 truncate text-sm font-medium">
             {info.row.original.domain}
           </span>
-          {l2Actions.length > 0 && <CellRowActions item={info.row.original} actions={l2Actions} />}
+          {domainActions.length > 0 && <CellRowActions item={info.row.original} actions={domainActions} />}
         </div>
       )
     },
@@ -403,6 +425,26 @@ export function buildCatalogColumns(
         prev?.original.level1Code === info.row.original.level1Code
       )
         return null
+
+      const isDraftL1 =
+        info.row.original.level3Status === 'Draft' && !info.row.original.level1Name
+      const isFirstDraft = info.table.options.meta?.firstDraftRowId === info.row.original.id
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+
+      if (isDraftL1 && onUpdate) {
+        return (
+          <div className="flex min-w-0 w-full flex-col gap-0.5">
+            <DraftNameInput
+              rowId={info.row.original.id}
+              field="level1Name"
+              autoFocus={!!isFirstDraft}
+              onUpdate={onUpdate}
+            />
+            <span className="text-muted-foreground text-xs">{info.row.original.level1Code}</span>
+          </div>
+        )
+      }
+
       return (
         <div className="flex w-full min-w-0 items-center gap-1">
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -411,7 +453,7 @@ export function buildCatalogColumns(
             </span>
             <span className="text-muted-foreground text-xs">{info.row.original.level1Code}</span>
           </div>
-          {l2Actions.length > 0 && <CellRowActions item={info.row.original} actions={l2Actions} />}
+          {l1Actions.length > 0 && <CellRowActions item={info.row.original} actions={l1Actions} />}
         </div>
       )
     },
@@ -430,6 +472,26 @@ export function buildCatalogColumns(
         prev?.original.level2Code === info.row.original.level2Code
       )
         return null
+
+      const isDraftL2 =
+        info.row.original.level3Status === 'Draft' && !info.row.original.level2Name
+      const isFirstDraft = info.table.options.meta?.firstDraftRowId === info.row.original.id
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+
+      if (isDraftL2 && onUpdate) {
+        return (
+          <div className="flex min-w-0 w-full flex-col gap-0.5">
+            <DraftNameInput
+              rowId={info.row.original.id}
+              field="level2Name"
+              autoFocus={!!isFirstDraft && !!info.row.original.level1Name}
+              onUpdate={onUpdate}
+            />
+            <span className="text-muted-foreground text-xs">{info.row.original.level2Code}</span>
+          </div>
+        )
+      }
+
       return (
         <div className="flex w-full min-w-0 items-center gap-1">
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -462,7 +524,8 @@ export function buildCatalogColumns(
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
               <DraftNameInput
                 rowId={info.row.original.id}
-                autoFocus={!!isFirstDraft}
+                field="level3Name"
+                autoFocus={!!isFirstDraft && !!info.row.original.level2Name}
                 onUpdate={onUpdate}
               />
               <span className="text-muted-foreground text-xs">{info.row.original.level3Code}</span>
