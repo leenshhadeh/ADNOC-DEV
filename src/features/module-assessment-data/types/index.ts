@@ -1,9 +1,15 @@
 export interface Level4Row {
   id: string
-  level4Name: string
-  level4Code: string
+  level4Name?: string
+  level4Code?: string
   /** Per-entity-site editable values for this L4 process. */
-  entities: Record<string, Record<string, string> | any>
+  status?:any
+  site?: string
+  description?: string
+  centrallyGovernedProcess?: string
+  sharedService?: {services:number,shared:number}
+  businessUnit?: string
+  processCriticality?: string
 
 }
 
@@ -14,6 +20,12 @@ export interface AssessmentLevel3 {
   level4Items: Level4Row[]
   groupCompany?: string
   status?:string
+  site?: string
+  description?: string
+  centrallyGovernedProcess?: string
+  sharedService: {services:number,shared:number},
+  businessUnit?: string
+  processCriticality?: string
 
 }
 
