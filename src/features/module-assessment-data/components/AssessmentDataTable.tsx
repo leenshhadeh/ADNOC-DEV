@@ -13,7 +13,8 @@ import { buildEntityLeafColumns, HIERARCHY_COLUMNS } from '../constants/assessme
 import type { AssessmentDomain, EntityConfig, Level4Row } from '../types'
 import { cn } from '@/shared/lib/utils'
 import { StatusBadgeCell } from '@/features/module-process-catalog/components/cells'
-import { ExpandIcon } from 'lucide-react'
+import { Maximize2 ,Tally1} from 'lucide-react'
+
 
 // ── Main component ────────────────────────────────────────────────────────────
 
@@ -179,15 +180,15 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
     if (parsedValue.services && parsedValue.shared) {
       return (
         <div className="inline-flex items-center">
-          <b className="pe-[10px]">{parsedValue.services}</b>
-          {/* <BreadcrumbSeparator/> */} /
-          <span className="px-[10px]">{parsedValue.shared} Shared</span>
-          {/* <BreadcrumbSeparator/> */} |
-          <ExpandIcon className="ms-[10px] size-4" strokeWidth={2} />
+          <span className="pe-[16px]">{parsedValue.services}</span>
+          <Tally1  className='rotate-[25deg] text-[#DFE3E6] mt-[7px]'/>
+          <span className="pe-[10px] text-muted-foreground">{parsedValue.shared} Shared</span>
+          <Tally1 className='text-[#DFE3E6]' />
+          <Maximize2 className="ms-[10px] size-4" strokeWidth={2} />
         </div>
       )
     }
-    return ''
+    return <></>
   }
 
   const setCellValue = (l4Id: string, entityName: string, site: string, val: string) =>
@@ -257,7 +258,7 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
     {
       key: 'sharedService',
       content: (
-        <td style={{ width: 200 }}>
+        <td style={{ width: 250 }}>
           {getSharedCellValue(row.l4Item?.id, entityLeafs[4].entityName, entityLeafs[4].siteName)}
         </td>
       ),
