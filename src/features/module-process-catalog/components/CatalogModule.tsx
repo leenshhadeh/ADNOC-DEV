@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { X } from 'lucide-react'
 import type { RowSelectionState } from '@tanstack/react-table'
 import { Button } from '@/shared/components/ui/button'
-import CatalogHeader, { type CatalogTabValue } from './CatalogHeader'
+import CatalogHeader from './CatalogHeader'
 import DataTable from './data-table/DataTable'
 import { buildCatalogColumns, type CatalogColumnActions } from './catalog-columns'
 import MyTasksTable from './tables/MyTasksTable'
@@ -20,11 +20,12 @@ import { useProcessFilterDefinitions } from '@features/module-process-catalog/ho
 import { useGetLevel4s } from '@features/module-process-catalog/hooks/useGetLevel4s'
 import { useGetProcessCatalogRows } from '@features/module-process-catalog/hooks/useGetProcessCatalogRows'
 import { useGetGroupCompanies } from '@features/module-process-catalog/hooks/useGetGroupCompanies'
+import { useCatalogNavStore } from '@features/module-process-catalog/store/useCatalogNavStore'
 import type { ProcessItem } from '@features/module-process-catalog/types'
 
 const CatalogModule = () => {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<CatalogTabValue>('processes')
+  const { activeTab, setActiveTab, highlightedProcessId, clearHighlight } = useCatalogNavStore()
   const [isAddL2ModalOpen, setIsAddL2ModalOpen] = useState(false)
   const [numberOfProcesses, setNumberOfProcesses] = useState('1')
   const [targetItem, setTargetItem] = useState<ProcessItem | null>(null)
@@ -47,6 +48,23 @@ const CatalogModule = () => {
   useEffect(() => {
     if (serverRows) setTableData(serverRows)
   }, [serverRows])
+
+  // ── Deep-link scroll + highlight ────────────────────────────────────────────
+  // When a task/request Eye button triggers navigateToProcess(), the store sets
+  // highlightedProcessId. We wait one frame for the Processes tab to render,
+  // then scroll the marked row into view and auto-clear after 2.5 s.
+  useEffect(() => {
+    if (!highlightedProcessId) return
+    const frame = requestAnimationFrame(() => {
+      const el = tableContainerRef.current?.querySelector(`[data-row-id="${highlightedProcessId}"]`)
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    })
+    const timer = setTimeout(clearHighlight, 2500)
+    return () => {
+      cancelAnimationFrame(frame)
+      clearTimeout(timer)
+    }
+  }, [highlightedProcessId, clearHighlight])
 
   const [firstDraftRowId, setFirstDraftRowId] = useState<string | undefined>()
   const tableContainerRef = useRef<HTMLDivElement>(null)
@@ -229,6 +247,7 @@ const CatalogModule = () => {
               rowDividers: true,
               onUpdateDraftRow: handleUpdateDraftRow,
               firstDraftRowId,
+              highlightedRowId: highlightedProcessId ?? undefined,
             }}
           />
         </div>

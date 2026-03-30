@@ -15,6 +15,7 @@ import LevelsIcon from '@/assets/Levels.svg?react'
 
 import type { TaskItem } from '@features/module-process-catalog/types/my-tasks'
 import { useGetMyTasks } from '@features/module-process-catalog/hooks/useGetMyTasks'
+import { useCatalogNavStore } from '@features/module-process-catalog/store/useCatalogNavStore'
 
 const LevelCell = ({ level }: { level: string }) => {
   return (
@@ -27,6 +28,7 @@ const LevelCell = ({ level }: { level: string }) => {
 
 const MyTasksTable = () => {
   const { data: tasks, isLoading, isError } = useGetMyTasks()
+  const navigateToProcess = useCatalogNavStore((s) => s.navigateToProcess)
   const columns = useMemo<ColumnDef<TaskItem, unknown>[]>(
     () => [
       {
@@ -195,6 +197,7 @@ const MyTasksTable = () => {
         meta: { multiline: true },
         cell: (info) => {
           if (info.row.depth > 0) return null
+          const row = info.row.original
           return (
             <div className="flex justify-center">
               <Button
@@ -202,6 +205,9 @@ const MyTasksTable = () => {
                 variant="ghost"
                 size="icon-sm"
                 className="text-muted-foreground rounded-full"
+                disabled={!row.processId}
+                aria-label="Go to affected record"
+                onClick={() => row.processId && navigateToProcess(row.processId)}
               >
                 <Eye className="size-4" />
               </Button>

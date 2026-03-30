@@ -4,6 +4,7 @@ import { withSubRows } from '@features/module-process-catalog/types/my-tasks'
 export const MY_TASKS: TaskItem[] = [
   withSubRows({
     id: 'task-1',
+    processId: 'r1',
     processName: 'Regional studies',
     requestId: '9377353',
     level: 'L 3',
@@ -59,6 +60,7 @@ export const MY_TASKS: TaskItem[] = [
   }),
   withSubRows({
     id: 'task-2',
+    processId: 'r2',
     processName: 'Define Budget and Schedule',
     requestId: '9377354',
     level: 'L 3',
@@ -79,6 +81,7 @@ export const MY_TASKS: TaskItem[] = [
   }),
   withSubRows({
     id: 'task-3',
+    processId: 'r3',
     processName: 'Develop external communication',
     requestId: '9377355',
     level: 'L 3',
@@ -96,6 +99,7 @@ export const MY_TASKS: TaskItem[] = [
   }),
   withSubRows({
     id: 'task-4',
+    processId: 'r4',
     processName: 'Prepare media materials',
     requestId: '9377356',
     level: 'L 3',
@@ -113,6 +117,7 @@ export const MY_TASKS: TaskItem[] = [
   }),
   withSubRows({
     id: 'task-5',
+    processId: 'r5',
     processName: 'Defining brand performance',
     requestId: '9377357',
     level: 'L 3',

@@ -40,6 +40,7 @@ export interface DataTableRowProps<TData> {
   density?: 'compact' | 'comfortable'
   rowDividers?: boolean
   getRowActions?: (row: Row<TData>) => RowAction<TData>[]
+  isHighlighted?: boolean
 }
 
 export interface DataTableProps<TData> {

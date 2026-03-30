@@ -14,6 +14,8 @@ export interface WorkflowHistoryItem {
 
 export interface RequestItem {
   id: string
+  /** ID of the corresponding ProcessItem in the catalog — used for deep-link navigation. */
+  processId?: string
   processName: string
   requestId: string
   level: string

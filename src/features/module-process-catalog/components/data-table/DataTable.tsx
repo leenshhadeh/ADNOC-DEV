@@ -161,6 +161,7 @@ const DataTable = <TData,>({
                     density={density}
                     rowDividers={!!tableMeta?.rowDividers}
                     getRowActions={getRowActions}
+                    isHighlighted={row.id === (tableMeta?.highlightedRowId ?? null)}
                   />
                 ))
             ) : (

@@ -21,6 +21,7 @@ const DataTableRow = <TData,>({
   density = 'compact',
   rowDividers = false,
   getRowActions,
+  isHighlighted = false,
 }: DataTableRowProps<TData>) => {
   const [expanded, setExpanded] = useState(false)
 
@@ -32,9 +33,11 @@ const DataTableRow = <TData,>({
   return (
     <Fragment>
       <TableRow
+        data-row-id={row.id}
         className={cn(
           row.getIsSelected() ? 'ring-primary/30 bg-orange-50/50 ring-1 ring-inset' : undefined,
           isDraft ? 'bg-blue-50/30' : undefined,
+          isHighlighted ? 'ring-primary/60 bg-primary/5 ring-2 ring-inset' : undefined,
         )}
       >
         {cells.map((cell, index) => (

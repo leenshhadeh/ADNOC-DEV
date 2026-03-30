@@ -3,6 +3,7 @@ import type { RequestItem } from '@features/module-process-catalog/types/submitt
 export const SUBMITTED_REQUESTS: RequestItem[] = [
   {
     id: 'request-1',
+    processId: 'r4',
     processName: 'Play-based exploration (concept) 2',
     requestId: '9377353',
     level: 'L 3',
@@ -92,6 +93,7 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
   },
   {
     id: 'request-2',
+    processId: 'r5',
     processName: 'Define Budget and Schedule',
     requestId: '9377353',
     level: 'L 3',
@@ -127,6 +129,7 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
   },
   {
     id: 'request-3',
+    processId: 'r6',
     processName: 'Develop external communication',
     requestId: '9377353',
     level: 'L 3',
@@ -162,6 +165,7 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
   },
   {
     id: 'request-4',
+    processId: 'r7',
     processName: 'Prepare media materials',
     requestId: '9377353',
     level: 'L 3',
@@ -197,6 +201,7 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
   },
   {
     id: 'request-5',
+    processId: 'r8',
     processName: 'Defining brand performance',
     requestId: '9377353',
     level: 'L 3',

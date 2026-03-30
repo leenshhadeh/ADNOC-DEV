@@ -16,6 +16,7 @@ import RequestDetailsSheet from './RequestDetailsSheet'
 
 import type { RequestItem } from '@features/module-process-catalog/types/submitted-requests'
 import { useGetSubmittedRequests } from '@features/module-process-catalog/hooks/useGetSubmittedRequests'
+import { useCatalogNavStore } from '@features/module-process-catalog/store/useCatalogNavStore'
 
 const LevelCell = ({ level }: { level: string }) => {
   return (
@@ -28,6 +29,7 @@ const LevelCell = ({ level }: { level: string }) => {
 
 const SubmittedRequestsTable = () => {
   const { data: requests, isLoading, isError } = useGetSubmittedRequests()
+  const navigateToProcess = useCatalogNavStore((s) => s.navigateToProcess)
   const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
@@ -118,19 +120,24 @@ const SubmittedRequestsTable = () => {
         size: 120,
         meta: { multiline: true },
         header: 'Go To Affected Record',
-        cell: () => (
-          <div className="flex justify-center">
-            <Button
-              type="button"
-              size="icon-xs"
-              variant="ghost"
-              className="text-muted-foreground rounded-full"
-              aria-label="Go To Affected Record"
-            >
-              <Eye className="size-4" />
-            </Button>
-          </div>
-        ),
+        cell: (info) => {
+          const row = info.row.original
+          return (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="icon-xs"
+                variant="ghost"
+                className="text-muted-foreground rounded-full"
+                disabled={!row.processId}
+                aria-label="Go to affected record"
+                onClick={() => row.processId && navigateToProcess(row.processId)}
+              >
+                <Eye className="size-4" />
+              </Button>
+            </div>
+          )
+        },
       },
     ],
     [],
