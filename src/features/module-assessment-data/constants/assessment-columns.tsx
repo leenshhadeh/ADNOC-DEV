@@ -25,7 +25,7 @@ export interface EntityColumnConfig {
   /** Top-tier entity name (e.g. "ADNOC HQ") */
   entityName: string
   /** Bottom-tier site name (e.g. "General") */
-  siteName: string
+  siteName: any
   size: number
 }
 
@@ -45,12 +45,12 @@ export const HIERARCHY_COLUMNS: HierarchyColumnConfig[] = [
 
 export function buildEntityLeafColumns(config: EntityConfig[]): EntityColumnConfig[] {
   return config.flatMap(entity =>
-    entity.sites.map(site => ({
+    entity.sites.map((site:any) => ({
       kind: 'entity' as const,
-      id: `entity__${entity.name}__${site}`,
+      id: `entity__${entity.name}__${typeof site === 'object' ? site.services : site}`,
       entityName: entity.name,
       siteName: site,
-      size: 160,
+      size: site=='description'?350: 160,
     })),
   )
 }
