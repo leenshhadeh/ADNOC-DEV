@@ -4,6 +4,7 @@ import { ChevronDown, Eye, MoreHorizontal, Pencil, Plus, RotateCcw } from 'lucid
 
 import { EditLevel4sModal } from './EditLevel4sModal'
 import { useGetLevel4s } from '@features/module-process-catalog/hooks/useGetLevel4s'
+import { PermissionGuard } from '@/shared/components/PermissionGuard'
 
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/components/ui/button'
@@ -259,13 +260,15 @@ const Level3RowActions = ({
           Switch to <strong className="font-semibold">Draft</strong> version
         </span>
       </DropdownMenuItem>
-      <DropdownMenuItem
-        onSelect={() => onAddL4s(item)}
-        className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
-      >
-        <Plus className="text-muted-foreground size-4 shrink-0" />
-        Add L4s
-      </DropdownMenuItem>
+      <PermissionGuard action="ADD_LEVEL_4">
+        <DropdownMenuItem
+          onSelect={() => onAddL4s(item)}
+          className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
+        >
+          <Plus className="text-muted-foreground size-4 shrink-0" />
+          Add L4s
+        </DropdownMenuItem>
+      </PermissionGuard>
       {onEditL4s && (
         <DropdownMenuItem
           onSelect={() => onEditL4s(item)}
@@ -275,13 +278,15 @@ const Level3RowActions = ({
           Edit L4s
         </DropdownMenuItem>
       )}
-      <DropdownMenuItem
-        onSelect={() => onRename(item)}
-        className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
-      >
-        <Pencil className="text-muted-foreground size-4 shrink-0" />
-        Rename
-      </DropdownMenuItem>
+      <PermissionGuard action="RENAME_PROCESS">
+        <DropdownMenuItem
+          onSelect={() => onRename(item)}
+          className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
+        >
+          <Pencil className="text-muted-foreground size-4 shrink-0" />
+          Rename
+        </DropdownMenuItem>
+      </PermissionGuard>
     </DropdownMenuContent>
   </DropdownMenu>
 )
