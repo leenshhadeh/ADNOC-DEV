@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import React from 'react'
 
 import { TableBody } from '@/shared/components/ui/table'
 import {
   ColHead,
   EditableCell,
   HierarchyTd,
+  RadioCell,
   TableShell,
 } from '@/shared/components/table-primitives'
 import Level4Cell from './cells/Level4Cell'
@@ -12,6 +13,8 @@ import { buildEntityLeafColumns, HIERARCHY_COLUMNS } from '../constants/assessme
 import type { AssessmentDomain, EntityConfig, Level4Row } from '../types'
 import { cn } from '@/shared/lib/utils'
 import { StatusBadgeCell } from '@/features/module-process-catalog/components/cells'
+import { Maximize2 ,Tally1} from 'lucide-react'
+
 
 // ── Main component ────────────────────────────────────────────────────────────
 
@@ -37,12 +40,13 @@ interface FlatRow {
   domainCell?: CellDesc<{ value: string }>
   level1Cell?: CellDesc<{ name: string; code: string }>
   level2Cell?: CellDesc<{ name: string; code: string }>
-  level3Cell?: CellDesc<{ name: string; code: string; groupCompany?: string; status?: string }>
+  //level3Cell?: CellDesc<{ name: string; code: string; groupCompany?: string; status?: string }>
+  level3Cell?: any;
 }
 
 function flattenDomains(domains: AssessmentDomain[]): FlatRow[] {
+  //TODO:  calculate the row span for each level and create a flat list of rows to render
   const rows: FlatRow[] = []
-
   for (const domain of domains) {
     const domainSpan = domain.level1Items.reduce(
       (s, l1) =>
@@ -73,16 +77,25 @@ function flattenDomains(domains: AssessmentDomain[]): FlatRow[] {
           const l4List: (Level4Row | null)[] = l3.level4Items.length > 0 ? l3.level4Items : [null]
           let l3First = true
 
+          // rows for level 4 items (or a single row with empty L4 if none exist)
           for (const l4 of l4List) {
             const row: FlatRow = {
               key: l4 ? l4.id : `${l3.id}__empty`,
-              l4Item: l4,
+              l4Item:  l4 && {...l4, 
+                id:l4.id ,
+                status: l4?.status || l3.status,
+                site: l4?.site || l3.site,
+                description: l4?.description || l3.description,
+              
+              
+              } ,
               l3Id: l3.id,
             }
             if (domainFirst) {
               row.domainCell = { data: { value: domain.domain }, rowSpan: domainSpan }
               domainFirst = false
             }
+            // level1Cell
             if (l1First) {
               row.level1Cell = {
                 data: { name: l1.level1Name, code: l1.level1Code },
@@ -90,6 +103,7 @@ function flattenDomains(domains: AssessmentDomain[]): FlatRow[] {
               }
               l1First = false
             }
+            // level2Cell
             if (l2First) {
               row.level2Cell = {
                 data: { name: l2.level2Name, code: l2.level2Code },
@@ -97,13 +111,22 @@ function flattenDomains(domains: AssessmentDomain[]): FlatRow[] {
               }
               l2First = false
             }
+            // level3Cell
             if (l3First) {
-              row.level3Cell = {
+              row.level3Cell = { 
                 data: {
                   name: l3.level3Name,
                   code: l3.level3Code,
                   groupCompany: l3.groupCompany,
                   status: l3.status,
+                  site: l3.site,
+                  description: l3.description,
+                  centrallyGovernedProcess: l3.centrallyGovernedProcess,
+                  sharedService: l3.sharedService,
+                  businessUnit: l3.businessUnit,
+                  ResponsibleDigitalTeam : l3.ResponsibleDigitalTeam,
+                  processCriticality: l3.processCriticality,
+
                 },
                 rowSpan: l3Span,
               }
@@ -119,8 +142,8 @@ function flattenDomains(domains: AssessmentDomain[]): FlatRow[] {
   return rows
 }
 
-/** Mutable cell state: keyed by `${l4Id}__${entityName}__${site}` */
-type CellState = Record<string, string>
+
+
 
 const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) => {
   const entityLeafs = buildEntityLeafColumns(entityConfig)
@@ -136,42 +159,129 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
 
   const flatRows = flattenDomains(data)
 
-  // Local mutable state for all editable entity/site cells
-  const [cellValues, setCellValues] = useState<CellState>(() => {
-    const init: CellState = {}
-    for (const domain of data) {
-      for (const l1 of domain.level1Items) {
-        for (const l2 of l1.level2Items) {
-          for (const l3 of l2.level3Items) {
-            for (const l4 of l3.level4Items) {
-              for (const entity of entityConfig) {
-                for (const site of entity.sites) {
-                  const key = `${l4.id}__${entity.name}__${site}`
-                  init[key] = l4.entities[entity.name]?.[site] ?? ''
-                }
-              }
-            }
-          }
-        }
+  const getSharedCellValue = (item:any) => {
+    let parsedValue: any
+    try {
+      parsedValue = {
+        services: item?.services ?? 0,
+        shared: item?.shared ?? 0,
       }
+    } catch {
+      parsedValue = {}
     }
-    return init
-  })
-
-  const getCellValue = (l4Id?: string, entityName?: string, col?: string, l3Status?: any) => {
-    if (col == 'status') {
-      console.log('l3Status', l3Status)
-      const status: any = cellValues[`${l4Id}__${entityName}__${col}`]
-      return status || l3Status
+    if (parsedValue.services && parsedValue.shared) {
+      return (
+        <div className="flex justify-between items-center">
+          <span className='pe-[7px]'>{parsedValue.services}</span>
+          <Tally1  className='rotate-[25deg] text-[#DFE3E6] mt-[7px]'/>
+          <span className="text-muted-foreground pe-[7px]">{parsedValue.shared} Shared</span>
+          <Tally1 className='text-[#DFE3E6]' />
+          <Maximize2 className="size-4" strokeWidth={2} />
+        </div>
+      )
     }
-    return cellValues[`${l4Id}__${entityName}__${col}`] ?? ''
+    return <></>
   }
 
-  const setCellValue = (l4Id: string, entityName: string, site: string, val: string) =>
-    setCellValues((prev) => ({ ...prev, [`${l4Id}__${entityName}__${site}`]: val }))
+  // const setCellValue = (l4Id: string, entityName: string, site: string, val: string) =>
+  //  setCellValues((prev) => ({ ...prev, [`${l4Id}__${entityName}__${site}`]: val }))
+
+  // entities columns data - render and configration
+  const entityCells = (row: any) => [
+    {
+      key: 'site',
+      content: (
+        <td style={{ width: entityLeafs[0].size, minWidth: entityLeafs[0].size }}>
+          <EditableCell
+            value={ row.l4Item?.site|| row.level3Cell?.data.site ||''}//{getCellValue(row.l4Item?.id, entityLeafs[0].entityName, entityLeafs[0].siteName)}
+            onChange={()=>{}}
+          />
+        </td>
+      ),
+    },
+    {
+      key: 'status',
+      content: (
+        <td style={{ width: entityLeafs[1].size, minWidth: entityLeafs[1].size }}>
+          <StatusBadgeCell
+            status={ row.l4Item?.status || row.level3Cell?.data.status || ''}//{getCellValue(row.l4Item?.id, entityLeafs[1].entityName, entityLeafs[1].siteName, row.level3Cell?.data.status)}
+          />
+        </td>
+      ),
+    },
+    {
+      key: 'desc',
+      content: (
+        <td style={{ width: entityLeafs[2].size, minWidth: entityLeafs[2].size }}>
+          <EditableCell
+            value={row.l4Item?.description || row.level3Cell?.data.description || ''}//{getCellValue(row.l4Item?.id, entityLeafs[2].entityName, entityLeafs[2].siteName)}
+            onChange={()=>{}}
+          />
+        </td>
+      ),
+    },
+    {
+      key: 'centrallyGovernedProcess',
+      content: (
+        <td style={{ width: entityLeafs[3].size, minWidth: entityLeafs[3].size }}>
+          <RadioCell
+            name={`${row.l4Item?.id}__${entityLeafs[3].entityName}__${entityLeafs[3].siteName}`}
+            value={row.l4Item?.centrallyGovernedProcess || row.level3Cell?.data.centrallyGovernedProcess || ''}//{getCellValue(row.l4Item?.id, entityLeafs[3].entityName, entityLeafs[3].siteName)}
+            options={[
+              { label: 'Yes', value: 'yes' },
+              { label: 'No', value: 'no' },
+            ]}
+            onChange={()=>{}}
+          />
+        </td>
+      ),
+    },
+    {
+      key: 'sharedService',
+      content: (
+        <td style={{ width: 190 }}>
+          {getSharedCellValue(row.l4Item?.sharedService || row.level3Cell?.data.sharedService)}
+        </td>
+      ),
+    },
+    {
+      key: 'businessUnit',
+      content: (
+        <td style={{ width: entityLeafs[5].size, minWidth: entityLeafs[5].size }}>
+          <EditableCell
+            value={row.l4Item?.businessUnit?.join(', ') || row.level3Cell?.data.businessUnit?.join(', ') || ''}
+            onChange={()=>{}}
+          />
+        </td>
+      ),
+    },
+    {
+      key: 'ResponsibleDigitalTeam',
+      content: (
+        <td style={{ width: entityLeafs[6].size, minWidth: entityLeafs[6].size }}>
+          <EditableCell
+            value={row.l4Item?.ResponsibleDigitalTeam?.join(', ') || row.level3Cell?.data.ResponsibleDigitalTeam?.join(', ') || ''}
+            onChange={()=>{}}
+          />
+        </td>
+      ),
+    },
+    {
+      key: 'processCriticality',
+      content: (
+        <td style={{ width: entityLeafs[7].size, minWidth: entityLeafs[7].size }}>
+          <EditableCell
+            value={row.l4Item?.processCriticality || row.level3Cell?.data.processCriticality || ''}
+            onChange={()=>{}}
+          />
+        </td>
+      ),
+    }
+  ]
 
   let lastGroupCompany = ''
-  let lastStatus = ''
+
+console.log('Flat rows:', flatRows)
 
   return (
     <TableShell>
@@ -209,14 +319,11 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
           <TableBody>
             {flatRows.map((row) => {
               const currentGroupCompany = row.level3Cell?.data.groupCompany
-              const currentStatus = row.level3Cell?.data?.status
 
               if (currentGroupCompany) {
                 lastGroupCompany = currentGroupCompany
               }
-              if (currentStatus) {
-                lastStatus = currentStatus
-              }
+           
 
               return (
                 <tr
@@ -302,7 +409,7 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
                     }}
                     className={cn(
                       'bg-card border-border border-b px-3 py-2 align-top text-sm',
-                      'border-r-border/60 border-r-2 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.07)]',
+                      'border-r-border/60 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.07)]',
                     )}
                   >
                     <Level4Cell item={row.l4Item} />
@@ -310,7 +417,7 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
 
                   {/* groupCompany */}
                   <td
-                    className="border-r-border/60 border-border border-r-2 border-b px-3 py-2 align-middle"
+                    className="border-r-border/60 border-border border-b px-3 py-2 align-middle"
                     style={{ width: 250, minWidth: 250 }}
                   >
                     <span className="text-muted-foreground text-xs">
@@ -319,32 +426,14 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
                     </span>
                   </td>
 
-                  {/* ── Entity/site editable cells ────────────────────── */}
-                  {entityLeafs.map((col) => (
-                    <td
-                      key={col.id}
-                      className="border-border border-b px-1 py-1 align-middle"
-                      style={{ width: col.size, minWidth: col.size }}
-                    >
-                      {col.siteName == 'status' ? (
-                        <StatusBadgeCell
-                          status={getCellValue(
-                            row.l4Item?.id,
-                            col.entityName,
-                            col.siteName,
-                            lastStatus,
-                          )}
-                        />
-                      ) : (
-                        <EditableCell
-                          value={getCellValue(row.l4Item?.id, col.entityName, col.siteName)}
-                          onChange={(v) =>
-                            setCellValue(row.l4Item!.id, col.entityName, col.siteName, v)
-                          }
-                        />
-                      )}
-                    </td>
-                  ))}
+                  {
+                    /* Entity cells — rendered on every row, but with values based on L4 ID + entity/site */
+                    entityCells(row).map((cell) => (
+                      <React.Fragment key={cell.key}>{cell.content}</React.Fragment>
+                    ))
+                  }
+
+                  {/*  end  */}
                 </tr>
               )
             })}

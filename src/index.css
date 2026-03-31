@@ -110,4 +110,10 @@
   *::-webkit-scrollbar {
     display: none; /* Chrome/Safari/WebKit */
   }
+
+  /* columns across all tables */
+  td{
+    border-width: 1px;
+    padding: 10px 16px !important;
+  }
 }

@@ -17,7 +17,6 @@ import { ASSESSMENT_DATA } from '../constants/assessment-data'
 import { ASSESSMENT_ENTITY_CONFIG } from '../types'
 import ProcessesMenu from '../../../shared/components/ProcessesMenu'
 
-// ── Component ──────────────────────────────────────────────────────────────────
 
 const AssessmentDataModule = () => {
   const [activeTab, setActiveTab] = useState('processes')
