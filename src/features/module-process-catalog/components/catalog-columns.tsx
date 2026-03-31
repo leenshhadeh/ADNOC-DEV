@@ -353,6 +353,71 @@ export type CatalogColumnActions = {
 /** Column IDs to pin to the left — pass directly to DataTable's initialColumnPinning. */
 export const CATALOG_PINNED_LEFT = ['domain', 'level1', 'level2', 'level3'] as const
 
+// ─── Full-report L4 cell components ──────────────────────────────────────────
+// Each cell fetches its own L4 rows from the query cache (populated earlier
+// by EntitySiteCell). This avoids a top-level N+1 fetch loop — TanStack Query
+// deduplicates & caches by parentId automatically.
+
+const Level4Cell = ({ parentId }: { parentId: string }) => {
+  const { data: l4s, isLoading } = useGetLevel4s(parentId)
+  if (isLoading) return <span className="text-muted-foreground text-xs">…</span>
+  if (!l4s || l4s.length === 0)
+    return <em className="text-muted-foreground text-xs">No Level 4 processes</em>
+  return (
+    <div className="flex flex-col gap-1">
+      {l4s.map((l4) => (
+        <div key={l4.id} className="flex flex-col gap-0.5">
+          <span className="text-foreground text-sm leading-tight font-medium">{l4.name}</span>
+          <span className="text-muted-foreground text-xs">{l4.processCode}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+const Level4DescriptionCell = ({ parentId }: { parentId: string }) => {
+  const { data: l4s, isLoading } = useGetLevel4s(parentId)
+  if (isLoading) return <span className="text-muted-foreground text-xs">…</span>
+  if (!l4s || l4s.length === 0) return <span className="text-muted-foreground text-xs">-</span>
+  return (
+    <div className="flex flex-col gap-1">
+      {l4s.map((l4) => (
+        <span key={l4.id} className="text-foreground line-clamp-2 text-sm whitespace-normal">
+          {l4.description}
+        </span>
+      ))}
+    </div>
+  )
+}
+
+/**
+ * Returns the two extra columns (Level 4 + Level 4 Description) to append
+ * when the full-report view is active.
+ */
+export function buildFullReportColumns(): ColumnDef<ProcessItem, unknown>[] {
+  const level4Col: ColumnDef<ProcessItem, unknown> = {
+    id: 'level4',
+    header: 'Level 4',
+    size: 260,
+    enableSorting: false,
+    cell: (info: CellContext<ProcessItem, unknown>) => (
+      <Level4Cell parentId={info.row.original.id} />
+    ),
+  }
+
+  const level4DescCol: ColumnDef<ProcessItem, unknown> = {
+    id: 'level4Description',
+    header: 'Level 4 Description',
+    size: 340,
+    enableSorting: false,
+    cell: (info: CellContext<ProcessItem, unknown>) => (
+      <Level4DescriptionCell parentId={info.row.original.id} />
+    ),
+  }
+
+  return [wrap(level4Col), wrap(level4DescCol)]
+}
+
 /**
  * Wraps a leaf column in a single-column group so it participates in the
  * two-tier header symmetrically with entity groups. The group header (depth 0)
@@ -373,6 +438,7 @@ function wrap<T>(leaf: ColumnDef<T, unknown>): ColumnDef<T, unknown> {
 export function buildCatalogColumns(
   rowActions?: CatalogColumnActions,
   groupCompanies: GroupCompany[] = [],
+  fullReport = false,
 ): ColumnDef<ProcessItem, unknown>[] {
   // Actions for the Domain column context menu
   const domainActions: CatalogRowAction[] = rowActions
@@ -618,17 +684,15 @@ export function buildCatalogColumns(
   }
 
   return [
-    // Each flat column is wrapped so all columns participate in the same two-tier
-    // header structure. The wrapper group emits an empty depth-0 header cell;
-    // the leaf emits the real column name at depth-1 (aligned with site sub-headers).
     wrap(domainCol),
     wrap(level1Col),
     wrap(level2Col),
     wrap(level3Col),
     wrap(level3StatusCol),
     wrap(descriptionCol),
-    // Entity matrix groups — top-tier shows group company name, bottom-tier shows sites.
-    // Built dynamically from the user-scoped group companies lookup.
+    // L4 columns injected right after description in full-report mode
+    ...(fullReport ? buildFullReportColumns() : []),
+    // Entity matrix groups
     ...buildEntityColumns(groupCompanies),
   ]
 }

@@ -6,11 +6,13 @@ import { Button } from '@/shared/components/ui/button'
 import CatalogHeader from './CatalogHeader'
 import DataTable from './data-table/DataTable'
 import { buildCatalogColumns, type CatalogColumnActions } from './catalog-columns'
+import type { CatalogView } from './CatalogHeader'
 import MyTasksTable from './tables/MyTasksTable'
 import SubmittedRequestsTable from './tables/SubmittedRequestsTable'
 import ProcessFilterSheet from './ProcessFilterSheet'
 import AddLevel4sModal from './AddLevel4sModal'
 import { EditLevel4sModal } from './EditLevel4sModal'
+import RenameModal from './RenameModal'
 import { FILTER_SECTION_IDS } from '@features/module-process-catalog/constants/filter-definitions'
 import {
   useProcessFilters,
@@ -28,6 +30,7 @@ const CatalogModule = () => {
   const { activeTab, setActiveTab, highlightedProcessId, clearHighlight } = useCatalogNavStore()
   const [isAddL2ModalOpen, setIsAddL2ModalOpen] = useState(false)
   const [addMode, setAddMode] = useState<'l1' | 'l2' | 'l3'>('l3')
+  const [currentView, setCurrentView] = useState<CatalogView>('default')
   const [numberOfProcesses, setNumberOfProcesses] = useState('1')
   const [targetItem, setTargetItem] = useState<ProcessItem | null>(null)
   const [isBulkMode, setIsBulkMode] = useState(false)
@@ -36,6 +39,8 @@ const CatalogModule = () => {
   const [isAddL4sModalOpen, setIsAddL4sModalOpen] = useState(false)
   const [isEditL4sModalOpen, setIsEditL4sModalOpen] = useState(false)
   const [targetL3Item, setTargetL3Item] = useState<ProcessItem | null>(null)
+  const [isRenameModalOpen, setIsRenameModalOpen] = useState(false)
+  const [renameTarget, setRenameTarget] = useState<ProcessItem | null>(null)
 
   // ── Server state ────────────────────────────────────────────────────────────
   // Row data comes from API; group companies are a user-scoped lookup.
@@ -327,7 +332,8 @@ const CatalogModule = () => {
       setIsAddL2ModalOpen(true)
     },
     onRename: (item) => {
-      console.log('Rename', item.id)
+      setRenameTarget(item)
+      setIsRenameModalOpen(true)
     },
     onViewRecordedChanges: (item) => {
       navigate(`/process-catalog/recorded-changes/${item.id}`)
@@ -347,12 +353,13 @@ const CatalogModule = () => {
     },
   }
 
-  // Rebuild columns only when the group company structure changes (first API load
-  // or user permission change). rowActions callbacks are stable via closure.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Rebuild columns only when the group company structure or view changes.
+  // rowActions is intentionally omitted — its identity changes every render
+  // but callbacks always close over the latest state via useState setters.
   const columns = useMemo(
-    () => buildCatalogColumns(rowActions, groupCompanies ?? []),
-    [groupCompanies],
+    () => buildCatalogColumns(rowActions, groupCompanies ?? [], currentView === 'full-report'),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [groupCompanies, currentView],
   )
 
   return (
@@ -369,6 +376,8 @@ const CatalogModule = () => {
         hasDraftRows={hasDraftRows}
         onSave={handleSave}
         onValidate={handleValidate}
+        currentView={currentView}
+        onViewChange={setCurrentView}
       />
 
       {activeTab === 'processes' ? (
@@ -491,6 +500,22 @@ const CatalogModule = () => {
             items,
             parent: targetL3Item?.level3Code,
           })
+        }}
+      />
+
+      <RenameModal
+        open={isRenameModalOpen}
+        onOpenChange={setIsRenameModalOpen}
+        currentName={
+          renameTarget?.level3Name ||
+          renameTarget?.level2Name ||
+          renameTarget?.level1Name ||
+          renameTarget?.domain ||
+          ''
+        }
+        onRename={(newName) => {
+          if (!renameTarget) return
+          console.log('Rename', renameTarget.id, '->', newName)
         }}
       />
 

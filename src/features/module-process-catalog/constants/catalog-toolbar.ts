@@ -1,4 +1,4 @@
-import { Download, Save, ShieldCheck, Upload } from 'lucide-react'
+import { Download, Save, ShieldCheck, Upload, FileSpreadsheet } from 'lucide-react'
 
 import type { TabConfig, ToolbarAction } from '@/shared/components/ModuleToolbar'
 
@@ -11,6 +11,10 @@ export const CATALOG_TABS: TabConfig[] = [
 export const CATALOG_ACTIONS: ToolbarAction[] = [
   { id: 'import', label: 'Import', icon: Upload },
   { id: 'export', label: 'Export', icon: Download },
+]
+
+export const CATALOG_FULL_REPORT_ACTIONS: ToolbarAction[] = [
+  { id: 'export-full-report', label: 'Export full report', icon: FileSpreadsheet },
 ]
 
 export const CATALOG_DRAFT_ACTIONS: ToolbarAction[] = [

@@ -2,17 +2,10 @@ import { useEffect } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { ChevronDown, Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, X } from 'lucide-react'
 
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/shared/components/ui/dialog'
 import { useGetGroupCompanies } from '@features/module-process-catalog/hooks/useGetGroupCompanies'
 
 // ── Schema ────────────────────────────────────────────────────────────────────
@@ -182,114 +175,92 @@ const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sM
     onOpenChange(false)
   }
 
+  if (!open) return null
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[90vh] flex-col p-0 sm:max-w-3xl">
+    <div className="bg-foreground/40 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-[1px]">
+      <div className="bg-background flex max-h-[90vh] w-full max-w-3xl flex-col rounded-2xl p-6 shadow-2xl">
         {/* ── Header ── */}
-        <DialogHeader className="border-border/60 shrink-0 space-y-4 border-b px-6 py-5">
-          <DialogTitle className="text-xl font-semibold">
+        <div className="flex shrink-0 items-start justify-between gap-4">
+          <h2 className="text-foreground text-2xl font-bold">
             Add Level 4s
-            {selectedCompany ? (
-              <span className="text-muted-foreground font-normal"> under {selectedCompany}</span>
-            ) : null}
-          </DialogTitle>
-
-          {/* Group company selector lives in the header so the title updates live */}
-          <div className="flex items-center gap-3">
-            <label
-              htmlFor="add-l4-group-company"
-              className="text-foreground shrink-0 text-sm font-medium"
-            >
-              Applicable Group Company
-            </label>
-            <div className="relative flex-1">
-              <select
-                id="add-l4-group-company"
-                {...register('groupCompany')}
-                className="border-border bg-background text-foreground focus-visible:ring-ring h-10 w-full appearance-none rounded-xl border ps-3 pe-9 text-sm outline-none focus-visible:ring-2"
-              >
-                {groupCompanyOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="text-muted-foreground pointer-events-none absolute end-3 top-1/2 size-4 -translate-y-1/2" />
-            </div>
-            {errors.groupCompany && (
-              <p className="text-destructive text-xs">{errors.groupCompany.message}</p>
-            )}
-          </div>
-        </DialogHeader>
-
-        {/* ── Scrollable table body ── */}
-        <form
-          id="add-l4-form"
-          onSubmit={handleSubmit(onSubmit)}
-          className="min-h-0 flex-1 overflow-y-auto px-6 py-4"
-        >
-          <table className="w-full table-fixed border-collapse">
-            <thead>
-              <tr className="border-border/60 border-b">
-                <th className="text-muted-foreground w-36 pe-3 pb-2 text-start text-xs font-medium tracking-wide uppercase">
-                  Process Code
-                </th>
-                <th className="text-muted-foreground pe-3 pb-2 text-start text-xs font-medium tracking-wide uppercase">
-                  Process Name
-                </th>
-                <th className="text-muted-foreground pe-3 pb-2 text-start text-xs font-medium tracking-wide uppercase">
-                  Process Description
-                </th>
-                <th className="w-10 pb-2" />
-              </tr>
-            </thead>
-
-            <tbody>
-              {fields.map((field, index) => (
-                <Level4DraftRow
-                  key={field.id}
-                  index={index}
-                  processCode={`${parentCode}.${index + 1}`}
-                  nameError={errors.items?.[index]?.processName?.message}
-                  register={register}
-                  onRemove={() => remove(index)}
-                  isOnly={fields.length === 1}
-                />
-              ))}
-            </tbody>
-          </table>
-
-          {/* Add row trigger */}
-          <button
+            {selectedCompany ? <span className="font-normal"> under {selectedCompany}</span> : null}
+          </h2>
+          <Button
             type="button"
-            onClick={handleAddRow}
-            className="text-primary mt-3 flex items-center gap-1.5 text-sm font-medium hover:underline focus-visible:underline focus-visible:outline-none"
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Close"
+            onClick={handleCancel}
           >
-            <Plus className="size-4" />
-            Add Level 4
-          </button>
-        </form>
+            <X className="size-5" />
+          </Button>
+        </div>
+
+        {/* ── Scrollable table card ── */}
+        <div className="border-border mt-5 min-h-0 flex-1 overflow-y-auto rounded-xl border">
+          <form id="add-l4-form" onSubmit={handleSubmit(onSubmit)}>
+            <input type="hidden" {...register('groupCompany')} />
+            <table className="w-full table-fixed border-collapse">
+              <thead>
+                <tr className="border-border/60 border-b">
+                  <th className="text-muted-foreground w-36 px-4 py-3 text-start text-xs font-medium tracking-wide uppercase">
+                    Process Code
+                  </th>
+                  <th className="text-muted-foreground px-4 py-3 text-start text-xs font-medium tracking-wide uppercase">
+                    Process Name
+                  </th>
+                  <th className="text-muted-foreground px-4 py-3 text-start text-xs font-medium tracking-wide uppercase">
+                    Process Description
+                  </th>
+                  <th className="w-10 py-3" />
+                </tr>
+              </thead>
+              <tbody>
+                {fields.map((field, index) => (
+                  <Level4DraftRow
+                    key={field.id}
+                    index={index}
+                    processCode={`${parentCode}.${index + 1}`}
+                    nameError={errors.items?.[index]?.processName?.message}
+                    register={register}
+                    onRemove={() => remove(index)}
+                    isOnly={fields.length === 1}
+                  />
+                ))}
+              </tbody>
+            </table>
+
+            {/* Add row trigger */}
+            <div className="px-4 py-3">
+              <button
+                type="button"
+                onClick={handleAddRow}
+                className="flex items-center gap-1.5 text-sm font-medium text-[#0047BA] hover:underline focus-visible:underline focus-visible:outline-none"
+              >
+                <Plus className="size-4" />
+                Add Level 4
+              </button>
+            </div>
+          </form>
+        </div>
 
         {/* ── Footer ── */}
-        <DialogFooter className="border-border/60 shrink-0 border-t px-6 py-4">
+        <div className="mt-6 grid shrink-0 grid-cols-2 gap-3">
           <Button
             type="button"
             variant="secondary"
-            className="rounded-full px-6"
+            className="h-12 rounded-full"
             onClick={handleCancel}
           >
             Cancel
           </Button>
-          <Button
-            type="submit"
-            form="add-l4-form"
-            className="rounded-full bg-[#3B00FF] px-8 text-white hover:bg-[#3B00FF]/90"
-          >
+          <Button type="submit" form="add-l4-form" className="h-12 rounded-full">
             Save
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </div>
+      </div>
+    </div>
   )
 }
 

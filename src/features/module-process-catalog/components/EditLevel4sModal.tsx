@@ -13,17 +13,10 @@ import { useEffect } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, X } from 'lucide-react'
 
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/shared/components/ui/dialog'
 
 // ── Schema ────────────────────────────────────────────────────────────────────
 
@@ -209,21 +202,29 @@ export const EditLevel4sModal = ({
     onOpenChange(false)
   }
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[90vh] flex-col p-0 sm:max-w-3xl">
-        {/* Header */}
-        <DialogHeader className="border-border/60 shrink-0 border-b px-6 py-5">
-          <DialogTitle className="text-xl font-semibold">
-            Add Level 4s under {parentLabel}
-          </DialogTitle>
-        </DialogHeader>
+  if (!open) return null
 
-        {/* Scrollable body */}
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
+  return (
+    <div className="bg-foreground/40 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-[1px]">
+      <div className="flex h-[90vh] w-full max-w-6xl flex-col rounded-2xl bg-[#F1F3F5] p-6 shadow-2xl">
+        {/* Header */}
+        <div className="flex shrink-0 items-start justify-between gap-4">
+          <h2 className="text-foreground text-2xl font-bold">Add Level 4s under {parentLabel}</h2>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Close"
+            onClick={handleCancel}
+          >
+            <X className="size-5" />
+          </Button>
+        </div>
+
+        {/* Scrollable table card */}
+        <div className="border-border mt-5 min-h-0 flex-1 overflow-y-auto rounded-xl border bg-white">
           {isLoading ? (
-            // Skeleton rows while fetch is in-flight (800ms mock latency)
-            <div className="space-y-3 py-2">
+            <div className="space-y-3 p-4">
               {[1, 2, 3].map((n) => (
                 <div key={n} className="flex items-center gap-4">
                   <div className="bg-muted h-4 w-24 animate-pulse rounded" />
@@ -233,73 +234,72 @@ export const EditLevel4sModal = ({
               ))}
             </div>
           ) : (
-            <table className="w-full table-fixed border-collapse">
-              {/* Column headers */}
-              <thead>
-                <tr className="border-border/60 border-b">
-                  <th className="text-muted-foreground w-36 pe-3 pb-2 text-start text-xs font-medium tracking-wide uppercase">
-                    Process Code
-                  </th>
-                  <th className="text-muted-foreground pe-3 pb-2 text-start text-xs font-medium tracking-wide uppercase">
-                    Process Name
-                  </th>
-                  <th className="text-muted-foreground pe-3 pb-2 text-start text-xs font-medium tracking-wide uppercase">
-                    Process Description
-                  </th>
-                  {/* spacer for delete column */}
-                  <th className="w-10 pb-2" />
-                </tr>
-              </thead>
+            <>
+              <table className="w-full table-fixed border-collapse">
+                <thead>
+                  <tr className="border-border/60 border-b">
+                    <th className="text-muted-foreground w-36 px-4 py-3 text-start text-xs font-medium tracking-wide uppercase">
+                      Process Code
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-start text-xs font-medium tracking-wide uppercase">
+                      Process Name
+                    </th>
+                    <th className="text-muted-foreground px-4 py-3 text-start text-xs font-medium tracking-wide uppercase">
+                      Process Description
+                    </th>
+                    <th className="w-10 py-3" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {fields.map((field, index) => (
+                    <Level4RowItem
+                      key={field.id}
+                      index={index}
+                      processCode={`${parentCode}.${index + 1}`}
+                      nameError={errors.rows?.[index]?.processName?.message}
+                      codeError={errors.rows?.[index]?.processCode?.message}
+                      register={register}
+                      onRemove={() => remove(index)}
+                      isOnly={fields.length === 1}
+                    />
+                  ))}
+                </tbody>
+              </table>
 
-              <tbody>
-                {fields.map((field, index) => (
-                  <Level4RowItem
-                    key={field.id}
-                    index={index}
-                    processCode={`${parentCode}.${index + 1}`}
-                    nameError={errors.rows?.[index]?.processName?.message}
-                    codeError={errors.rows?.[index]?.processCode?.message}
-                    register={register}
-                    onRemove={() => remove(index)}
-                    isOnly={fields.length === 1}
-                  />
-                ))}
-              </tbody>
-            </table>
-          )}
-
-          {/* Add row trigger — hidden while loading */}
-          {!isLoading && (
-            <button
-              type="button"
-              onClick={handleAddRow}
-              className="text-primary mt-3 flex items-center gap-1.5 text-sm font-medium hover:underline focus-visible:underline focus-visible:outline-none"
-            >
-              <Plus className="size-4" />
-              Add Level 4
-            </button>
+              {/* Add row trigger */}
+              <div className="px-4 py-3">
+                <button
+                  type="button"
+                  onClick={handleAddRow}
+                  className="flex items-center gap-1.5 text-sm font-medium text-[#0047BA] hover:underline focus-visible:underline focus-visible:outline-none"
+                >
+                  <Plus className="size-4" />
+                  Add Level 4
+                </button>
+              </div>
+            </>
           )}
         </div>
 
         {/* Footer */}
-        <DialogFooter className="border-border/60 shrink-0 border-t px-6 py-4">
+        <div className="mt-8 flex shrink-0 justify-end gap-3">
           <Button
             type="button"
             variant="secondary"
-            className="rounded-full px-6"
+            className="h-10 w-52 rounded-full border-none hover:bg-blue-100"
             onClick={handleCancel}
           >
             Cancel
           </Button>
           <Button
             type="button"
-            className="rounded-full bg-[#3B00FF] px-8 text-white hover:bg-[#3B00FF]/90"
+            className="h-10 w-52 rounded-full text-white hover:bg-[#4a1ce0]"
             onClick={handleSave}
           >
             Save
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </div>
+      </div>
+    </div>
   )
 }
