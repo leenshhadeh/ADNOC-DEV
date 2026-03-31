@@ -24,7 +24,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                 centrallyGovernedProcess: 'Yes',
                 sharedService: {services:12,shared:3},
-                businessUnit: 'Exploration',
+                businessUnit: ['Exploration'],
                 processCriticality: 'High',
                 level4Items: [
                   {
@@ -36,7 +36,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                     description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                     centrallyGovernedProcess: 'Yes',
                     sharedService: {services:12,shared:3},
-                    businessUnit: 'Exploration',
+                    businessUnit: ['Exploration'],
                     processCriticality: 'High',
                      
                   },
@@ -50,7 +50,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                     description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                     centrallyGovernedProcess: 'Yes',
                     sharedService: {services:12,shared:3},
-                    businessUnit: 'Exploration',
+                    businessUnit: ['Exploration','testing'],
                     processCriticality: 'High',
                   },
                   {
@@ -62,7 +62,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                     description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                     centrallyGovernedProcess: 'Yes',
                     sharedService: {services:12,shared:3},
-                    businessUnit: 'Exploration',
+                    businessUnit: ['Exploration'],
                     processCriticality: 'High',
                    
                   },
@@ -78,7 +78,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                 centrallyGovernedProcess: 'Yes',
                 sharedService: {services:12,shared:3},
-                businessUnit: 'Exploration',
+                businessUnit: ['Exploration'],
                 processCriticality: 'High',
                 level4Items: [],
               },
@@ -99,7 +99,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                 centrallyGovernedProcess: 'Yes',
                 sharedService: {services:12,shared:3},
-                businessUnit: 'Exploration',
+                businessUnit: ['Exploration'],
                 processCriticality: 'High',
                 level4Items: [],
               },
@@ -113,7 +113,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                 centrallyGovernedProcess: 'Yes',
                 sharedService: {services:12,shared:3},
-                businessUnit: 'Exploration',
+                businessUnit: ['Exploration'],
                 processCriticality: 'High',
                 level4Items: [
                   {
@@ -133,7 +133,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                 centrallyGovernedProcess: 'Yes',
                 sharedService: {services:12,shared:3},
-                businessUnit: 'Exploration',
+                businessUnit: ['Exploration'],
                 processCriticality: 'High',
                 level4Items: [
                   {
@@ -158,7 +158,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                 centrallyGovernedProcess: 'Yes',
                 sharedService: {services:12,shared:3},
-                businessUnit: 'Exploration',
+                businessUnit: ['Exploration'],
                 processCriticality: 'High',
                 level4Items: [
                   {
@@ -170,7 +170,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                     description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                     centrallyGovernedProcess: 'Yes',
                     sharedService: {services:12,shared:3},
-                    businessUnit: 'Exploration',
+                    businessUnit: ['Exploration'],
                     processCriticality: 'High',
                      
                   }],
@@ -199,7 +199,8 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                 centrallyGovernedProcess: 'Yes',
                 sharedService: {services:12,shared:3},
-                businessUnit: 'Exploration',
+                businessUnit: ['Exploration'],
+                ResponsibleDigitalTeam : ['Subsurface Digitalization'],
                 processCriticality: 'High',
                 level4Items: [
                   {

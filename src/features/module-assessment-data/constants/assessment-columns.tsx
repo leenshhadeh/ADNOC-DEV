@@ -22,9 +22,7 @@ export interface HierarchyColumnConfig {
 export interface EntityColumnConfig {
   kind: 'entity'
   id: string
-  /** Top-tier entity name (e.g. "ADNOC HQ") */
   entityName: string
-  /** Bottom-tier site name (e.g. "General") */
   siteName: any
   size: number
 }
@@ -41,16 +39,15 @@ export const HIERARCHY_COLUMNS: HierarchyColumnConfig[] = [
   { kind: 'hierarchy', id: 'level4',  label: 'Level 4',  size: 250 , pinned: true },
 ]
 
-// ── Entity matrix columns (flat list of all entity×site combinations) ────────
 
 export function buildEntityLeafColumns(config: EntityConfig[]): EntityColumnConfig[] {
   return config.flatMap(entity =>
-    entity.sites.map((site:any) => ({
+    entity.assmntCol.map((colName:any) => ({
       kind: 'entity' as const,
-      id: `entity__${entity.name}__${typeof site === 'object' ? site.services : site}`,
-      entityName: entity.name,
-      siteName: site,
-      size: site=='description'?350: 160,
+      id: `entity__${colName}}`,
+      entityName: colName,
+      siteName: colName,
+      size: colName=='description'?350: 160,
     })),
   )
 }
@@ -63,22 +60,4 @@ export function buildAssessmentColumns(entityConfig: EntityConfig[]): Assessment
   return [...HIERARCHY_COLUMNS, ...buildEntityLeafColumns(entityConfig)]
 }
 
-/**
- * Returns unique entity names in order — used to render the top-tier grouped
- * header row (entity names spanning their site children).
- */
-export function getEntityGroups(
-  columns: AssessmentColumnConfig[],
-): Array<{ entityName: string; colSpan: number }> {
-  const entityColumns = columns.filter((c): c is EntityColumnConfig => c.kind === 'entity')
-  const groups: Array<{ entityName: string; colSpan: number }> = []
-  for (const col of entityColumns) {
-    const last = groups[groups.length - 1]
-    if (last && last.entityName === col.entityName) {
-      last.colSpan++
-    } else {
-      groups.push({ entityName: col.entityName, colSpan: 1 })
-    }
-  }
-  return groups
-}
+

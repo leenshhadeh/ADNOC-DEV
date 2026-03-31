@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import { TableBody } from '@/shared/components/ui/table'
 import {
@@ -124,6 +124,7 @@ function flattenDomains(domains: AssessmentDomain[]): FlatRow[] {
                   centrallyGovernedProcess: l3.centrallyGovernedProcess,
                   sharedService: l3.sharedService,
                   businessUnit: l3.businessUnit,
+                  ResponsibleDigitalTeam : l3.ResponsibleDigitalTeam,
                   processCriticality: l3.processCriticality,
 
                 },
@@ -159,7 +160,6 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
   const flatRows = flattenDomains(data)
 
   const getSharedCellValue = (item:any) => {
-    console.log('SharedService item:', item)
     let parsedValue: any
     try {
       parsedValue = {
@@ -171,12 +171,12 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
     }
     if (parsedValue.services && parsedValue.shared) {
       return (
-        <div className="inline-flex items-center">
-          <span className="pe-[16px]">{parsedValue.services}</span>
+        <div className="flex justify-between items-center">
+          <span className='pe-[7px]'>{parsedValue.services}</span>
           <Tally1  className='rotate-[25deg] text-[#DFE3E6] mt-[7px]'/>
-          <span className="pe-[10px] text-muted-foreground">{parsedValue.shared} Shared</span>
+          <span className="text-muted-foreground pe-[7px]">{parsedValue.shared} Shared</span>
           <Tally1 className='text-[#DFE3E6]' />
-          <Maximize2 className="ms-[10px] size-4" strokeWidth={2} />
+          <Maximize2 className="size-4" strokeWidth={2} />
         </div>
       )
     }
@@ -239,11 +239,44 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
     {
       key: 'sharedService',
       content: (
-        <td style={{ width: 250 }}>
+        <td style={{ width: 190 }}>
           {getSharedCellValue(row.l4Item?.sharedService || row.level3Cell?.data.sharedService)}
         </td>
       ),
     },
+    {
+      key: 'businessUnit',
+      content: (
+        <td style={{ width: entityLeafs[5].size, minWidth: entityLeafs[5].size }}>
+          <EditableCell
+            value={row.l4Item?.businessUnit?.join(', ') || row.level3Cell?.data.businessUnit?.join(', ') || ''}
+            onChange={()=>{}}
+          />
+        </td>
+      ),
+    },
+    {
+      key: 'ResponsibleDigitalTeam',
+      content: (
+        <td style={{ width: entityLeafs[6].size, minWidth: entityLeafs[6].size }}>
+          <EditableCell
+            value={row.l4Item?.ResponsibleDigitalTeam?.join(', ') || row.level3Cell?.data.ResponsibleDigitalTeam?.join(', ') || ''}
+            onChange={()=>{}}
+          />
+        </td>
+      ),
+    },
+    {
+      key: 'processCriticality',
+      content: (
+        <td style={{ width: entityLeafs[7].size, minWidth: entityLeafs[7].size }}>
+          <EditableCell
+            value={row.l4Item?.processCriticality || row.level3Cell?.data.processCriticality || ''}
+            onChange={()=>{}}
+          />
+        </td>
+      ),
+    }
   ]
 
   let lastGroupCompany = ''
