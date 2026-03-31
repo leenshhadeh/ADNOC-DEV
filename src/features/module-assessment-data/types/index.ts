@@ -8,7 +8,7 @@ export interface Level4Row {
   description?: string
   centrallyGovernedProcess?: string
   sharedService?: {services:number,shared:number}
-  businessUnit?: string
+  businessUnit?: string[]
   processCriticality?: string
 
 }
@@ -24,7 +24,8 @@ export interface AssessmentLevel3 {
   description?: string
   centrallyGovernedProcess?: string
   sharedService: {services:number,shared:number},
-  businessUnit?: string
+  businessUnit?: string[]
+  ResponsibleDigitalTeam ?: string[]
   processCriticality?: string
 
 }
@@ -52,11 +53,9 @@ export interface AssessmentDomain {
 
 /** Defines one entity group and its sites for the matrix columns. */
 export interface EntityConfig {
-  name: string
-  sites: any
+  assmntCol: any
 }
 
 export const ASSESSMENT_ENTITY_CONFIG: EntityConfig[] = [
-  { name: 'ADNOC HQ', sites: ['Site', 'status', 'description','centrallyGovernedProcess','sharedService','business unit','Process Criticality'] },
-  // { name: 'ADNOC AL DHAFRA AND AL YASAT', sites: ['General', 'Site A'] },
+  { assmntCol: ['Site', 'status', 'description','centrallyGovernedProcess','sharedService','business unit','Responsible Digital Team','Process Criticality'] },
 ]
