@@ -408,7 +408,7 @@ const CatalogModule = () => {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-foreground text-2xl font-bold">Add multiple processes</h2>
-                <p className="text-muted-foreground mt-2 text-sm">
+                <p className="mt-2 text-[#687076]">
                   Please select the number of processes you want to add.
                 </p>
               </div>
@@ -426,7 +426,7 @@ const CatalogModule = () => {
             </div>
 
             <div className="mt-6 space-y-2">
-              <label htmlFor="process-count" className="text-muted-foreground text-sm">
+              <label htmlFor="process-count" className="text-[#687076]">
                 How many processes you want to add?
               </label>
               <div className="relative">

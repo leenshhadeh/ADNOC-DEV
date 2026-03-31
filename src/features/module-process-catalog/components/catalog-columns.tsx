@@ -24,7 +24,11 @@ declare module '@tanstack/react-table' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData> {
     isBulkMode?: boolean
-    onUpdateDraftRow?: (id: string, field: 'level1Name' | 'level2Name' | 'level3Name' | 'description', value: string) => void
+    onUpdateDraftRow?: (
+      id: string,
+      field: 'level1Name' | 'level2Name' | 'level3Name' | 'description',
+      value: string,
+    ) => void
     draftRowIds?: Set<string>
     firstDraftRowId?: string
   }
@@ -39,7 +43,11 @@ const DraftNameInput = ({
   rowId: string
   field: 'level1Name' | 'level2Name' | 'level3Name'
   autoFocus: boolean
-  onUpdate: (id: string, field: 'level1Name' | 'level2Name' | 'level3Name' | 'description', value: string) => void
+  onUpdate: (
+    id: string,
+    field: 'level1Name' | 'level2Name' | 'level3Name' | 'description',
+    value: string,
+  ) => void
 }) => {
   const [value, setValue] = useState('')
   const ref = useRef<HTMLInputElement>(null)
@@ -153,7 +161,7 @@ const EntitySiteCell = ({
         <>
           <button
             type="button"
-            className="text-primary text-xs font-medium whitespace-nowrap hover:underline"
+            className="text-xs font-medium whitespace-nowrap text-[#0047BA] hover:underline"
             onClick={() => setEditOpen(true)}
           >
             Edit L4s
@@ -406,7 +414,9 @@ export function buildCatalogColumns(
           <span className="text-foreground flex-1 truncate text-sm font-medium">
             {info.row.original.domain}
           </span>
-          {domainActions.length > 0 && <CellRowActions item={info.row.original} actions={domainActions} />}
+          {domainActions.length > 0 && (
+            <CellRowActions item={info.row.original} actions={domainActions} />
+          )}
         </div>
       )
     },
@@ -426,14 +436,13 @@ export function buildCatalogColumns(
       )
         return null
 
-      const isDraftL1 =
-        info.row.original.level3Status === 'Draft' && !info.row.original.level1Name
+      const isDraftL1 = info.row.original.level3Status === 'Draft' && !info.row.original.level1Name
       const isFirstDraft = info.table.options.meta?.firstDraftRowId === info.row.original.id
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
 
       if (isDraftL1 && onUpdate) {
         return (
-          <div className="flex min-w-0 w-full flex-col gap-0.5">
+          <div className="flex w-full min-w-0 flex-col gap-0.5">
             <DraftNameInput
               rowId={info.row.original.id}
               field="level1Name"
@@ -473,14 +482,13 @@ export function buildCatalogColumns(
       )
         return null
 
-      const isDraftL2 =
-        info.row.original.level3Status === 'Draft' && !info.row.original.level2Name
+      const isDraftL2 = info.row.original.level3Status === 'Draft' && !info.row.original.level2Name
       const isFirstDraft = info.table.options.meta?.firstDraftRowId === info.row.original.id
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
 
       if (isDraftL2 && onUpdate) {
         return (
-          <div className="flex min-w-0 w-full flex-col gap-0.5">
+          <div className="flex w-full min-w-0 flex-col gap-0.5">
             <DraftNameInput
               rowId={info.row.original.id}
               field="level2Name"
