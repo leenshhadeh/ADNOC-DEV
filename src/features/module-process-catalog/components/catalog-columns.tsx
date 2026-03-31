@@ -13,6 +13,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu'
 import StatusBadgeCell, { type CatalogStatus } from './cells/StatusBadgeCell'
@@ -261,6 +262,7 @@ const Level3RowActions = ({
         <Eye className="text-muted-foreground size-4 shrink-0" />
         View recorded changes
       </DropdownMenuItem>
+      <DropdownMenuSeparator className="bg-border m-0" /> {/* Divider */}
       <DropdownMenuItem
         onSelect={() => onSwitchToDraft(item)}
         className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
@@ -270,6 +272,7 @@ const Level3RowActions = ({
           Switch to <strong className="font-semibold">Draft</strong> version
         </span>
       </DropdownMenuItem>
+      <DropdownMenuSeparator className="bg-border m-0" /> {/* Divider */}
       <PermissionGuard action="ADD_LEVEL_4">
         <DropdownMenuItem
           onSelect={() => onAddL4s(item)}
@@ -279,7 +282,8 @@ const Level3RowActions = ({
           Add L4s
         </DropdownMenuItem>
       </PermissionGuard>
-      {onEditL4s && (
+      <DropdownMenuSeparator className="bg-border m-0" /> {/* Divider */}
+      {/* {onEditL4s && (
         <DropdownMenuItem
           onSelect={() => onEditL4s(item)}
           className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
@@ -287,7 +291,7 @@ const Level3RowActions = ({
           <Pencil className="text-muted-foreground size-4 shrink-0" />
           Edit L4s
         </DropdownMenuItem>
-      )}
+      )} */}
       <PermissionGuard action="RENAME_PROCESS">
         <DropdownMenuItem
           onSelect={() => onRename(item)}

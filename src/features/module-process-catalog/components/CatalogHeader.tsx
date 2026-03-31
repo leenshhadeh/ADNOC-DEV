@@ -85,14 +85,16 @@ const CatalogHeader = ({
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage className="text-muted-foreground">Process Catalog</BreadcrumbPage>
+            <BreadcrumbPage className="text-muted-foreground">
+              Process Catalog Management
+            </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-foreground text-start text-4xl font-semibold">
-          {isFullReport ? 'Process Catalog Management - Full Report' : 'Process Catalog'}
+        <h1 className="text-foreground text-start text-2xl font-semibold">
+          {isFullReport ? 'Process Catalog Management - Full Report' : 'Process Catalog Management'}
         </h1>
       </div>
 
