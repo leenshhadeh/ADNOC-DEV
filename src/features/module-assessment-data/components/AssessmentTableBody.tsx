@@ -33,7 +33,7 @@ const AssessmentTableBody = (props: any) => {
 
   const getCellValueOptions = (fieldName: string) => {
     const optionsMap: any = {
-      AutomationLevel: ['0%', '10%', '15%','20%', '25%', '30%','35%','40%','45%','50%','55%','60%','65%','70%','75%','80%','85%','90%','95%','100%'],
+      AutomationLevel: ['0%', '10%', '20%', '25%','50%','80%','90%','100%'],
       ScaleOfProcess: ['Small (1-5)', 'Medium: (bigger team within one department)', 'Large (500+)'],
       processCriticality: ['Low', 'Standard', 'Critical'],
       UsersImpacted: ['Small (1-50)', 'Medium (50-500)', 'High (500-1000)'],

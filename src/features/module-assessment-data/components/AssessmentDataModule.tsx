@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Info } from 'lucide-react'
-
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,11 +11,11 @@ import {
 import ModuleToolbar from '@/shared/components/ModuleToolbar'
 import { ASSESSMENT_ACTIONS, ASSESSMENT_TABS } from '../constants/assessment-toolbar'
 
-import AssessmentDataTable from './AssessmentDataTable'
+import AssessmentDataTable from './tabels/AssessmentDataTable'
 import { ASSESSMENT_DATA } from '../constants/assessment-data'
 import { ASSESSMENT_ENTITY_CONFIG } from '../types'
 import ProcessesMenu from '../../../shared/components/ProcessesMenu'
-
+import MyTasksTable from './tabels/MyTasksTable'
 
 const AssessmentDataModule = () => {
   const [activeTab, setActiveTab] = useState('processes')
@@ -71,7 +70,11 @@ const AssessmentDataModule = () => {
 
       {/* ── Table ──────────────────────────────────────────────────────── */}
       <div className="flex-1 overflow-auto px-6 py-1">
-        <AssessmentDataTable data={ASSESSMENT_DATA} entityConfig={ASSESSMENT_ENTITY_CONFIG} />
+        {activeTab == 'processes' ? (
+          <AssessmentDataTable data={ASSESSMENT_DATA} entityConfig={ASSESSMENT_ENTITY_CONFIG} />
+        ) : (
+          <MyTasksTable />
+        )}
       </div>
     </div>
   )
