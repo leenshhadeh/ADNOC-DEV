@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import { ChevronDown, Eye, MoreHorizontal, Pencil, Plus, RotateCcw } from 'lucide-react'
 
@@ -187,6 +187,7 @@ const EntitySiteCell = ({
 type CatalogRowAction = {
   id: string
   label: string
+  icon: React.ElementType
   onSelect: (item: ProcessItem) => void
 }
 
@@ -208,14 +209,17 @@ const CellRowActions = ({ item, actions }: { item: ProcessItem; actions: Catalog
       sideOffset={4}
       className="w-52 overflow-hidden rounded-2xl border p-0 shadow-lg"
     >
-      {actions.map((a) => (
-        <DropdownMenuItem
-          key={a.id}
-          onSelect={() => a.onSelect(item)}
-          className="rounded-none px-4 py-2.5 text-sm font-normal"
-        >
-          {a.label}
-        </DropdownMenuItem>
+      {actions.map((a, i) => (
+        <React.Fragment key={a.id}>
+          <DropdownMenuItem
+            onSelect={() => a.onSelect(item)}
+            className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
+          >
+            <a.icon className="text-muted-foreground size-4 shrink-0" />
+            {a.label}
+          </DropdownMenuItem>
+          {i < actions.length - 1 && <DropdownMenuSeparator className="bg-border m-0" />}
+        </React.Fragment>
       ))}
     </DropdownMenuContent>
   </DropdownMenu>
@@ -228,14 +232,14 @@ const Level3RowActions = ({
   onViewRecordedChanges,
   onSwitchToDraft,
   onAddL4s,
-  onEditL4s,
+  // onEditL4s,
   onRename,
 }: {
   item: ProcessItem
   onViewRecordedChanges: (item: ProcessItem) => void
   onSwitchToDraft: (item: ProcessItem) => void
   onAddL4s: (item: ProcessItem) => void
-  onEditL4s?: (item: ProcessItem) => void
+  // onEditL4s?: (item: ProcessItem) => void
   onRename: (item: ProcessItem) => void
 }) => (
   <DropdownMenu modal={false}>
@@ -447,24 +451,24 @@ export function buildCatalogColumns(
   // Actions for the Domain column context menu
   const domainActions: CatalogRowAction[] = rowActions
     ? [
-        { id: 'add-l1', label: 'Add L1 processes', onSelect: rowActions.onAddL1 },
-        { id: 'rename', label: 'Rename', onSelect: rowActions.onRename },
+        { id: 'add-l1', label: 'Add L1 processes', icon: Plus, onSelect: rowActions.onAddL1 },
+        { id: 'rename', label: 'Rename', icon: Pencil, onSelect: rowActions.onRename },
       ]
     : []
 
   // Actions for the Level 1 column context menu
   const l1Actions: CatalogRowAction[] = rowActions
     ? [
-        { id: 'add-l2', label: 'Add L2 processes', onSelect: rowActions.onAddL2 },
-        { id: 'rename', label: 'Rename', onSelect: rowActions.onRename },
+        { id: 'add-l2', label: 'Add L2 processes', icon: Plus, onSelect: rowActions.onAddL2 },
+        { id: 'rename', label: 'Rename', icon: Pencil, onSelect: rowActions.onRename },
       ]
     : []
 
   // Actions for the Level 2 column context menu
   const l2Actions: CatalogRowAction[] = rowActions
     ? [
-        { id: 'add-l3', label: 'Add L3 processes', onSelect: rowActions.onAddL3 },
-        { id: 'rename', label: 'Rename', onSelect: rowActions.onRename },
+        { id: 'add-l3', label: 'Add L3 processes', icon: Plus, onSelect: rowActions.onAddL3 },
+        { id: 'rename', label: 'Rename', icon: Pencil, onSelect: rowActions.onRename },
       ]
     : []
 

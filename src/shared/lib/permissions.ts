@@ -30,6 +30,7 @@ export const ACTIONS = [
   'RENAME_PROCESS',
   // Catalog — workflow
   'VIEW_CHANGES',
+  'VIEW_SUBMITTED_REQUESTS',
   'REQUEST_PROCESS_CHANGE', // BFP / DFP: raise a new request
   'SUBMIT_REQUEST', // BFP / DFP / Custodian: submit for review
   'APPROVE_REQUEST',
@@ -56,6 +57,11 @@ export const PERMISSIONS: Record<Action, Role[]> = {
   RENAME_PROCESS: ['BPA Process Catalog Custodian'],
   // ── Workflow ────────────────────────────────────────────────────────────────
   VIEW_CHANGES: ['BPA Program Manager', 'BPA Process Catalog Custodian'],
+  VIEW_SUBMITTED_REQUESTS: [
+    'BPA Process Catalog Custodian',
+    'Business Focal Point',
+    'Digital Focal Point',
+  ],
   REQUEST_PROCESS_CHANGE: ['Business Focal Point', 'Digital Focal Point'],
   SUBMIT_REQUEST: ['Business Focal Point', 'Digital Focal Point', 'BPA Process Catalog Custodian'],
   APPROVE_REQUEST: ['BPA Program Manager', 'BPA Process Catalog Custodian'],
