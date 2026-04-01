@@ -4,11 +4,11 @@ import {
   HierarchyTd,
   TableShell,
 } from '@/shared/components/table-primitives'
-import Level4Cell from './cells/Level4Cell'
-import { buildEntityLeafColumns, HIERARCHY_COLUMNS } from '../constants/assessment-columns'
-import type { AssessmentDomain, EntityConfig, Level4Row } from '../types'
+import Level4Cell from '../cells/Level4Cell'
+import { buildEntityLeafColumns, HIERARCHY_COLUMNS } from '../../constants/assessment-columns'
+import type { AssessmentDomain, EntityConfig, Level4Row } from '../../types'
 import { cn } from '@/shared/lib/utils'
-import AssessmentTableBody from './AssessmentTableBody'
+import AssessmentTableBody from '../AssessmentTableBody'
 
 
 // ── Main component ────────────────────────────────────────────────────────────
