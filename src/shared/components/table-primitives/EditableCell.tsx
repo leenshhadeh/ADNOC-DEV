@@ -11,9 +11,10 @@ import { useState } from 'react'
 export interface EditableCellProps {
   value: string
   onChange: (value: string) => void
+  type?: 'text' | 'textArea'
 }
 
-const EditableCell = ({ value, onChange }: EditableCellProps) => {
+const EditableCell = ({ value, onChange , type }: EditableCellProps) => {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(value)
 
@@ -23,8 +24,8 @@ const EditableCell = ({ value, onChange }: EditableCellProps) => {
   }
 
   if (editing) {
-    return (
-      <input
+    return (<>
+      {type !="textArea"?  <input
         autoFocus
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
@@ -37,7 +38,24 @@ const EditableCell = ({ value, onChange }: EditableCellProps) => {
           }
         }}
         className="border-primary bg-background ring-primary/30 w-full rounded-md border px-2 py-1 text-sm ring-2 outline-none"
-      />
+      />:<>
+        <textarea
+          autoFocus
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') commit()
+            if (e.key === 'Escape') {
+              setDraft(value)
+              setEditing(false)
+            }
+          }}
+          className="border-primary bg-background ring-primary/30 w-full rounded-md border px-2 py-1 text-sm ring-2 outline-none"
+
+        />
+      </>}
+      </>
     )
   }
 
