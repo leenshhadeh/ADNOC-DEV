@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { TableBody } from '@/shared/components/ui/table'
 import {
   ColHead,
@@ -146,7 +144,6 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
 
   const flatRows = flattenDomains(data)
   let lastGroupCompany = ''
-console.log('flatRows', flatRows)
   return (
     <TableShell>
       <div className="relative w-full overflow-auto">
@@ -289,11 +286,7 @@ console.log('flatRows', flatRows)
                       {/* if there is no data , then bring the last one aded  */}
                     </span>
                   </td>
-
-{/*  */}
                   <AssessmentTableBody row={row} />
-
-                  {/*  end  */}
                 </tr>
               )
             })}
