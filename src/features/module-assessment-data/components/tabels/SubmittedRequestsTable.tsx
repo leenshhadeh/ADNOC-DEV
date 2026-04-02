@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 
-import DataTable from '@features/module-process-catalog/components/data-table/DataTable'
+import DataTable from '@/shared/components/data-table/DataTable'
 import {
   ProcessInfoCell,
   StageProgressCell,
