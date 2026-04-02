@@ -17,9 +17,13 @@ import {
 } from '@dnd-kit/sortable'
 import {
   getCoreRowModel,
+  getFilteredRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
   getSortedRowModel,
   useReactTable,
   type ColumnDef,
+  type ColumnFiltersState,
   type ColumnPinningState,
   type Row,
   type SortingState,
@@ -60,6 +64,7 @@ const DataTable = <TData,>({
   tableMeta,
 }: DataTableProps<TData>) => {
   const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>(initialColumnPinning ?? {})
 
   const initialColumnOrder = useMemo(() => getLeafColumnIds(columns), [columns])
@@ -84,11 +89,13 @@ const DataTable = <TData,>({
     defaultColumn: { size: 250, minSize: 50 },
     state: {
       sorting,
+      columnFilters,
       columnOrder,
       columnPinning,
       ...(rowSelection !== undefined ? { rowSelection } : {}),
     },
     onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     onColumnOrderChange: setColumnOrder,
     onColumnPinningChange: setColumnPinning,
     ...(onRowSelectionChange
@@ -105,6 +112,9 @@ const DataTable = <TData,>({
     getRowId,
     getSubRows,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
     getSortedRowModel: getSortedRowModel(),
   })
 
