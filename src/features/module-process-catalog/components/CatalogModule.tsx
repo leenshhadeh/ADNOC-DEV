@@ -7,6 +7,7 @@ import CatalogHeader from './CatalogHeader'
 import DataTable from './data-table/DataTable'
 import { buildCatalogColumns, type CatalogColumnActions } from './catalog-columns'
 import type { CatalogView } from './CatalogHeader'
+import type { ProcessViewOption } from '@/shared/components/ProcessesMenu'
 import MyTasksTable from './tables/MyTasksTable'
 import SubmittedRequestsTable from './tables/SubmittedRequestsTable'
 import ProcessFilterSheet from './ProcessFilterSheet'
@@ -43,6 +44,7 @@ const CatalogModule = () => {
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false)
   const [renameTarget, setRenameTarget] = useState<ProcessItem | null>(null)
   const [isExporting, setIsExporting] = useState(false)
+  const [processView, setProcessView] = useState<ProcessViewOption>('Published processes')
 
   // ── Server state ────────────────────────────────────────────────────────────
   // Row data comes from API; group companies are a user-scoped lookup.
@@ -411,6 +413,8 @@ const CatalogModule = () => {
         onExportFullReport={handleExportFullReport}
         onExport={handleExport}
         isExporting={isExporting}
+        processView={processView}
+        onProcessViewChange={setProcessView}
       />
 
       {activeTab === 'processes' ? (
@@ -497,7 +501,11 @@ const CatalogModule = () => {
               >
                 Cancel
               </Button>
-              <Button type="button" className="h-12 rounded-full" onClick={handleAddProcesses}>
+              <Button
+                type="button"
+                className="hover:bg-button-hover h-12 rounded-full"
+                onClick={handleAddProcesses}
+              >
                 Add
               </Button>
             </div>

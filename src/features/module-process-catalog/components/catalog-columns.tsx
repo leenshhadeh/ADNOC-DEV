@@ -13,7 +13,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu'
 import StatusBadgeCell, { type CatalogStatus } from './cells/StatusBadgeCell'
@@ -210,16 +209,19 @@ const CellRowActions = ({ item, actions }: { item: ProcessItem; actions: Catalog
       className="w-52 overflow-hidden rounded-2xl border p-0 shadow-lg"
     >
       {actions.map((a, i) => (
-        <React.Fragment key={a.id}>
-          <DropdownMenuItem
-            onSelect={() => a.onSelect(item)}
-            className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
-          >
-            <a.icon className="text-muted-foreground size-4 shrink-0" />
-            {a.label}
-          </DropdownMenuItem>
-          {i < actions.length - 1 && <DropdownMenuSeparator className="bg-border m-0" />}
-        </React.Fragment>
+        <DropdownMenuItem
+          key={a.id}
+          onSelect={() => a.onSelect(item)}
+          className={cn(
+            'flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal transition-colors',
+            'border-b border-transparent',
+            'hover:border-b hover:border-[#0047ba]',
+            i < actions.length - 1 && 'border-border border-b',
+          )}
+        >
+          <a.icon className="text-muted-foreground size-4 shrink-0" />
+          {a.label}
+        </DropdownMenuItem>
       ))}
     </DropdownMenuContent>
   </DropdownMenu>
@@ -261,32 +263,29 @@ const Level3RowActions = ({
     >
       <DropdownMenuItem
         onSelect={() => onViewRecordedChanges(item)}
-        className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
+        className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-[#0047ba]"
       >
         <Eye className="text-muted-foreground size-4 shrink-0" />
         View recorded changes
       </DropdownMenuItem>
-      <DropdownMenuSeparator className="bg-border m-0" /> {/* Divider */}
       <DropdownMenuItem
         onSelect={() => onSwitchToDraft(item)}
-        className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
+        className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-[#0047ba]"
       >
         <RotateCcw className="text-muted-foreground size-4 shrink-0" />
         <span>
           Switch to <strong className="font-semibold">Draft</strong> version
         </span>
       </DropdownMenuItem>
-      <DropdownMenuSeparator className="bg-border m-0" /> {/* Divider */}
       <PermissionGuard action="ADD_LEVEL_4">
         <DropdownMenuItem
           onSelect={() => onAddL4s(item)}
-          className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
+          className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-[#0047ba]"
         >
           <Plus className="text-muted-foreground size-4 shrink-0" />
           Add L4s
         </DropdownMenuItem>
       </PermissionGuard>
-      <DropdownMenuSeparator className="bg-border m-0" /> {/* Divider */}
       {/* {onEditL4s && (
         <DropdownMenuItem
           onSelect={() => onEditL4s(item)}

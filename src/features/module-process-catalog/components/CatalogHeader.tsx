@@ -21,6 +21,7 @@ import { LayoutGrid, Table2 } from 'lucide-react'
 import { cn } from '@/shared/lib/utils'
 import { useCurrentUser } from '@/shared/auth/useUserStore'
 import { hasPermission } from '@/shared/lib/permissions'
+import ProcessesMenu, { type ProcessViewOption } from '@/shared/components/ProcessesMenu'
 
 export type CatalogTabValue = 'processes' | 'myTasks' | 'submittedRequests'
 export type CatalogView = 'default' | 'full-report'
@@ -43,6 +44,8 @@ interface CatalogHeaderProps {
   onExportFullReport?: () => void
   onExport?: () => void
   isExporting?: boolean
+  processView?: ProcessViewOption
+  onProcessViewChange?: (value: ProcessViewOption) => void
 }
 
 const CatalogHeader = ({
@@ -62,6 +65,8 @@ const CatalogHeader = ({
   onExportFullReport,
   onExport,
   isExporting = false,
+  processView,
+  onProcessViewChange,
 }: CatalogHeaderProps) => {
   const { role } = useCurrentUser()
 
@@ -110,10 +115,11 @@ const CatalogHeader = ({
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center gap-2">
         <h1 className="text-foreground text-start text-2xl font-semibold">
           {isFullReport ? 'Process Catalog Management - Full Report' : 'Process Catalog Management'}
         </h1>
+        {!isFullReport && <ProcessesMenu value={processView} onChange={onProcessViewChange} />}
       </div>
 
       <div className="flex items-center gap-2">
