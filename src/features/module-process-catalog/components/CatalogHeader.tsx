@@ -19,6 +19,9 @@ import {
 import { Button } from '@/shared/components/ui/button'
 import { LayoutGrid, Table2 } from 'lucide-react'
 import { cn } from '@/shared/lib/utils'
+import { useCurrentUser } from '@/shared/auth/useUserStore'
+import { hasPermission } from '@/shared/lib/permissions'
+import ProcessesMenu, { type ProcessViewOption } from '@/shared/components/ProcessesMenu'
 
 export type CatalogTabValue = 'processes' | 'myTasks' | 'submittedRequests'
 export type CatalogView = 'default' | 'full-report'
@@ -38,6 +41,11 @@ interface CatalogHeaderProps {
   onValidate?: () => void
   currentView?: CatalogView
   onViewChange?: (view: CatalogView) => void
+  onExportFullReport?: () => void
+  onExport?: () => void
+  isExporting?: boolean
+  processView?: ProcessViewOption
+  onProcessViewChange?: (value: ProcessViewOption) => void
 }
 
 const CatalogHeader = ({
@@ -54,7 +62,18 @@ const CatalogHeader = ({
   onValidate,
   currentView = 'default',
   onViewChange,
+  onExportFullReport,
+  onExport,
+  isExporting = false,
+  processView,
+  onProcessViewChange,
 }: CatalogHeaderProps) => {
+  const { role } = useCurrentUser()
+
+  const visibleTabs = hasPermission(role, 'VIEW_SUBMITTED_REQUESTS')
+    ? CATALOG_TABS
+    : CATALOG_TABS.filter((t) => t.value !== 'submittedRequests')
+
   const bulkMode: BulkModeState = {
     isActive: isBulkMode,
     selectedCount,
@@ -68,11 +87,15 @@ const CatalogHeader = ({
   )
 
   const isFullReport = currentView === 'full-report'
-  const actions = hasDraftRows
-    ? draftActions
-    : isFullReport
-      ? CATALOG_FULL_REPORT_ACTIONS
-      : CATALOG_ACTIONS
+  const fullReportActions: ToolbarAction[] = CATALOG_FULL_REPORT_ACTIONS.map((a) =>
+    a.id === 'export-full-report'
+      ? { ...a, onClick: onExportFullReport, disabled: isExporting }
+      : a,
+  )
+  const defaultActions: ToolbarAction[] = CATALOG_ACTIONS.map((a) =>
+    a.id === 'export' ? { ...a, onClick: onExport, disabled: isExporting } : a,
+  )
+  const actions = hasDraftRows ? draftActions : isFullReport ? fullReportActions : defaultActions
 
   return (
     <header className="space-y-3">
@@ -92,16 +115,17 @@ const CatalogHeader = ({
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center gap-2">
         <h1 className="text-foreground text-start text-2xl font-semibold">
           {isFullReport ? 'Process Catalog Management - Full Report' : 'Process Catalog Management'}
         </h1>
+        {!isFullReport && <ProcessesMenu value={processView} onChange={onProcessViewChange} />}
       </div>
 
       <div className="flex items-center gap-2">
         <div className="flex-1">
           <ModuleToolbar
-            tabs={CATALOG_TABS}
+            tabs={visibleTabs}
             activeTab={activeTab}
             onTabChange={(value) => onTabChange(value as CatalogTabValue)}
             onFilterClick={onFilterClick}
@@ -120,7 +144,10 @@ const CatalogHeader = ({
                 variant="ghost"
                 size="icon"
                 aria-label="View full report"
-                className={cn('size-9 rounded-lg', currentView === 'full-report' && 'bg-secondary')}
+                className={cn('size-9 rounded-lg')}
+                style={
+                  currentView === 'full-report' ? { background: 'var(--tab-active-bg)' } : undefined
+                }
                 onClick={() => onViewChange?.('full-report')}
               >
                 <Table2 className="size-4" />
@@ -136,7 +163,10 @@ const CatalogHeader = ({
                 variant="ghost"
                 size="icon"
                 aria-label="Default view"
-                className={cn('size-9 rounded-lg', currentView === 'default' && 'bg-secondary')}
+                className={cn('size-9 rounded-lg')}
+                style={
+                  currentView === 'default' ? { background: 'var(--tab-active-bg)' } : undefined
+                }
                 onClick={() => onViewChange?.('default')}
               >
                 <LayoutGrid className="size-4" />

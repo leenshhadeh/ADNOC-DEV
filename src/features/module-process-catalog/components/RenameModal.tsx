@@ -88,7 +88,11 @@ const RenameModal = ({ open, onOpenChange, currentName, onRename }: RenameModalP
             >
               Cancel
             </Button>
-            <Button type="submit" className="h-12 rounded-full" disabled={!name.trim()}>
+            <Button
+              type="submit"
+              className="hover:bg-button-hover h-12 rounded-full"
+              disabled={!name.trim()}
+            >
               Rename
             </Button>
           </div>

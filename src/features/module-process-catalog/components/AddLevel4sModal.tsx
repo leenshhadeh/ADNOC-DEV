@@ -146,9 +146,9 @@ const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sM
 
   return (
     <div className="bg-foreground/40 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-[1px]">
-      <div className="flex max-h-[90vh] w-full max-w-[520px] flex-col rounded-2xl bg-[#F1F3F5] p-6 shadow-2xl">
+      <div className="flex max-h-[90vh] w-full max-w-xl flex-col rounded-2xl bg-[#F1F3F5] p-6 shadow-2xl">
         {/* ── Header ── */}
-        <div className="flex shrink-0 items-start justify-between gap-4">
+        <div className="flex shrink-0 items-start justify-between gap-4 px-2">
           <div>
             <h2 className="text-foreground text-2xl font-bold">Add Level 4s</h2>
             <p className="text-muted-foreground mt-1.5 text-sm">
@@ -170,7 +170,7 @@ const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sM
         <form
           id="add-l4-form"
           onSubmit={handleSubmit(onSubmit)}
-          className="mt-5 min-h-0 flex-1 space-y-4 overflow-y-auto"
+          className="mt-5 min-h-0 flex-1 space-y-4 overflow-y-auto px-2"
         >
           {/* Group Company Select */}
           <div className="space-y-1.5">

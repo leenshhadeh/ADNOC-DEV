@@ -7,12 +7,14 @@ import CatalogHeader from './CatalogHeader'
 import DataTable from './data-table/DataTable'
 import { buildCatalogColumns, type CatalogColumnActions } from './catalog-columns'
 import type { CatalogView } from './CatalogHeader'
+import type { ProcessViewOption } from '@/shared/components/ProcessesMenu'
 import MyTasksTable from './tables/MyTasksTable'
 import SubmittedRequestsTable from './tables/SubmittedRequestsTable'
 import ProcessFilterSheet from './ProcessFilterSheet'
 import AddLevel4sModal from './AddLevel4sModal'
 import { EditLevel4sModal } from './EditLevel4sModal'
 import RenameModal from './RenameModal'
+import { exportToExcel } from '@features/module-process-catalog/utils/exportToExcel'
 import { FILTER_SECTION_IDS } from '@features/module-process-catalog/constants/filter-definitions'
 import {
   useProcessFilters,
@@ -41,6 +43,8 @@ const CatalogModule = () => {
   const [targetL3Item, setTargetL3Item] = useState<ProcessItem | null>(null)
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false)
   const [renameTarget, setRenameTarget] = useState<ProcessItem | null>(null)
+  const [isExporting, setIsExporting] = useState(false)
+  const [processView, setProcessView] = useState<ProcessViewOption>('Published processes')
 
   // ── Server state ────────────────────────────────────────────────────────────
   // Row data comes from API; group companies are a user-scoped lookup.
@@ -81,6 +85,34 @@ const CatalogModule = () => {
 
   // Computed filtered view — does not mutate tableData (draft injection is preserved)
   const filteredData = useMemo(() => applyProcessFilters(tableData, applied), [tableData, applied])
+
+  const handleExportFullReport = useCallback(async () => {
+    setIsExporting(true)
+    try {
+      await exportToExcel({
+        rows: filteredData,
+        groupCompanies: groupCompanies ?? [],
+        includeL4: true,
+        filename: 'process-catalog-full-report',
+      })
+    } finally {
+      setIsExporting(false)
+    }
+  }, [filteredData, groupCompanies])
+
+  const handleExport = useCallback(async () => {
+    setIsExporting(true)
+    try {
+      await exportToExcel({
+        rows: filteredData,
+        groupCompanies: groupCompanies ?? [],
+        includeL4: false,
+        filename: 'process-catalog',
+      })
+    } finally {
+      setIsExporting(false)
+    }
+  }, [filteredData, groupCompanies])
 
   // Fetch existing L4s for the selected L3 row — only runs when Edit L4s modal is open
   const { data: existingL4s, isLoading: isLoadingL4s } = useGetLevel4s(
@@ -378,6 +410,11 @@ const CatalogModule = () => {
         onValidate={handleValidate}
         currentView={currentView}
         onViewChange={setCurrentView}
+        onExportFullReport={handleExportFullReport}
+        onExport={handleExport}
+        isExporting={isExporting}
+        processView={processView}
+        onProcessViewChange={setProcessView}
       />
 
       {activeTab === 'processes' ? (
@@ -464,7 +501,11 @@ const CatalogModule = () => {
               >
                 Cancel
               </Button>
-              <Button type="button" className="h-12 rounded-full" onClick={handleAddProcesses}>
+              <Button
+                type="button"
+                className="hover:bg-button-hover h-12 rounded-full"
+                onClick={handleAddProcesses}
+              >
                 Add
               </Button>
             </div>
@@ -482,6 +523,30 @@ const CatalogModule = () => {
         onApply={apply}
         onReset={reset}
       />
+
+      {/* ── Exporting toast ── */}
+      {isExporting && (
+        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
+          <div className="bg-foreground text-background flex items-center gap-3 rounded-xl px-5 py-3 shadow-2xl">
+            <svg className="size-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+              />
+            </svg>
+            <span className="text-sm font-medium">Preparing download…</span>
+          </div>
+        </div>
+      )}
 
       {/* Entry A — triggered from L3 dropdown "Add L4s" */}
       <AddLevel4sModal
