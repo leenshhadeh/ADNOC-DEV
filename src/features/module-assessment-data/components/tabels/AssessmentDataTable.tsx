@@ -9,6 +9,7 @@ import { buildEntityLeafColumns, HIERARCHY_COLUMNS } from '../../constants/asses
 import type { AssessmentDomain, EntityConfig, Level4Row } from '../../types'
 import { cn } from '@/shared/lib/utils'
 import AssessmentTableBody from '../AssessmentTableBody'
+import CellMenuOptions from '../CellMenuOptions'
 
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -248,6 +249,7 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
                       leftOffset={stickyOffsets['level3']}
                       isLast={false}
                     >
+                      <div className='flex items-center justify-between gap-2'>
                       <div className="flex flex-col gap-0.5">
                         <span className="text-foreground text-sm font-medium">
                           {row.level3Cell.data.name}
@@ -255,6 +257,8 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
                         <span className="text-muted-foreground text-xs">
                           {row.level3Cell.data.code}
                         </span>
+                      </div>
+                      {!row.l4Item &&  <CellMenuOptions item={row.level3Cell.data} />}
                       </div>
                     </HierarchyTd>
                   )}

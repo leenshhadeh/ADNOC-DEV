@@ -52,7 +52,8 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 toBeAIPoweredComments:'AI could be used to assist with result interpretation and identify patterns in the data.',
                 rateCardAED:'500 AED',
                 costOfManualEffortAED:'120000 AED',
-                markedAsReviewed:'No',
+                markedAsReviewed:'false',
+                reviewedOn:'',
                 businessFocalPoint:['John Doe'],
                 digitalFocalPoint:['Jane Smith'],
                 publishedDate:'2024-01-15',
@@ -68,7 +69,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                     description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                     centrallyGovernedProcess: 'Yes',
                     sharedService: {services:12,shared:3},
-                    businessUnit: ['Exploration'],
+                    businessUnit: ['Internal Audit Department (Operations)','Exploration'],
                     processCriticality: 'High',
                      
                   },
@@ -95,7 +96,11 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                     centrallyGovernedProcess: 'Yes',
                     sharedService: {services:12,shared:3},
                     businessUnit: ['Exploration'],
+                    markedAsReviewed:'true',
+                    reviewedOn:'2024-02-01',
                     processCriticality: 'High',
+                    currentApplicationsSystems:['Audit Management System (RSA Archer)','Audit Management'],
+
                    
                   },
                 ],
@@ -140,7 +145,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 scaleOfProcess:'Medium: (bigger team within one department)',
                 automationMaturityLevel:'Fully Automated',
                 automationLevel:'50%',
-                currentApplicationsSystems:['Microsot Excel','Petrel'],
+                currentApplicationsSystems:['Audit Management System (RSA Archer)','Audit Management'],
                 OngoingAutomationDigitalInitiatives:'N/A',
                 businessRecommendationForAutomation:'Should be kept as is',
                 keyChallengesAutomationNeeds:'none',
@@ -161,7 +166,8 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 toBeAIPoweredComments:'AI could be used to assist with result interpretation and identify patterns in the data.',
                 rateCardAED:'400 AED',
                 costOfManualEffortAED:'120000 AED',
-                markedAsReviewed:'No',
+                markedAsReviewed:'true',
+                reviewedOn:'2024-02-01',
                 businessFocalPoint:['John Doe'],
                 digitalFocalPoint:['Jane Smith'],
                 publishedDate:'2024-01-15',
@@ -182,6 +188,9 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 businessUnit: ['Exploration'],
                 ResponsibleDigitalTeam : ['Subsurface Digitalization'],
                 processCriticality: 'High',
+                currentApplicationsSystems:['Audit Management System (RSA Archer)','Audit Management'],
+                markedAsReviewed:'false',
+                reviewedOn:'',
                 level4Items: [
                   {
                     id: 'l4-4-1',
@@ -203,6 +212,8 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 businessUnit: ['Exploration'],
                 ResponsibleDigitalTeam : ['Subsurface Digitalization'],
                 processCriticality: 'High',
+                currentApplicationsSystems:['Audit Management System (RSA Archer)','Audit Management'],
+
                 level4Items: [
                   {
                     id: 'l4-5-1',

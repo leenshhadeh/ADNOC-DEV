@@ -1,11 +1,14 @@
 import React from 'react'
 import { EditableCell, RadioCell } from '@/shared/components/table-primitives'
 import { StatusBadgeCell } from '@/features/module-process-catalog/components/cells'
-import { Maximize2, Tally1 } from 'lucide-react'
+import { Check, CheckCheck, ChevronDown, Maximize2, Tally1 } from 'lucide-react'
 import SelectCell from '@/shared/components/table-primitives/SelectCell'
+import TagsList from '@/shared/components/table-primitives/TagsList'
+import MarkedAsReviewCell from './cells/MarkedAsReviewCell'
 
 const AssessmentTableBody = (props: any) => {
-    const { row } = props;
+  const { row } = props
+  console.log('Rendering AssessmentTableBody for row:', row) // Debug log to check row data
 
   const getSharedCellValue = (item: any) => {
     let parsedValue: any
@@ -30,19 +33,26 @@ const AssessmentTableBody = (props: any) => {
     }
     return <></>
   }
-
   const getCellValueOptions = (fieldName: string) => {
     const optionsMap: any = {
-      AutomationLevel: ['0%', '10%', '20%', '25%','50%','80%','90%','100%'],
-      ScaleOfProcess: ['Small (1-5)', 'Medium: (bigger team within one department)', 'Large (500+)'],
+      AutomationLevel: ['0%', '10%', '20%', '25%', '50%', '80%', '90%', '100%'],
+      ScaleOfProcess: [
+        'Small (1-5)',
+        'Medium: (bigger team within one department)',
+        'Large (500+)',
+      ],
       processCriticality: ['Low', 'Standard', 'Critical'],
       UsersImpacted: ['Small (1-50)', 'Medium (50-500)', 'High (500-1000)'],
       automationMaturityLevel: ['Low', 'Medium', 'Fully Automated'],
-      BusinessRecommendationForAutomation: ['Should be automated', 'Should be kept as is', 'Should not be automated'],
+      BusinessRecommendationForAutomation: [
+        'Should be automated',
+        'Should be kept as is',
+        'Should not be automated',
+      ],
       NorthStarTargetAutomation: ['Keep as is', 'To be fully automated', 'To be intelligent'],
     }
     return optionsMap[fieldName] || []
-  } 
+  }
 
   const entityCells = (row: any) => [
     {
@@ -50,7 +60,7 @@ const AssessmentTableBody = (props: any) => {
       content: (
         <td style={{ width: 160 }}>
           <EditableCell
-            value={row.l4Item?.site || row.level3Cell?.data.site || ''} 
+            value={row.l4Item?.site || row.level3Cell?.data.site || ''}
             onChange={() => {}}
           />
         </td>
@@ -60,9 +70,7 @@ const AssessmentTableBody = (props: any) => {
       key: 'status',
       content: (
         <td style={{ width: 160 }}>
-          <StatusBadgeCell
-            status={row.l4Item?.status || row.level3Cell?.data.status || ''} 
-          />
+          <StatusBadgeCell status={row.l4Item?.status || row.level3Cell?.data.status || ''} />
         </td>
       ),
     },
@@ -71,7 +79,7 @@ const AssessmentTableBody = (props: any) => {
       content: (
         <td style={{ width: 160 }}>
           <EditableCell
-            value={row.l4Item?.description || row.level3Cell?.data.description || ''} 
+            value={row.l4Item?.description || row.level3Cell?.data.description || ''}
             onChange={() => {}}
             type={'textArea'}
           />
@@ -109,16 +117,22 @@ const AssessmentTableBody = (props: any) => {
     {
       key: 'businessUnit',
       content: (
-        <td style={{ width: 160 }}>
-          <SelectCell
-            defaultValue={
-              row.l4Item?.businessUnit?.join(', ') ||
-              row.level3Cell?.data.businessUnit?.join(', ') ||
-              'Select'
-            }
-            options={row.l4Item?.businessUnit || row.level3Cell?.data.businessUnit || []}
-            onValueChange={() => {}}
-          />
+        <td style={{ width: 350 }}>
+          <div className="flex items-center justify-between">
+            <div className="max-w-[290px] overflow-hidden">
+              <TagsList
+                tags={(row.l4Item?.businessUnit || row.level3Cell?.data.businessUnit || []).map(
+                  (bu: string, index: number) => ({
+                    id: `${row.l4Item?.id || row.level3Cell?.data.id}__businessUnit__${index}`,
+                    text: bu,
+                  }),
+                )}
+                onRemoveTag={() => {}}
+              />
+            </div>
+
+            <Maximize2 className="size-4" strokeWidth={2} />
+          </div>
         </td>
       ),
     },
@@ -126,18 +140,16 @@ const AssessmentTableBody = (props: any) => {
       key: 'ResponsibleDigitalTeam',
       content: (
         <td style={{ width: 160 }}>
-          <SelectCell
-            defaultValue={
-              row.l4Item?.ResponsibleDigitalTeam?.join(', ') ||
-              row.level3Cell?.data.ResponsibleDigitalTeam?.join(', ') ||
-              'Select'
-            }
-            options={
+          <TagsList
+            tags={(
               row.l4Item?.ResponsibleDigitalTeam ||
               row.level3Cell?.data.ResponsibleDigitalTeam ||
               []
-            }
-            onValueChange={() => {}}
+            ).map((team: string, index: number) => ({
+              id: `${row.l4Item?.id || row.level3Cell?.data.id}__ResponsibleDigitalTeam__${index}`,
+              text: team,
+            }))}
+            onRemoveTag={() => {}}
           />
         </td>
       ),
@@ -152,7 +164,7 @@ const AssessmentTableBody = (props: any) => {
               row.level3Cell?.data.processCriticality ||
               'Standard'
             }
-            options={getCellValueOptions('processCriticality')} 
+            options={getCellValueOptions('processCriticality')}
             onValueChange={() => {}}
           />
         </td>
@@ -164,15 +176,12 @@ const AssessmentTableBody = (props: any) => {
         <td style={{ width: 200 }}>
           <SelectCell
             defaultValue={
-              row.l4Item?.UsersImpacted ||
-              row.level3Cell?.data.UsersImpacted ||
-              'Select'
+              row.l4Item?.UsersImpacted || row.level3Cell?.data.UsersImpacted || 'Select'
             }
             options={getCellValueOptions('UsersImpacted')}
             onValueChange={() => {}}
           />
         </td>
-          
       ),
     },
     {
@@ -181,9 +190,7 @@ const AssessmentTableBody = (props: any) => {
         <td style={{ width: 250 }}>
           <SelectCell
             defaultValue={
-              row.l4Item?.scaleOfProcess ||
-              row.level3Cell?.data.scaleOfProcess ||
-              'Select'
+              row.l4Item?.scaleOfProcess || row.level3Cell?.data.scaleOfProcess || 'Select'
             }
             options={getCellValueOptions('ScaleOfProcess')}
             onValueChange={() => {}}
@@ -201,7 +208,7 @@ const AssessmentTableBody = (props: any) => {
               row.level3Cell?.data.automationMaturityLevel ||
               'Select'
             }
-            options={getCellValueOptions('automationMaturityLevel')} 
+            options={getCellValueOptions('automationMaturityLevel')}
             onValueChange={() => {}}
           />
         </td>
@@ -210,12 +217,10 @@ const AssessmentTableBody = (props: any) => {
     {
       key: 'AutomationLevel',
       content: (
-        <td style={{ width: 200 }}>
+        <td style={{ width: 100 }}>
           <SelectCell
             defaultValue={
-              row.l4Item?.automationLevel ||
-              row.level3Cell?.data.automationLevel ||
-              'Select'
+              row.l4Item?.automationLevel || row.level3Cell?.data.automationLevel || 'Select'
             }
             options={getCellValueOptions('AutomationLevel')}
             onValueChange={() => {}}
@@ -227,14 +232,22 @@ const AssessmentTableBody = (props: any) => {
       key: 'CurrentApplications',
       content: (
         <td style={{ width: 200 }}>
-          <EditableCell
-            value={
-              row.l4Item?.currentApplicationsSystems?.join(', ') ||
-              row.level3Cell?.data.currentApplicationsSystems?.join(', ') ||
-              ''
-            }
-            onChange={() => {}}
-          />
+          <div className="flex items-center justify-between">
+            <div className="max-w-[200px] overflow-hidden">
+              <TagsList
+                tags={(
+                  row.l4Item?.currentApplicationsSystems ||
+                  row.level3Cell?.data.currentApplicationsSystems ||
+                  []
+                ).map((app: string, index: number) => ({
+                  id: `${row.l4Item?.id || row.level3Cell?.data.id}__currentApplications__${index}`,
+                  text: app,
+                }))}
+                onRemoveTag={() => {}}
+              />
+            </div>
+            <ChevronDown className="text-muted-foreground size-4" />
+          </div>
         </td>
       ),
     },
@@ -243,7 +256,7 @@ const AssessmentTableBody = (props: any) => {
       content: (
         <td style={{ width: 200 }}>
           <EditableCell
-            value={row.l4Item?.OngoingAutomation || row.level3Cell?.data.OngoingAutomation || 'N/A'} 
+            value={row.l4Item?.OngoingAutomation || row.level3Cell?.data.OngoingAutomation || 'N/A'}
             onChange={() => {}}
           />
         </td>
@@ -252,7 +265,7 @@ const AssessmentTableBody = (props: any) => {
     {
       key: 'BusinessRecommendationForAutomation',
       content: (
-        <td style={{ width: 250 }}>
+        <td style={{ width: 150 }}>
           <SelectCell
             defaultValue={
               row.l4Item?.businessRecommendationForAutomation ||
@@ -286,16 +299,12 @@ const AssessmentTableBody = (props: any) => {
         <td style={{ width: 150 }}>
           <RadioCell
             name={`${row.l4Item?.id}__AIPowered`}
-            value={
-              row.l4Item?.AIPowered ||
-              row.level3Cell?.data.AIPowered ||
-              ''
-            }
+            value={row.l4Item?.AIPowered || row.level3Cell?.data.AIPowered || ''}
             options={[
               { label: 'Yes', value: 'yes' },
               { label: 'No', value: 'no' },
             ]}
-            onChange={() => {}} 
+            onChange={() => {}}
           />
         </td>
       ),
@@ -305,17 +314,12 @@ const AssessmentTableBody = (props: any) => {
       content: (
         <td style={{ width: 250 }}>
           <EditableCell
-            value={
-              row.l4Item?.AIPoweredUseCase ||
-              row.level3Cell?.data.AIPoweredUseCase ||
-              '-'
-            }
+            value={row.l4Item?.AIPoweredUseCase || row.level3Cell?.data.AIPoweredUseCase || '-'}
             onChange={() => {}}
           />
         </td>
       ),
-    }
-    ,
+    },
     {
       key: 'AutonomousUseCaseEnabled',
       content: (
@@ -331,7 +335,7 @@ const AssessmentTableBody = (props: any) => {
               { label: 'Yes', value: 'yes' },
               { label: 'No', value: 'no' },
             ]}
-            onChange={() => {}} 
+            onChange={() => {}}
           />
         </td>
       ),
@@ -356,11 +360,7 @@ const AssessmentTableBody = (props: any) => {
       content: (
         <td style={{ width: 250 }}>
           <SelectCell
-            defaultValue={
-              row.l4Item?.ProcessCycle ||
-              row.level3Cell?.data.ProcessCycle ||
-              'Select'
-            }
+            defaultValue={row.l4Item?.ProcessCycle || row.level3Cell?.data.ProcessCycle || 'Select'}
             options={['Daily', 'Weekly', 'Monthly', 'Annually']}
             onValueChange={() => {}}
           />
@@ -372,11 +372,7 @@ const AssessmentTableBody = (props: any) => {
       content: (
         <td style={{ width: 250 }}>
           <EditableCell
-            value={
-              row.l4Item?.n ||
-              row.level3Cell?.data.processRepetitionWithinCycle ||
-              'N/A'
-            }
+            value={row.l4Item?.n || row.level3Cell?.data.processRepetitionWithinCycle || 'N/A'}
             onChange={() => {}}
           />
         </td>
@@ -427,23 +423,20 @@ const AssessmentTableBody = (props: any) => {
           />
         </td>
       ),
-    }
-    ,{
+    },
+    {
       key: 'KeyManualSteps',
       content: (
         <td style={{ width: 280 }}>
           <EditableCell
-            value={
-              row.l4Item?.keyManualSteps ||
-              row.level3Cell?.data.keyManualSteps ||
-              'N/A'
-            }
+            value={row.l4Item?.keyManualSteps || row.level3Cell?.data.keyManualSteps || 'N/A'}
             type={'textArea'}
             onChange={() => {}}
           />
         </td>
       ),
-    },{
+    },
+    {
       key: 'NorthStarTargetAutomation',
       content: (
         <td style={{ width: 250 }}>
@@ -473,19 +466,14 @@ const AssessmentTableBody = (props: any) => {
             onValueChange={() => {}}
           />
         </td>
-      ),  
-
+      ),
     },
     {
       key: 'SMEFeedback',
       content: (
         <td style={{ width: 250 }}>
           <EditableCell
-            value={
-              row.l4Item?.SMEFeedback ||
-              row.level3Cell?.data.SMEFeedback ||
-              'N/A'
-            }
+            value={row.l4Item?.SMEFeedback || row.level3Cell?.data.SMEFeedback || 'N/A'}
             type={'textArea'}
             onChange={() => {}}
           />
@@ -498,19 +486,15 @@ const AssessmentTableBody = (props: any) => {
         <td style={{ width: 150 }}>
           <RadioCell
             name={`${row.l4Item?.id}__toBeAIPowered`}
-            value={
-              row.l4Item?.toBeAIPowered ||
-              row.level3Cell?.data.toBeAIPowered ||
-              ''
-            }
+            value={row.l4Item?.toBeAIPowered || row.level3Cell?.data.toBeAIPowered || ''}
             options={[
               { label: 'Yes', value: 'yes' },
               { label: 'No', value: 'no' },
             ]}
-            onChange={() => {}} 
+            onChange={() => {}}
           />
         </td>
-      ),  
+      ),
     },
     {
       key: 'ToBeAIPoweredComments',
@@ -526,18 +510,14 @@ const AssessmentTableBody = (props: any) => {
             onChange={() => {}}
           />
         </td>
-      ),  
+      ),
     },
     {
       key: 'RateCardAED',
       content: (
         <td style={{ width: 150 }}>
           <EditableCell
-            value={
-              row.l4Item?.rateCardAED ||
-              row.level3Cell?.data.rateCardAED ||
-              'N/A'
-            }
+            value={row.l4Item?.rateCardAED || row.level3Cell?.data.rateCardAED || 'N/A'}
             onChange={() => {}}
           />
         </td>
@@ -558,27 +538,22 @@ const AssessmentTableBody = (props: any) => {
         </td>
       ),
     },
-      {
+    {
       key: 'MarkedAsReviewed',
       content: (
-        <td style={{ width: 150 }}>
-          <RadioCell
-            name={`${row.l4Item?.id}__markedAsReviewed`}
-            value={
-              row.l4Item?.markedAsReviewed ||
-              row.level3Cell?.data.markedAsReviewed ||
-              ''
+        <td style={{ width: 200 }}>
+          <MarkedAsReviewCell
+            marked={
+              row.l4Item?.markedAsReviewed || row.level3Cell?.data.markedAsReviewed || false
             }
-            options={[
-              { label: 'Yes', value: 'yes' },
-              { label: 'No', value: 'no' },
-            ]}
-            onChange={() => {}} 
+            date={row.l4Item?.reviewedOn || row.level3Cell?.data.reviewedOn || ''}
+            id={row.l4Item?.id || row.level3Cell?.data?.id || ''}
+            handleMarkAsReviewed={() => {}}
           />
         </td>
-      ),  
+      ),
     },
-     {
+    {
       key: 'BusinessFocalPoint',
       content: (
         <td style={{ width: 200 }}>
@@ -588,12 +563,14 @@ const AssessmentTableBody = (props: any) => {
               row.level3Cell?.data.businessFocalPoint?.join(', ') ||
               'Select'
             }
-            options={row.l4Item?.businessFocalPoint || row.level3Cell?.data.businessFocalPoint || []}
+            options={
+              row.l4Item?.businessFocalPoint || row.level3Cell?.data.businessFocalPoint || []
+            }
             onValueChange={() => {}}
           />
         </td>
       ),
-    },  
+    },
     {
       key: 'digitalFocalPoint',
       content: (
@@ -608,20 +585,13 @@ const AssessmentTableBody = (props: any) => {
             onValueChange={() => {}}
           />
         </td>
-      ),  
+      ),
     },
     {
       key: 'publishedDate',
       content: (
         <td style={{ width: 150 }}>
-          <EditableCell
-            value={
-              row.l4Item?.publishedDate ||
-              row.level3Cell?.data.publishedDate ||
-              'N/A'
-            }
-            onChange={() => {}}
-          />
+          {row.l4Item?.publishedDate || row.level3Cell?.data.publishedDate || 'N/A'}
         </td>
       ),
     },
@@ -629,37 +599,18 @@ const AssessmentTableBody = (props: any) => {
       key: 'submittedBy',
       content: (
         <td style={{ width: 150 }}>
-          <EditableCell
-            value={
-              row.l4Item?.submittedBy ||
-              row.level3Cell?.data.submittedBy ||
-              'N/A'
-            }
-            onChange={() => {}}
-          />
+          {row.l4Item?.submittedBy || row.level3Cell?.data.submittedBy || 'N/A'}
         </td>
-      ),  
-
+      ),
     },
     {
       key: 'submittedOn',
       content: (
         <td style={{ width: 150 }}>
-          <EditableCell
-            value={
-              row.l4Item?.submittedOn ||
-              row.level3Cell?.data.submittedOn ||
-              'N/A'
-            }
-            onChange={() => {}}
-          />
+          {row.l4Item?.submittedOn || row.level3Cell?.data.submittedOn || 'N/A'}
         </td>
       ),
-    }
-
-  
-    
-    
+    },
   ]
 
   return (

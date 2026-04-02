@@ -25,7 +25,7 @@ const SelectCell = (props:SelectProps) => {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="inline-flex h-9 min-w-16 items-center justify-between gap-2 rounded-md ps-2 pe-2 text-base text-foreground outline-none hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring"
+          className="inline-flex w-full text-left justify-between gap-2 rounded-md ps-2 pe-2 text-base text-foreground outline-none hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring"
           aria-label={`Selected value: ${value}`}
         >
           <span>{value}</span>

@@ -1,13 +1,5 @@
-import { MoreHorizontal } from 'lucide-react'
-
-import { Button } from '@/shared/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/shared/components/ui/dropdown-menu'
 import type { Level4Row } from '../../types'
+import CellMenuOptions from '../CellMenuOptions'
 
 interface Level4CellProps {
   item: Level4Row | null
@@ -33,30 +25,7 @@ const Level4Cell = ({ item }: Level4CellProps) => {
         <span className="text-xs text-muted-foreground">{item.level4Code}</span>
       </div>
 
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-xs"
-            className="shrink-0 opacity-0 transition-opacity group-hover/l4:opacity-100 text-muted-foreground"
-            aria-label={`Actions for ${item.level4Name}`}
-          >
-            <MoreHorizontal className="size-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" sideOffset={4} className="w-44 overflow-hidden rounded-xl border p-0 shadow-md">
-          <DropdownMenuItem className="rounded-none px-3 py-2 text-sm">
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem className="rounded-none px-3 py-2 text-sm">
-            Add sub-process
-          </DropdownMenuItem>
-          <DropdownMenuItem className="rounded-none px-3 py-2 text-sm text-destructive focus:text-destructive">
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <CellMenuOptions item={item} />
     </div>
   )
 }
