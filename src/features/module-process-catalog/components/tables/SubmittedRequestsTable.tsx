@@ -4,7 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import LevelsIcon from '@/assets/Levels.svg?react'
 
 import { Button } from '@/shared/components/ui/button'
-import DataTable from '@features/module-process-catalog/components/data-table/DataTable'
+import DataTable from '@/shared/components/data-table/DataTable'
 import {
   ProcessInfoCell,
   StageProgressCell,
