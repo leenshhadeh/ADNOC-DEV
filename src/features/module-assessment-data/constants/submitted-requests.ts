@@ -1,0 +1,161 @@
+import type { RequestItem } from "../types/submitted-requests";
+
+
+export const SUBMITTED_REQUESTS: RequestItem[] = [
+  {
+    id: 'request-1',
+    processId: 'r4',
+    processName: 'Play-based exploration (concept) 2',
+    requestId: '9377353',
+    requester: 'Maryam Al Shamsi',
+    status: 'Pending approval',
+    stageCurrent: 2,
+    stageTotal: 3,
+    stageText: 'Pending custodian approval',
+    submittedOn: '08 Apr 2024',
+    // Detail-view fields
+    processCategory: 'Dashboard',
+    domain: 'Exploration & Planning',
+    processLevel: 'Level 3',
+    level1: 'Exploration',
+    level2: 'Regional studies',
+    businessFocalPoint: 'Mohammed Al Hajeri',
+    workflowHistory: [
+      {
+        id: 'wh-1',
+        action: 'Submitted',
+        date: '22 Apr 2025 at 10:14 AM',
+        userName: 'Fatma Al Shamsi',
+        userRole: 'Opportunity Manager',
+      },
+      {
+        id: 'wh-2',
+        action: 'Reviewed',
+        date: '23 Apr 2025 at 02:30 PM',
+        userName: 'Sara Al Tameemi',
+        userRole: 'Opportunity Evaluator',
+      },
+      {
+        id: 'wh-3',
+        action: 'Returned',
+        date: '24 Apr 2025 at 09:15 AM',
+        userName: 'Sara Al Tameemi',
+        userRole: 'Opportunity Evaluator',
+        reason:
+          'Phasellus accumsan imperdiet tempor. Cras tincidunt, arcu nec eleifend porttitor, orci est vehicula.',
+      },
+      {
+        id: 'wh-4',
+        action: 'Resubmitted',
+        date: '25 Apr 2025 at 11:45 AM',
+        userName: 'Fatma Al Shamsi',
+        userRole: 'Opportunity Manager',
+      },
+      {
+        id: 'wh-5',
+        action: 'Reviewed',
+        date: '26 Apr 2025 at 03:20 PM',
+        userName: 'Mohammed Al Hajeri',
+        userRole: 'BPA Program Manager',
+      },
+      {
+        id: 'wh-6',
+        action: 'Approved',
+        date: '27 Apr 2025 at 04:00 PM',
+        userName: 'Mohammed Al Hajeri',
+        userRole: 'BPA Program Manager',
+      },
+    ],
+    changes: [
+      {
+        id: 'description',
+        label: 'Process description',
+        oldValue: '-',
+        newValue:
+          'Creating a comprehensive Basin Modeling concept involves several key steps. First, define the modeling objectives, like understanding hydrological cycles or basin-scale modeling.',
+      },
+      {
+        id: 'parent-name',
+        label: 'Process parent name (L2)',
+        oldValue: 'Regional studies',
+        newValue: 'Studies',
+      },
+      {
+        id: 'applicability',
+        label: 'Applicability',
+        oldValue: 'Regional studies',
+        newValue: 'ADNOC – Offshore',
+      },
+      { id: 'shared-service', label: 'Shared service', oldValue: 'No', newValue: 'Yes' },
+    ],
+  },
+  {
+    id: 'request-2',
+    processId: 'r5',
+    domain: 'Exploration & Planning',
+    processName: 'Define Budget and Schedule',
+    requestId: '9377353',
+    requester: 'Mohammed Al Hajeri',
+    status: 'Returned draft',
+    stageCurrent: 1,
+    stageTotal: 3,
+    stageText: 'Pending updates',
+    submittedOn: '09 Apr 2024',
+    changes: [
+      {
+        id: 'description',
+        label: 'Process description',
+        oldValue: 'Draft description',
+        newValue: 'Updated process scope',
+      },
+      {
+        id: 'parent-name',
+        label: 'Process parent name (L2)',
+        oldValue: 'Planning',
+        newValue: 'Budget planning',
+      },
+      {
+        id: 'applicability',
+        label: 'Applicability',
+        oldValue: 'Corporate',
+        newValue: 'Corporate + Group',
+      },
+      { id: 'shared-service', label: 'Shared service', oldValue: 'No', newValue: 'No' },
+    ],
+  },
+  {
+    id: 'request-3',
+    processId: 'r6',
+    domain: 'Exploration & Planning',
+    processName: 'Develop external communication',
+    requestId: '9377353',
+    requester: 'Noura Al Ghamdi',
+    status: 'Pending signoff',
+    stageCurrent: 3,
+    stageTotal: 3,
+    stageText: 'Program manager signoff',
+    submittedOn: '10 Apr 2024',
+    changes: [
+      {
+        id: 'description',
+        label: 'Process description',
+        oldValue: 'External comms draft',
+        newValue: 'External comms final',
+      },
+      {
+        id: 'parent-name',
+        label: 'Process parent name (L2)',
+        oldValue: 'Campaign management',
+        newValue: 'Comms management',
+      },
+      {
+        id: 'applicability',
+        label: 'Applicability',
+        oldValue: 'Internal',
+        newValue: 'Internal + External',
+      },
+      { id: 'shared-service', label: 'Shared service', oldValue: 'Yes', newValue: 'Yes' },
+    ],
+  },
+
+]
