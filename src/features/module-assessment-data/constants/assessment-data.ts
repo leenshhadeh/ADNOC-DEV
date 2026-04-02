@@ -68,7 +68,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                     description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                     centrallyGovernedProcess: 'Yes',
                     sharedService: {services:12,shared:3},
-                    businessUnit: ['Exploration'],
+                    businessUnit: ['Internal Audit Department (Operations)','Exploration'],
                     processCriticality: 'High',
                      
                   },
@@ -96,6 +96,8 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                     sharedService: {services:12,shared:3},
                     businessUnit: ['Exploration'],
                     processCriticality: 'High',
+                    currentApplicationsSystems:['Audit Management System (RSA Archer)','Audit Management'],
+
                    
                   },
                 ],
@@ -140,7 +142,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 scaleOfProcess:'Medium: (bigger team within one department)',
                 automationMaturityLevel:'Fully Automated',
                 automationLevel:'50%',
-                currentApplicationsSystems:['Microsot Excel','Petrel'],
+                currentApplicationsSystems:['Audit Management System (RSA Archer)','Audit Management'],
                 OngoingAutomationDigitalInitiatives:'N/A',
                 businessRecommendationForAutomation:'Should be kept as is',
                 keyChallengesAutomationNeeds:'none',
@@ -182,6 +184,8 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 businessUnit: ['Exploration'],
                 ResponsibleDigitalTeam : ['Subsurface Digitalization'],
                 processCriticality: 'High',
+                currentApplicationsSystems:['Audit Management System (RSA Archer)','Audit Management'],
+
                 level4Items: [
                   {
                     id: 'l4-4-1',
@@ -203,6 +207,8 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 businessUnit: ['Exploration'],
                 ResponsibleDigitalTeam : ['Subsurface Digitalization'],
                 processCriticality: 'High',
+                currentApplicationsSystems:['Audit Management System (RSA Archer)','Audit Management'],
+
                 level4Items: [
                   {
                     id: 'l4-5-1',
