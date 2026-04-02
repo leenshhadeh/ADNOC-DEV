@@ -152,10 +152,7 @@ const ColumnFilter = <TData, TValue>({ column }: ColumnFilterProps<TData, TValue
     if (!open) return
     const handler = (e: MouseEvent) => {
       const target = e.target as Node
-      if (
-        triggerRef.current?.contains(target) ||
-        popoverRef.current?.contains(target)
-      ) return
+      if (triggerRef.current?.contains(target) || popoverRef.current?.contains(target)) return
       setOpen(false)
     }
     document.addEventListener('mousedown', handler)
@@ -233,116 +230,117 @@ const ColumnFilter = <TData, TValue>({ column }: ColumnFilterProps<TData, TValue
       </button>
 
       {/* Popover — portaled to document.body so it escapes overflow containers */}
-      {open && createPortal(
-        <div
-          ref={popoverRef}
-          className={cn(
-            'bg-background border-border fixed z-[100] w-64 rounded-xl border shadow-xl',
-            'animate-in fade-in-0 zoom-in-95',
-          )}
-        >
-          {/* Sort options */}
-          <div className="border-border border-b px-1 py-1">
-            <button
-              type="button"
-              onClick={() => handleSort('asc')}
-              className={cn(
-                'flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors',
-                sortDir === 'asc'
-                  ? 'bg-accent text-foreground'
-                  : 'text-foreground hover:bg-accent/60',
-              )}
-            >
-              <ArrowDownNarrowWide className="size-4 opacity-70" />
-              Sort A to Z
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSort('desc')}
-              className={cn(
-                'flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors',
-                sortDir === 'desc'
-                  ? 'bg-accent text-foreground'
-                  : 'text-foreground hover:bg-accent/60',
-              )}
-            >
-              <ArrowUpNarrowWide className="size-4 opacity-70" />
-              Sort Z to A
-            </button>
-          </div>
-
-          {/* Filter label */}
-          <div className="px-3 pt-3 pb-1.5">
-            <span className="text-muted-foreground text-sm font-medium">Filter by:</span>
-          </div>
-
-          {/* Search */}
-          <div className="px-3 pb-2">
-            <div className="border-border bg-card flex items-center gap-2 rounded-lg border px-2.5">
-              <Search className="text-muted-foreground size-3.5 shrink-0" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search..."
-                className="text-foreground placeholder:text-muted-foreground/60 h-9 w-full bg-transparent text-sm outline-none"
-              />
-            </div>
-          </div>
-
-          {/* Options list */}
-          <div className="max-h-52 overflow-y-auto px-1 pb-1">
-            {/* Select All */}
-            <label className="hover:bg-accent/60 flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-1.5">
-              <Checkbox
-                checked={allSelected}
-                indeterminate={someSelected}
-                onCheckedChange={toggleAll}
-              />
-              <span className="text-foreground text-sm font-medium">Select All</span>
-            </label>
-
-            {visibleOptions.map((option) => (
-              <label
-                key={option}
-                className="hover:bg-accent/60 flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-1.5"
-              >
-                <Checkbox
-                  checked={pendingValues.has(option)}
-                  onCheckedChange={() => toggleOne(option)}
-                />
-                <span className="text-foreground truncate text-sm">{option}</span>
-              </label>
-            ))}
-
-            {visibleOptions.length === 0 && (
-              <p className="text-muted-foreground px-3 py-2 text-center text-xs">No matches</p>
+      {open &&
+        createPortal(
+          <div
+            ref={popoverRef}
+            className={cn(
+              'bg-background border-border fixed z-[100] w-64 rounded-xl border shadow-xl',
+              'animate-in fade-in-0 zoom-in-95',
             )}
-          </div>
+          >
+            {/* Sort options */}
+            <div className="border-border border-b px-1 py-1">
+              <button
+                type="button"
+                onClick={() => handleSort('asc')}
+                className={cn(
+                  'flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors',
+                  sortDir === 'asc'
+                    ? 'bg-accent text-foreground'
+                    : 'text-foreground hover:bg-accent/60',
+                )}
+              >
+                <ArrowDownNarrowWide className="size-4 opacity-70" />
+                Sort A to Z
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSort('desc')}
+                className={cn(
+                  'flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors',
+                  sortDir === 'desc'
+                    ? 'bg-accent text-foreground'
+                    : 'text-foreground hover:bg-accent/60',
+                )}
+              >
+                <ArrowUpNarrowWide className="size-4 opacity-70" />
+                Sort Z to A
+              </button>
+            </div>
 
-          {/* Footer */}
-          <div className="border-border grid grid-cols-2 gap-2 border-t px-3 py-2.5">
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              className="h-9 rounded-full"
-              onClick={handleClear}
-            >
-              Clear filter
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              className="h-9 rounded-full bg-[#5B23FF] text-white hover:bg-[#4A1DD6]"
-              onClick={handleApply}
-            >
-              Apply filter
-            </Button>
-          </div>
-        </div>,
-        document.body,
-      )}
+            {/* Filter label */}
+            <div className="px-3 pt-3 pb-1.5">
+              <span className="text-muted-foreground text-sm font-medium">Filter by:</span>
+            </div>
+
+            {/* Search */}
+            <div className="px-3 pb-2">
+              <div className="border-border bg-card flex items-center gap-2 rounded-lg border px-2.5">
+                <Search className="text-muted-foreground size-3.5 shrink-0" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search..."
+                  className="text-foreground placeholder:text-muted-foreground/60 h-9 w-full bg-transparent text-sm outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Options list */}
+            <div className="max-h-52 overflow-y-auto px-1 pb-1">
+              {/* Select All */}
+              <label className="hover:bg-accent/60 flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-1.5">
+                <Checkbox
+                  checked={allSelected}
+                  indeterminate={someSelected}
+                  onCheckedChange={toggleAll}
+                />
+                <span className="text-foreground text-sm font-medium">Select All</span>
+              </label>
+
+              {visibleOptions.map((option) => (
+                <label
+                  key={option}
+                  className="hover:bg-accent/60 flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-1.5"
+                >
+                  <Checkbox
+                    checked={pendingValues.has(option)}
+                    onCheckedChange={() => toggleOne(option)}
+                  />
+                  <span className="text-foreground truncate text-sm">{option}</span>
+                </label>
+              ))}
+
+              {visibleOptions.length === 0 && (
+                <p className="text-muted-foreground px-3 py-2 text-center text-xs">No matches</p>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="border-border grid grid-cols-2 gap-2 border-t px-3 py-2.5">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="h-9 rounded-full"
+                onClick={handleClear}
+              >
+                Clear filter
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                className="h-9 rounded-full bg-[#5B23FF] text-white hover:bg-[#4A1DD6]"
+                onClick={handleApply}
+              >
+                Apply filter
+              </Button>
+            </div>
+          </div>,
+          document.body,
+        )}
     </>
   )
 }
