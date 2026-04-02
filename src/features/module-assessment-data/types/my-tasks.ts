@@ -1,10 +1,12 @@
 import type { CatalogStatus } from '@features/module-process-catalog/components/cells/StatusBadgeCell'
 
 export interface ChangeRecord {
-  name: string
+  name?: string
   comment: string
   oldValue: string
   newValue: string
+  id?: string
+  label?: string
 }
 
 export interface TaskItem {

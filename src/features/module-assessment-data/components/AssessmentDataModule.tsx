@@ -16,6 +16,7 @@ import { ASSESSMENT_DATA } from '../constants/assessment-data'
 import { ASSESSMENT_ENTITY_CONFIG } from '../types'
 import ProcessesMenu from '../../../shared/components/ProcessesMenu'
 import MyTasksTable from './tabels/MyTasksTable'
+import SubmittedRequestsTable from './tabels/SubmittedRequestsTable'
 
 const AssessmentDataModule = () => {
   const [activeTab, setActiveTab] = useState('processes')
@@ -72,8 +73,12 @@ const AssessmentDataModule = () => {
       <div className="flex-1 overflow-auto px-6 py-1">
         {activeTab == 'processes' ? (
           <AssessmentDataTable data={ASSESSMENT_DATA} entityConfig={ASSESSMENT_ENTITY_CONFIG} />
-        ) : (
+        ) : activeTab == 'my-tasks' ? (
           <MyTasksTable />
+        ) : activeTab == 'submittedRequests' ? (
+          <SubmittedRequestsTable />
+        ) : (
+          <p className="text-foreground text-sm italic">No data found</p>
         )}
       </div>
     </div>
