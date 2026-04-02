@@ -1,12 +1,14 @@
 import React from 'react'
 import { EditableCell, RadioCell } from '@/shared/components/table-primitives'
 import { StatusBadgeCell } from '@/features/module-process-catalog/components/cells'
-import { ChevronDown, Maximize2, Tally1 } from 'lucide-react'
+import { Check, CheckCheck, ChevronDown, Maximize2, Tally1 } from 'lucide-react'
 import SelectCell from '@/shared/components/table-primitives/SelectCell'
 import TagsList from '@/shared/components/table-primitives/TagsList'
+import MarkedAsReviewCell from './cells/MarkedAsReviewCell'
 
 const AssessmentTableBody = (props: any) => {
   const { row } = props
+  console.log('Rendering AssessmentTableBody for row:', row) // Debug log to check row data
 
   const getSharedCellValue = (item: any) => {
     let parsedValue: any
@@ -31,7 +33,6 @@ const AssessmentTableBody = (props: any) => {
     }
     return <></>
   }
-
   const getCellValueOptions = (fieldName: string) => {
     const optionsMap: any = {
       AutomationLevel: ['0%', '10%', '20%', '25%', '50%', '80%', '90%', '100%'],
@@ -540,15 +541,14 @@ const AssessmentTableBody = (props: any) => {
     {
       key: 'MarkedAsReviewed',
       content: (
-        <td style={{ width: 150 }}>
-          <RadioCell
-            name={`${row.l4Item?.id}__markedAsReviewed`}
-            value={row.l4Item?.markedAsReviewed || row.level3Cell?.data.markedAsReviewed || ''}
-            options={[
-              { label: 'Yes', value: 'yes' },
-              { label: 'No', value: 'no' },
-            ]}
-            onChange={() => {}}
+        <td style={{ width: 200 }}>
+          <MarkedAsReviewCell
+            marked={
+              row.l4Item?.markedAsReviewed || row.level3Cell?.data.markedAsReviewed || false
+            }
+            date={row.l4Item?.reviewedOn || row.level3Cell?.data.reviewedOn || ''}
+            id={row.l4Item?.id || row.level3Cell?.data?.id || ''}
+            handleMarkAsReviewed={() => {}}
           />
         </td>
       ),
@@ -599,7 +599,7 @@ const AssessmentTableBody = (props: any) => {
       key: 'submittedBy',
       content: (
         <td style={{ width: 150 }}>
-         {row.l4Item?.submittedBy || row.level3Cell?.data.submittedBy || 'N/A'}
+          {row.l4Item?.submittedBy || row.level3Cell?.data.submittedBy || 'N/A'}
         </td>
       ),
     },
@@ -607,7 +607,7 @@ const AssessmentTableBody = (props: any) => {
       key: 'submittedOn',
       content: (
         <td style={{ width: 150 }}>
-        { row.l4Item?.submittedOn || row.level3Cell?.data.submittedOn || 'N/A'}
+          {row.l4Item?.submittedOn || row.level3Cell?.data.submittedOn || 'N/A'}
         </td>
       ),
     },

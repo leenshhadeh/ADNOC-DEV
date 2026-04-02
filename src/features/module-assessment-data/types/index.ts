@@ -12,6 +12,7 @@ export interface Level4Row {
   processCriticality?: string
   OngoingAutomation?: string
 
+
 }
 
 export interface AssessmentLevel3 {
@@ -49,6 +50,10 @@ export interface AssessmentLevel3 {
   keyManualSteps ?: string
   northStarTargetAutomation ?: string
   targetAutomationLevelPercent ?: string
+  reviewedOn?: string
+  markedAsReviewed?: string
+  submittedBy?: string
+  submittedOn?: string
 
 
   

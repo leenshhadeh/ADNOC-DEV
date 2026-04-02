@@ -52,7 +52,8 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 toBeAIPoweredComments:'AI could be used to assist with result interpretation and identify patterns in the data.',
                 rateCardAED:'500 AED',
                 costOfManualEffortAED:'120000 AED',
-                markedAsReviewed:'No',
+                markedAsReviewed:'false',
+                reviewedOn:'',
                 businessFocalPoint:['John Doe'],
                 digitalFocalPoint:['Jane Smith'],
                 publishedDate:'2024-01-15',
@@ -95,6 +96,8 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                     centrallyGovernedProcess: 'Yes',
                     sharedService: {services:12,shared:3},
                     businessUnit: ['Exploration'],
+                    markedAsReviewed:'true',
+                    reviewedOn:'2024-02-01',
                     processCriticality: 'High',
                     currentApplicationsSystems:['Audit Management System (RSA Archer)','Audit Management'],
 
@@ -163,7 +166,8 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 toBeAIPoweredComments:'AI could be used to assist with result interpretation and identify patterns in the data.',
                 rateCardAED:'400 AED',
                 costOfManualEffortAED:'120000 AED',
-                markedAsReviewed:'No',
+                markedAsReviewed:'true',
+                reviewedOn:'2024-02-01',
                 businessFocalPoint:['John Doe'],
                 digitalFocalPoint:['Jane Smith'],
                 publishedDate:'2024-01-15',
@@ -185,7 +189,8 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 ResponsibleDigitalTeam : ['Subsurface Digitalization'],
                 processCriticality: 'High',
                 currentApplicationsSystems:['Audit Management System (RSA Archer)','Audit Management'],
-
+                markedAsReviewed:'false',
+                reviewedOn:'',
                 level4Items: [
                   {
                     id: 'l4-4-1',
