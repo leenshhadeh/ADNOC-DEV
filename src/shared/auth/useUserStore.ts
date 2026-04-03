@@ -22,7 +22,8 @@ export const useUserStore = create<UserStore>((set) => ({
   user: {
     name: 'Jane Doe',
     // role: 'BPA Program Manager',
-    role: 'Business Focal Point',
+    // role: 'Business Focal Point',
+    role: 'BPA Process Catalog Custodian',
   },
   setUser: (user) => set({ user }),
   setRole: (role) => set((state) => ({ user: { ...state.user, role } })),

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Eye } from 'lucide-react'
 import type { ColumnDef } from '@tanstack/react-table'
 
@@ -12,6 +12,8 @@ import {
   UserBadgeCell,
 } from '@features/module-process-catalog/components/cells'
 import LevelsIcon from '@/assets/Levels.svg?react'
+
+import TaskDetailsSheet from './TaskDetailsSheet'
 
 import type { TaskItem } from '@features/module-process-catalog/types/my-tasks'
 import { useGetMyTasks } from '@features/module-process-catalog/hooks/useGetMyTasks'
@@ -29,6 +31,23 @@ const LevelCell = ({ level }: { level: string }) => {
 const MyTasksTable = () => {
   const { data: tasks, isLoading, isError } = useGetMyTasks()
   const navigateToProcess = useCatalogNavStore((s) => s.navigateToProcess)
+  const [selectedTask, setSelectedTask] = useState<TaskItem | null>(null)
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+
+  const handleOpenDetails = (task: TaskItem) => {
+    setSelectedTask(task)
+    setIsDetailsOpen(true)
+  }
+
+  const handleTaskAction = (
+    taskId: string,
+    action: 'approve' | 'reject' | 'return',
+    reason?: string,
+  ) => {
+    // TODO: wire to mutation hooks when backend is ready
+    console.log(`Task ${taskId}: ${action}`, reason ? `reason: ${reason}` : '')
+  }
+
   const columns = useMemo<ColumnDef<TaskItem, unknown>[]>(
     () => [
       {
@@ -40,7 +59,15 @@ const MyTasksTable = () => {
         cell: (info) => {
           if (info.row.depth > 0) return null
           const row = info.row.original
-          return <ProcessInfoCell processName={row.processName} requestId={row.requestId} />
+          return (
+            <button
+              type="button"
+              className="focus-visible:ring-ring w-full cursor-pointer text-start outline-none focus-visible:ring-2"
+              onClick={() => handleOpenDetails(row)}
+            >
+              <ProcessInfoCell processName={row.processName} requestId={row.requestId} />
+            </button>
+          )
         },
       },
       {
@@ -238,16 +265,24 @@ const MyTasksTable = () => {
   }
 
   return (
-    <DataTable
-      columns={columns}
-      data={tasks ?? []}
-      density="comfortable"
-      enableColumnDnd={false}
-      enableSorting={false}
-      initialColumnPinning={{ left: ['processName'] }}
-      getSubRows={(row) => row.subRows}
-      tableMeta={{ rowDividers: true }}
-    />
+    <>
+      <DataTable
+        columns={columns}
+        data={tasks ?? []}
+        density="comfortable"
+        enableColumnDnd={false}
+        enableSorting={false}
+        initialColumnPinning={{ left: ['processName'] }}
+        getSubRows={(row) => row.subRows}
+        tableMeta={{ rowDividers: true }}
+      />
+      <TaskDetailsSheet
+        task={selectedTask}
+        open={isDetailsOpen}
+        onOpenChange={setIsDetailsOpen}
+        onAction={handleTaskAction}
+      />
+    </>
   )
 }
 

@@ -5,6 +5,7 @@ import { ChevronDown, Eye, MoreHorizontal, Pencil, Plus, RotateCcw } from 'lucid
 import { EditLevel4sModal } from './EditLevel4sModal'
 import { useGetLevel4s } from '@features/module-process-catalog/hooks/useGetLevel4s'
 import { PermissionGuard } from '@/shared/components/PermissionGuard'
+import { includeListFilterFn, firstCharFilterFn } from '@/shared/components/data-table/ColumnFilter'
 
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/components/ui/button'
@@ -478,6 +479,8 @@ export function buildCatalogColumns(
     header: 'Domain',
     size: 180,
     enableSorting: false,
+    enableColumnFilter: true,
+    filterFn: includeListFilterFn,
     cell: (info: CellContext<ProcessItem, unknown>) => {
       const rows = info.table.getRowModel().rows
       const prev = info.row.index > 0 ? rows[info.row.index - 1] : null
@@ -497,9 +500,12 @@ export function buildCatalogColumns(
 
   const level1Col: ColumnDef<ProcessItem, unknown> = {
     id: 'level1',
+    accessorFn: (row) => row.level1Name,
     header: 'Level 1',
     size: 200,
     enableSorting: false,
+    enableColumnFilter: true,
+    filterFn: includeListFilterFn,
     cell: (info: CellContext<ProcessItem, unknown>) => {
       const rows = info.table.getRowModel().rows
       const prev = info.row.index > 0 ? rows[info.row.index - 1] : null
@@ -543,9 +549,12 @@ export function buildCatalogColumns(
 
   const level2Col: ColumnDef<ProcessItem, unknown> = {
     id: 'level2',
+    accessorFn: (row) => row.level2Name,
     header: 'Level 2',
     size: 200,
     enableSorting: false,
+    enableColumnFilter: true,
+    filterFn: includeListFilterFn,
     cell: (info: CellContext<ProcessItem, unknown>) => {
       const rows = info.table.getRowModel().rows
       const prev = info.row.index > 0 ? rows[info.row.index - 1] : null
@@ -589,9 +598,13 @@ export function buildCatalogColumns(
 
   const level3Col: ColumnDef<ProcessItem, unknown> = {
     id: 'level3',
+    accessorFn: (row) => row.level3Name,
     header: 'Level 3',
     size: 240,
     enableSorting: false,
+    enableColumnFilter: true,
+    filterFn: firstCharFilterFn,
+    meta: { filterByFirstChar: true },
     cell: (info: CellContext<ProcessItem, unknown>) => {
       const isBulkMode = info.table.options.meta?.isBulkMode ?? false
       const isSelected = info.row.getIsSelected()
@@ -663,6 +676,9 @@ export function buildCatalogColumns(
     header: 'Level 3 Status',
     size: 170,
     enableSorting: false,
+    enableColumnFilter: true,
+    filterFn: includeListFilterFn,
+    meta: { fixedFilterOptions: ['Published', 'Draft', 'Pending Approval'] },
     cell: (info: CellContext<ProcessItem, unknown>) => (
       <StatusBadgeCell status={info.getValue() as CatalogStatus} />
     ),

@@ -1,28 +1,20 @@
 import { useEffect } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { ChevronDown, Plus, Trash2, X } from 'lucide-react'
 
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/components/ui/button'
 import { useGetGroupCompanies } from '@features/module-process-catalog/hooks/useGetGroupCompanies'
+import {
+  addLevel4sFormSchema,
+  type AddLevel4sFormValues,
+  type AddLevel4Item,
+} from '@features/module-process-catalog/schemas/catalog.schemas'
 
-// ── Schema ────────────────────────────────────────────────────────────────────
+export type { AddLevel4Item }
 
-const itemSchema = z.object({
-  processCode: z.string(),
-  processName: z.string().min(1, 'Required'),
-  processDescription: z.string().optional(),
-})
-
-const formSchema = z.object({
-  groupCompany: z.string().min(1, 'Please select a group company'),
-  items: z.array(itemSchema).min(1),
-})
-
-type FormValues = z.infer<typeof formSchema>
-export type AddLevel4Item = FormValues['items'][number]
+type FormValues = AddLevel4sFormValues
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
@@ -113,7 +105,7 @@ const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sM
     reset,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(addLevel4sFormSchema),
     defaultValues: buildDefaults(),
   })
 

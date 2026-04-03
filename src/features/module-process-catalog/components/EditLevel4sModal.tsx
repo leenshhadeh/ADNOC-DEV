@@ -12,26 +12,18 @@
 import { useEffect } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { Plus, Trash2, X } from 'lucide-react'
 
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/components/ui/button'
+import {
+  editLevel4sFormSchema,
+  type EditLevel4sFormValues,
+  type EditLevel4Row,
+} from '@features/module-process-catalog/schemas/catalog.schemas'
 
-// ── Schema ────────────────────────────────────────────────────────────────────
-
-const level4RowSchema = z.object({
-  processCode: z.string().min(1, 'Required'),
-  processName: z.string().min(1, 'Required'),
-  processDescription: z.string().optional(),
-})
-
-const formSchema = z.object({
-  rows: z.array(level4RowSchema),
-})
-
-type FormValues = z.infer<typeof formSchema>
-type Level4Row = FormValues['rows'][number]
+type FormValues = EditLevel4sFormValues
+type Level4Row = EditLevel4Row
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
@@ -165,7 +157,7 @@ export const EditLevel4sModal = ({
     reset,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(editLevel4sFormSchema),
     defaultValues: { rows: defaultRows },
   })
 

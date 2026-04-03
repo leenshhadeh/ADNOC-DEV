@@ -7,6 +7,7 @@ import { Button } from '@/shared/components/ui/button'
 import { TableHead } from '@/shared/components/ui/table'
 import { cn } from '@/shared/lib/utils'
 import FilterIcon from '@/assets/Shape.svg?react'
+import ColumnFilter from './ColumnFilter'
 
 import type { DataTableHeaderProps } from './interfaces'
 
@@ -138,15 +139,11 @@ const DataTableHeader = <TData, TValue>({
             >
               {flexRender(column.columnDef.header, header.getContext())}
             </span>
-            {/* {enableSorting && column.getCanSort() && sortedState === 'asc' && (
-            <ArrowUp className="size-3.5" />
-          )}
-          {enableSorting && column.getCanSort() && sortedState === 'desc' && (
-            <ArrowDown className="size-3.5" />
-          )} */}
-            {/* {enableSorting && column.getCanSort() && !sortedState && ( */}
-            <FilterIcon className="size-3.5 opacity-70" />
-            {/* )} */}
+            {column.getCanFilter() ? (
+              <ColumnFilter column={column} />
+            ) : (
+              <FilterIcon className="size-3.5 opacity-70" />
+            )}
           </Button>
         )}
       </div>

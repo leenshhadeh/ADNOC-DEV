@@ -5,20 +5,20 @@ import { cn } from '@/shared/lib/utils'
 import sidebarIcon from '@/assets/Logo.svg'
 import dashboardIcon from '@/assets/icons/dashboard.svg'
 import assessmentDataIcon from '@/assets/icons/assesment.svg'
-import automationTargetsIcon from '@/assets/icons/target.svg'
+// import automationTargetsIcon from '@/assets/icons/target.svg'
 import processCatalogIcon from '@/assets/icons/paper.svg'
-import opportunitiesIcon from '@/assets/icons/bag.svg'
+// import opportunitiesIcon from '@/assets/icons/bag.svg'
 
 const menuItems = [
   { to: '/dashboard', label: 'Dashboard', icon: dashboardIcon },
   { to: '/assessment-data', label: 'Assessment Data', icon: assessmentDataIcon },
-  { to: '/automation-targets', label: 'Automation Targets', icon: automationTargetsIcon },
+  // { to: '/automation-targets', label: 'Automation Targets', icon: automationTargetsIcon },
   { to: '/process-catalog', label: 'Process Catalog', icon: processCatalogIcon },
-  { to: '/opportunities', label: 'Opportunities', icon: opportunitiesIcon },
+  // { to: '/opportunities', label: 'Opportunities', icon: opportunitiesIcon },
 ]
 
 const bottomItems = [
-  { to: '/settings', label: 'Settings', icon: Settings },
+  // { to: '/settings', label: 'Settings', icon: Settings },
   { to: '/logout', label: 'Log out', icon: LogOut },
 ]
 
@@ -137,7 +137,7 @@ const Sidebar = () => {
           ))}
         </nav>
 
-        <div className="border-sidebar-border border-t py-4">
+        {/* <div className="border-sidebar-border border-t py-4">
           <div
             className={cn(
               'from-sidebar to-sidebar-accent flex h-20 items-center rounded-2xl',
@@ -147,7 +147,7 @@ const Sidebar = () => {
             <Sparkles className="text-primary size-5" />
             {!isCollapsed && <span className="text-foreground ml-3 text-lg/none">Ask AI</span>}
           </div>
-        </div>
+        </div> */}
       </div>
     </aside>
   )
