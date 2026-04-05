@@ -1,10 +1,12 @@
 import React from 'react'
 import { EditableCell, RadioCell } from '@/shared/components/table-primitives'
 import { StatusBadgeCell } from '@/features/module-process-catalog/components/cells'
-import { Check, CheckCheck, ChevronDown, Maximize2, Tally1 } from 'lucide-react'
+import {ChevronDown, Maximize2, Tally1 } from 'lucide-react'
 import SelectCell from '@/shared/components/table-primitives/SelectCell'
 import TagsList from '@/shared/components/table-primitives/TagsList'
 import MarkedAsReviewCell from './cells/MarkedAsReviewCell'
+import { ASSESSMENT_APPLICATIONS } from '../constants/CurrentApplication'
+import TagsSelect from '@/shared/components/table-primitives/TagsSelect'
 
 const AssessmentTableBody = (props: any) => {
   const { row } = props
@@ -128,6 +130,7 @@ const AssessmentTableBody = (props: any) => {
                   }),
                 )}
                 onRemoveTag={() => {}}
+                allTags={[]}
               />
             </div>
 
@@ -150,6 +153,7 @@ const AssessmentTableBody = (props: any) => {
               text: team,
             }))}
             onRemoveTag={() => {}}
+            allTags={[]}
           />
         </td>
       ),
@@ -234,16 +238,17 @@ const AssessmentTableBody = (props: any) => {
         <td style={{ width: 200 }}>
           <div className="flex items-center justify-between">
             <div className="max-w-[200px] overflow-hidden">
-              <TagsList
+              <TagsSelect
                 tags={(
                   row.l4Item?.currentApplicationsSystems ||
                   row.level3Cell?.data.currentApplicationsSystems ||
                   []
                 ).map((app: string, index: number) => ({
-                  id: `${row.l4Item?.id || row.level3Cell?.data.id}__currentApplications__${index}`,
-                  text: app,
-                }))}
-                onRemoveTag={() => {}}
+                  id: `${app}_${index}`,
+                  name: app,
+                  }))
+              }
+                allTags={ASSESSMENT_APPLICATIONS}
               />
             </div>
             <ChevronDown className="text-muted-foreground size-4" />
