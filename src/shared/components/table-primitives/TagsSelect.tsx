@@ -9,11 +9,12 @@ import {
 } from '@/shared/components/ui/dropdown-menu'
 
 interface TagsListProps {
-  tags: { id: string; name: string }[]
-  allTags: { id: string; name: string }[] // Assuming you have a list of all available tags
+  tags: { id: string; name: string ,img?:string}[]
+  allTags: { id: string; name: string ,img?:string}[] // Assuming you have a list of all available tags
+  isUsers?: boolean
 }
 
-const TagsSelect: React.FC<TagsListProps> = ({ tags, allTags }) => {
+const TagsSelect: React.FC<TagsListProps> = ({ tags, allTags, isUsers }) => {
   const [open, setOpen] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>(tags.map((tag) => tag.id))
   const [selectedTags, setSelectedTags] = useState(tags)
@@ -54,12 +55,11 @@ const TagsSelect: React.FC<TagsListProps> = ({ tags, allTags }) => {
           </div>
         </DropdownMenuTrigger>
 
-
         <DropdownMenuContent
           className="w-[420px] border-0 bg-transparent p-0 shadow-none"
           align="start"
         >
-          <div className="rounded-md border border-[#E0E0E0] bg-[#F1F3F5] p-2 shadow-sm flex items-center justify-start flex-wrap gap-2">
+          <div className="flex flex-wrap items-center justify-start gap-2 rounded-md border border-[#E0E0E0] bg-[#F1F3F5] p-2 shadow-sm">
             {selectedTags.map((tag) => (
               <div
                 key={tag.id}
@@ -77,12 +77,10 @@ const TagsSelect: React.FC<TagsListProps> = ({ tags, allTags }) => {
             ))}
           </div>
 
-            {/* multi checkbox: --------------------------------------------------------------------- */}
-          <div className="mt-2 rounded-md border border-[#E0E0E0] bg-white p-0 shadow-sm">
+          {/* multi checkbox: --------------------------------------------------------------------- */}
+          <div className="mt-2 max-h-[360px] overflow-scroll rounded-md border border-[#E0E0E0] bg-white p-0 shadow-sm">
             <DropdownMenuLabel className="mb-2 p-0 text-sm font-medium text-gray-700">
-             <div className="border-[#E0E0E0] bg-[#F1F3F5] p-2">
-Search
-             </div>
+              <div className="border-[#E0E0E0] bg-[#F1F3F5] p-2">Search</div>
             </DropdownMenuLabel>
             {allTags.map((option) => (
               <DropdownMenuCheckboxItem
@@ -90,8 +88,25 @@ Search
                 checked={selectedIds.includes(option.id)}
                 onCheckedChange={(checked) => handleToggleTag(option.id, checked === true)}
                 onSelect={(e) => e.preventDefault()}
+                className={isUsers?'border-b':''}
               >
-                {option.name}
+                {isUsers ? (
+                  <>
+                    <div className="inline-flex items-center gap-2">
+                      <img
+                        src={ option.img||"https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"}
+                        alt="Profile"
+                        className="h-9 w-9 rounded-full object-cover"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-[#889096]">{option.name}</p>
+                        <p className="text-sm font-medium text-[#687076]">amansoori@adnoc.ae</p>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  option.name
+                )}
               </DropdownMenuCheckboxItem>
             ))}
           </div>

@@ -5,7 +5,7 @@ import {ChevronDown, Maximize2, Tally1 } from 'lucide-react'
 import SelectCell from '@/shared/components/table-primitives/SelectCell'
 import TagsList from '@/shared/components/table-primitives/TagsList'
 import MarkedAsReviewCell from './cells/MarkedAsReviewCell'
-import { ASSESSMENT_APPLICATIONS } from '../constants/CurrentApplication'
+import { ASSESSMENT_APPLICATIONS , DIGITAL_FP_USERS } from '../constants/CurrentApplication'
 import TagsSelect from '@/shared/components/table-primitives/TagsSelect'
 
 const AssessmentTableBody = (props: any) => {
@@ -580,14 +580,17 @@ const AssessmentTableBody = (props: any) => {
       key: 'digitalFocalPoint',
       content: (
         <td style={{ width: 200 }}>
-          <SelectCell
-            defaultValue={
-              row.l4Item?.digitalFocalPoint?.join(', ') ||
-              row.level3Cell?.data.digitalFocalPoint?.join(', ') ||
-              'Select'
-            }
-            options={row.l4Item?.digitalFocalPoint || row.level3Cell?.data.digitalFocalPoint || []}
-            onValueChange={() => {}}
+          <TagsSelect
+            tags={(
+              row.l4Item?.digitalFocalPoint ||
+              row.level3Cell?.data.digitalFocalPoint ||
+              []
+            ).map((focal: string, index: number) => ({
+              id: `${row.l4Item?.id || row.level3Cell?.data.id}__digitalFocalPoint__${index}`,
+              name: focal,
+            }))}
+            allTags={DIGITAL_FP_USERS}
+            isUsers={true}
           />
         </td>
       ),
