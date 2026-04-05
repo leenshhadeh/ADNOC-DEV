@@ -7,11 +7,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu'
+import { useNavigate } from 'react-router-dom'
 
 const CellMenuOptions = (props:any) => {
+    const navigate = useNavigate()
     const { item } = props  /// use item id to perform actions on the specific item
 const options = [
-    { label: 'View Details', action: () => console.log('Edit', item) },
+    { label: 'View Details', action: () => onViewItemDetails(item) },
     { label: 'Switch to Draft version', action: () => console.log('Add sub-process', item) },
     { label: 'Copy assessment data', action: () => console.log('Delete', item)},
     { label: 'Mark as reviewed', action: () => console.log('Delete', item) },
@@ -19,6 +21,12 @@ const options = [
     { label: 'Archive', action: () => console.log('Delete', item)},
     { label: 'Discard', action: () => console.log('Delete', item), destructive: true },
   ]
+
+const onViewItemDetails = (item:any) => {
+    // Implement the logic to view item details, e.g., navigate to a details page or open a modal
+    navigate(`/assessment-data/process/${item.id}`)
+
+}
 
 return (
 <DropdownMenu modal={false}>
