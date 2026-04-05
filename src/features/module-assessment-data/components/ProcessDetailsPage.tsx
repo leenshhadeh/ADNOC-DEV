@@ -9,13 +9,15 @@ import {
 import ProcessDetails from './processDetailsComponents/ProcessDetails'
 import ModuleToolbar from '@/shared/components/ModuleToolbar'
 import { useParams } from 'react-router-dom'
+import { Label } from '@radix-ui/react-dropdown-menu'
+import GeneralInfoForm from './processDetailsComponents/GeneralInfoForm'
 
 // Genaral info about the process, can be fetched from API using processId
 const processDetails = {
   groupCompany: '12345',
   domain: 'Process 1',
-  code: 'This is a sample process description.',
-  status: 'In Progress',
+  code: 'SGSAUD.1.1.3.1',
+  status: 'Draft',
   stageCurrent: '1',
   stageTotal: '3',
   processApplicapility: true,
@@ -28,16 +30,20 @@ const ProcessDetailsPage = () => {
   const processData = [
     { label: 'Group Company', value: processDetails.groupCompany },
     { label: 'Domain', value: processDetails.domain },
-    { label: 'Process Code', value: processDetails.code },
+    { label: 'Process Code', value: processDetails.code, canCopy: true },
     {
       label: 'Status',
       value: processDetails.status,
+    },
+    {
+      label: 'Process stage',
+      value: 'Quality review',
       stageTotal: processDetails.stageTotal,
       stageCurrent: processDetails.stageCurrent,
     },
-    { label: 'ProcessApplicapility', value: processDetails.processApplicapility ? 'Yes' : 'No' },
-    { label: 'LastPublishedDate', value: processDetails.lastPublishedDate },
-    { label: 'MarkedReviewDate', value: processDetails.markedReviewDate },
+    { label: 'Process Applicapility', value: processDetails.processApplicapility ? 'Yes' : 'No' },
+    { label: 'Last Published Date', value: processDetails.lastPublishedDate },
+    { label: 'Marked Review Date', value: processDetails.markedReviewDate },
   ]
   const processGeneralInfo = [
     { label: 'Process Level 1', value: processDetails.groupCompany },
@@ -50,8 +56,13 @@ const ProcessDetailsPage = () => {
     {
       label: 'Centrally Governed Process',
       value: processDetails.processApplicapility ? 'Yes' : 'No',
+      isEditable: true,
     },
-    { label: 'Shared Service process', value: processDetails.lastPublishedDate },
+    {
+      label: 'Shared Service process',
+      value: processDetails.lastPublishedDate ? 'Yes' : 'No',
+      isEditable: true,
+    },
   ]
 
   return (
@@ -75,12 +86,12 @@ const ProcessDetailsPage = () => {
         </Breadcrumb>
       </div>
 
-      <div className="flex items-center py-3">
+      <div className="mb-[24px] flex items-center py-3">
         <h1 className="text-foreground text-2xl font-bold">{`Process ${processId} Details`}</h1>
       </div>
 
       <ProcessDetails data={processData} />
-
+      <div className="mb-[24px]"></div>
       <ModuleToolbar
         tabs={[
           { label: 'General Info', value: 'General Info' },
@@ -99,6 +110,9 @@ const ProcessDetailsPage = () => {
       <div className="mt-[24px] rounded-2xl bg-[linear-gradient(90.49deg,rgba(78,241,228,0.1)_0.03%,rgba(17,24,39,0.1)_99.89%)] p-[1px]">
         <div className="rounded-2xl bg-white p-[24px]">
           <ProcessDetails data={processGeneralInfo} />
+
+          {/* Form: */}
+          <GeneralInfoForm />
         </div>
       </div>
     </div>
