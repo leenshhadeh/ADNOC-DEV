@@ -48,7 +48,10 @@ export const router = createBrowserRouter([
       },
       {
         path: 'settings',
-        element: <PlaceholderPage title="Settings" />,
+        lazy: () =>
+          import('@features/module-admin').then((m) => ({
+            Component: m.AdminModule,
+          })),
       },
       {
         path: 'logout',
