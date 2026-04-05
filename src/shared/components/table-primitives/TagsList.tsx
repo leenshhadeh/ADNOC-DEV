@@ -4,9 +4,10 @@ import { X } from 'lucide-react'
 interface TagsListProps {
   tags: { id: string; text: string }[]
   onRemoveTag: (id: string) => void
+  allTags?: { id: string; name: string }[] // Optional, in case you want to use it for a select component in the future
 }
 
-const TagsList: React.FC<TagsListProps> = ({ tags, onRemoveTag }) => {
+const TagsList: React.FC<TagsListProps> = ({ tags, onRemoveTag ,allTags}) => {
   return (
     <div className="flex gap-2">
       {tags.map((tag) => (
