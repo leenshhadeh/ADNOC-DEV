@@ -18,7 +18,7 @@ const menuItems = [
 ]
 
 const bottomItems = [
-  // { to: '/settings', label: 'Settings', icon: Settings },
+  { to: '/settings', label: 'Settings', icon: Settings },
   { to: '/logout', label: 'Log out', icon: LogOut },
 ]
 
