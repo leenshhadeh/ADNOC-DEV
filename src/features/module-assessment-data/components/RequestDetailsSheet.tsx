@@ -21,69 +21,14 @@ import type {
   RequestItem,
   WorkflowHistoryItem,
 } from '@features/module-process-catalog/types/submitted-requests'
+import WorkflowStepper from '@/shared/components/WorkFlowStepper'
 
-// ── Step definitions (3-step standard workflow) ───────────────────────────────
-
-const WORKFLOW_STEPS = ['Draft updates', 'Custodian approval', 'Program manager signoff']
-
-// ── WorkflowStepper ───────────────────────────────────────────────────────────
-
-function WorkflowStepper({ currentStep, totalSteps }: { currentStep: number; totalSteps: number }) {
-  const steps = WORKFLOW_STEPS.slice(0, totalSteps)
-  return (
-    <div className="flex items-start">
-      {steps.map((title, i) => {
-        const stepIndex = i + 1
-        const isCompleted = stepIndex < currentStep
-        const isActive = stepIndex === currentStep
-        const isLast = i === steps.length - 1
-        // Connector after this step is blue only if this step is already completed.
-        const lineBlue = isCompleted
-
-        return (
-          <div key={stepIndex} className={cn('flex flex-col', isLast ? '' : 'flex-1')}>
-            {/* Node + connector row */}
-            <div className="flex items-center">
-              <div
-                className={cn(
-                  'flex size-10 shrink-0 items-center justify-center rounded-full border-2',
-                  isCompleted || isActive
-                    ? 'border-[#0047BB] bg-[#EFF6FF]'
-                    : 'border-[#D1D5DB] bg-white',
-                )}
-              >
-                {isCompleted ? (
-                  <Check className="size-4 text-[#0047BB]" strokeWidth={2.5} />
-                ) : isActive ? (
-                  <div className="size-4 rounded-full bg-[#c7dcf7]" />
-                ) : (
-                  <div className="size-4 rounded-full bg-[#F1F5F9]" />
-                )}
-              </div>
-              {!isLast && (
-                <div className={cn('h-0.5 flex-1', lineBlue ? 'bg-[#0047BB]' : 'bg-[#D1D5DB]')} />
-              )}
-            </div>
-            {/* Labels */}
-            <div className="mt-2 max-w-[9\100px]">
-              <p className="text-muted-foreground text-[0.65rem] font-medium tracking-wide uppercase">
-                STEP {stepIndex}/{steps.length}
-              </p>
-              <p
-                className={cn(
-                  'text-sm leading-5',
-                  isActive ? 'text-foreground font-semibold' : 'text-muted-foreground',
-                )}
-              >
-                {title}
-              </p>
-            </div>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
+const WORKFLOW_STEPS = [
+  { id: 'step1', title: 'Draft updates', status: 'completed', owner: 'Business FP' },
+  { id: 'step2', title: 'Draft Submit', status: 'active', owner: 'Digital FP', progress: '40%' },
+  { id: 'step3', title: 'Quality review', status: '' },
+  { id: 'step4', title: 'Digital VP signoff', status: '' },
+]
 
 // ── WorkflowHistoryPanel ──────────────────────────────────────────────────────
 // Rendered as absolute overlay within the sheet body — does not cover the sheet header.
@@ -202,7 +147,8 @@ function ChangeAccordionItem({ change }: { change: RequestItem['changes'][number
 // ── Main component ────────────────────────────────────────────────────────────
 
 interface RequestDetailsSheetProps {
-  request: RequestItem | null
+  // request: RequestItem | null
+  request: any | null
   open: boolean
   onOpenChange: (open: boolean) => void
 }
@@ -240,7 +186,7 @@ const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsShee
                   className="text-primary inline-flex items-center gap-1.5 text-sm font-medium hover:underline"
                 >
                   <Eye className="size-4" />
-                  Go to affected record
+                  View full card
                 </button>
                 <button
                   type="button"
@@ -254,7 +200,7 @@ const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsShee
             </div>
 
             {/* Stage card */}
-            <div className="border-border bg-card mt-6 rounded-2xl border p-4">
+            <div className="border-border bg-card mt-6 rounded-2xl border p-4 shadow-[0_4px_8px_0_#d1d5df80]">
               {/* Stage header */}
               <div className="mb-4 flex items-center gap-2">
                 <p className="text-foreground text-lg font-semibold">
@@ -266,7 +212,7 @@ const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsShee
               </div>
 
               {/* Horizontal stepper */}
-              <WorkflowStepper currentStep={request.stageCurrent} totalSteps={request.stageTotal} />
+              <WorkflowStepper steps={WORKFLOW_STEPS} />
 
               <Separator className="my-4" />
 
@@ -357,7 +303,7 @@ const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsShee
               </div>
 
               <Accordion type="single" collapsible className="mt-3 w-full">
-                {request.changes.map((change) => (
+                {request.changes.map((change: any) => (
                   <ChangeAccordionItem key={change.id} change={change} />
                 ))}
               </Accordion>

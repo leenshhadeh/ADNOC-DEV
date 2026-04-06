@@ -1,16 +1,15 @@
 import React from 'react'
 import { EditableCell, RadioCell } from '@/shared/components/table-primitives'
 import { StatusBadgeCell } from '@/features/module-process-catalog/components/cells'
-import {ChevronDown, Maximize2, Tally1 } from 'lucide-react'
+import { ChevronDown, Maximize2, Tally1 } from 'lucide-react'
 import SelectCell from '@/shared/components/table-primitives/SelectCell'
 import TagsList from '@/shared/components/table-primitives/TagsList'
 import MarkedAsReviewCell from './cells/MarkedAsReviewCell'
-import { ASSESSMENT_APPLICATIONS , DIGITAL_FP_USERS } from '../constants/CurrentApplication'
+import { ASSESSMENT_APPLICATIONS, DIGITAL_FP_USERS } from '../constants/CurrentApplication'
 import TagsSelect from '@/shared/components/table-primitives/TagsSelect'
 
 const AssessmentTableBody = (props: any) => {
   const { row } = props
-  console.log('Rendering AssessmentTableBody for row:', row) // Debug log to check row data
 
   const getSharedCellValue = (item: any) => {
     let parsedValue: any
@@ -246,8 +245,7 @@ const AssessmentTableBody = (props: any) => {
                 ).map((app: string, index: number) => ({
                   id: `${app}_${index}`,
                   name: app,
-                  }))
-              }
+                }))}
                 allTags={ASSESSMENT_APPLICATIONS}
               />
             </div>
@@ -548,9 +546,7 @@ const AssessmentTableBody = (props: any) => {
       content: (
         <td style={{ width: 200 }}>
           <MarkedAsReviewCell
-            marked={
-              row.l4Item?.markedAsReviewed || row.level3Cell?.data.markedAsReviewed || false
-            }
+            marked={row.l4Item?.markedAsReviewed || row.level3Cell?.data.markedAsReviewed || false}
             date={row.l4Item?.reviewedOn || row.level3Cell?.data.reviewedOn || ''}
             id={row.l4Item?.id || row.level3Cell?.data?.id || ''}
             handleMarkAsReviewed={() => {}}
@@ -562,17 +558,23 @@ const AssessmentTableBody = (props: any) => {
       key: 'BusinessFocalPoint',
       content: (
         <td style={{ width: 200 }}>
-          <SelectCell
-            defaultValue={
-              row.l4Item?.businessFocalPoint?.join(', ') ||
-              row.level3Cell?.data.businessFocalPoint?.join(', ') ||
-              'Select'
-            }
-            options={
-              row.l4Item?.businessFocalPoint || row.level3Cell?.data.businessFocalPoint || []
-            }
-            onValueChange={() => {}}
-          />
+          <div className="flex items-center justify-between">
+            <div className="max-w-[200px] overflow-hidden">
+              <TagsSelect
+                tags={(
+                  row.l4Item?.businessFocalPoint ||
+                  row.level3Cell?.data.businessFocalPoint ||
+                  []
+                ).map((focal: string, index: number) => ({
+                  id: `${row.l4Item?.id || row.level3Cell?.data.id}__businessFocalPoint__${index}`,
+                  name: focal,
+                }))}
+                allTags={DIGITAL_FP_USERS}
+                isUsers={true}
+              />
+            </div>
+            <ChevronDown className="text-muted-foreground size-4" />
+          </div>
         </td>
       ),
     },
@@ -580,18 +582,23 @@ const AssessmentTableBody = (props: any) => {
       key: 'digitalFocalPoint',
       content: (
         <td style={{ width: 200 }}>
-          <TagsSelect
-            tags={(
-              row.l4Item?.digitalFocalPoint ||
-              row.level3Cell?.data.digitalFocalPoint ||
-              []
-            ).map((focal: string, index: number) => ({
-              id: `${row.l4Item?.id || row.level3Cell?.data.id}__digitalFocalPoint__${index}`,
-              name: focal,
-            }))}
-            allTags={DIGITAL_FP_USERS}
-            isUsers={true}
-          />
+          <div className="flex items-center justify-between">
+            <div className="max-w-[200px] overflow-hidden">
+              <TagsSelect
+                tags={(
+                  row.l4Item?.digitalFocalPoint ||
+                  row.level3Cell?.data.digitalFocalPoint ||
+                  []
+                ).map((focal: string, index: number) => ({
+                  id: `${row.l4Item?.id || row.level3Cell?.data.id}__digitalFocalPoint__${index}`,
+                  name: focal,
+                }))}
+                allTags={DIGITAL_FP_USERS}
+                isUsers={true}
+              />
+            </div>
+            <ChevronDown className="text-muted-foreground size-4" />
+          </div>
         </td>
       ),
     },
@@ -607,7 +614,8 @@ const AssessmentTableBody = (props: any) => {
       key: 'submittedBy',
       content: (
         <td style={{ width: 150 }}>
-          {row.l4Item?.submittedBy || row.level3Cell?.data.submittedBy || 'N/A'}
+        <div className='bg-[#F1F3F5] rounded-[99px] p-1 text-center text-muted-foreground'>{row.l4Item?.submittedBy || row.level3Cell?.data.submittedBy || 'N/A'}
+          </div>  
         </td>
       ),
     },
