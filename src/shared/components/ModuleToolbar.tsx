@@ -10,7 +10,7 @@
 import type { LucideProps } from 'lucide-react'
 import { Layers, Search, X } from 'lucide-react'
 
-import ShapeIcon from '@/assets/Shape.svg?react'
+import ShapeIcon from '@/assets/icons/Shape.svg?react'
 
 import { Button } from './ui/button'
 import { Input } from './ui/input'

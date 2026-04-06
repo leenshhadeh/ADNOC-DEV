@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Eye } from 'lucide-react'
 import type { ColumnDef } from '@tanstack/react-table'
-import LevelsIcon from '@/assets/Levels.svg?react'
+import LevelsIcon from '@/assets/icons/Levels.svg?react'
 
 import { Button } from '@/shared/components/ui/button'
 import DataTable from '@/shared/components/data-table/DataTable'
