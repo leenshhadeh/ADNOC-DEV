@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { X } from 'lucide-react'
 import AddProcessesModal from './AddProcessesModal'
 import type { RowSelectionState } from '@tanstack/react-table'
 import CatalogHeader from './CatalogHeader'
@@ -13,6 +14,8 @@ import ProcessFilterSheet from './ProcessFilterSheet'
 import AddLevel4sModal from './AddLevel4sModal'
 import { EditLevel4sModal } from './EditLevel4sModal'
 import RenameModal from './RenameModal'
+import BulkActionBar, { type BulkAction } from './BulkActionBar'
+import { BulkApproveModal, BulkRejectModal, BulkReturnModal } from './BulkActionModals'
 import { exportToExcel } from '@features/module-process-catalog/utils/exportToExcel'
 import { FILTER_SECTION_IDS } from '@features/module-process-catalog/constants/filter-definitions'
 import {
@@ -44,6 +47,65 @@ const CatalogModule = () => {
   const [renameTarget, setRenameTarget] = useState<ProcessItem | null>(null)
   const [isExporting, setIsExporting] = useState(false)
   const [processView, setProcessView] = useState<ProcessViewOption>('Published processes')
+  const [successToast, setSuccessToast] = useState<string | null>(null)
+
+  // ── My Tasks bulk action state ──────────────────────────────────────────────
+  const [isTaskBulkMode, setIsTaskBulkMode] = useState(false)
+  const [taskRowSelection, setTaskRowSelection] = useState<RowSelectionState>({})
+  const [bulkApproveOpen, setBulkApproveOpen] = useState(false)
+  const [bulkReturnOpen, setBulkReturnOpen] = useState(false)
+  const [bulkRejectOpen, setBulkRejectOpen] = useState(false)
+
+  const taskSelectedCount = Object.values(taskRowSelection).filter(Boolean).length
+
+  const handleToggleTaskBulkMode = () => {
+    setIsTaskBulkMode((prev) => {
+      if (prev) setTaskRowSelection({})
+      return !prev
+    })
+  }
+
+  const handleTaskBulkAction = (action: BulkAction) => {
+    if (action === 'approve') setBulkApproveOpen(true)
+    else if (action === 'return') setBulkReturnOpen(true)
+    else if (action === 'reject') setBulkRejectOpen(true)
+    else if (action === 'goToAffectedRecord') {
+      // Navigate to the first selected task's process
+      const selectedIds = Object.keys(taskRowSelection).filter((k) => taskRowSelection[k])
+      if (selectedIds.length > 0) {
+        // For now, navigate to processes tab to see affected records
+        setActiveTab('processes')
+        handleToggleTaskBulkMode()
+      }
+    }
+  }
+
+  const handleBulkApprove = () => {
+    const selectedIds = Object.keys(taskRowSelection).filter((k) => taskRowSelection[k])
+    console.log('Bulk approve tasks:', selectedIds)
+    setSuccessToast(`${selectedIds.length} request(s) approved successfully.`)
+    setTimeout(() => setSuccessToast(null), 4000)
+    setTaskRowSelection({})
+    setIsTaskBulkMode(false)
+  }
+
+  const handleBulkReject = () => {
+    const selectedIds = Object.keys(taskRowSelection).filter((k) => taskRowSelection[k])
+    console.log('Bulk reject tasks:', selectedIds)
+    setSuccessToast(`${selectedIds.length} request(s) rejected.`)
+    setTimeout(() => setSuccessToast(null), 4000)
+    setTaskRowSelection({})
+    setIsTaskBulkMode(false)
+  }
+
+  const handleBulkReturn = (reason: string) => {
+    const selectedIds = Object.keys(taskRowSelection).filter((k) => taskRowSelection[k])
+    console.log('Bulk return tasks:', selectedIds, 'reason:', reason)
+    setSuccessToast(`${selectedIds.length} request(s) returned.`)
+    setTimeout(() => setSuccessToast(null), 4000)
+    setTaskRowSelection({})
+    setIsTaskBulkMode(false)
+  }
 
   // ── Server state ────────────────────────────────────────────────────────────
   // Row data comes from API; group companies are a user-scoped lookup.
@@ -397,7 +459,13 @@ const CatalogModule = () => {
     <section className="space-y-4">
       <CatalogHeader
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={(tab) => {
+          setActiveTab(tab)
+          if (tab !== 'myTasks' && isTaskBulkMode) {
+            setIsTaskBulkMode(false)
+            setTaskRowSelection({})
+          }
+        }}
         isBulkMode={isBulkMode}
         onToggleBulkMode={handleToggleBulkMode}
         selectedCount={selectedCount}
@@ -414,6 +482,9 @@ const CatalogModule = () => {
         isExporting={isExporting}
         processView={processView}
         onProcessViewChange={setProcessView}
+        isTaskBulkMode={isTaskBulkMode}
+        onToggleTaskBulkMode={handleToggleTaskBulkMode}
+        taskSelectedCount={taskSelectedCount}
       />
 
       {activeTab === 'processes' ? (
@@ -437,7 +508,20 @@ const CatalogModule = () => {
           />
         </div>
       ) : activeTab === 'myTasks' ? (
-        <MyTasksTable />
+        <>
+          {isTaskBulkMode && (
+            <BulkActionBar
+              selectedCount={taskSelectedCount}
+              onAction={handleTaskBulkAction}
+              onCancel={handleToggleTaskBulkMode}
+            />
+          )}
+          <MyTasksTable
+            isBulkMode={isTaskBulkMode}
+            rowSelection={taskRowSelection}
+            onRowSelectionChange={setTaskRowSelection}
+          />
+        </>
       ) : activeTab === 'submittedRequests' ? (
         <SubmittedRequestsTable />
       ) : (
@@ -499,14 +583,15 @@ const CatalogModule = () => {
             ? { level3Name: targetL3Item.level3Name, level3Code: targetL3Item.level3Code }
             : null
         }
-        onSave={(groupCompany, items) => {
-          // State is scoped to the modal. Do NOT inject into tableData.
+        onSave={(selectedCompanySites, items) => {
           // Wire to a POST /api/level4s call here when the backend is ready.
           console.log('Save L4s (Entry A)', {
-            groupCompany,
+            selectedCompanySites,
             items,
             parent: targetL3Item?.level3Code,
           })
+          setSuccessToast('Level 4s added as draft. Submit Level 3s to publish.')
+          setTimeout(() => setSuccessToast(null), 4000)
         }}
       />
 
@@ -544,6 +629,55 @@ const CatalogModule = () => {
           console.log('Save L4s (Entry B)', { rows, parent: targetL3Item?.level3Code })
         }}
       />
+
+      {/* ── Bulk action modals ── */}
+      <BulkApproveModal
+        open={bulkApproveOpen}
+        onOpenChange={setBulkApproveOpen}
+        selectedCount={taskSelectedCount}
+        onConfirm={handleBulkApprove}
+      />
+      <BulkRejectModal
+        open={bulkRejectOpen}
+        onOpenChange={setBulkRejectOpen}
+        selectedCount={taskSelectedCount}
+        onConfirm={handleBulkReject}
+      />
+      <BulkReturnModal
+        open={bulkReturnOpen}
+        onOpenChange={setBulkReturnOpen}
+        selectedCount={taskSelectedCount}
+        onConfirm={handleBulkReturn}
+      />
+
+      {/* ── Success toast ── */}
+      {successToast && (
+        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
+          <div className="bg-foreground text-background flex items-center gap-3 rounded-xl px-5 py-3 shadow-2xl">
+            <svg
+              className="size-5 shrink-0 text-emerald-400"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="text-sm font-medium">{successToast}</span>
+            <button
+              type="button"
+              onClick={() => setSuccessToast(null)}
+              className="text-background/60 hover:text-background ml-2 transition-colors"
+              aria-label="Dismiss"
+            >
+              <X className="size-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   )
 }

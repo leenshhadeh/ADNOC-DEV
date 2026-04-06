@@ -46,6 +46,10 @@ interface CatalogHeaderProps {
   isExporting?: boolean
   processView?: ProcessViewOption
   onProcessViewChange?: (value: ProcessViewOption) => void
+  // My Tasks bulk mode
+  isTaskBulkMode?: boolean
+  onToggleTaskBulkMode?: () => void
+  taskSelectedCount?: number
 }
 
 const CatalogHeader = ({
@@ -67,6 +71,9 @@ const CatalogHeader = ({
   isExporting = false,
   processView,
   onProcessViewChange,
+  isTaskBulkMode = false,
+  onToggleTaskBulkMode,
+  taskSelectedCount = 0,
 }: CatalogHeaderProps) => {
   const { role } = useCurrentUser()
 
@@ -80,6 +87,13 @@ const CatalogHeader = ({
     onToggle: onToggleBulkMode ?? (() => {}),
     actionLabel: 'Add multiple processes',
     onAction: onBulkAddProcesses,
+  }
+
+  const taskBulkMode: BulkModeState = {
+    isActive: isTaskBulkMode,
+    selectedCount: taskSelectedCount,
+    onToggle: onToggleTaskBulkMode ?? (() => {}),
+    actionLabel: 'Bulk action',
   }
 
   const draftActions: ToolbarAction[] = CATALOG_DRAFT_ACTIONS.map((a) =>
@@ -130,7 +144,13 @@ const CatalogHeader = ({
             onTabChange={(value) => onTabChange(value as CatalogTabValue)}
             onFilterClick={onFilterClick}
             activeFilterCount={activeFilterCount}
-            bulkMode={hasDraftRows || isFullReport ? undefined : bulkMode}
+            bulkMode={
+              activeTab === 'myTasks'
+                ? taskBulkMode
+                : hasDraftRows || isFullReport
+                  ? undefined
+                  : bulkMode
+            }
             actions={actions}
           />
         </div>
