@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
 // Shape.svg is used inside ModuleToolbar via svgr — mock it so jsdom doesn't choke
-vi.mock('@/assets/Shape.svg?react', () => ({ default: () => <svg data-testid="shape-icon" /> }))
+vi.mock('@/assets/icons/Shape.svg?react', () => ({ default: () => <svg data-testid="shape-icon" /> }))
 
 import CatalogHeader from '../components/CatalogHeader'
 

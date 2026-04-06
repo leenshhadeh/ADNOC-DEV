@@ -6,7 +6,7 @@ import { ArrowDownNarrowWide, ArrowUpNarrowWide, Search } from 'lucide-react'
 import { cn } from '@/shared/lib/utils'
 import { Checkbox } from '@/shared/components/ui/checkbox'
 import { Button } from '@/shared/components/ui/button'
-import FilterIcon from '@/assets/Shape.svg?react'
+import FilterIcon from '@/assets/icons/Shape.svg?react'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 

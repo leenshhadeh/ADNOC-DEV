@@ -42,15 +42,20 @@ return (
   </Button>
 </DropdownMenuTrigger>
 <DropdownMenuContent align="end" sideOffset={4} className="w-44 overflow-hidden rounded-xl border p-0 shadow-md">
+<DropdownMenuContent align="end" sideOffset={4} className="w-60 overflow-hidden rounded-xl border p-0 shadow-md bg-[#F1F3F5]">
     {options.map((option) => (
         <DropdownMenuItem
         key={option.label}
-        className={`rounded-none px-3 py-2 text-sm ${
+        className={`rounded-none px-3 py-2 text-sm border  first:border-t-0 ${
             option.destructive ? 'text-destructive focus:text-destructive' : ''
         }`}
         onSelect={option.action}
         >
-        {option.label}
+          <div className='flex'>
+            {/* <img src={copyIcon} className='me-2'/> */}
+             {option.label}
+          </div>
+   
         </DropdownMenuItem>
     ))} 
 </DropdownMenuContent>

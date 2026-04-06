@@ -11,7 +11,7 @@ import {
   type CatalogStatus,
   UserBadgeCell,
 } from '@features/module-process-catalog/components/cells'
-import LevelsIcon from '@/assets/Levels.svg?react'
+import LevelsIcon from '@/assets/icons/Levels.svg?react'
 
 import TaskDetailsSheet from './TaskDetailsSheet'
 

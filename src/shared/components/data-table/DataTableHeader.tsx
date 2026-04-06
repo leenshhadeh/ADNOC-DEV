@@ -6,7 +6,7 @@ import { GripVertical } from 'lucide-react'
 import { Button } from '@/shared/components/ui/button'
 import { TableHead } from '@/shared/components/ui/table'
 import { cn } from '@/shared/lib/utils'
-import FilterIcon from '@/assets/Shape.svg?react'
+import FilterIcon from '@/assets/icons/Shape.svg?react'
 import ColumnFilter from './ColumnFilter'
 
 import type { DataTableHeaderProps } from './interfaces'

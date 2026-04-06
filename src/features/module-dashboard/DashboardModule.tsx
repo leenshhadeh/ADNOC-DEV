@@ -1,5 +1,5 @@
 import { BookOpen, FolderOpen } from 'lucide-react'
-import cards from '../../assets/cards.svg'
+import cards from '../../assets/icons/cards.svg'
 import AccessCard from './components/AccessCard'
 import Tag from './components/Tag'
 import ProcessesSummary from './components/ProcessesSummary'

@@ -1,4 +1,4 @@
-import NoTasksIcon from '../../../assets/NoTasks.svg'
+import NoTasksIcon from '@/assets/icons/NoTasks.svg'
 
 const NoTasks = () => {
   return (
