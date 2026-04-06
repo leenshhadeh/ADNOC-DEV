@@ -10,7 +10,7 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
     requester: 'Maryam Al Shamsi',
     status: 'Pending approval',
     stageCurrent: 2,
-    stageTotal: 3,
+    stageTotal: 4,
     stageText: 'Pending custodian approval',
     submittedOn: '08 Apr 2024',
     // Detail-view fields
@@ -98,7 +98,7 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
     requester: 'Mohammed Al Hajeri',
     status: 'Returned draft',
     stageCurrent: 1,
-    stageTotal: 3,
+    stageTotal: 4,
     stageText: 'Pending updates',
     submittedOn: '09 Apr 2024',
     changes: [
@@ -132,7 +132,7 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
     requester: 'Noura Al Ghamdi',
     status: 'Pending signoff',
     stageCurrent: 3,
-    stageTotal: 3,
+    stageTotal: 4,
     stageText: 'Program manager signoff',
     submittedOn: '10 Apr 2024',
     changes: [
