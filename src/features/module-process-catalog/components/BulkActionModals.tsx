@@ -1,0 +1,228 @@
+/**
+ * BulkActionModals — confirmation dialogs for bulk approve / return / reject on My Tasks.
+ *
+ * Approve (Figma 6349-327528): simple confirm with Cancel + Approve gradient buttons.
+ * Reject: simple confirm with Cancel + Reject gradient buttons.
+ * Return (Figma 6349-327515): includes a required "Reason" text field.
+ *
+ * All use #F1F3F5 background, rounded-2xl, gradient pill buttons.
+ */
+import { useState } from 'react'
+import { X } from 'lucide-react'
+
+import { Dialog, DialogContent } from '@/shared/components/ui/dialog'
+
+// ── Shared close button ───────────────────────────────────────────────────────
+
+function CloseButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="ml-2 shrink-0 rounded-full p-1 text-[#687076] transition-colors hover:text-[#151718]"
+      aria-label="Close"
+    >
+      <X className="size-5" />
+    </button>
+  )
+}
+
+// ── Approve Modal ─────────────────────────────────────────────────────────────
+
+interface ApproveModalProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  selectedCount?: number
+  onConfirm: () => void
+}
+
+export function BulkApproveModal({
+  open,
+  onOpenChange,
+  selectedCount,
+  onConfirm,
+}: ApproveModalProps) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        showClose={false}
+        className="max-w-lg gap-8 rounded-2xl bg-[#F1F3F5] p-8 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]"
+      >
+        {/* Header */}
+        <div className="flex items-start gap-2">
+          <div className="flex flex-1 flex-col gap-2">
+            <h2 className="text-2xl font-medium text-[#151718]">
+              Approve selected requests{selectedCount ? ` (${selectedCount})` : ''}
+            </h2>
+            <p className="text-base font-normal text-[#687076]">
+              These requests will be forwarded for BPA Program Manager. Are you sure you want to
+              approve them?
+            </p>
+          </div>
+          <CloseButton onClick={() => onOpenChange(false)} />
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="flex flex-1 items-center justify-center rounded-[36px] bg-gradient-to-r from-[#EAEFFF] to-[#C7D6F9] px-6 py-3 text-sm font-medium text-[#151718] shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90"
+            onClick={() => onOpenChange(false)}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="flex flex-1 items-center justify-center rounded-full bg-gradient-to-r from-[#5B23FF] to-[#3C00EB] px-6 py-3 text-sm font-medium text-white shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90"
+            onClick={() => {
+              onConfirm()
+              onOpenChange(false)
+            }}
+          >
+            Approve
+          </button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// ── Reject Modal ──────────────────────────────────────────────────────────────
+
+interface RejectModalProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  selectedCount?: number
+  onConfirm: () => void
+}
+
+export function BulkRejectModal({
+  open,
+  onOpenChange,
+  selectedCount,
+  onConfirm,
+}: RejectModalProps) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        showClose={false}
+        className="max-w-lg gap-8 rounded-2xl bg-[#F1F3F5] p-8 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]"
+      >
+        {/* Header */}
+        <div className="flex items-start gap-2">
+          <div className="flex flex-1 flex-col gap-2">
+            <h2 className="text-2xl font-medium text-[#151718]">
+              Reject selected requests{selectedCount ? ` (${selectedCount})` : ''}
+            </h2>
+            <p className="text-base font-normal text-[#687076]">
+              These requests will be rejected. Are you sure you want to reject them?
+            </p>
+          </div>
+          <CloseButton onClick={() => onOpenChange(false)} />
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="flex flex-1 items-center justify-center rounded-[36px] bg-gradient-to-r from-[#EAEFFF] to-[#C7D6F9] px-6 py-3 text-sm font-medium text-[#151718] shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90"
+            onClick={() => onOpenChange(false)}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="flex flex-1 items-center justify-center rounded-full bg-gradient-to-r from-[#EB3865] to-[#B12A4C] px-6 py-3 text-sm font-medium text-white shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90"
+            onClick={() => {
+              onConfirm()
+              onOpenChange(false)
+            }}
+          >
+            Reject
+          </button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// ── Return Modal ──────────────────────────────────────────────────────────────
+
+interface ReturnModalProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  selectedCount?: number
+  onConfirm: (reason: string) => void
+}
+
+export function BulkReturnModal({
+  open,
+  onOpenChange,
+  selectedCount,
+  onConfirm,
+}: ReturnModalProps) {
+  const [reason, setReason] = useState('')
+
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) setReason('')
+    onOpenChange(isOpen)
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent
+        showClose={false}
+        className="max-w-lg gap-8 rounded-2xl bg-[#F1F3F5] p-8 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]"
+      >
+        {/* Header */}
+        <div className="flex items-start gap-2">
+          <div className="flex flex-1 flex-col gap-2">
+            <h2 className="text-2xl font-medium text-[#151718]">
+              Return selected requests{selectedCount ? ` (${selectedCount})` : ''}
+            </h2>
+            <p className="text-base font-normal text-[#687076]">
+              These requests will be marked as Returned. Please add the return reason below.
+            </p>
+          </div>
+          <CloseButton onClick={() => handleOpenChange(false)} />
+        </div>
+
+        {/* Reason input */}
+        <div className="flex flex-col gap-2">
+          <label className="flex items-center gap-0.5 text-base font-normal text-[#687076]">
+            Reason <span className="text-[#EB3865]">*</span>
+          </label>
+          <input
+            type="text"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            className="rounded-2xl border border-[#DFE3E6] bg-white px-6 py-4 text-sm text-[#151718] outline-none placeholder:text-[#A1A8AD] focus:border-[#0047BA]"
+            placeholder="Enter return reason..."
+          />
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="flex flex-1 items-center justify-center rounded-[36px] bg-gradient-to-r from-[#EAEFFF] to-[#C7D6F9] px-6 py-3 text-sm font-medium text-[#151718] shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90"
+            onClick={() => handleOpenChange(false)}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            disabled={reason.trim().length === 0}
+            className="flex flex-1 items-center justify-center rounded-full bg-gradient-to-r from-[#EB3865] to-[#B12A4C] px-6 py-3 text-sm font-medium text-white shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90 disabled:opacity-50"
+            onClick={() => {
+              onConfirm(reason.trim())
+              handleOpenChange(false)
+            }}
+          >
+            Return
+          </button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}

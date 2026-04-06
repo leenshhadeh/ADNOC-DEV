@@ -1,21 +1,9 @@
 import { useState } from 'react'
-import {
-  ArrowRight,
-  Check,
-  ChevronDown,
-  ChevronRight,
-  ChevronUp,
-  Clock,
-  Eye,
-  RotateCcw,
-  ThumbsDown,
-  X,
-} from 'lucide-react'
+import { ArrowRight, Check, ChevronDown, ChevronUp, Clock, Eye, FileText, X } from 'lucide-react'
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
 
 import ActionSheet from '@/shared/components/ActionSheet'
 import { Accordion, AccordionContent, AccordionItem } from '@/shared/components/ui/accordion'
-import { Badge } from '@/shared/components/ui/badge'
 import { Button } from '@/shared/components/ui/button'
 import { Separator } from '@/shared/components/ui/separator'
 import { PermissionGuard } from '@/shared/components/PermissionGuard'
@@ -45,32 +33,32 @@ function WorkflowStepper({ currentStep, totalSteps }: { currentStep: number; tot
             <div className="flex items-center">
               <div
                 className={cn(
-                  'flex size-10 shrink-0 items-center justify-center rounded-full border-2',
+                  'flex size-8 shrink-0 items-center justify-center rounded-full',
                   isCompleted || isActive
-                    ? 'border-[#0047BB] bg-[#EFF6FF]'
-                    : 'border-[#D1D5DB] bg-white',
+                    ? 'bg-gradient-to-b from-[rgba(76,195,255,0.2)] to-[rgba(25,62,117,0.2)]'
+                    : 'bg-gradient-to-b from-[rgba(76,195,255,0.2)] to-[rgba(25,62,117,0.2)] opacity-50',
                 )}
               >
                 {isCompleted ? (
-                  <Check className="size-4 text-[#0047BB]" strokeWidth={2.5} />
+                  <Check className="size-3.5 text-[#0047BA]" strokeWidth={2.5} />
                 ) : isActive ? (
-                  <div className="size-4 rounded-full bg-[#c7dcf7]" />
+                  <div className="size-3 rounded-full bg-[#0047BA]" />
                 ) : (
-                  <div className="size-4 rounded-full bg-[#F1F5F9]" />
+                  <div className="size-3 rounded-full bg-gradient-to-b from-[rgba(76,195,255,0.2)] to-[rgba(25,62,117,0.2)]" />
                 )}
               </div>
               {!isLast && (
-                <div className={cn('h-0.5 flex-1', lineBlue ? 'bg-[#0047BB]' : 'bg-[#D1D5DB]')} />
+                <div className={cn('h-0.5 flex-1', lineBlue ? 'bg-[#0047BA]' : 'bg-[#CCC]')} />
               )}
             </div>
             <div className="mt-2 max-w-[90px]">
-              <p className="text-muted-foreground text-[0.65rem] font-medium tracking-wide uppercase">
+              <p className="text-[8px] font-normal tracking-wide text-[#687076]">
                 STEP {stepIndex}/{steps.length}
               </p>
               <p
                 className={cn(
-                  'text-sm leading-5',
-                  isActive ? 'text-foreground font-semibold' : 'text-muted-foreground',
+                  'text-xs leading-4 font-medium',
+                  isActive ? 'text-[#151718]' : 'text-[#687076]',
                 )}
               >
                 {title}
@@ -149,11 +137,10 @@ function WorkflowHistoryPanel({
 // ── ChangeAccordionItem ───────────────────────────────────────────────────────
 
 function ChangeAccordionItem({ change, index }: { change: ChangeRecord; index: number }) {
-  const truncate = (str: string, n = 18) => (str.length > n ? str.slice(0, n) + '…' : str)
   const id = `change-${index}`
 
   return (
-    <AccordionItem value={id}>
+    <AccordionItem value={id} className="border-b border-[#DFE3E6]">
       <AccordionPrimitive.Header className="flex">
         <AccordionPrimitive.Trigger
           className={cn(
@@ -161,29 +148,29 @@ function ChangeAccordionItem({ change, index }: { change: ChangeRecord; index: n
             'focus-visible:ring-ring focus-visible:rounded focus-visible:ring-2',
           )}
         >
-          <ChevronRight className="text-muted-foreground mt-0.5 size-4 shrink-0 transition-transform duration-200 group-data-[state=open]/ch:-rotate-90" />
+          <FileText className="mt-0.5 size-4 shrink-0 text-[#151718]" />
           <div className="min-w-0 flex-1">
-            <p className="text-foreground font-semibold">{change.name}</p>
-            <p className="text-muted-foreground mt-0.5 flex items-center gap-1 text-sm group-data-[state=open]/ch:hidden">
-              <span>Old Value: {truncate(change.oldValue)}</span>
-              <ArrowRight className="size-3 shrink-0" />
-              <span>New Value: {truncate(change.newValue)}</span>
-            </p>
+            <p className="text-base font-medium text-[#151718]">{change.name}</p>
+            <div className="mt-0.5 flex items-center gap-8 text-sm font-light text-[#687076] group-data-[state=open]/ch:hidden">
+              <span className="flex-1">Old Value: {change.oldValue || '—'}</span>
+              <ArrowRight className="size-3.5 shrink-0 text-[#687076]" />
+              <span className="flex-1">New Value: {change.newValue || '—'}</span>
+            </div>
           </div>
         </AccordionPrimitive.Trigger>
       </AccordionPrimitive.Header>
       <AccordionContent className="ps-6">
         <div className="flex flex-col gap-3 pb-4">
           <div>
-            <p className="text-muted-foreground mb-1.5 text-sm">Old Value</p>
-            <div className="text-foreground min-h-10 rounded-xl bg-slate-100 px-3 py-2.5 text-sm">
-              {change.oldValue}
+            <p className="mb-1.5 text-sm text-[#687076]">Old Value</p>
+            <div className="min-h-10 rounded-xl bg-slate-100 px-3 py-2.5 text-sm text-[#151718]">
+              {change.oldValue || '—'}
             </div>
           </div>
           <div>
-            <p className="text-muted-foreground mb-1.5 text-sm">New Value</p>
-            <div className="text-foreground min-h-10 rounded-xl bg-slate-100 px-3 py-2.5 text-sm">
-              {change.newValue}
+            <p className="mb-1.5 text-sm text-[#687076]">New Value</p>
+            <div className="min-h-10 rounded-xl bg-slate-100 px-3 py-2.5 text-sm text-[#151718]">
+              {change.newValue || '—'}
             </div>
           </div>
         </div>
@@ -318,42 +305,43 @@ const TaskDetailsSheet = ({ task, open, onOpenChange, onAction }: TaskDetailsShe
             </div>
 
             {/* Stage card */}
-            <div className="border-border bg-card mt-6 rounded-2xl border p-4">
+            <div className="mt-6 rounded-2xl bg-gradient-to-b from-[#E9EFFF] to-white p-3 px-4 shadow-[7px_8px_28px_0px_rgba(0,0,0,0.2)]">
               <div className="mb-4 flex items-center gap-2">
-                <p className="text-foreground text-lg font-semibold">
+                <p className="text-base font-medium text-[#151718]">
                   Stage {task.stageCurrent}/{task.stageTotal}
                 </p>
-                <Badge className="h-6 rounded-full border-transparent bg-[#F8E7DA] px-2.5 text-xs font-medium text-[#6E4C33]">
+                <span className="inline-flex items-center rounded-full bg-[#FEE5D3] px-1.5 text-xs font-normal text-[#151718]">
                   {task.stageText}
-                </Badge>
+                </span>
               </div>
 
               <WorkflowStepper currentStep={task.stageCurrent} totalSteps={task.stageTotal} />
 
-              <Separator className="my-4" />
-
-              <button
-                type="button"
-                className="text-primary mx-auto flex w-full items-center justify-center gap-1 text-sm font-medium"
-                onClick={() => setShowMore((v) => !v)}
-              >
-                {showMore ? (
-                  <>
-                    Hide <ChevronUp className="size-4" />
-                  </>
-                ) : (
-                  <>
-                    More <ChevronDown className="size-4" />
-                  </>
-                )}
-              </button>
+              <div className="mt-4 flex flex-col">
+                <Separator className="bg-[#DFE3E6]" />
+                <button
+                  type="button"
+                  className="mx-auto flex w-full items-center justify-center gap-1 py-2 text-sm font-medium text-[#0047BA]"
+                  onClick={() => setShowMore((v) => !v)}
+                >
+                  {showMore ? (
+                    <>
+                      Hide <ChevronUp className="size-4" />
+                    </>
+                  ) : (
+                    <>
+                      More <ChevronDown className="size-4" />
+                    </>
+                  )}
+                </button>
+              </div>
 
               {showMore && (
                 <>
-                  <Separator className="my-4" />
+                  <Separator className="bg-[#DFE3E6]" />
 
                   {/* Task details grid */}
-                  <section>
+                  <section className="pt-4">
                     <p className="text-muted-foreground mb-3 text-sm font-medium">Task details</p>
                     <div className="grid grid-cols-2">
                       <div className="border-border border-r border-b pe-4 pb-3">
@@ -424,11 +412,15 @@ const TaskDetailsSheet = ({ task, open, onOpenChange, onAction }: TaskDetailsShe
             {/* Change details */}
             {task.changes && task.changes.length > 0 && (
               <section className="mt-6">
-                <div className="flex items-center gap-3">
-                  <h3 className="text-foreground shrink-0 text-xl font-semibold">Change details</h3>
-                  <Separator className="flex-1" />
+                <div className="flex items-center gap-2">
+                  <h3 className="shrink-0 text-base font-medium text-[#151718]">Change details</h3>
+                  <Separator className="flex-1 bg-[#DFE3E6]" />
                 </div>
-                <Accordion type="single" collapsible className="mt-3 w-full">
+                <Accordion
+                  type="single"
+                  collapsible
+                  className="mt-3 w-full [&>*:first-child]:border-t [&>*:first-child]:border-[#DFE3E6]"
+                >
                   {task.changes.map((change, i) => (
                     <ChangeAccordionItem key={i} change={change} index={i} />
                   ))}
@@ -447,41 +439,42 @@ const TaskDetailsSheet = ({ task, open, onOpenChange, onAction }: TaskDetailsShe
 
           {/* ── Action footer (Custodian / Program Manager only) ─────────── */}
           <PermissionGuard action="APPROVE_REQUEST">
-            <div className="border-border shrink-0 border-t px-6 py-4">
+            <div className="shrink-0 border-t border-[#DFE3E6] px-6 py-6">
               {showReturnForm ? (
                 <ReturnReasonForm
                   onSubmit={(reason) => handleAction('return', reason)}
                   onCancel={() => setShowReturnForm(false)}
                 />
               ) : (
-                <div className="flex items-center justify-between gap-3">
-                  <Button variant="outline" onClick={() => handleOpenChange(false)}>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    className="shrink-0 text-sm font-medium text-[#0047BA] hover:bg-transparent hover:text-[#0047BA]/80"
+                    onClick={() => handleOpenChange(false)}
+                  >
                     Cancel
                   </Button>
-                  <div className="flex gap-2">
-                    <Button
-                      className="bg-action-return text-action-return-foreground hover:bg-action-return/80"
-                      onClick={() => setShowReturnForm(true)}
-                    >
-                      <RotateCcw className="size-4" />
-                      Return
-                    </Button>
-
-                    <Button
-                      className="bg-action-reject hover:bg-action-reject/90 text-white"
-                      onClick={() => handleAction('reject')}
-                    >
-                      <ThumbsDown className="size-4" />
-                      Reject
-                    </Button>
-                    <Button
-                      className="bg-action-approve hover:bg-action-approve/90 text-white"
-                      onClick={() => handleAction('approve')}
-                    >
-                      <Check className="size-4" />
-                      Approve
-                    </Button>
-                  </div>
+                  <button
+                    type="button"
+                    className="flex flex-1 items-center justify-center rounded-[36px] bg-gradient-to-r from-[#EAEFFF] to-[#C7D6F9] px-6 py-3 text-sm font-medium text-[#151718] shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90"
+                    onClick={() => setShowReturnForm(true)}
+                  >
+                    Return
+                  </button>
+                  <button
+                    type="button"
+                    className="flex flex-1 items-center justify-center rounded-full bg-gradient-to-r from-[#EB3865] to-[#B12A4C] px-6 py-3 text-sm font-medium text-white shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90"
+                    onClick={() => handleAction('reject')}
+                  >
+                    Reject
+                  </button>
+                  <button
+                    type="button"
+                    className="flex flex-1 items-center justify-center rounded-full bg-gradient-to-r from-[#5B23FF] to-[#3C00EB] px-6 py-3 text-sm font-medium text-white shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90"
+                    onClick={() => handleAction('approve')}
+                  >
+                    Approve
+                  </button>
                 </div>
               )}
             </div>

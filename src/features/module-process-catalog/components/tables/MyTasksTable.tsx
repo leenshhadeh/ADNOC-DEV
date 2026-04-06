@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
 import { Eye } from 'lucide-react'
-import type { ColumnDef } from '@tanstack/react-table'
+import type { ColumnDef, RowSelectionState } from '@tanstack/react-table'
 
 import { Button } from '@/shared/components/ui/button'
+import { Checkbox } from '@/shared/components/ui/checkbox'
 import DataTable from '@/shared/components/data-table/DataTable'
 import {
   ProcessInfoCell,
@@ -28,7 +29,19 @@ const LevelCell = ({ level }: { level: string }) => {
   )
 }
 
-const MyTasksTable = () => {
+interface MyTasksTableProps {
+  isBulkMode?: boolean
+  rowSelection?: RowSelectionState
+  onRowSelectionChange?: (
+    updater: RowSelectionState | ((prev: RowSelectionState) => RowSelectionState),
+  ) => void
+}
+
+const MyTasksTable = ({
+  isBulkMode = false,
+  rowSelection,
+  onRowSelectionChange,
+}: MyTasksTableProps) => {
   const { data: tasks, isLoading, isError } = useGetMyTasks()
   const navigateToProcess = useCatalogNavStore((s) => s.navigateToProcess)
   const [selectedTask, setSelectedTask] = useState<TaskItem | null>(null)
@@ -59,14 +72,26 @@ const MyTasksTable = () => {
         cell: (info) => {
           if (info.row.depth > 0) return null
           const row = info.row.original
+          const isSelected = info.row.getIsSelected()
           return (
-            <button
-              type="button"
-              className="focus-visible:ring-ring w-full cursor-pointer text-start outline-none focus-visible:ring-2"
-              onClick={() => handleOpenDetails(row)}
-            >
-              <ProcessInfoCell processName={row.processName} requestId={row.requestId} />
-            </button>
+            <div className="flex w-full items-center gap-2">
+              {isBulkMode && (
+                <Checkbox
+                  checked={isSelected}
+                  onCheckedChange={(checked) => info.row.toggleSelected(!!checked)}
+                  onClick={(e) => e.stopPropagation()}
+                  aria-label={`Select ${row.processName}`}
+                  className="shrink-0"
+                />
+              )}
+              <button
+                type="button"
+                className="focus-visible:ring-ring min-w-0 flex-1 cursor-pointer text-start outline-none focus-visible:ring-2"
+                onClick={() => handleOpenDetails(row)}
+              >
+                <ProcessInfoCell processName={row.processName} requestId={row.requestId} />
+              </button>
+            </div>
           )
         },
       },
@@ -243,7 +268,7 @@ const MyTasksTable = () => {
         },
       },
     ],
-    [],
+    [isBulkMode],
   )
 
   if (isError) {
@@ -274,7 +299,10 @@ const MyTasksTable = () => {
         enableSorting={false}
         initialColumnPinning={{ left: ['processName'] }}
         getSubRows={(row) => row.subRows}
-        tableMeta={{ rowDividers: true }}
+        getRowId={(row) => row.id}
+        rowSelection={rowSelection}
+        onRowSelectionChange={onRowSelectionChange}
+        tableMeta={{ rowDividers: true, isBulkMode }}
       />
       <TaskDetailsSheet
         task={selectedTask}
