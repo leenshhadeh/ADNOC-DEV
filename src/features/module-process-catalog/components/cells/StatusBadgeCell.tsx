@@ -8,6 +8,7 @@ export type CatalogStatus =
   | 'Pending updates'
   | 'Returned draft'
   | 'Published'
+  | 'Draft'
   | '-'
 
 interface StatusBadgeCellProps {
@@ -19,6 +20,7 @@ const statusStyles: Record<CatalogStatus, string> = {
   'Pending signoff': 'border-transparent bg-[#F4EEBE] text-[#5E570C]',
   'Pending updates': 'border-transparent bg-[#F8E7DA] text-[#6E4C33]',
   'Returned draft': 'border-transparent bg-[#F9D4E0] text-[#5E2A3A]',
+  'Draft':'border-transparent bg-[#eee] text-[#151718]',
   Published: 'border-transparent bg-[#E8F0FF] text-[#0047BB]',
   '-': 'border-transparent bg-[#eee]',
 }

@@ -10,7 +10,7 @@
 import type { LucideProps } from 'lucide-react'
 import { Layers, Search, X } from 'lucide-react'
 
-import ShapeIcon from '@/assets/Shape.svg?react'
+import ShapeIcon from '@/assets/icons/Shape.svg?react'
 
 import { Button } from './ui/button'
 import { Input } from './ui/input'
@@ -54,6 +54,7 @@ export interface ModuleToolbarProps {
   onSearchChange?: (value: string) => void
   searchPlaceholder?: string
   showFilter?: boolean
+  showSearch?: boolean
 
   // ── Filter ────────────────────────────────────────────────────────────────
   /** Called when the filter icon button is clicked */
@@ -82,6 +83,7 @@ const ModuleToolbar = ({
   bulkMode,
   actions = [],
   showFilter = true,
+  showSearch = true,
 }: ModuleToolbarProps) => {
   return (
     /**
@@ -126,15 +128,17 @@ const ModuleToolbar = ({
            flex-1 + min-w-0 lets this row grow to fill remaining space on sm+;
            on mobile it is already on its own row so w-full inside is enough. */}
       <div className="flex min-w-0 flex-1 items-center gap-2">
-        <div className="relative w-full sm:max-w-[340px] sm:min-w-[180px] sm:flex-1">
-          <Search className="text-muted-foreground pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2" />
-          <Input
-            placeholder={searchPlaceholder}
-            value={searchValue ?? ''}
-            onChange={(e) => onSearchChange?.(e.target.value)}
-            className="h-11 rounded-2xl ps-9 pe-3"
-          />
-        </div>
+        {showSearch && (
+          <div className="relative w-full sm:max-w-[340px] sm:min-w-[180px] sm:flex-1">
+            <Search className="text-muted-foreground pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2" />
+            <Input
+              placeholder={searchPlaceholder}
+              value={searchValue ?? ''}
+              onChange={(e) => onSearchChange?.(e.target.value)}
+              className="h-11 rounded-2xl ps-9 pe-3"
+            />
+          </div>
+        )}
 
         {showFilter && (
           <div className="relative">

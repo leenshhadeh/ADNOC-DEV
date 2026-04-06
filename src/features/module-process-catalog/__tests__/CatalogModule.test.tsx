@@ -20,7 +20,7 @@ vi.mock('../components/tables/SubmittedRequestsTable', () => ({
 }))
 
 // svgr SVG used in ModuleToolbar (inside CatalogHeader)
-vi.mock('@/assets/Shape.svg?react', () => ({ default: () => <svg data-testid="shape-icon" /> }))
+vi.mock('@/assets/icons/Shape.svg?react', () => ({ default: () => <svg data-testid="shape-icon" /> }))
 
 // Capture rowActions so tests can open the modal programmatically
 // (avoids needing real row selections which require unmocked DataTable)

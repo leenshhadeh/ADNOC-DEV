@@ -1,6 +1,6 @@
 import { TableHead } from '@/shared/components/ui/table'
 import { cn } from '@/shared/lib/utils'
-import FilterIcon from '@/assets/Shape.svg?react'
+import FilterIcon from '@/assets/icons/Shape.svg?react'
 
 /**
  * Reusable column header <th> for any module table.

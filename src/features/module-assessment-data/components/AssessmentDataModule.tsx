@@ -21,7 +21,6 @@ import SubmittedRequestsTable from './tabels/SubmittedRequestsTable'
 const AssessmentDataModule = () => {
   const [activeTab, setActiveTab] = useState('processes')
   const [search, setSearch] = useState('')
-  const options = ['Published processes', 'Latest processes', 'Archived processes']
 
   return (
     <div className="flex h-full flex-col gap-0 overflow-hidden">
@@ -44,7 +43,7 @@ const AssessmentDataModule = () => {
       <div className="flex items-center px-6 py-3">
         <h1 className="text-foreground text-2xl font-bold">Assessment Data Processes</h1>
 
-        <ProcessesMenu options={options} />
+        <ProcessesMenu />
       </div>
 
       {/* ── Tabs + search + filter + toolbar ──────────────────────────── */}

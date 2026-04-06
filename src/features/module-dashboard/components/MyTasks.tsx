@@ -89,7 +89,7 @@ const MyTasks = () => {
                 onClick={() => setIsFilterOpen(true)}
                 className="ml-2 inline-flex items-center justify-center rounded-md text-[#151718] transition hover:opacity-70"
               >
-                <ListFilter className="h-4 w-4" strokeWidth={2} />
+                <ListFilter className="h-4 w-4 cursor-pointer" strokeWidth={2} />
               </button>
             </div>
 
@@ -98,7 +98,7 @@ const MyTasks = () => {
               onClick={() => setIsViewAllOpen(true)}
               className="inline-flex items-center justify-center text-[#0047BA] transition hover:opacity-70"
             >
-              <Maximize2 className="h-4 w-4" strokeWidth={2} />
+              <Maximize2 className="h-4 w-4 cursor-pointer" strokeWidth={2} />
             </button>
           </div>
 
@@ -122,7 +122,7 @@ const MyTasks = () => {
 
                     <button
                       type="button"
-                      className="text-[14px] font-semibold text-[#0047BA] transition hover:opacity-70"
+                      className="cursor-pointer text-[14px] font-semibold text-[#0047BA] transition hover:opacity-70"
                       onClick={() => navigate(group.module.url)}
                     >
                       View all

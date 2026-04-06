@@ -134,4 +134,7 @@
     border-width: 1px;
     padding: 10px 16px !important;
   }
+  [role=menuitemcheckbox] span.pointer-events-none {
+    border: 1px solid #687076
+  }
 }

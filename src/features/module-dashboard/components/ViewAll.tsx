@@ -57,7 +57,7 @@ const ViewAll = ({ open, onOpenChange, taskGroups }: ViewAllProps) => {
             className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#151718] transition hover:bg-[#F1F3F5]"
             aria-label="Close"
           >
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5 cursor-pointer" />
           </button>
         </div>
 
@@ -82,7 +82,7 @@ const ViewAll = ({ open, onOpenChange, taskGroups }: ViewAllProps) => {
 
                     <button
                       type="button"
-                      className="text-[14px] font-semibold text-[#0047BA] transition hover:opacity-70"
+                      className="cursor-pointer text-[14px] font-semibold text-[#0047BA] transition hover:opacity-70"
                       onClick={() => {
                         navigate(group.module.url)
                         if (open) return null

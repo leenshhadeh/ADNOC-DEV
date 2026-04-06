@@ -22,6 +22,13 @@ export const router = createBrowserRouter([
           })),
       },
       {
+        path: 'assessment-data/process/:processId',
+        lazy: () =>
+          import('@features/module-assessment-data').then((m) => ({
+            Component: m.ProcessDetailsPage,
+          })),
+      },
+      {
         path: 'dashboard',
         lazy: () =>
           import('@/features/module-dashboard').then((m) => ({ Component: m.DashboardModule })),
@@ -48,7 +55,10 @@ export const router = createBrowserRouter([
       },
       {
         path: 'settings',
-        element: <PlaceholderPage title="Settings" />,
+        lazy: () =>
+          import('@features/module-admin').then((m) => ({
+            Component: m.AdminModule,
+          })),
       },
       {
         path: 'logout',
