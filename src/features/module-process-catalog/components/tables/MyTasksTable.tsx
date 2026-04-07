@@ -1,10 +1,17 @@
-import { useMemo, useState } from 'react'
-import { Eye } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Check, CornerDownLeft, Eye, MoreVertical, X as XIcon } from 'lucide-react'
 import type { ColumnDef, RowSelectionState } from '@tanstack/react-table'
 
 import { Button } from '@/shared/components/ui/button'
 import { Checkbox } from '@/shared/components/ui/checkbox'
 import DataTable from '@/shared/components/data-table/DataTable'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/shared/components/ui/dropdown-menu'
 import {
   ProcessInfoCell,
   StageProgressCell,
@@ -12,6 +19,12 @@ import {
   type CatalogStatus,
   UserBadgeCell,
 } from '@features/module-process-catalog/components/cells'
+import {
+  ApproveModal,
+  ReturnModal,
+  RejectModal,
+  SuccessToast,
+} from '@features/module-process-catalog/components/modals'
 import LevelsIcon from '@/assets/icons/Levels.svg?react'
 
 import TaskDetailsSheet from './TaskDetailsSheet'
@@ -19,6 +32,11 @@ import TaskDetailsSheet from './TaskDetailsSheet'
 import type { TaskItem } from '@features/module-process-catalog/types/my-tasks'
 import { useGetMyTasks } from '@features/module-process-catalog/hooks/useGetMyTasks'
 import { useCatalogNavStore } from '@features/module-process-catalog/store/useCatalogNavStore'
+import {
+  approveTask,
+  returnTask,
+  rejectTask,
+} from '@features/module-process-catalog/api/taskActionService'
 
 const LevelCell = ({ level }: { level: string }) => {
   return (
@@ -47,18 +65,56 @@ const MyTasksTable = ({
   const [selectedTask, setSelectedTask] = useState<TaskItem | null>(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
+  // action modal state
+  const [activeModal, setActiveModal] = useState<'approve' | 'return' | 'reject' | null>(null)
+  const [actionTask, setActionTask] = useState<TaskItem | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [isActionLoading, setIsActionLoading] = useState(false)
+
+  // auto-dismiss success toast
+  useEffect(() => {
+    if (!successMessage) return
+    const t = setTimeout(() => setSuccessMessage(null), 4000)
+    return () => clearTimeout(t)
+  }, [successMessage])
+
   const handleOpenDetails = (task: TaskItem) => {
     setSelectedTask(task)
     setIsDetailsOpen(true)
   }
 
-  const handleTaskAction = (
+  const openActionModal = useCallback((task: TaskItem, action: 'approve' | 'return' | 'reject') => {
+    setActionTask(task)
+    setActiveModal(action)
+  }, [])
+
+  const handleTaskAction = async (
     taskId: string,
     action: 'approve' | 'reject' | 'return',
     reason?: string,
   ) => {
-    // TODO: wire to mutation hooks when backend is ready
-    console.log(`Task ${taskId}: ${action}`, reason ? `reason: ${reason}` : '')
+    setIsActionLoading(true)
+    try {
+      let result
+      switch (action) {
+        case 'approve':
+          result = await approveTask(taskId)
+          break
+        case 'return':
+          result = await returnTask(taskId, { reason: reason ?? '' })
+          break
+        case 'reject':
+          result = await rejectTask(taskId, { reason: reason ?? '' })
+          break
+      }
+      setSuccessMessage(result.message)
+    } catch (error) {
+      console.error(`Task action failed:`, error)
+    } finally {
+      setIsActionLoading(false)
+      setActiveModal(null)
+      setActionTask(null)
+    }
   }
 
   const columns = useMemo<ColumnDef<TaskItem, unknown>[]>(
@@ -83,6 +139,67 @@ const MyTasksTable = ({
                   aria-label={`Select ${row.processName}`}
                   className="shrink-0"
                 />
+              )}
+              {!isBulkMode && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="shrink-0 rounded-full text-[#687076] hover:text-[#151718]"
+                      onClick={(e) => e.stopPropagation()}
+                      aria-label="Row actions"
+                    >
+                      <MoreVertical className="size-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="start"
+                    sideOffset={4}
+                    className="w-56 overflow-hidden rounded-2xl border-0 bg-[#151718] p-0 shadow-[0px_10px_30px_0px_rgba(0,0,0,0.2)]"
+                  >
+                    <DropdownMenuItem
+                      className="cursor-pointer gap-4 bg-[#F1F3F5] px-4 py-2 text-base font-normal text-[#151718] focus:bg-[#E8EAED]"
+                      onClick={() => handleOpenDetails(row)}
+                    >
+                      <Eye className="size-4 shrink-0" />
+                      View change details
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="m-0 h-px bg-[#DFE3E6]" />
+                    <DropdownMenuItem
+                      className="cursor-pointer gap-4 bg-[#F1F3F5] px-4 py-2 text-base font-normal text-[#151718] focus:bg-[#E8EAED]"
+                      disabled={!row.processId}
+                      onClick={() => row.processId && navigateToProcess(row.processId)}
+                    >
+                      <Eye className="size-4 shrink-0" />
+                      Go to affected record
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="m-0 h-px bg-[#DFE3E6]" />
+                    <DropdownMenuItem
+                      className="cursor-pointer gap-4 bg-[#F1F3F5] px-4 py-2 text-base font-normal text-[#151718] focus:bg-[#E8EAED]"
+                      onClick={() => openActionModal(row, 'approve')}
+                    >
+                      <Check className="size-4 shrink-0" />
+                      Approve
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="m-0 h-px bg-[#DFE3E6]" />
+                    <DropdownMenuItem
+                      className="cursor-pointer gap-4 bg-[#F1F3F5] px-4 py-2 text-base font-normal text-[#151718] focus:bg-[#E8EAED]"
+                      onClick={() => openActionModal(row, 'return')}
+                    >
+                      <CornerDownLeft className="size-4 shrink-0" />
+                      Return
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="m-0 h-px bg-[#DFE3E6]" />
+                    <DropdownMenuItem
+                      className="cursor-pointer gap-4 bg-[#F1F3F5] px-4 py-2 text-base font-normal text-[#EB3865] focus:bg-[#E8EAED]"
+                      onClick={() => openActionModal(row, 'reject')}
+                    >
+                      <XIcon className="size-4 shrink-0 text-[#EB3865]" />
+                      Reject
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
               <button
                 type="button"
@@ -309,6 +426,37 @@ const MyTasksTable = ({
         open={isDetailsOpen}
         onOpenChange={setIsDetailsOpen}
         onAction={handleTaskAction}
+      />
+
+      {/* Single-row action modals */}
+      <ApproveModal
+        open={activeModal === 'approve'}
+        onOpenChange={(open) => !open && setActiveModal(null)}
+        title={`Approve ${actionTask?.processName ?? ''}`}
+        description="The request will be forwarded for Quality Manager Review. Are you sure you want to approve it?"
+        onConfirm={() => actionTask && handleTaskAction(actionTask.id, 'approve')}
+      />
+      <ReturnModal
+        open={activeModal === 'return'}
+        onOpenChange={(open) => !open && setActiveModal(null)}
+        title={`Return ${actionTask?.processName ?? ''}`}
+        description="The request will be marked as Returned. Please add the return reason below."
+        onConfirm={(reason) => actionTask && handleTaskAction(actionTask.id, 'return', reason)}
+      />
+      <RejectModal
+        open={activeModal === 'reject'}
+        onOpenChange={(open) => !open && setActiveModal(null)}
+        title={`Reject ${actionTask?.processName ?? ''}`}
+        description="The request will be marked as Rejected. Please add the reject reason below."
+        requireReason
+        onConfirm={(reason) => actionTask && handleTaskAction(actionTask.id, 'reject', reason)}
+      />
+
+      {/* Success toast */}
+      <SuccessToast
+        open={!!successMessage}
+        message={successMessage ?? ''}
+        onClose={() => setSuccessMessage(null)}
       />
     </>
   )

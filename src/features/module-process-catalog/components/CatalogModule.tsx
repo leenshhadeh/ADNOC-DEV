@@ -15,7 +15,12 @@ import AddLevel4sModal from './AddLevel4sModal'
 import { EditLevel4sModal } from './EditLevel4sModal'
 import RenameModal from './RenameModal'
 import BulkActionBar, { type BulkAction } from './BulkActionBar'
-import { BulkApproveModal, BulkRejectModal, BulkReturnModal } from './BulkActionModals'
+import { ApproveModal, RejectModal, ReturnModal } from './modals'
+import {
+  bulkApproveTasks,
+  bulkRejectTasks,
+  bulkReturnTasks,
+} from '@features/module-process-catalog/api/taskActionService'
 import { exportToExcel } from '@features/module-process-catalog/utils/exportToExcel'
 import { FILTER_SECTION_IDS } from '@features/module-process-catalog/constants/filter-definitions'
 import {
@@ -80,28 +85,40 @@ const CatalogModule = () => {
     }
   }
 
-  const handleBulkApprove = () => {
+  const handleBulkApprove = async () => {
     const selectedIds = Object.keys(taskRowSelection).filter((k) => taskRowSelection[k])
-    console.log('Bulk approve tasks:', selectedIds)
-    setSuccessToast(`${selectedIds.length} request(s) approved successfully.`)
+    try {
+      const result = await bulkApproveTasks({ taskIds: selectedIds })
+      setSuccessToast(`${result.processed} request(s) approved successfully.`)
+    } catch {
+      setSuccessToast(`Failed to approve requests.`)
+    }
     setTimeout(() => setSuccessToast(null), 4000)
     setTaskRowSelection({})
     setIsTaskBulkMode(false)
   }
 
-  const handleBulkReject = () => {
+  const handleBulkReject = async () => {
     const selectedIds = Object.keys(taskRowSelection).filter((k) => taskRowSelection[k])
-    console.log('Bulk reject tasks:', selectedIds)
-    setSuccessToast(`${selectedIds.length} request(s) rejected.`)
+    try {
+      const result = await bulkRejectTasks({ taskIds: selectedIds })
+      setSuccessToast(`${result.processed} request(s) rejected.`)
+    } catch {
+      setSuccessToast(`Failed to reject requests.`)
+    }
     setTimeout(() => setSuccessToast(null), 4000)
     setTaskRowSelection({})
     setIsTaskBulkMode(false)
   }
 
-  const handleBulkReturn = (reason: string) => {
+  const handleBulkReturn = async (reason: string) => {
     const selectedIds = Object.keys(taskRowSelection).filter((k) => taskRowSelection[k])
-    console.log('Bulk return tasks:', selectedIds, 'reason:', reason)
-    setSuccessToast(`${selectedIds.length} request(s) returned.`)
+    try {
+      const result = await bulkReturnTasks({ taskIds: selectedIds, reason })
+      setSuccessToast(`${result.processed} request(s) returned.`)
+    } catch {
+      setSuccessToast(`Failed to return requests.`)
+    }
     setTimeout(() => setSuccessToast(null), 4000)
     setTaskRowSelection({})
     setIsTaskBulkMode(false)
@@ -631,19 +648,19 @@ const CatalogModule = () => {
       />
 
       {/* ── Bulk action modals ── */}
-      <BulkApproveModal
+      <ApproveModal
         open={bulkApproveOpen}
         onOpenChange={setBulkApproveOpen}
         selectedCount={taskSelectedCount}
         onConfirm={handleBulkApprove}
       />
-      <BulkRejectModal
+      <RejectModal
         open={bulkRejectOpen}
         onOpenChange={setBulkRejectOpen}
         selectedCount={taskSelectedCount}
         onConfirm={handleBulkReject}
       />
-      <BulkReturnModal
+      <ReturnModal
         open={bulkReturnOpen}
         onOpenChange={setBulkReturnOpen}
         selectedCount={taskSelectedCount}

@@ -17,9 +17,12 @@ interface ActionSheetProps {
 
 const ActionSheet = ({ title, open, onOpenChange, children }: ActionSheetProps) => (
   <Sheet open={open} onOpenChange={onOpenChange}>
-    <SheetContent side="right" className="flex w-full flex-col p-0 sm:max-w-[460px] lg:max-w-[600px]">
+    <SheetContent
+      side="right"
+      className="flex w-full flex-col p-0 sm:max-w-[460px] lg:max-w-[600px]"
+    >
       <SheetHeader className="border-border shrink-0 border-b px-6 py-5">
-        <SheetTitle className="text-foreground text-2xl font-semibold">{title}</SheetTitle>
+        <SheetTitle className="text-foreground text-2xl font-medium">{title}</SheetTitle>
       </SheetHeader>
       {children}
     </SheetContent>
