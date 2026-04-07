@@ -12,9 +12,7 @@ import { useState } from 'react'
 import UserPermissionsPage from './pages/UserPermissionsPage'
 import GroupCompaniesPage from './pages/GroupCompaniesPage'
 import DomainsPage from './pages/DomainsPage'
-import AssessmentCyclePage from './pages/AssessmentCyclePage'
 import RateCardsPage from './pages/RateCardsPage'
-import EmailNotificationPage from './pages/EmailNotificationPage'
 
 const AdminModule = () => {
   const [activeTab, setActiveTab] = useState('user-permissions')
@@ -52,12 +50,8 @@ const AdminModule = () => {
           <GroupCompaniesPage />
         ) : activeTab == 'domains' ? (
           <DomainsPage />
-        ) : activeTab == 'assessment-cycle' ? (
-          <AssessmentCyclePage />
         ) : activeTab == 'rate-cards' ? (
           <RateCardsPage />
-        ) : activeTab == 'email-notification' ? (
-          <EmailNotificationPage />
         ) : (
           <>something went wrong</>
         )}
