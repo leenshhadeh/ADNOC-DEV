@@ -1,5 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { Dashboard } from '@/features/module-dashboard'
+import { ProtectedRoute } from '@/shared/auth/ProtectedRoute'
+import { LoginPage, HomePage } from '@/shared/auth/pages'
 
 const PlaceholderPage = ({ title }: { title: string }) => {
   return <h1 className="text-foreground text-2xl font-semibold">{title}</h1>
@@ -7,8 +9,24 @@ const PlaceholderPage = ({ title }: { title: string }) => {
 
 export const router = createBrowserRouter([
   {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/home',
+    element: (
+      <ProtectedRoute>
+        <HomePage />
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: '/',
-    element: <Dashboard />,
+    element: (
+      <ProtectedRoute>
+        <Dashboard />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,

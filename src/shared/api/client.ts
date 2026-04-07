@@ -1,11 +1,11 @@
 import axios, { type AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
 import type { ApiError, ApiResponse } from './types'
+import { getAccessToken } from '@/shared/auth/useAuth'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL as string
 const TIMEOUT_MS = 10_000
-const AUTH_TOKEN_KEY = 'auth_token'
 
 // ── Instance ──────────────────────────────────────────────────────────────────
 
@@ -21,10 +21,13 @@ export const apiClient = axios.create({
 // ── Request interceptor ───────────────────────────────────────────────────────
 
 apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem(AUTH_TOKEN_KEY)
-    if (token) {
+  async (config: InternalAxiosRequestConfig) => {
+    try {
+      const token = await getAccessToken()
       config.headers.Authorization = `Bearer ${token}`
+    } catch {
+      // No active account or token acquisition failed — let the request
+      // proceed unauthenticated; the 401 response interceptor will handle it.
     }
     return config
   },
@@ -44,9 +47,7 @@ apiClient.interceptors.response.use(
     const status = error.response?.status
 
     if (status === 401) {
-      // Clear stale credentials and redirect to the login page.
-      // Using location.replace avoids a back-button loop.
-      localStorage.removeItem(AUTH_TOKEN_KEY)
+      // Session expired — redirect to Azure AD login.
       window.location.replace('/login')
     }
 
