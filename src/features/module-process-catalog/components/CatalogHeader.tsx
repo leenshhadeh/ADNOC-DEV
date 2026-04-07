@@ -109,7 +109,8 @@ const CatalogHeader = ({
   const defaultActions: ToolbarAction[] = CATALOG_ACTIONS.map((a) =>
     a.id === 'export' ? { ...a, onClick: onExport, disabled: isExporting } : a,
   )
-  const actions = hasDraftRows ? draftActions : isFullReport ? fullReportActions : defaultActions
+  const actions =
+    hasDraftRows || isBulkMode ? draftActions : isFullReport ? fullReportActions : defaultActions
 
   return (
     <header className="space-y-3">
@@ -147,7 +148,7 @@ const CatalogHeader = ({
             bulkMode={
               activeTab === 'myTasks'
                 ? taskBulkMode
-                : hasDraftRows || isFullReport
+                : hasDraftRows || isFullReport || isBulkMode
                   ? undefined
                   : bulkMode
             }
