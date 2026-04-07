@@ -1,15 +1,6 @@
 import { useState } from 'react'
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
-import {
-  ArrowRight,
-  Check,
-  ChevronDown,
-  ChevronRight,
-  ChevronUp,
-  Clock,
-  Eye,
-  X,
-} from 'lucide-react'
+import { ArrowRight, Check, ChevronDown, ChevronUp, Clock, Eye, X } from 'lucide-react'
 
 import ActionSheet from '@/shared/components/ActionSheet'
 import { Accordion, AccordionContent, AccordionItem } from '@/shared/components/ui/accordion'
@@ -65,14 +56,14 @@ function WorkflowStepper({ currentStep, totalSteps }: { currentStep: number; tot
               )}
             </div>
             {/* Labels */}
-            <div className="mt-2 max-w-[9\100px]">
-              <p className="text-muted-foreground text-[0.65rem] font-medium tracking-wide uppercase">
+            <div className="mt-2 max-w-[100px]">
+              <p className="text-muted-foreground text-[8px] font-normal tracking-wide uppercase">
                 STEP {stepIndex}/{steps.length}
               </p>
               <p
                 className={cn(
-                  'text-sm leading-5',
-                  isActive ? 'text-foreground font-semibold' : 'text-muted-foreground',
+                  'text-xs leading-4',
+                  isActive ? 'text-foreground font-medium' : 'text-muted-foreground font-medium',
                 )}
               >
                 {title}
@@ -162,14 +153,14 @@ function ChangeAccordionItem({ change }: { change: RequestItem['changes'][number
             'focus-visible:ring-ring focus-visible:rounded focus-visible:ring-2',
           )}
         >
-          {/* Chevron LEFT — rotates to ∧ when open */}
-          <ChevronRight className="text-muted-foreground mt-0.5 size-4 shrink-0 transition-transform duration-200 group-data-[state=open]/ch:-rotate-90" />
+          {/* Chevron — points down when collapsed, up when open */}
+          <ChevronDown className="text-muted-foreground mt-0.5 size-5 shrink-0 transition-transform duration-200 group-data-[state=open]/ch:rotate-180" />
 
           <div className="min-w-0 flex-1">
             {/* Label — always visible */}
-            <p className="text-foreground font-semibold">{change.label}</p>
+            <p className="text-foreground text-base font-medium">{change.label}</p>
             {/* Collapsed preview — hidden when open */}
-            <p className="text-muted-foreground mt-0.5 flex items-center gap-1 text-sm group-data-[state=open]/ch:hidden">
+            <p className="text-muted-foreground mt-0.5 flex items-center gap-1 text-sm font-light group-data-[state=open]/ch:hidden">
               <span>Old Value: {truncate(change.oldValue)}</span>
               <ArrowRight className="size-3 shrink-0" />
               <span>New Value: {truncate(change.newValue)}</span>
@@ -179,17 +170,17 @@ function ChangeAccordionItem({ change }: { change: RequestItem['changes'][number
       </AccordionPrimitive.Header>
 
       {/* Expanded — two labeled value boxes */}
-      <AccordionContent className="ps-6">
-        <div className="flex flex-col gap-3 pb-4">
+      <AccordionContent className="ps-7">
+        <div className="flex flex-col gap-6 pb-4">
           <div>
-            <p className="text-muted-foreground mb-1.5 text-sm">Old Value</p>
-            <div className="text-foreground min-h-10 rounded-xl bg-slate-100 px-3 py-2.5 text-sm">
+            <p className="mb-2 text-base font-normal text-[#889096]">Old Value</p>
+            <div className="min-h-10 rounded-2xl border border-[#DFE3E6] bg-[#F1F3F5] px-6 py-3 text-base font-medium text-[#889096]">
               {change.oldValue}
             </div>
           </div>
           <div>
-            <p className="text-muted-foreground mb-1.5 text-sm">New Value</p>
-            <div className="text-foreground min-h-10 rounded-xl bg-slate-100 px-3 py-2.5 text-sm">
+            <p className="mb-2 text-base font-normal text-[#889096]">New Value</p>
+            <div className="min-h-10 rounded-2xl border border-[#DFE3E6] bg-[#F1F3F5] px-6 py-4 text-base leading-6 font-medium text-[#889096]">
               {change.newValue}
             </div>
           </div>
@@ -254,13 +245,19 @@ const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsShee
             </div>
 
             {/* Stage card */}
-            <div className="border-border bg-card mt-6 rounded-2xl border p-4">
+            <div
+              className="mt-6 rounded-2xl p-3 px-4"
+              style={{
+                background: 'linear-gradient(180deg, #E9EFFF 0%, #FFFFFF 92%)',
+                boxShadow: '7px 8px 28px 0px rgba(0,0,0,0.2)',
+              }}
+            >
               {/* Stage header */}
               <div className="mb-4 flex items-center gap-2">
-                <p className="text-foreground text-lg font-semibold">
+                <p className="text-foreground text-base font-medium">
                   Stage {request.stageCurrent}/{request.stageTotal}
                 </p>
-                <Badge className="h-6 rounded-full border-transparent bg-[#F8E7DA] px-2.5 text-xs font-medium text-[#6E4C33]">
+                <Badge className="h-6 rounded-full border-transparent bg-[#FEE5D3] px-1.5 text-xs font-normal text-[#151718]">
                   {request.stageText}
                 </Badge>
               </div>
@@ -299,26 +296,26 @@ const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsShee
                     </p>
                     <div className="grid grid-cols-2">
                       <div className="border-border border-r border-b pe-4 pb-3">
-                        <p className="text-muted-foreground text-xs">Domain</p>
-                        <p className="text-foreground mt-0.5 font-semibold">
+                        <p className="text-muted-foreground text-sm font-light">Domain</p>
+                        <p className="text-foreground mt-0.5 text-sm font-medium">
                           {request.domain ?? '—'}
                         </p>
                       </div>
                       <div className="border-border border-b ps-4 pb-3">
-                        <p className="text-muted-foreground text-xs">Process Level</p>
-                        <p className="text-foreground mt-0.5 font-semibold">
+                        <p className="text-muted-foreground text-sm font-light">Process Level</p>
+                        <p className="text-foreground mt-0.5 text-sm font-medium">
                           {request.processLevel ?? '—'}
                         </p>
                       </div>
                       <div className="border-border border-r pe-4 pt-3">
-                        <p className="text-muted-foreground text-xs">Level 1</p>
-                        <p className="text-foreground mt-0.5 font-semibold">
+                        <p className="text-muted-foreground text-sm font-light">Level 1</p>
+                        <p className="text-foreground mt-0.5 text-sm font-medium">
                           {request.level1 ?? '—'}
                         </p>
                       </div>
                       <div className="ps-4 pt-3">
-                        <p className="text-muted-foreground text-xs">Level 2</p>
-                        <p className="text-foreground mt-0.5 font-semibold">
+                        <p className="text-muted-foreground text-sm font-light">Level 2</p>
+                        <p className="text-foreground mt-0.5 text-sm font-medium">
                           {request.level2 ?? '—'}
                         </p>
                       </div>
@@ -334,12 +331,16 @@ const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsShee
                     </p>
                     <div className="grid grid-cols-2">
                       <div className="border-border border-r pe-4">
-                        <p className="text-muted-foreground text-xs">Requester</p>
-                        <p className="text-foreground mt-0.5 font-semibold">{request.requester}</p>
+                        <p className="text-muted-foreground text-sm font-light">Requester</p>
+                        <p className="text-foreground mt-0.5 text-sm font-medium">
+                          {request.requester}
+                        </p>
                       </div>
                       <div className="ps-4">
-                        <p className="text-muted-foreground text-xs">Business focal point</p>
-                        <p className="text-foreground mt-0.5 font-semibold">
+                        <p className="text-muted-foreground text-sm font-light">
+                          Business focal point
+                        </p>
+                        <p className="text-foreground mt-0.5 text-sm font-medium">
                           {request.businessFocalPoint ?? request.approver}
                         </p>
                       </div>
@@ -352,7 +353,7 @@ const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsShee
             {/* Change details section */}
             <section className="mt-6">
               <div className="flex items-center gap-3">
-                <h3 className="text-foreground shrink-0 text-xl font-semibold">Change details</h3>
+                <h3 className="text-foreground shrink-0 text-base font-medium">Change details</h3>
                 <Separator className="flex-1" />
               </div>
 

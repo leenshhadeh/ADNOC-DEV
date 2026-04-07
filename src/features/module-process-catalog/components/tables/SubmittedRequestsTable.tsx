@@ -98,7 +98,6 @@ const SubmittedRequestsTable = () => {
               currentStep={row.stageCurrent}
               totalSteps={row.stageTotal}
               statusText={row.stageText}
-              active={row.status === 'Published'}
             />
           )
         },

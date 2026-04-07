@@ -33,6 +33,7 @@ export const editLevel4RowSchema = z.object({
   processCode: z.string().min(1, 'Required'),
   processName: z.string().min(1, 'Required'),
   processDescription: z.string().optional(),
+  status: z.enum(['Published', 'Draft']).default('Draft'),
 })
 
 export const editLevel4sFormSchema = z.object({

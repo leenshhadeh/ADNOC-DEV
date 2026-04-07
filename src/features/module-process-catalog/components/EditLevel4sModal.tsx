@@ -2,20 +2,27 @@
  * EditLevel4sModal
  *
  * Allows users to add, edit, and delete Level 4 processes under a parent node.
+ * Matches Figma design 6506-359505.
  *
  * Architecture (SRP):
- *   - Schema / types  → pure Zod definitions, no UI
- *   - EditLevel4sModal → form state + submit logic only (no layout)
- *   - Level4Row        → single-row presentation (inputs + delete button)
+ *   - Schema / types   → pure Zod definitions (catalog.schemas.ts)
+ *   - StatusBadge       → read-only status display
+ *   - Level4RowItem     → single-row presentation (cells + actions)
+ *   - EditLevel4sModal  → form state + submit logic + layout
  */
 
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, Trash2, X } from 'lucide-react'
+import { Info, MoreVertical, Plus, Search, X } from 'lucide-react'
 
 import { cn } from '@/shared/lib/utils'
-import { Button } from '@/shared/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/shared/components/ui/dropdown-menu'
 import {
   editLevel4sFormSchema,
   type EditLevel4sFormValues,
@@ -30,106 +37,193 @@ type Level4Row = EditLevel4Row
 export interface EditLevel4sModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-
-  /** E.g. "ADNOC HQ - Site A" — shown in the modal title */
   parentLabel: string
-
-  /**
-   * Auto-code prefix used to generate the next code for new rows.
-   * E.g. "EXP.1.1.1" → new rows get "EXP.1.1.1.1", "EXP.1.1.1.2", …
-   */
   parentCode: string
-
-  /** Pre-populate the list with existing Level 4 rows. */
   initialRows?: Level4Row[]
-
-  /** Shows a loading skeleton while rows are being fetched. */
+  /** Previously added process names under the same group company (shown as suggestions). */
+  previousProcessNames?: string[]
   isLoading?: boolean
-
-  /** Called with the final validated list when the user clicks Save. */
   onSave?: (rows: Level4Row[]) => void
 }
 
-// ── Sub-component: single editable row ───────────────────────────────────────
+// ── StatusBadge ───────────────────────────────────────────────────────────────
+
+const STATUS_STYLES: Record<string, string> = {
+  Published: 'bg-[#DFEBFF]',
+  Draft: 'bg-[#E0E0E0]',
+}
+
+function StatusBadge({ status }: { status: string }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center justify-center rounded-full px-1.5 text-xs leading-[13px] font-normal text-[#151718]',
+        STATUS_STYLES[status] ?? 'bg-[#E0E0E0]',
+      )}
+    >
+      {status}
+    </span>
+  )
+}
+
+// ── Searchable suggestions dropdown ───────────────────────────────────────────
+
+interface ProcessNameSuggestionsProps {
+  suggestions: string[]
+  onSelect: (name: string) => void
+}
+
+function ProcessNameSuggestions({ suggestions, onSelect }: ProcessNameSuggestionsProps) {
+  const [search, setSearch] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    // Auto-focus the search input when the dropdown opens
+    inputRef.current?.focus()
+  }, [])
+
+  const filtered = suggestions.filter((s) => s.toLowerCase().includes(search.toLowerCase()))
+
+  return (
+    <div className="absolute top-full left-0 z-20 mt-1 w-full overflow-hidden rounded-2xl border border-[#DFE3E6] bg-white shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]">
+      {/* Search row */}
+      <div className="flex items-center gap-2 border-b border-[#DFE3E6] bg-[#F1F3F5] px-3 py-2">
+        <Search className="size-4 shrink-0 text-[#0047BA]" />
+        <input
+          ref={inputRef}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search"
+          className="flex-1 bg-transparent text-xs font-normal text-[#687076] outline-none placeholder:text-[#687076]"
+        />
+      </div>
+
+      {/* Suggestion items */}
+      <div className="max-h-[200px] overflow-y-auto">
+        {filtered.length > 0 ? (
+          filtered.map((name, i) => (
+            <button
+              key={i}
+              type="button"
+              className="flex w-full items-center border-b border-[#DFE3E6]/50 px-3 py-2 text-left text-sm font-normal text-[#687076] transition-colors last:border-b-0 hover:bg-[#F1F3F5]"
+              onMouseDown={(e) => {
+                e.preventDefault()
+                onSelect(name)
+              }}
+            >
+              {name}
+            </button>
+          ))
+        ) : (
+          <div className="px-3 py-2 text-xs text-[#687076]">No matches</div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ── Single-row sub-component ──────────────────────────────────────────────────
 
 interface Level4RowProps {
   index: number
   processCode: string
+  status: string
   nameError?: string
-  codeError?: string
   register: ReturnType<typeof useForm<FormValues>>['register']
+  previousProcessNames?: string[]
+  onSelectSuggestion: (name: string) => void
   onRemove: () => void
-  isOnly: boolean
 }
 
-const Level4RowItem = ({
+function Level4RowItem({
   index,
   processCode,
+  status,
   nameError,
   register,
+  previousProcessNames,
+  onSelectSuggestion,
   onRemove,
-  isOnly,
-}: Level4RowProps) => (
-  <tr className="group border-border/60 border-b last:border-0">
-    {/* Process Code — read-only, muted */}
-    <td className="w-36 py-2 pe-3 align-top">
-      <span className="text-muted-foreground block px-2 py-2 font-mono text-sm select-none">
-        {processCode}
-      </span>
-    </td>
+}: Level4RowProps) {
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const hasSuggestions = previousProcessNames && previousProcessNames.length > 0
 
-    {/* Process Name */}
-    <td className="py-2 pe-3 align-top">
-      <input
-        {...register(`rows.${index}.processName`)}
-        placeholder="Enter process name"
-        aria-label="Process name"
-        className={cn(
-          'text-foreground w-full border-0 border-b bg-transparent px-2 py-1.5 text-sm outline-none',
-          'placeholder:text-muted-foreground/60',
-          'transition-colors',
-          'focus:border-border border-transparent',
-          nameError && 'border-destructive focus:border-destructive',
-        )}
-      />
-      {nameError && <p className="text-destructive mt-0.5 px-2 text-xs">{nameError}</p>}
-    </td>
+  return (
+    <div className="flex min-h-[56px] border-b border-[#DFE3E6] last:border-b-0">
+      {/* Process Code */}
+      <div className="flex w-[140px] shrink-0 items-center border-r border-[#DFE3E6] px-4 py-2">
+        <span className="text-sm font-normal text-[#687076]">{processCode}</span>
+      </div>
 
-    {/* Process Description */}
-    <td className="py-2 pe-3 align-top">
-      <input
-        {...register(`rows.${index}.processDescription`)}
-        placeholder="Enter description (optional)"
-        aria-label="Process description"
-        className={cn(
-          'text-foreground w-full border-0 border-b bg-transparent px-2 py-1.5 text-sm outline-none',
-          'placeholder:text-muted-foreground/60',
-          'transition-colors',
-          'focus:border-border border-transparent',
+      {/* Process Name */}
+      <div className="relative flex flex-1 items-center border-r border-[#DFE3E6] px-4 py-2">
+        <input
+          {...register(`rows.${index}.processName`)}
+          placeholder="Start writing..."
+          aria-label="Process name"
+          onFocus={() => hasSuggestions && setShowSuggestions(true)}
+          onBlur={() => setShowSuggestions(false)}
+          className={cn(
+            'w-full bg-transparent text-sm font-normal text-[#151718] outline-none',
+            'placeholder:font-light placeholder:text-[#687076]',
+            nameError && 'text-[#EB3865]',
+          )}
+        />
+        {showSuggestions && hasSuggestions && (
+          <ProcessNameSuggestions
+            suggestions={previousProcessNames}
+            onSelect={(name) => {
+              onSelectSuggestion(name)
+              setShowSuggestions(false)
+            }}
+          />
         )}
-      />
-    </td>
+      </div>
 
-    {/* Delete action */}
-    <td className="w-10 py-2 align-top">
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-xs"
-        disabled={isOnly}
-        aria-label="Remove row"
-        onClick={onRemove}
-        className={cn(
-          'text-muted-foreground mt-1.5 transition-opacity',
-          'opacity-0 group-hover:opacity-100 focus-visible:opacity-100',
-          isOnly && 'pointer-events-none',
-        )}
-      >
-        <Trash2 className="text-destructive/70 size-3.5" />
-      </Button>
-    </td>
-  </tr>
-)
+      {/* Process Description */}
+      <div className="flex flex-1 items-center border-r border-[#DFE3E6] px-4 py-2">
+        <input
+          {...register(`rows.${index}.processDescription`)}
+          placeholder="Start writing..."
+          aria-label="Process description"
+          className="w-full bg-transparent text-sm font-normal text-[#151718] outline-none placeholder:font-light placeholder:text-[#687076]"
+        />
+      </div>
+
+      {/* Status */}
+      <div className="flex w-[100px] shrink-0 items-center border-r border-[#DFE3E6] px-4 py-2">
+        <StatusBadge status={status} />
+      </div>
+
+      {/* Actions */}
+      <div className="flex w-[56px] shrink-0 items-center justify-center py-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className="rounded-full p-1 text-[#151718] transition-colors hover:bg-[#DFE3E6]"
+              aria-label="Row actions"
+            >
+              <MoreVertical className="size-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            sideOffset={4}
+            className="w-40 rounded-2xl border border-[#DFE3E6] bg-white p-0 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]"
+          >
+            <DropdownMenuItem
+              className="cursor-pointer px-3 py-2 text-sm font-normal text-[#EB3865] focus:bg-[#F1F3F5]"
+              onClick={onRemove}
+            >
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  )
+}
 
 // ── Main component ────────────────────────────────────────────────────────────
 
@@ -139,22 +233,25 @@ export const EditLevel4sModal = ({
   parentLabel,
   parentCode,
   initialRows = [],
+  previousProcessNames = [],
   isLoading = false,
   onSave,
 }: EditLevel4sModalProps) => {
-  const emptyRow: Level4Row = {
-    processCode: `${parentCode}.1`,
+  const makeEmptyRow = (index: number): Level4Row => ({
+    processCode: `${parentCode}.${index}`,
     processName: '',
     processDescription: '',
-  }
+    status: 'Draft',
+  })
 
-  const defaultRows: Level4Row[] = initialRows.length > 0 ? initialRows : [emptyRow]
+  const defaultRows: Level4Row[] = initialRows.length > 0 ? initialRows : [makeEmptyRow(1)]
 
   const {
     register,
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(editLevel4sFormSchema),
@@ -163,25 +260,17 @@ export const EditLevel4sModal = ({
 
   const { fields, append, remove } = useFieldArray({ control, name: 'rows' })
 
-  // Sync fetched data into the form once it arrives
   useEffect(() => {
     if (open && !isLoading) {
       reset({
-        rows:
-          initialRows.length > 0
-            ? initialRows
-            : [{ processCode: `${parentCode}.1`, processName: '', processDescription: '' }],
+        rows: initialRows.length > 0 ? initialRows : [makeEmptyRow(1)],
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, isLoading, initialRows.length])
 
   const handleAddRow = () => {
-    append({
-      processCode: `${parentCode}.${fields.length + 1}`,
-      processName: '',
-      processDescription: '',
-    })
+    append(makeEmptyRow(fields.length + 1))
   }
 
   const handleSave = handleSubmit((data) => {
@@ -197,99 +286,121 @@ export const EditLevel4sModal = ({
   if (!open) return null
 
   return (
-    <div className="bg-foreground/40 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-[1px]">
-      <div className="flex h-[90vh] w-full max-w-6xl flex-col rounded-2xl bg-[#F1F3F5] p-6 shadow-2xl">
-        {/* Header */}
-        <div className="flex shrink-0 items-start justify-between gap-4">
-          <h2 className="text-foreground text-2xl font-bold">Add Level 4s under {parentLabel}</h2>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            aria-label="Close"
-            onClick={handleCancel}
-          >
-            <X className="size-5" />
-          </Button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-[1px]">
+      <div className="flex h-[90vh] w-full max-w-6xl flex-col gap-8 rounded-2xl bg-[#F1F3F5] p-8 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]">
+        {/* ── Header block ── */}
+        <div className="flex shrink-0 flex-col gap-[18px]">
+          {/* Title row */}
+          <div className="flex items-start gap-2">
+            <h2 className="flex-1 text-2xl leading-8 font-medium text-[#151718]">
+              Edit Level 4s under {parentLabel}
+            </h2>
+            <button
+              type="button"
+              aria-label="Close"
+              onClick={handleCancel}
+              className="shrink-0 rounded-full p-1 text-[#687076] transition-colors hover:text-[#151718]"
+            >
+              <X className="size-5" />
+            </button>
+          </div>
+
+          {/* Info notice */}
+          <div className="flex items-center gap-1">
+            <Info className="size-4 shrink-0 text-[#151718]" />
+            <span className="text-sm font-normal text-[#151718]">
+              Level 4 changes will be applied when Level 3 is submitted.
+            </span>
+          </div>
         </div>
 
-        {/* Scrollable table card */}
-        <div className="border-border mt-5 min-h-0 flex-1 overflow-y-auto rounded-xl border bg-white">
-          {isLoading ? (
-            <div className="space-y-3 p-4">
-              {[1, 2, 3].map((n) => (
-                <div key={n} className="flex items-center gap-4">
-                  <div className="bg-muted h-4 w-24 animate-pulse rounded" />
-                  <div className="bg-muted h-4 flex-1 animate-pulse rounded" />
-                  <div className="bg-muted h-4 flex-1 animate-pulse rounded" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <>
-              <table className="w-full table-fixed border-collapse">
-                <thead>
-                  <tr className="border-border/60 border-b">
-                    <th className="text-muted-foreground w-36 px-4 py-3 text-start text-xs font-medium tracking-wide uppercase">
-                      Process Code
-                    </th>
-                    <th className="text-muted-foreground px-4 py-3 text-start text-xs font-medium tracking-wide uppercase">
-                      Process Name
-                    </th>
-                    <th className="text-muted-foreground px-4 py-3 text-start text-xs font-medium tracking-wide uppercase">
-                      Process Description
-                    </th>
-                    <th className="w-10 py-3" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {fields.map((field, index) => (
-                    <Level4RowItem
-                      key={field.id}
-                      index={index}
-                      processCode={`${parentCode}.${index + 1}`}
-                      nameError={errors.rows?.[index]?.processName?.message}
-                      codeError={errors.rows?.[index]?.processCode?.message}
-                      register={register}
-                      onRemove={() => remove(index)}
-                      isOnly={fields.length === 1}
-                    />
-                  ))}
-                </tbody>
-              </table>
-
-              {/* Add row trigger */}
-              <div className="px-4 py-3">
-                <button
-                  type="button"
-                  onClick={handleAddRow}
-                  className="flex items-center gap-1.5 text-sm font-medium text-[#0047BA] hover:underline focus-visible:underline focus-visible:outline-none"
-                >
-                  <Plus className="size-4" />
-                  Add Level 4
-                </button>
+        {/* ── Scrollable table card ── */}
+        <div className="min-h-0 flex-1 overflow-hidden rounded-2xl border border-[#DFE3E6] bg-white">
+          <div className="flex h-full flex-col overflow-y-auto px-4 py-3">
+            {isLoading ? (
+              <div className="space-y-3 py-2">
+                {[1, 2, 3].map((n) => (
+                  <div key={n} className="flex items-center gap-4">
+                    <div className="h-4 w-24 animate-pulse rounded bg-[#DFE3E6]" />
+                    <div className="h-4 flex-1 animate-pulse rounded bg-[#DFE3E6]" />
+                    <div className="h-4 flex-1 animate-pulse rounded bg-[#DFE3E6]" />
+                  </div>
+                ))}
               </div>
-            </>
-          )}
+            ) : (
+              <>
+                {/* Table header */}
+                <div className="flex min-h-[56px] border-b border-[#DFE3E6]">
+                  <div className="flex w-[140px] shrink-0 items-center px-4 py-2">
+                    <span className="text-xs font-normal text-[#687076] uppercase">
+                      Process code
+                    </span>
+                  </div>
+                  <div className="flex flex-1 items-center px-4 py-2">
+                    <span className="text-xs font-normal text-[#687076] uppercase">
+                      Process name
+                    </span>
+                  </div>
+                  <div className="flex flex-1 items-center px-4 py-2">
+                    <span className="text-xs font-normal text-[#687076] uppercase">
+                      Process Description
+                    </span>
+                  </div>
+                  <div className="flex w-[100px] shrink-0 items-center px-4 py-2">
+                    <span className="text-xs font-normal text-[#687076] uppercase">Status</span>
+                  </div>
+                  <div className="w-[56px] shrink-0" />
+                </div>
+
+                {/* Data rows */}
+                {fields.map((field, index) => (
+                  <Level4RowItem
+                    key={field.id}
+                    index={index}
+                    processCode={`${parentCode}.${index + 1}`}
+                    status={field.status ?? 'Draft'}
+                    nameError={errors.rows?.[index]?.processName?.message}
+                    register={register}
+                    previousProcessNames={previousProcessNames}
+                    onSelectSuggestion={(name) =>
+                      setValue(`rows.${index}.processName`, name, { shouldValidate: true })
+                    }
+                    onRemove={() => remove(index)}
+                  />
+                ))}
+
+                {/* Add row trigger */}
+                <div className="py-3">
+                  <button
+                    type="button"
+                    onClick={handleAddRow}
+                    className="flex items-center gap-1 text-sm font-medium text-[#0047BA] hover:underline focus-visible:underline focus-visible:outline-none"
+                  >
+                    <Plus className="size-4" />
+                    Add Level 4
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
-        {/* Footer */}
-        <div className="mt-8 flex shrink-0 justify-end gap-3">
-          <Button
+        {/* ── Footer ── */}
+        <div className="flex shrink-0 justify-end gap-3">
+          <button
             type="button"
-            variant="secondary"
-            className="h-10 w-52 rounded-full border-none hover:bg-blue-100"
+            className="flex w-48 items-center justify-center rounded-[36px] bg-gradient-to-r from-[#EAEFFF] to-[#C7D6F9] px-6 py-3 text-sm font-medium text-[#151718] shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90"
             onClick={handleCancel}
           >
             Cancel
-          </Button>
-          <Button
+          </button>
+          <button
             type="button"
-            className="h-10 w-52 rounded-full text-white hover:bg-[#4a1ce0]"
+            className="flex w-48 items-center justify-center rounded-full bg-gradient-to-r from-[#5B23FF] to-[#3C00EB] px-6 py-3 text-sm font-medium text-white shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90"
             onClick={handleSave}
           >
             Save
-          </Button>
+          </button>
         </div>
       </div>
     </div>

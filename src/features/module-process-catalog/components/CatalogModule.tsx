@@ -15,7 +15,17 @@ import AddLevel4sModal from './AddLevel4sModal'
 import { EditLevel4sModal } from './EditLevel4sModal'
 import RenameModal from './RenameModal'
 import BulkActionBar, { type BulkAction } from './BulkActionBar'
-import { BulkApproveModal, BulkRejectModal, BulkReturnModal } from './BulkActionModals'
+import ProcessBulkActionBar, { type ProcessBulkAction } from './ProcessBulkActionBar'
+import { ApproveModal, BulkEditModal, RejectModal, ReturnModal } from './modals'
+import {
+  bulkApproveTasks,
+  bulkRejectTasks,
+  bulkReturnTasks,
+} from '@features/module-process-catalog/api/taskActionService'
+import {
+  bulkEditProcesses,
+  bulkSubmitProcesses,
+} from '@features/module-process-catalog/api/processBulkActionService'
 import { exportToExcel } from '@features/module-process-catalog/utils/exportToExcel'
 import { FILTER_SECTION_IDS } from '@features/module-process-catalog/constants/filter-definitions'
 import {
@@ -23,7 +33,11 @@ import {
   applyProcessFilters,
 } from '@features/module-process-catalog/hooks/useProcessFilters'
 import { useProcessFilterDefinitions } from '@features/module-process-catalog/hooks/useProcessFilterDefinitions'
-import { useGetLevel4s } from '@features/module-process-catalog/hooks/useGetLevel4s'
+import {
+  useGetLevel4s,
+  useGetLevel4Names,
+} from '@features/module-process-catalog/hooks/useGetLevel4s'
+import { saveLevel4s } from '@features/module-process-catalog/api/level4Service'
 import { useGetProcessCatalogRows } from '@features/module-process-catalog/hooks/useGetProcessCatalogRows'
 import { useGetGroupCompanies } from '@features/module-process-catalog/hooks/useGetGroupCompanies'
 import { useCatalogNavStore } from '@features/module-process-catalog/store/useCatalogNavStore'
@@ -48,6 +62,49 @@ const CatalogModule = () => {
   const [isExporting, setIsExporting] = useState(false)
   const [processView, setProcessView] = useState<ProcessViewOption>('Published processes')
   const [successToast, setSuccessToast] = useState<string | null>(null)
+
+  // ── Processes bulk action state ─────────────────────────────────────────────
+  const [bulkEditOpen, setBulkEditOpen] = useState(false)
+
+  const selectedCount = Object.values(rowSelection).filter(Boolean).length
+
+  const handleToggleBulkMode = () => {
+    setIsBulkMode((prev) => {
+      if (prev) setRowSelection({})
+      return !prev
+    })
+  }
+
+  const handleProcessBulkAction = (action: ProcessBulkAction) => {
+    if (action === 'edit') setBulkEditOpen(true)
+    else if (action === 'submit') handleBulkSubmitProcesses()
+  }
+
+  const handleBulkEditApply = async (companySite: string) => {
+    const selectedIds = Object.keys(rowSelection).filter((k) => rowSelection[k])
+    try {
+      const result = await bulkEditProcesses({ processIds: selectedIds, companySite })
+      setSuccessToast(`${result.processed} process(es) updated with "${companySite}".`)
+    } catch {
+      setSuccessToast('Failed to apply bulk edit.')
+    }
+    setTimeout(() => setSuccessToast(null), 4000)
+    setRowSelection({})
+    setIsBulkMode(false)
+  }
+
+  const handleBulkSubmitProcesses = async () => {
+    const selectedIds = Object.keys(rowSelection).filter((k) => rowSelection[k])
+    try {
+      const result = await bulkSubmitProcesses({ processIds: selectedIds })
+      setSuccessToast(`${result.processed} process(es) submitted successfully.`)
+    } catch {
+      setSuccessToast('Failed to submit processes.')
+    }
+    setTimeout(() => setSuccessToast(null), 4000)
+    setRowSelection({})
+    setIsBulkMode(false)
+  }
 
   // ── My Tasks bulk action state ──────────────────────────────────────────────
   const [isTaskBulkMode, setIsTaskBulkMode] = useState(false)
@@ -80,28 +137,40 @@ const CatalogModule = () => {
     }
   }
 
-  const handleBulkApprove = () => {
+  const handleBulkApprove = async () => {
     const selectedIds = Object.keys(taskRowSelection).filter((k) => taskRowSelection[k])
-    console.log('Bulk approve tasks:', selectedIds)
-    setSuccessToast(`${selectedIds.length} request(s) approved successfully.`)
+    try {
+      const result = await bulkApproveTasks({ taskIds: selectedIds })
+      setSuccessToast(`${result.processed} request(s) approved successfully.`)
+    } catch {
+      setSuccessToast(`Failed to approve requests.`)
+    }
     setTimeout(() => setSuccessToast(null), 4000)
     setTaskRowSelection({})
     setIsTaskBulkMode(false)
   }
 
-  const handleBulkReject = () => {
+  const handleBulkReject = async () => {
     const selectedIds = Object.keys(taskRowSelection).filter((k) => taskRowSelection[k])
-    console.log('Bulk reject tasks:', selectedIds)
-    setSuccessToast(`${selectedIds.length} request(s) rejected.`)
+    try {
+      const result = await bulkRejectTasks({ taskIds: selectedIds })
+      setSuccessToast(`${result.processed} request(s) rejected.`)
+    } catch {
+      setSuccessToast(`Failed to reject requests.`)
+    }
     setTimeout(() => setSuccessToast(null), 4000)
     setTaskRowSelection({})
     setIsTaskBulkMode(false)
   }
 
-  const handleBulkReturn = (reason: string) => {
+  const handleBulkReturn = async (reason: string) => {
     const selectedIds = Object.keys(taskRowSelection).filter((k) => taskRowSelection[k])
-    console.log('Bulk return tasks:', selectedIds, 'reason:', reason)
-    setSuccessToast(`${selectedIds.length} request(s) returned.`)
+    try {
+      const result = await bulkReturnTasks({ taskIds: selectedIds, reason })
+      setSuccessToast(`${result.processed} request(s) returned.`)
+    } catch {
+      setSuccessToast(`Failed to return requests.`)
+    }
     setTimeout(() => setSuccessToast(null), 4000)
     setTaskRowSelection({})
     setIsTaskBulkMode(false)
@@ -147,6 +216,15 @@ const CatalogModule = () => {
   // Computed filtered view — does not mutate tableData (draft injection is preserved)
   const filteredData = useMemo(() => applyProcessFilters(tableData, applied), [tableData, applied])
 
+  // Derive company/site options for the bulk edit "Applicable to" dropdown
+  const companySiteOptions = useMemo(
+    () =>
+      (groupCompanies ?? []).flatMap((gc) =>
+        (gc.sites ?? []).map((s: string) => `${gc.name} - ${s}`),
+      ),
+    [groupCompanies],
+  )
+
   const handleExportFullReport = useCallback(async () => {
     setIsExporting(true)
     try {
@@ -180,14 +258,10 @@ const CatalogModule = () => {
     isEditL4sModalOpen ? (targetL3Item?.id ?? undefined) : undefined,
   )
 
-  const selectedCount = Object.values(rowSelection).filter(Boolean).length
-
-  const handleToggleBulkMode = () => {
-    setIsBulkMode((prev) => {
-      if (prev) setRowSelection({})
-      return !prev
-    })
-  }
+  // Fetch previously added L4 names for suggestion dropdown
+  const { data: previousL4Names } = useGetLevel4Names(
+    isEditL4sModalOpen ? (targetL3Item?.id ?? undefined) : undefined,
+  )
 
   /** Called when the user clicks "Add" in the modal */
   const handleAddProcesses = useCallback(() => {
@@ -489,6 +563,13 @@ const CatalogModule = () => {
 
       {activeTab === 'processes' ? (
         <div ref={tableContainerRef} className="overflow-auto">
+          {isBulkMode && selectedCount > 0 && (
+            <ProcessBulkActionBar
+              selectedCount={selectedCount}
+              onAction={handleProcessBulkAction}
+              onCancel={handleToggleBulkMode}
+            />
+          )}
           <DataTable
             columns={columns}
             data={filteredData}
@@ -618,32 +699,56 @@ const CatalogModule = () => {
         parentLabel={targetL3Item?.level3Name ?? ''}
         parentCode={targetL3Item?.level3Code ?? ''}
         isLoading={isLoadingL4s}
+        previousProcessNames={previousL4Names}
         initialRows={existingL4s?.map((l4) => ({
           processCode: l4.processCode,
           processName: l4.name,
           processDescription: l4.description,
         }))}
-        onSave={(rows) => {
-          // State is scoped to the modal. Do NOT inject into tableData.
-          // Wire to a PUT /api/level4s call here when the backend is ready.
-          console.log('Save L4s (Entry B)', { rows, parent: targetL3Item?.level3Code })
+        onSave={async (rows) => {
+          if (!targetL3Item) return
+          try {
+            const result = await saveLevel4s(
+              targetL3Item.id,
+              rows.map((r) => ({
+                processCode: r.processCode,
+                processName: r.processName,
+                processDescription: r.processDescription,
+                status: r.status,
+              })),
+            )
+            setSuccessToast(
+              `Level 4s saved — ${result.created} created, ${result.updated} updated, ${result.deleted} removed.`,
+            )
+            setTimeout(() => setSuccessToast(null), 4000)
+          } catch {
+            setSuccessToast('Failed to save Level 4 changes.')
+            setTimeout(() => setSuccessToast(null), 4000)
+          }
         }}
       />
 
       {/* ── Bulk action modals ── */}
-      <BulkApproveModal
+      <BulkEditModal
+        open={bulkEditOpen}
+        onOpenChange={setBulkEditOpen}
+        selectedCount={selectedCount}
+        companySiteOptions={companySiteOptions}
+        onApply={handleBulkEditApply}
+      />
+      <ApproveModal
         open={bulkApproveOpen}
         onOpenChange={setBulkApproveOpen}
         selectedCount={taskSelectedCount}
         onConfirm={handleBulkApprove}
       />
-      <BulkRejectModal
+      <RejectModal
         open={bulkRejectOpen}
         onOpenChange={setBulkRejectOpen}
         selectedCount={taskSelectedCount}
         onConfirm={handleBulkReject}
       />
-      <BulkReturnModal
+      <ReturnModal
         open={bulkReturnOpen}
         onOpenChange={setBulkReturnOpen}
         selectedCount={taskSelectedCount}

@@ -16,18 +16,18 @@ interface StatusBadgeCellProps {
 }
 
 const statusStyles: Record<CatalogStatus, string> = {
-  'Pending approval': 'border-transparent bg-[#F8E7DA] text-[#6E4C33]',
+  'Pending approval': 'border-transparent bg-[#FEE5D3] text-[#151718]',
   'Pending signoff': 'border-transparent bg-[#F4EEBE] text-[#5E570C]',
   'Pending updates': 'border-transparent bg-[#F8E7DA] text-[#6E4C33]',
   'Returned draft': 'border-transparent bg-[#F9D4E0] text-[#5E2A3A]',
-  'Draft':'border-transparent bg-[#eee] text-[#151718]',
+  Draft: 'border-transparent bg-[#eee] text-[#151718]',
   Published: 'border-transparent bg-[#E8F0FF] text-[#0047BB]',
   '-': 'border-transparent bg-[#eee]',
 }
 
 // Highlighted colours shown to BPA Program Manager so pending items stand out
 const bpaPmStatusOverrides: Partial<Record<CatalogStatus, string>> = {
-  'Pending approval': 'border-transparent bg-[#FEE5D3] text-[#6E4C33]',
+  'Pending approval': 'border-transparent bg-[#FEE5D3] text-[#151718]',
   'Pending signoff': 'border-transparent bg-[#FFFAC7] text-[#5E570C]',
 }
 
@@ -40,7 +40,7 @@ const StatusBadgeCell = ({ status }: StatusBadgeCellProps) => {
   return (
     <Badge
       className={cn(
-        'flex h-7 min-w-[120px] items-center justify-center px-5 text-sm font-medium whitespace-nowrap',
+        'flex h-7 min-w-[120px] items-center justify-center px-5 text-xs font-normal whitespace-nowrap',
         style,
       )}
     >

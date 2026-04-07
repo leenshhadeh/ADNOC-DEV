@@ -5,7 +5,7 @@ interface StageProgressCellProps {
   totalSteps: number
   statusText: string
   active?: boolean
-  showSteps?:boolean
+  showSteps?: boolean
 }
 
 const StageProgressCell = ({
@@ -13,7 +13,7 @@ const StageProgressCell = ({
   totalSteps,
   statusText,
   active = true,
-  showSteps=true
+  showSteps = true,
 }: StageProgressCellProps) => {
   const isComplete = currentStep >= totalSteps
   const progress = Math.max(0, Math.min(100, (currentStep / totalSteps) * 100))
@@ -56,10 +56,12 @@ const StageProgressCell = ({
       </div>
 
       <div className="min-w-0">
-        {showSteps && <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-          Step {currentStep}/{totalSteps}
-        </p>}
-        <p className="text-foreground text-sm leading-5 font-semibold">{statusText}</p>
+        {showSteps && (
+          <p className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
+            Step {currentStep}/{totalSteps}
+          </p>
+        )}
+        <p className="text-foreground text-sm leading-5 font-medium">{statusText}</p>
       </div>
     </div>
   )

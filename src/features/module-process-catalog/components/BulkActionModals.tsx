@@ -33,6 +33,8 @@ interface ApproveModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   selectedCount?: number
+  title?: string
+  description?: string
   onConfirm: () => void
 }
 
@@ -40,8 +42,14 @@ export function BulkApproveModal({
   open,
   onOpenChange,
   selectedCount,
+  title,
+  description,
   onConfirm,
 }: ApproveModalProps) {
+  const defaultTitle = `Approve selected requests${selectedCount ? ` (${selectedCount})` : ''}`
+  const defaultDesc =
+    'These requests will be forwarded for BPA Program Manager. Are you sure you want to approve them?'
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -51,13 +59,8 @@ export function BulkApproveModal({
         {/* Header */}
         <div className="flex items-start gap-2">
           <div className="flex flex-1 flex-col gap-2">
-            <h2 className="text-2xl font-medium text-[#151718]">
-              Approve selected requests{selectedCount ? ` (${selectedCount})` : ''}
-            </h2>
-            <p className="text-base font-normal text-[#687076]">
-              These requests will be forwarded for BPA Program Manager. Are you sure you want to
-              approve them?
-            </p>
+            <h2 className="text-2xl font-medium text-[#151718]">{title ?? defaultTitle}</h2>
+            <p className="text-base font-normal text-[#687076]">{description ?? defaultDesc}</p>
           </div>
           <CloseButton onClick={() => onOpenChange(false)} />
         </div>
@@ -93,17 +96,32 @@ interface RejectModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   selectedCount?: number
-  onConfirm: () => void
+  title?: string
+  description?: string
+  requireReason?: boolean
+  onConfirm: (reason?: string) => void
 }
 
 export function BulkRejectModal({
   open,
   onOpenChange,
   selectedCount,
+  title,
+  description,
+  requireReason = false,
   onConfirm,
 }: RejectModalProps) {
+  const [reason, setReason] = useState('')
+  const defaultTitle = `Reject selected requests${selectedCount ? ` (${selectedCount})` : ''}`
+  const defaultDesc = 'These requests will be rejected. Are you sure you want to reject them?'
+
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) setReason('')
+    onOpenChange(isOpen)
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         showClose={false}
         className="max-w-lg gap-8 rounded-2xl bg-[#F1F3F5] p-8 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]"
@@ -111,31 +129,44 @@ export function BulkRejectModal({
         {/* Header */}
         <div className="flex items-start gap-2">
           <div className="flex flex-1 flex-col gap-2">
-            <h2 className="text-2xl font-medium text-[#151718]">
-              Reject selected requests{selectedCount ? ` (${selectedCount})` : ''}
-            </h2>
-            <p className="text-base font-normal text-[#687076]">
-              These requests will be rejected. Are you sure you want to reject them?
-            </p>
+            <h2 className="text-2xl font-medium text-[#151718]">{title ?? defaultTitle}</h2>
+            <p className="text-base font-normal text-[#687076]">{description ?? defaultDesc}</p>
           </div>
-          <CloseButton onClick={() => onOpenChange(false)} />
+          <CloseButton onClick={() => handleOpenChange(false)} />
         </div>
+
+        {/* Optional reason input */}
+        {requireReason && (
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-0.5 text-base font-normal text-[#687076]">
+              Reason <span className="text-[#EB3865]">*</span>
+            </label>
+            <input
+              type="text"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              className="rounded-2xl border border-[#DFE3E6] bg-white px-6 py-4 text-sm text-[#151718] outline-none placeholder:text-[#A1A8AD] focus:border-[#0047BA]"
+              placeholder="Enter reject reason..."
+            />
+          </div>
+        )}
 
         {/* Actions */}
         <div className="flex gap-2">
           <button
             type="button"
             className="flex flex-1 items-center justify-center rounded-[36px] bg-gradient-to-r from-[#EAEFFF] to-[#C7D6F9] px-6 py-3 text-sm font-medium text-[#151718] shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90"
-            onClick={() => onOpenChange(false)}
+            onClick={() => handleOpenChange(false)}
           >
             Cancel
           </button>
           <button
             type="button"
-            className="flex flex-1 items-center justify-center rounded-full bg-gradient-to-r from-[#EB3865] to-[#B12A4C] px-6 py-3 text-sm font-medium text-white shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90"
+            disabled={requireReason && reason.trim().length === 0}
+            className="flex flex-1 items-center justify-center rounded-full bg-gradient-to-r from-[#EB3865] to-[#B12A4C] px-6 py-3 text-sm font-medium text-white shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90 disabled:opacity-50"
             onClick={() => {
-              onConfirm()
-              onOpenChange(false)
+              onConfirm(requireReason ? reason.trim() : undefined)
+              handleOpenChange(false)
             }}
           >
             Reject
@@ -152,6 +183,8 @@ interface ReturnModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   selectedCount?: number
+  title?: string
+  description?: string
   onConfirm: (reason: string) => void
 }
 
@@ -159,6 +192,8 @@ export function BulkReturnModal({
   open,
   onOpenChange,
   selectedCount,
+  title,
+  description,
   onConfirm,
 }: ReturnModalProps) {
   const [reason, setReason] = useState('')
@@ -178,10 +213,11 @@ export function BulkReturnModal({
         <div className="flex items-start gap-2">
           <div className="flex flex-1 flex-col gap-2">
             <h2 className="text-2xl font-medium text-[#151718]">
-              Return selected requests{selectedCount ? ` (${selectedCount})` : ''}
+              {title ?? `Return selected requests${selectedCount ? ` (${selectedCount})` : ''}`}
             </h2>
             <p className="text-base font-normal text-[#687076]">
-              These requests will be marked as Returned. Please add the return reason below.
+              {description ??
+                'These requests will be marked as Returned. Please add the return reason below.'}
             </p>
           </div>
           <CloseButton onClick={() => handleOpenChange(false)} />
