@@ -1,16 +1,13 @@
 import { TableBody } from '@/shared/components/ui/table'
-import {
-  ColHead,
-  HierarchyTd,
-  TableShell,
-} from '@/shared/components/table-primitives'
+import { ColHead, HierarchyTd, TableShell } from '@/shared/components/table-primitives'
 import Level4Cell from '../cells/Level4Cell'
 import { buildEntityLeafColumns, HIERARCHY_COLUMNS } from '../../constants/assessment-columns'
 import type { AssessmentDomain, EntityConfig, Level4Row } from '../../types'
 import { cn } from '@/shared/lib/utils'
 import AssessmentTableBody from '../AssessmentTableBody'
 import CellMenuOptions from '../CellMenuOptions'
-
+import SharedServicesSheet from '../sidePanels/SharedServicesSheet'
+import { useState } from 'react'
 
 // ── Main component ────────────────────────────────────────────────────────────
 
@@ -37,7 +34,7 @@ interface FlatRow {
   level1Cell?: CellDesc<{ name: string; code: string }>
   level2Cell?: CellDesc<{ name: string; code: string }>
   //level3Cell?: CellDesc<{ name: string; code: string; groupCompany?: string; status?: string }>
-  level3Cell?: any;
+  level3Cell?: any
 }
 
 function flattenDomains(domains: AssessmentDomain[]): FlatRow[] {
@@ -77,14 +74,13 @@ function flattenDomains(domains: AssessmentDomain[]): FlatRow[] {
           for (const l4 of l4List) {
             const row: FlatRow = {
               key: l4 ? l4.id : `${l3.id}__empty`,
-              l4Item:  l4 && {...l4, 
-                id:l4.id ,
+              l4Item: l4 && {
+                ...l4,
+                id: l4.id,
                 status: l4?.status || l3.status,
                 site: l4?.site || l3.site,
                 description: l4?.description || l3.description,
-              
-              
-              } ,
+              },
               l3Id: l3.id,
             }
             if (domainFirst) {
@@ -109,12 +105,11 @@ function flattenDomains(domains: AssessmentDomain[]): FlatRow[] {
             }
             // level3Cell
             if (l3First) {
-              row.level3Cell = { 
+              row.level3Cell = {
                 data: {
                   name: l3.level3Name,
                   code: l3.level3Code,
-                 ...l3
-
+                  ...l3,
                 },
                 rowSpan: l3Span,
               }
@@ -130,9 +125,9 @@ function flattenDomains(domains: AssessmentDomain[]): FlatRow[] {
   return rows
 }
 
-
 const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) => {
   const entityLeafs = buildEntityLeafColumns(entityConfig)
+  const [isSharedServiceOpen, setIsSharedServiceOpen] = useState(false)
 
   // Compute left offsets for sticky hierarchy columns
   const stickyOffsets = HIERARCHY_COLUMNS.filter((c) => c.pinned).reduce<Record<string, number>>(
@@ -146,158 +141,168 @@ const AssessmentDataTable = ({ data, entityConfig }: AssessmentDataTableProps) =
   const flatRows = flattenDomains(data)
   let lastGroupCompany = ''
   return (
-    <TableShell>
-      <div className="relative w-full overflow-auto">
-        <table
-          className="w-full caption-bottom border-separate border-spacing-0 text-sm"
-          style={{ minWidth: 'max-content' }}
-        >
-          {/* Columns ─────────────────────────────────────────────────────── */}
+    <>
+      <TableShell>
+        <div className="relative w-full overflow-auto">
+          <table
+            className="w-full caption-bottom border-separate border-spacing-0 text-sm"
+            style={{ minWidth: 'max-content' }}
+          >
+            {/* Columns ─────────────────────────────────────────────────────── */}
 
-          <thead>
-            {/* Row 1 — actual column labels with sort icons */}
-            <tr>
-              {HIERARCHY_COLUMNS.map((col) => (
-                <ColHead
-                  key={col.id}
-                  label={col.label}
-                  size={col.size}
-                  isSticky
-                  leftOffset={stickyOffsets[col.id]}
-                  className={col.id === 'level3' ? 'border-r-0 bg-white' : 'bg-white'}
-                />
-              ))}
-              {/* Group Company */}
-              <ColHead label="Group Company" size={250} className="bg-white" />
+            <thead>
+              {/* Row 1 — actual column labels with sort icons */}
+              <tr>
+                {HIERARCHY_COLUMNS.map((col) => (
+                  <ColHead
+                    key={col.id}
+                    label={col.label}
+                    size={col.size}
+                    isSticky
+                    leftOffset={stickyOffsets[col.id]}
+                    className={col.id === 'level3' ? 'border-r-0 bg-white' : 'bg-white'}
+                  />
+                ))}
+                {/* Group Company */}
+                <ColHead label="Group Company" size={250} className="bg-white" />
 
-              {/* Site sub-headers */}
-              {entityLeafs.map((col) => (
-                <ColHead key={col.id} label={col.siteName} size={col.size} className="bg-white" />
-              ))}
-            </tr>
-          </thead>
+                {/* Site sub-headers */}
+                {entityLeafs.map((col) => (
+                  <ColHead key={col.id} label={col.siteName} size={col.size} className="bg-white" />
+                ))}
+              </tr>
+            </thead>
 
-          {/* ── Body with rowSpan ────────────────────────────────────────── */}
-          <TableBody>
-            {flatRows.map((row) => {
-              const currentGroupCompany = row.level3Cell?.data.groupCompany
+            {/* ── Body with rowSpan ────────────────────────────────────────── */}
+            <TableBody>
+              {flatRows.map((row) => {
+                const currentGroupCompany = row.level3Cell?.data.groupCompany
 
-              if (currentGroupCompany) {
-                lastGroupCompany = currentGroupCompany
-              }
-           
+                if (currentGroupCompany) {
+                  lastGroupCompany = currentGroupCompany
+                }
 
-              return (
-                <tr
-                  key={row.key}
-                  className="group/row border-border hover:bg-muted/20 border-b transition-colors"
-                >
-                  {/* Domain — rendered only on its first row */}
-                  {row.domainCell && (
-                    <HierarchyTd
-                      rowSpan={row.domainCell.rowSpan}
-                      size={HIERARCHY_COLUMNS[0].size}
-                      leftOffset={stickyOffsets['domain']}
-                    >
-                      <span className="text-foreground text-sm font-medium">
-                        {row.domainCell.data.value}
-                      </span>
-                    </HierarchyTd>
-                  )}
-
-                  {/* Level 1 — rendered only on its first row */}
-                  {row.level1Cell && (
-                    <HierarchyTd
-                      rowSpan={row.level1Cell.rowSpan}
-                      size={HIERARCHY_COLUMNS[1].size}
-                      leftOffset={stickyOffsets['level1']}
-                    >
-                      <div className="flex flex-col gap-0.5">
+                return (
+                  <tr
+                    key={row.key}
+                    className="group/row border-border hover:bg-muted/20 border-b transition-colors"
+                  >
+                    {/* Domain — rendered only on its first row */}
+                    {row.domainCell && (
+                      <HierarchyTd
+                        rowSpan={row.domainCell.rowSpan}
+                        size={HIERARCHY_COLUMNS[0].size}
+                        leftOffset={stickyOffsets['domain']}
+                      >
                         <span className="text-foreground text-sm font-medium">
-                          {row.level1Cell.data.name}
+                          {row.domainCell.data.value}
                         </span>
-                        <span className="text-muted-foreground text-xs">
-                          {row.level1Cell.data.code}
-                        </span>
-                      </div>
-                    </HierarchyTd>
-                  )}
-
-                  {/* Level 2 — rendered only on its first row */}
-                  {row.level2Cell && (
-                    <HierarchyTd
-                      rowSpan={row.level2Cell.rowSpan}
-                      size={HIERARCHY_COLUMNS[2].size}
-                      leftOffset={stickyOffsets['level2']}
-                    >
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-foreground text-sm font-medium">
-                          {row.level2Cell.data.name}
-                        </span>
-                        <span className="text-muted-foreground text-xs">
-                          {row.level2Cell.data.code}
-                        </span>
-                      </div>
-                    </HierarchyTd>
-                  )}
-
-                  {/* Level 3 — ((pinned col))*/}
-                  {row.level3Cell && (
-                    <HierarchyTd
-                      rowSpan={row.level3Cell.rowSpan}
-                      size={HIERARCHY_COLUMNS[3].size}
-                      leftOffset={stickyOffsets['level3']}
-                      isLast={false}
-                    >
-                      <div className='flex items-center justify-between gap-2'>
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-foreground text-sm font-medium">
-                          {row.level3Cell.data.name}
-                        </span>
-                        <span className="text-muted-foreground text-xs">
-                          {row.level3Cell.data.code}
-                        </span>
-                      </div>
-                      {!row.l4Item &&  <CellMenuOptions item={row.level3Cell.data} />}
-                      </div>
-                    </HierarchyTd>
-                  )}
-
-                  {/* ── Level 4 cell ((pinned col))───────────────────────────────── */}
-                  <td
-                    style={{
-                      width: HIERARCHY_COLUMNS[4].size,
-                      minWidth: HIERARCHY_COLUMNS[4].size,
-                      position: 'sticky',
-                      left: stickyOffsets['level4'],
-                      zIndex: 10,
-                    }}
-                    className={cn(
-                      'bg-card border-border border-b px-3 py-2 align-top text-sm',
-                      'border-r-border/60 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.07)]',
+                      </HierarchyTd>
                     )}
-                  >
-                    <Level4Cell item={row.l4Item} />
-                  </td>
 
-                  {/* groupCompany */}
-                  <td
-                    className="border-r-border/60 border-border border-b px-3 py-2 align-middle"
-                    style={{ width: 250, minWidth: 250 }}
-                  >
-                    <span className="text-muted-foreground text-xs">
-                      {row.level3Cell?.data.groupCompany || lastGroupCompany}
-                      {/* if there is no data , then bring the last one aded  */}
-                    </span>
-                  </td>
-                  <AssessmentTableBody row={row} />
-                </tr>
-              )
-            })}
-          </TableBody>
-        </table>
-      </div>
-    </TableShell>
+                    {/* Level 1 — rendered only on its first row */}
+                    {row.level1Cell && (
+                      <HierarchyTd
+                        rowSpan={row.level1Cell.rowSpan}
+                        size={HIERARCHY_COLUMNS[1].size}
+                        leftOffset={stickyOffsets['level1']}
+                      >
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-foreground text-sm font-medium">
+                            {row.level1Cell.data.name}
+                          </span>
+                          <span className="text-muted-foreground text-xs">
+                            {row.level1Cell.data.code}
+                          </span>
+                        </div>
+                      </HierarchyTd>
+                    )}
+
+                    {/* Level 2 — rendered only on its first row */}
+                    {row.level2Cell && (
+                      <HierarchyTd
+                        rowSpan={row.level2Cell.rowSpan}
+                        size={HIERARCHY_COLUMNS[2].size}
+                        leftOffset={stickyOffsets['level2']}
+                      >
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-foreground text-sm font-medium">
+                            {row.level2Cell.data.name}
+                          </span>
+                          <span className="text-muted-foreground text-xs">
+                            {row.level2Cell.data.code}
+                          </span>
+                        </div>
+                      </HierarchyTd>
+                    )}
+
+                    {/* Level 3 — ((pinned col))*/}
+                    {row.level3Cell && (
+                      <HierarchyTd
+                        rowSpan={row.level3Cell.rowSpan}
+                        size={HIERARCHY_COLUMNS[3].size}
+                        leftOffset={stickyOffsets['level3']}
+                        isLast={false}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-foreground text-sm font-medium">
+                              {row.level3Cell.data.name}
+                            </span>
+                            <span className="text-muted-foreground text-xs">
+                              {row.level3Cell.data.code}
+                            </span>
+                          </div>
+                          {!row.l4Item && <CellMenuOptions item={row.level3Cell.data} />}
+                        </div>
+                      </HierarchyTd>
+                    )}
+
+                    {/* ── Level 4 cell ((pinned col))───────────────────────────────── */}
+                    <td
+                      style={{
+                        width: HIERARCHY_COLUMNS[4].size,
+                        minWidth: HIERARCHY_COLUMNS[4].size,
+                        position: 'sticky',
+                        left: stickyOffsets['level4'],
+                        zIndex: 10,
+                      }}
+                      className={cn(
+                        'bg-card border-border border-b px-3 py-2 align-top text-sm',
+                        'border-r-border/60 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.07)]',
+                      )}
+                    >
+                      <Level4Cell item={row.l4Item} />
+                    </td>
+
+                    {/* groupCompany */}
+                    <td
+                      className="border-r-border/60 border-border border-b px-3 py-2 align-middle"
+                      style={{ width: 250, minWidth: 250 }}
+                    >
+                      <span className="text-muted-foreground text-xs">
+                        {row.level3Cell?.data.groupCompany || lastGroupCompany}
+                        {/* if there is no data , then bring the last one aded  */}
+                      </span>
+                    </td>
+                    <AssessmentTableBody
+                      row={row}
+                      onExpandSharedServices={() => setIsSharedServiceOpen(true)}
+                    />
+                  </tr>
+                )
+              })}
+            </TableBody>
+          </table>
+        </div>
+      </TableShell>
+
+      {/* side panels */}
+      <SharedServicesSheet
+        open={isSharedServiceOpen}
+        handleOpenChange={() => setIsSharedServiceOpen(false)}
+      />
+    </>
   )
 }
 

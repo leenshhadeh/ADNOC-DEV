@@ -1,7 +1,6 @@
 import { BookOpen, FolderOpen } from 'lucide-react'
 import cards from '../../assets/icons/cards.svg'
 import AccessCard from './components/AccessCard'
-import Tag from './components/Tag'
 import ProcessesSummary from './components/ProcessesSummary'
 import MyTasks from './components/MyTasks'
 import HeaderActions from './components/HeaderActions'
@@ -37,10 +36,6 @@ const DashboardModule = () => {
         </div>
 
         <HeaderActions />
-      </div>
-
-      <div className="pb-5">
-        <Tag title="Annual assessment cycle" />
       </div>
 
       <div className="pb-5">

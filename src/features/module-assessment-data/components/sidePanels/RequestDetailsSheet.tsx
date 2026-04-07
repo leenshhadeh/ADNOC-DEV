@@ -2,7 +2,6 @@ import { useState } from 'react'
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
 import {
   ArrowRight,
-  Check,
   ChevronDown,
   ChevronRight,
   ChevronUp,

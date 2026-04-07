@@ -9,7 +9,7 @@ import { ASSESSMENT_APPLICATIONS, DIGITAL_FP_USERS } from '../constants/CurrentA
 import TagsSelect from '@/shared/components/table-primitives/TagsSelect'
 
 const AssessmentTableBody = (props: any) => {
-  const { row } = props
+  const { row, onExpandSharedServices } = props
 
   const getSharedCellValue = (item: any) => {
     let parsedValue: any
@@ -28,7 +28,11 @@ const AssessmentTableBody = (props: any) => {
           <Tally1 className="mt-[7px] rotate-[25deg] text-[#DFE3E6]" />
           <span className="text-muted-foreground pe-[7px]">{parsedValue.shared} Shared</span>
           <Tally1 className="text-[#DFE3E6]" />
-          <Maximize2 className="size-4" strokeWidth={2} />
+          <Maximize2
+            className="size-4 cursor-pointer"
+            strokeWidth={2}
+            onClick={onExpandSharedServices}
+          />
         </div>
       )
     }
@@ -614,8 +618,9 @@ const AssessmentTableBody = (props: any) => {
       key: 'submittedBy',
       content: (
         <td style={{ width: 150 }}>
-        <div className='bg-[#F1F3F5] rounded-[99px] p-1 text-center text-muted-foreground'>{row.l4Item?.submittedBy || row.level3Cell?.data.submittedBy || 'N/A'}
-          </div>  
+          <div className="text-muted-foreground rounded-[99px] bg-[#F1F3F5] p-1 text-center">
+            {row.l4Item?.submittedBy || row.level3Cell?.data.submittedBy || 'N/A'}
+          </div>
         </td>
       ),
     },
