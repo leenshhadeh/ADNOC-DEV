@@ -9,7 +9,7 @@ import {
   type CatalogStatus,
   UserBadgeCell,
 } from '@features/module-process-catalog/components/cells'
-import RequestDetailsSheet from '../RequestDetailsSheet'
+import RequestDetailsSheet from '../sidePanels/RequestDetailsSheet'
 
 import type { RequestItem } from '@features/module-assessment-data/types/submitted-requests'
 import { useGetSubmittedRequests } from '@features/module-assessment-data/hooks/useGetSubmittedRequests'
