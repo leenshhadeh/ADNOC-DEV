@@ -67,7 +67,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                     status:'Published',
                     site: 'C',
                     description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
-                    centrallyGovernedProcess: 'Yes',
+                    centrallyGovernedProcess: 'no',
                     sharedService: {services:12,shared:3},
                     businessUnit: ['Internal Audit Department (Operations)','Exploration'],
                     processCriticality: 'High',
@@ -93,7 +93,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                     status:'Pending approval',
                     site: 'B',
                     description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
-                    centrallyGovernedProcess: 'Yes',
+                    centrallyGovernedProcess: 'no',
                     sharedService: {services:12,shared:3},
                     businessUnit: ['Exploration'],
                     markedAsReviewed:'true',
@@ -203,7 +203,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 id: 'l3-5',
                 level3Name: 'Regional Data Gathering & QC (PA-02)',
                 level3Code: 'EXP.1.2.3',
-                groupCompany: 'ADNOC SA',
+                groupCompany: 'ADNOC HQ',
                 status:'Pending approval',
                 site: 'A',
                 description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
@@ -303,4 +303,5 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
       },
     ],
   },
+
 ]

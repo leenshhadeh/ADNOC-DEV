@@ -20,12 +20,12 @@ const DataTableCell = <TData, TValue>({
   const leftOffset = isPinned === 'left' ? cell.column.getStart('left') : undefined
   const colSize = cell.column.getSize()
   const isDivider = !!(cell.column.columnDef.meta as { isDivider?: boolean } | undefined)?.isDivider
-
   const cellStyle: React.CSSProperties = {
     width: colSize,
     minWidth: colSize,
     maxWidth: colSize,
     ...(isPinned === 'left' ? { position: 'sticky', left: leftOffset, zIndex: 10 } : {}),
+    ...( cell.column.columnDef?.meta?.pinnedCol ? { position: 'sticky', left: cell.column.columnDef?.meta?.offset || 0, zIndex: 10 ,backgroundColor:'#fff'} : {}),
     ...(startPadding ? { paddingInlineStart: startPadding } : {}),
   }
 
