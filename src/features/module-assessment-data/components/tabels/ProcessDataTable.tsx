@@ -6,10 +6,8 @@ import type { DomainItem, FlatAssessmentRow, SharedService } from '../../types/p
 import CellMenuOptions from '../CellMenuOptions'
 import { StatusBadgeCell } from '@/features/module-process-catalog/components/cells'
 import { EditableCell, RadioCell } from '@/shared/components/table-primitives'
-import { tr } from 'zod/v4/locales'
 import { Maximize2, Tally1 } from 'lucide-react'
 import TagsList from '@/shared/components/table-primitives/TagsList'
-
 
 const ProcessDataTable = () => {
   const toText = (value: unknown): string => {
@@ -23,7 +21,7 @@ const ProcessDataTable = () => {
     if (!value) return ''
     if (typeof value === 'string') return value
 
-    return {services: value.services, shared: value.shared}
+    return { services: value.services, shared: value.shared }
   }
   const onExpandSharedServices = () => {
     // Implement the logic to expand and show shared services details
@@ -95,11 +93,10 @@ const ProcessDataTable = () => {
                 centrallyGovernedProcess: toText(
                   pickValue(l4Item?.centrallyGovernedProcess, l3Item.centrallyGovernedProcess),
                 ),
-                sharedService: formatSharedService(
-                l4Item?.sharedService || l3Item.sharedService
-                ),
-                businessUnit:l4Item?.businessUnit || l3Item.businessUnit || [],
-                responsibleDigitalTeam: l4Item?.ResponsibleDigitalTeam  || l3Item.ResponsibleDigitalTeam || [],
+                sharedService: formatSharedService(l4Item?.sharedService || l3Item.sharedService),
+                businessUnit: l4Item?.businessUnit || l3Item.businessUnit || [],
+                responsibleDigitalTeam:
+                  l4Item?.ResponsibleDigitalTeam || l3Item.ResponsibleDigitalTeam || [],
                 processCriticality: toText(
                   pickValue(l4Item?.processCriticality, l3Item.processCriticality),
                 ),
@@ -242,43 +239,40 @@ const ProcessDataTable = () => {
         id: 'l3',
         accessorKey: 'l3',
         header: 'Level 3',
-        size: 260,
+        size: 300,
         pinnedCol: true,
         meta: { pinnedCol: true },
         cell: (info) => (
           <div className="flex items-center justify-between gap-2">
-          <div className="flex flex-col gap-0.5">
-            <span className="text-foreground text-sm font-medium">{info.getValue<string>()}</span>
-            <span className="text-muted-foreground text-xs">
-              {info.getValue<string>() ? info.row.original.l3Code : ''}
-            </span>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-foreground text-sm font-medium">{info.getValue<string>()}</span>
+              <span className="text-muted-foreground text-xs">
+                {info.getValue<string>() ? info.row.original.l3Code : ''}
+              </span>
+            </div>
+            {/* if there is l4 , remove the menu actins */}
+            {!info.row.original.l4Code && <CellMenuOptions item={info.row.original} />}
           </div>
-          <CellMenuOptions 
-           item={info.row.original}
-          />
-          </div>
-     
         ),
       },
       {
         id: 'l4',
         accessorKey: 'l4',
         header: 'Level 4',
-        size: 260,
+        size: 300,
         pinnedCol: true,
         meta: { pinnedCol: true, offset: 256 },
         cell: (info) => (
           <div className="flex items-center justify-between gap-2">
-
-          <div className="flex flex-col gap-0.5">
-            <span className="text-foreground text-sm font-medium">{info.getValue<string>()}</span>
-            <span className="text-muted-foreground text-xs">
-              {info.getValue<string>() ? info.row.original.l4Code : ''}
-            </span>
-          </div>
-          {info.getValue<string>() && <CellMenuOptions 
-           item={info.row.original}
-          />}
+            <div className="flex flex-col gap-0.5">
+              <span className="text-foreground text-sm font-medium">{info.getValue<string>()}</span>
+              {info.getValue<string>() ? (
+                <span className="text-muted-foreground text-xs">{info.row.original.l4Code} </span>
+              ) : (
+                <span className="text-muted-foreground text-sm italic">No Level 4 processes</span>
+              )}
+            </div>
+            {info.getValue<string>() && <CellMenuOptions item={info.row.original} />}
           </div>
         ),
       },
@@ -308,56 +302,59 @@ const ProcessDataTable = () => {
         accessorKey: 'description',
         header: 'Description',
         size: 320,
-        cell: (info) => <EditableCell value={info.getValue<string>()}
-        onChange={(newValue) => {
-          // Handle the change, e.g., update the data source or state
-          console.log('New description:', newValue);
-        }} 
-          />,
+        cell: (info) => (
+          <EditableCell
+            value={info.getValue<string>()}
+            onChange={(newValue) => {
+              // Handle the change, e.g., update the data source or state
+              console.log('New description:', newValue)
+            }}
+          />
+        ),
       },
       {
         id: 'centrallyGovernedProcess',
         accessorKey: 'centrallyGovernedProcess',
         header: 'Centrally Governed Process',
         size: 250,
-        cell: (info) =>  <RadioCell
-        name={`${info.row.original.l4Code}__centrallyGovernedProcess`}
-        value={info.getValue<string>()?true:false}
-        options={[
-          { label: 'Yes', value: 'yes' },
-          { label: 'No', value: 'no' },
-        ]}
-        onChange={() => {}}
-      />
+        cell: (info) => (
+          <RadioCell
+            name={`${info.row.original.l4Code}__centrallyGovernedProcess`}
+            value={info.getValue<string>() ? true : false}
+            options={[
+              { label: 'Yes', value: 'yes' },
+              { label: 'No', value: 'no' },
+            ]}
+            onChange={() => {}}
+          />
+        ),
       },
       {
         id: 'sharedService',
         accessorKey: 'sharedService',
         header: 'Shared Service',
         size: 250,
-        cell: (info) => <>{getSharedCellValue(info.getValue<string>())}</>
+        cell: (info) => <>{getSharedCellValue(info.getValue<string>())}</>,
 
-          // <p>{info.getValue<string>()}</p>,
       },
       {
         id: 'businessUnit',
         accessorKey: 'businessUnit',
         header: 'Business Unit',
         size: 250,
-        cell: (info) =>   <div className="max-w-[290px] overflow-hidden">
-        <TagsList
-          tags={(info.getValue<string>() || []).map(
-            (bu: string, index: number) => ({
-              id: `${info.row.original.l4Code || info.row.original.l3Code}__businessUnit__${index}`,
-              text: bu,
-            }),
-          )}
-          onRemoveTag={() => {}}
-          allTags={[]}
-        />
-      </div>
-        
-        //<p>{info.getValue<string>()}</p>,
+        cell: (info) => (
+          <div className="max-w-[290px] overflow-hidden">
+            <TagsList
+              tags={(info.getValue<string>() || []).map((bu: string, index: number) => ({
+                id: `${info.row.original.l4Code || info.row.original.l3Code}__businessUnit__${index}`,
+                text: bu,
+              }))}
+              onRemoveTag={() => {}}
+              allTags={[]}
+            />
+          </div>
+        ),
+
       },
       {
         id: 'responsibleDigitalTeam',
