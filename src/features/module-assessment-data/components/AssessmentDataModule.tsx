@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import {  useState } from 'react'
 import { Info } from 'lucide-react'
 import {
   Breadcrumb,
@@ -10,17 +10,16 @@ import {
 } from '@/shared/components/ui/breadcrumb'
 import ModuleToolbar from '@/shared/components/ModuleToolbar'
 import { ASSESSMENT_ACTIONS, ASSESSMENT_TABS } from '../constants/assessment-toolbar'
-
-import AssessmentDataTable from './tabels/AssessmentDataTable'
-import { ASSESSMENT_DATA } from '../constants/assessment-data'
-import { ASSESSMENT_ENTITY_CONFIG } from '../types'
 import ProcessesMenu from '../../../shared/components/ProcessesMenu'
 import MyTasksTable from './tabels/MyTasksTable'
 import SubmittedRequestsTable from './tabels/SubmittedRequestsTable'
+import ProcessDataTable from './tabels/ProcessDataTable'
 
 const AssessmentDataModule = () => {
   const [activeTab, setActiveTab] = useState('processes')
   const [search, setSearch] = useState('')
+
+
 
   return (
     <div className="flex h-full flex-col gap-0 overflow-hidden">
@@ -71,7 +70,7 @@ const AssessmentDataModule = () => {
       {/* ── Table ──────────────────────────────────────────────────────── */}
       <div className="flex-1 overflow-auto px-6 py-1">
         {activeTab == 'processes' ? (
-          <AssessmentDataTable data={ASSESSMENT_DATA} entityConfig={ASSESSMENT_ENTITY_CONFIG} />
+          <ProcessDataTable/>
         ) : activeTab == 'my-tasks' ? (
           <MyTasksTable />
         ) : activeTab == 'submittedRequests' ? (

@@ -7,7 +7,7 @@ interface TagsListProps {
   allTags?: { id: string; name: string }[] // Optional, in case you want to use it for a select component in the future
 }
 
-const TagsList: React.FC<TagsListProps> = ({ tags, onRemoveTag ,allTags}) => {
+const TagsList: React.FC<TagsListProps> = ({ tags, onRemoveTag}) => {
   return (
     <div className="flex gap-2">
       {tags.map((tag) => (
