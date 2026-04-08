@@ -3,7 +3,9 @@ import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
 // Shape.svg is used inside ModuleToolbar via svgr — mock it so jsdom doesn't choke
-vi.mock('@/assets/icons/Shape.svg?react', () => ({ default: () => <svg data-testid="shape-icon" /> }))
+vi.mock('@/assets/icons/Shape.svg?react', () => ({
+  default: () => <svg data-testid="shape-icon" />,
+}))
 
 import CatalogHeader from '../components/CatalogHeader'
 
@@ -76,7 +78,7 @@ describe('CatalogHeader', () => {
       expect(onToggle).toHaveBeenCalledTimes(1)
     })
 
-    it('shows selected count pill when bulk mode is active', () => {
+    it('shows Save and Validate actions when bulk mode is active', () => {
       render(
         <CatalogHeader
           {...defaultProps}
@@ -85,10 +87,11 @@ describe('CatalogHeader', () => {
           onToggleBulkMode={noop}
         />,
       )
-      expect(screen.getByText(/3 selected/i)).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /validate/i })).toBeInTheDocument()
     })
 
-    it('shows the add-multiple action button in bulk mode', () => {
+    it('hides the bulk pill and add-multiple button in bulk mode', () => {
       render(
         <CatalogHeader
           {...defaultProps}
@@ -98,7 +101,10 @@ describe('CatalogHeader', () => {
           onBulkAddProcesses={noop}
         />,
       )
-      expect(screen.getByRole('button', { name: /add multiple processes/i })).toBeInTheDocument()
+      expect(screen.queryByText(/selected/i)).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: /add multiple processes/i }),
+      ).not.toBeInTheDocument()
     })
   })
 })

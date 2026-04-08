@@ -581,6 +581,7 @@ const CatalogModule = () => {
             getRowId={(row) => row.id}
             tableMeta={{
               isBulkMode,
+              isFullReport: currentView === 'full-report',
               rowDividers: true,
               onUpdateDraftRow: handleUpdateDraftRow,
               firstDraftRowId,

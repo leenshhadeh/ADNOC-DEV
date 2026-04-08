@@ -25,6 +25,7 @@ declare module '@tanstack/react-table' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData> {
     isBulkMode?: boolean
+    isFullReport?: boolean
     onUpdateDraftRow?: (
       id: string,
       field: 'level1Name' | 'level2Name' | 'level3Name' | 'description',
@@ -342,6 +343,51 @@ function buildEntityColumns(groupCompanies: GroupCompany[]): ColumnDef<ProcessIt
 
 // ─── Public exports ───────────────────────────────────────────────────────────
 
+// ─── Read-only entity column builder (full report) ───────────────────────────
+// In full-report mode the entity matrix is read-only plain text cells with an
+// extra "Shared Service process?" sub-column under each group company.
+
+const ReadOnlyEntityCell = ({ value }: { value: string }) => (
+  <span className={cn('text-sm', value === 'Yes' ? 'text-foreground' : 'text-muted-foreground')}>
+    {value}
+  </span>
+)
+
+function buildFullReportEntityColumns(
+  groupCompanies: GroupCompany[],
+): ColumnDef<ProcessItem, unknown>[] {
+  return groupCompanies.map((entity) => ({
+    id: `entity__${entity.name}`,
+    header: entity.name,
+    meta: { isEntityGroup: true },
+    columns: [
+      // "Shared Service process?" sub-column
+      {
+        id: `entity__${entity.name}__sharedService`,
+        header: 'Shared Service process?',
+        size: 200,
+        enableSorting: false,
+        cell: (info: CellContext<ProcessItem, unknown>) => (
+          <ReadOnlyEntityCell value={info.row.original.isSharedService ? 'Yes' : 'No'} />
+        ),
+      } satisfies ColumnDef<ProcessItem, unknown>,
+      // Site sub-columns
+      ...entity.sites.map(
+        (site): ColumnDef<ProcessItem, unknown> => ({
+          id: `entity__${entity.name}__${site}`,
+          header: site,
+          size: 200,
+          enableSorting: false,
+          cell: (info: CellContext<ProcessItem, unknown>) => {
+            const val = (info.row.original.entities[entity.name]?.[site] ?? 'No') as string
+            return <ReadOnlyEntityCell value={val} />
+          },
+        }),
+      ),
+    ],
+  }))
+}
+
 export type CatalogColumnActions = {
   /** Opens modal to add L1 draft rows — triggered from Domain column context menu */
   onAddL1: (item: ProcessItem) => void
@@ -370,13 +416,13 @@ const Level4Cell = ({ parentId }: { parentId: string }) => {
   const { data: l4s, isLoading } = useGetLevel4s(parentId)
   if (isLoading) return <span className="text-muted-foreground text-xs">…</span>
   if (!l4s || l4s.length === 0)
-    return <em className="text-muted-foreground text-xs">No Level 4 processes</em>
+    return <em className="text-muted-foreground text-sm">No Level 4 processes</em>
   return (
     <div className="flex flex-col gap-1">
       {l4s.map((l4) => (
         <div key={l4.id} className="flex flex-col gap-0.5">
-          <span className="text-foreground text-sm leading-tight font-medium">{l4.name}</span>
-          <span className="text-muted-foreground text-xs">{l4.processCode}</span>
+          <span className="text-foreground text-base leading-tight font-light">{l4.name}</span>
+          <span className="text-muted-foreground text-sm font-light">{l4.processCode}</span>
         </div>
       ))}
     </div>
@@ -386,11 +432,11 @@ const Level4Cell = ({ parentId }: { parentId: string }) => {
 const Level4DescriptionCell = ({ parentId }: { parentId: string }) => {
   const { data: l4s, isLoading } = useGetLevel4s(parentId)
   if (isLoading) return <span className="text-muted-foreground text-xs">…</span>
-  if (!l4s || l4s.length === 0) return <span className="text-muted-foreground text-xs">-</span>
+  if (!l4s || l4s.length === 0) return <span className="text-muted-foreground text-sm">-</span>
   return (
     <div className="flex flex-col gap-1">
       {l4s.map((l4) => (
-        <span key={l4.id} className="text-foreground line-clamp-2 text-sm whitespace-normal">
+        <span key={l4.id} className="text-muted-foreground line-clamp-2 text-sm whitespace-normal">
           {l4.description}
         </span>
       ))}
@@ -607,6 +653,7 @@ export function buildCatalogColumns(
     meta: { filterByFirstChar: true },
     cell: (info: CellContext<ProcessItem, unknown>) => {
       const isBulkMode = info.table.options.meta?.isBulkMode ?? false
+      const isFullReport = info.table.options.meta?.isFullReport ?? false
       const isSelected = info.row.getIsSelected()
       const isDraft = info.row.original.level3Status === 'Draft'
       const isFirstDraft = info.table.options.meta?.firstDraftRowId === info.row.original.id
@@ -641,10 +688,17 @@ export function buildCatalogColumns(
       return (
         <div className="flex w-full items-center gap-2">
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-            <span className="text-foreground truncate text-sm leading-tight font-medium">
+            <span
+              className={cn(
+                'text-foreground truncate leading-tight',
+                isFullReport ? 'text-base font-light' : 'text-sm font-medium',
+              )}
+            >
               {info.row.original.level3Name}
             </span>
-            <span className="text-muted-foreground text-xs">{info.row.original.level3Code}</span>
+            <span className="text-muted-foreground text-sm font-light">
+              {info.row.original.level3Code}
+            </span>
           </div>
           {rowActions && !isBulkMode && (
             <Level3RowActions
@@ -695,11 +749,17 @@ export function buildCatalogColumns(
     cell: (info: CellContext<ProcessItem, unknown>) => {
       const isDraft = info.row.original.level3Status === 'Draft'
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const isReport = info.table.options.meta?.isFullReport ?? false
       if (isDraft && onUpdate) {
         return <DraftDescriptionInput rowId={info.row.original.id} onUpdate={onUpdate} />
       }
       return (
-        <span className="text-foreground line-clamp-3 text-sm whitespace-normal">
+        <span
+          className={cn(
+            'line-clamp-3 text-sm whitespace-normal',
+            isReport ? 'text-muted-foreground' : 'text-foreground',
+          )}
+        >
           {String(info.getValue())}
         </span>
       )
@@ -715,7 +775,10 @@ export function buildCatalogColumns(
     wrap(descriptionCol),
     // L4 columns injected right after description in full-report mode
     ...(fullReport ? buildFullReportColumns() : []),
-    // Entity matrix groups
-    ...buildEntityColumns(groupCompanies),
+    // Full-report uses read-only entity columns with "Shared Service" sub-column;
+    // default view uses interactive entity columns with dropdown + Edit L4s link.
+    ...(fullReport
+      ? buildFullReportEntityColumns(groupCompanies)
+      : buildEntityColumns(groupCompanies)),
   ]
 }
