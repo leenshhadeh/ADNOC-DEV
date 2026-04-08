@@ -15,9 +15,11 @@ import SelectCell from '@/shared/components/table-primitives/SelectCell'
 import TagsSelect from '@/shared/components/table-primitives/TagsSelect'
 import { ASSESSMENT_APPLICATIONS, DIGITAL_FP_USERS } from '../../constants/CurrentApplication'
 import MarkedAsReviewCell from '../cells/MarkedAsReviewCell'
+import BUSheet from '../sidePanels/BUSheet'
 
 const ProcessDataTable = () => {
   const [isSharedServiceOpen, setIsSharedServiceOpen] = useState(false);
+  const [isBUOpen, setIsBUOpen] = useState(false);
   const toText = (value: unknown): string => {
     if (value == null) return ''
     if (Array.isArray(value)) return value.filter(Boolean).join(', ')
@@ -359,8 +361,8 @@ const ProcessDataTable = () => {
                 id: `${info.row.original.l4Code || info.row.original.l3Code}__businessUnit__${index}`,
                 text: bu,
               }))}
-              onRemoveTag={() => {}}
               allTags={[]}
+              onExpand={() => {setIsBUOpen(true)}}
             />
           </div>
         ),
@@ -772,9 +774,14 @@ const ProcessDataTable = () => {
       />
 
           {/* side panels */}
-          <SharedServicesSheet
+      <SharedServicesSheet
         open={isSharedServiceOpen}
         handleOpenChange={() => setIsSharedServiceOpen(false)}
+      />
+
+      <BUSheet
+        open={isBUOpen}
+        handleOpenChange={(newVal:any) => {setIsBUOpen(false); console.log('BU sheet open state changed:', newVal)}}
       />
     </>
   )
