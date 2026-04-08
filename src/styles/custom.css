@@ -1,0 +1,37 @@
+@layer base {
+    * {
+      @apply border-border outline-ring/50;
+    }
+    body {
+      @apply bg-background text-foreground;
+    }
+    html {
+      @apply font-sans;
+    }
+    a {
+      color: #687076;
+    }
+  
+    /* Hide scrollbars globally while keeping scroll functionality */
+    * {
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
+    }
+    *::-webkit-scrollbar {
+      display: none; /* Chrome/Safari/WebKit */
+    }
+  }
+
+/* columns across all tables */
+td {
+  border-width: 1px;
+  padding: 10px 16px !important;
+}
+[role='menuitemcheckbox'] span.pointer-events-none {
+  border: 1px solid #687076;
+}
+[role='menuitemcheckbox'] span svg {
+  padding: 1px;
+  background-color: #0047ba;
+  color: #fff;
+}

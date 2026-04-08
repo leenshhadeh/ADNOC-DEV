@@ -37,7 +37,7 @@ const TagsSelect: React.FC<TagsListProps> = ({ tags, allTags, isUsers }) => {
     <>
       <DropdownMenu modal={false} open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             {tags.map((tag) => (
               <div
                 key={tag.id}
@@ -59,13 +59,13 @@ const TagsSelect: React.FC<TagsListProps> = ({ tags, allTags, isUsers }) => {
           className="w-[420px] border-0 bg-transparent p-0 shadow-none"
           align="start"
         >
-          <div className="flex flex-wrap items-center justify-start gap-2 rounded-md border border-[#E0E0E0] bg-[#F1F3F5] p-2 shadow-sm">
+          <div className="flex flex-wrap items-center justify-start gap-1 rounded-md border border-[#E0E0E0] bg-[#F1F3F5] p-2 shadow-sm">
             {selectedTags.map((tag) => (
               <div
                 key={tag.id}
-                className="m-1 flex w-auto items-center rounded-full border border-[#2F68D9] bg-[#DCE5F9] px-1 py-1 text-gray-800"
+                className="flex w-auto items-center rounded-full border border-[#2F68D9] bg-[#DCE5F9] px-1 py-1 text-gray-800"
               >
-                <span>{tag.name}</span>
+                <span className='text-[12px]'>{tag.name}</span>
                 <button
                   onClick={() => handleToggleTag(tag.id, false)}
                   className="text-gray-500 hover:text-gray-800"

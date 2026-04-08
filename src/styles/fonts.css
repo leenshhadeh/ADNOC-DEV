@@ -1,0 +1,31 @@
+@font-face {
+  font-family: 'ADNOCSans';
+  src: url('../assets/fonts/ADNOCSansLight.ttf') format('truetype');
+  font-weight: 300;
+  font-style: light;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ADNOCSans';
+  src: url('../assets/fonts/ADNOCSansRegular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ADNOCSans';
+  src: url('../assets/fonts/ADNOCSansMedium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ADNOCSans';
+  src: url('../assets/fonts/ADNOCSansSemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
