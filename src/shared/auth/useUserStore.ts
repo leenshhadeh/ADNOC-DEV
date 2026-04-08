@@ -15,14 +15,13 @@ interface UserStore {
 }
 
 // ─── Store ────────────────────────────────────────────────────────────────────
-// TODO: replace the initial mock user with the authenticated user from your
-//       auth provider (e.g. MSAL, Okta). Call setUser() after login resolves.
+// When VITE_MOCK_AUTH=true the initial values below are used as-is.
+// In production, ProtectedRoute's useSyncAuthUser hook overwrites them
+// with the real MSAL account name & role claims.
 
 export const useUserStore = create<UserStore>((set) => ({
   user: {
     name: 'Jane Doe',
-    // role: 'BPA Program Manager',
-    // role: 'Business Focal Point',
     role: 'BPA Process Catalog Custodian',
   },
   setUser: (user) => set({ user }),
