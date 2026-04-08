@@ -110,7 +110,7 @@ export type FlatAssessmentRow = {
   scaleOfProcess: string
   automationMaturityLevel: string
   automationLevel: string
-  currentApplicationsSystems: string
+  currentApplicationsSystems: string[]
   ongoingAutomationDigitalInitiatives: string
   businessRecommendationForAutomation: string
   keyChallengesAutomationNeeds: string
@@ -132,6 +132,7 @@ export type FlatAssessmentRow = {
   rateCardAED: string
   costOfManualEffortAED: string
   markedAsReviewed: string
+  reviewedOn: string
   businessFocalPoint: string
   digitalFocalPoint: string
   publishedDate: string
