@@ -14,7 +14,7 @@ const GroupCompanySitesCell = ({ row, onOpenSitesDrawer }: Props) => {
           row.sites.map((site) => (
             <span
               key={site.id}
-              className="inline-flex h-7 items-center rounded-full border border-[#93B4FF] bg-[#EAF2FF] px-4 text-[14px] text-[#3F3F46]"
+              className="inline-flex h-7 items-center rounded-full border border-[#2F68D9] bg-[#DCE5F9] px-4 text-[14px] text-[#151718]"
             >
               {site.name}
             </span>

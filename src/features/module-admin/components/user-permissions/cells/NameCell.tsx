@@ -94,8 +94,8 @@ const NameCell = ({
               </div>
 
               <div className="flex min-w-0 flex-col">
-                <span className="truncate text-sm font-medium text-gray-900">{name}</span>
-                <span className="truncate text-sm text-gray-500">{email}</span>
+                <span className="truncate text-[16px] font-[500] text-[#151718]">{name}</span>
+                <span className="truncate text-[14px] font-[300] text-[#687076]">{email}</span>
               </div>
             </>
           ) : (
@@ -107,7 +107,7 @@ const NameCell = ({
 
         <button
           type="button"
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md hover:bg-gray-100"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md hover:bg-[#DCE5F9]"
         >
           <MoreHorizontal className="h-4 w-4 text-gray-600" />
         </button>
@@ -158,7 +158,7 @@ const NameCell = ({
                         setUserPickerSearch('')
                         setPickerPosition(null)
                       }}
-                      className={`flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 ${
+                      className={`flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-[#DCE5F9] ${
                         isSelected ? 'bg-blue-50' : ''
                       }`}
                     >
@@ -193,8 +193,8 @@ const NameCell = ({
         </div>
 
         <div className="flex min-w-0 flex-col">
-          <span className="truncate text-sm font-medium text-gray-900">{name}</span>
-          <span className="truncate text-sm text-gray-500">{email}</span>
+          <span className="truncate text-[16px] font-[500] text-[#151718]">{name}</span>
+          <span className="truncate text-[14px] font-[300] text-[#687076]">{email}</span>
         </div>
       </div>
 
@@ -203,16 +203,16 @@ const NameCell = ({
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100"
+              className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-[#DCE5F9]"
             >
               <MoreHorizontal className="h-4 w-4 text-gray-600" />
             </button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="w-44 rounded-xl">
+          <DropdownMenuContent align="end" className="w-44 rounded-xl p-1">
             <DropdownMenuItem
               onClick={() => onView?.(row)}
-              className="flex cursor-pointer items-center gap-2"
+              className="flex cursor-pointer items-center gap-2 rounded-lg data-[highlighted]:bg-[#DCE5F9]"
             >
               <Eye className="h-4 w-4" />
               <span>View</span>
@@ -220,7 +220,7 @@ const NameCell = ({
 
             <DropdownMenuItem
               onClick={() => onDeactivate?.(row)}
-              className="flex cursor-pointer items-center gap-2 text-red-600 focus:text-red-600"
+              className="flex cursor-pointer items-center gap-2 rounded-lg text-red-600 data-[highlighted]:bg-[#DCE5F9] data-[highlighted]:text-red-600"
             >
               <Trash2 className="h-4 w-4" />
               <span>Deactivate</span>

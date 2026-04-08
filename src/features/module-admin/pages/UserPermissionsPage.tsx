@@ -18,9 +18,11 @@ import {
   getAccessCounts,
 } from '../components/user-permissions/utils'
 
-const createMockAccess = (
-  selectedAccessByGroupCompany: Record<string, string[]> = {},
-): AccessConfig => ({
+const createMockAccess = ({
+  selectedGroupCompanyIds = [],
+  selectedAccessByGroupCompany = {},
+}: Partial<AccessConfig> = {}): AccessConfig => ({
+  selectedGroupCompanyIds,
   selectedAccessByGroupCompany,
 })
 
@@ -53,19 +55,22 @@ const initialUserPermissionsData: UserPermissionRow[] = [
     accountStatus: 'Active',
     assignedRole: ['Digital Focal Point', 'Digital Admin'],
     accessConfig: createMockAccess({
-      'adnoc-hq': [
-        'exploration-and-planning',
-        'capital-projects',
-        'technical-engineering',
-        'finance',
-      ],
-      'adnoc-onshore': [
-        'production',
-        'human-capital',
-        'audit-and-assurance',
-        'business-support',
-        'digital-it-data-and-cybersecurity',
-      ],
+      selectedGroupCompanyIds: ['adnoc-hq', 'adnoc-onshore'],
+      selectedAccessByGroupCompany: {
+        'adnoc-hq': [
+          'exploration-and-planning',
+          'capital-projects',
+          'technical-engineering',
+          'finance',
+        ],
+        'adnoc-onshore': [
+          'production',
+          'human-capital',
+          'audit-and-assurance',
+          'business-support',
+          'digital-it-data-and-cybersecurity',
+        ],
+      },
     }),
   }),
   createMockRow({
@@ -83,7 +88,10 @@ const initialUserPermissionsData: UserPermissionRow[] = [
     accountStatus: 'Active',
     assignedRole: ['Opportunity Evaluator', 'Super Admin'],
     accessConfig: createMockAccess({
-      'adnoc-onshore': ['finance', 'gas-processing'],
+      selectedGroupCompanyIds: ['adnoc-onshore'],
+      selectedAccessByGroupCompany: {
+        'adnoc-onshore': ['finance', 'gas-processing'],
+      },
     }),
   }),
   createMockRow({
@@ -93,9 +101,12 @@ const initialUserPermissionsData: UserPermissionRow[] = [
     accountStatus: 'Active',
     assignedRole: ['Opportunity Manager'],
     accessConfig: createMockAccess({
-      'adnoc-hq': ['exploration-and-planning', 'finance'],
-      'adnoc-onshore': ['production', 'retail-distribution'],
-      'adnoc-offshore': ['transportation-and-logistics'],
+      selectedGroupCompanyIds: ['adnoc-hq', 'adnoc-onshore', 'adnoc-offshore'],
+      selectedAccessByGroupCompany: {
+        'adnoc-hq': ['exploration-and-planning', 'finance'],
+        'adnoc-onshore': ['production', 'retail-distribution'],
+        'adnoc-offshore': ['transportation-and-logistics'],
+      },
     }),
   }),
   createMockRow({
@@ -105,10 +116,13 @@ const initialUserPermissionsData: UserPermissionRow[] = [
     accountStatus: 'Active',
     assignedRole: ['Opportunity Evaluator'],
     accessConfig: createMockAccess({
-      'adnoc-gas': ['finance'],
-      'adnoc-refining': ['audit-and-assurance'],
-      borouge: ['integrated-risk-management'],
-      'adnoc-hq': ['legal-governance-and-compliance'],
+      selectedGroupCompanyIds: ['adnoc-gas', 'adnoc-refining', 'borouge', 'adnoc-hq'],
+      selectedAccessByGroupCompany: {
+        'adnoc-gas': ['finance'],
+        'adnoc-refining': ['audit-and-assurance'],
+        borouge: ['integrated-risk-management'],
+        'adnoc-hq': ['legal-governance-and-compliance'],
+      },
     }),
   }),
   createMockRow({
@@ -126,14 +140,17 @@ const initialUserPermissionsData: UserPermissionRow[] = [
     accountStatus: 'Active',
     assignedRole: ['Digital VP', 'Digital Admin'],
     accessConfig: createMockAccess({
-      'adnoc-hq': ['digital-it-data-and-cybersecurity', 'strategy-and-corporate-planning'],
-      'adnoc-distribution': ['business-support', 'corporate-communications'],
-      'adnoc-gas': [
-        'finance',
-        'human-capital',
-        'audit-and-assurance',
-        'integrated-risk-management',
-      ],
+      selectedGroupCompanyIds: ['adnoc-hq', 'adnoc-distribution', 'adnoc-gas'],
+      selectedAccessByGroupCompany: {
+        'adnoc-hq': ['digital-it-data-and-cybersecurity', 'strategy-and-corporate-planning'],
+        'adnoc-distribution': ['business-support', 'corporate-communications'],
+        'adnoc-gas': [
+          'finance',
+          'human-capital',
+          'audit-and-assurance',
+          'integrated-risk-management',
+        ],
+      },
     }),
   }),
   createMockRow({
@@ -151,8 +168,11 @@ const initialUserPermissionsData: UserPermissionRow[] = [
     accountStatus: 'Deactivated',
     assignedRole: ['Opportunity Evaluator', 'Digital Admin'],
     accessConfig: createMockAccess({
-      'adnoc-hq': ['retail-distribution', 'finance'],
-      'adnoc-offshore': ['production'],
+      selectedGroupCompanyIds: ['adnoc-hq', 'adnoc-offshore'],
+      selectedAccessByGroupCompany: {
+        'adnoc-hq': ['retail-distribution', 'finance'],
+        'adnoc-offshore': ['production'],
+      },
     }),
   }),
   createMockRow({
@@ -162,9 +182,12 @@ const initialUserPermissionsData: UserPermissionRow[] = [
     accountStatus: 'Deactivated',
     assignedRole: ['Business Focal Point'],
     accessConfig: createMockAccess({
-      'adnoc-onshore': ['gas-processing', 'refining'],
-      'adnoc-drilling': ['trading', 'transportation-and-logistics'],
-      'adnoc-gas': ['procurement-and-inventory', 'finance'],
+      selectedGroupCompanyIds: ['adnoc-onshore', 'adnoc-drilling', 'adnoc-gas'],
+      selectedAccessByGroupCompany: {
+        'adnoc-onshore': ['gas-processing', 'refining'],
+        'adnoc-drilling': ['trading', 'transportation-and-logistics'],
+        'adnoc-gas': ['procurement-and-inventory', 'finance'],
+      },
     }),
   }),
 ]
