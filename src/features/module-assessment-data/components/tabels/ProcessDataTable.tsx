@@ -8,8 +8,12 @@ import { StatusBadgeCell } from '@/features/module-process-catalog/components/ce
 import { EditableCell, RadioCell } from '@/shared/components/table-primitives'
 import { Maximize2, Tally1 } from 'lucide-react'
 import TagsList from '@/shared/components/table-primitives/TagsList'
+import SharedServicesSheet from '../sidePanels/SharedServicesSheet'
+
+import { useState } from 'react';
 
 const ProcessDataTable = () => {
+  const [isSharedServiceOpen, setIsSharedServiceOpen] = useState(false);
   const toText = (value: unknown): string => {
     if (value == null) return ''
     if (Array.isArray(value)) return value.filter(Boolean).join(', ')
@@ -25,7 +29,7 @@ const ProcessDataTable = () => {
   }
   const onExpandSharedServices = () => {
     // Implement the logic to expand and show shared services details
-    //alert('Expand shared services details')
+    setIsSharedServiceOpen(true);
   }
 
   const getSharedCellValue = (item: any) => {
@@ -204,6 +208,7 @@ const ProcessDataTable = () => {
         accessorKey: 'domain',
         header: 'Domain',
         size: 250,
+        enableSorting: false,
         meta: { isDivider: true },
         cell: (info) => <p>{info.getValue<string>()}</p>,
       },
@@ -212,6 +217,7 @@ const ProcessDataTable = () => {
         accessorKey: 'l1',
         header: 'Level 1',
         size: 220,
+        enableSorting: false,
         cell: (info) => (
           <div className="flex flex-col gap-0.5">
             <span className="text-foreground text-sm font-medium">{info.getValue<string>()}</span>
@@ -226,6 +232,7 @@ const ProcessDataTable = () => {
         accessorKey: 'l2',
         header: 'Level 2',
         size: 220,
+        enableSorting: false,
         cell: (info) => (
           <div className="flex flex-col gap-0.5">
             <span className="text-foreground text-sm font-medium">{info.getValue<string>()}</span>
@@ -240,6 +247,7 @@ const ProcessDataTable = () => {
         accessorKey: 'l3',
         header: 'Level 3',
         size: 300,
+        enableSorting: false,
         pinnedCol: true,
         meta: { pinnedCol: true },
         cell: (info) => (
@@ -602,6 +610,12 @@ const ProcessDataTable = () => {
         // enableColumnResizing
         // columnResizeMode="onChange"
         // getCommonCellStyles={getCommonPinningStyles}
+      />
+
+          {/* side panels */}
+          <SharedServicesSheet
+        open={isSharedServiceOpen}
+        handleOpenChange={() => setIsSharedServiceOpen(false)}
       />
     </>
   )

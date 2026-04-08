@@ -14,6 +14,7 @@ import GeneralInfoForm from './processDetailsComponents/GeneralInfoForm'
 
 // Genaral info about the process, can be fetched from API using processId
 const processDetails = {
+  name: 'Define basin framework',
   groupCompany: '12345',
   domain: 'Process 1',
   code: 'SGSAUD.1.1.3.1',
@@ -80,14 +81,14 @@ const ProcessDetailsPage = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>{`Process ${processId}`}</BreadcrumbPage>
+              <BreadcrumbPage>Process Details</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </div>
 
       <div className="mb-[24px] flex items-center py-3">
-        <h1 className="text-foreground text-2xl font-bold">{`Process ${processId} Details`}</h1>
+        <h1 className="text-foreground text-2xl font-bold">{processDetails.name}</h1>
       </div>
 
       <ProcessDetails data={processData} />

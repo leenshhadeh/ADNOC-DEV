@@ -43,7 +43,7 @@ const DataTableHeader = <TData, TValue>({
     ...(isPinned === 'left'
       ? { position: 'sticky', left: leftOffset, zIndex: 20 }
       : { transform: CSS.Transform.toString(transform), transition }),
-      ...(column.columnDef?.meta?.pinnedCol ? { position: 'sticky', left: column.columnDef?.meta?.offset || 0, zIndex: 100 ,backgroundColor:'#F1F3F5'} : {}),
+      ...(column.columnDef?.meta?.pinnedCol ? { position: 'sticky', left: column.columnDef?.meta?.offset || 0, zIndex: 12 ,backgroundColor:'#F1F3F5'} : {}),
 
   }
 
