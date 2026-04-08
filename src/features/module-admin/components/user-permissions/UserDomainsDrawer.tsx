@@ -10,7 +10,6 @@ import type {
   AccessConfig,
   UserPermissionRow,
 } from '@/features/module-admin/components/user-permissions/types'
-import { getAccessCounts } from '@/features/module-admin/components/user-permissions/utils'
 
 type Props = {
   open: boolean
@@ -33,7 +32,7 @@ const UserDomainsDrawer = ({
 
   useCallback(() => {
     if (open) {
-      setOpenGroups(Object.fromEntries(groupCompanies.map((gc) => [gc.id, true])))
+      setOpenGroups(Object.fromEntries(groupCompanies.map((gc) => [gc.id, false])))
     }
   }, [open])
 
@@ -48,8 +47,6 @@ const UserDomainsDrawer = ({
       .toUpperCase()
   }, [user])
 
-  const counts = getAccessCounts(draftAccessConfig)
-
   const toggleGroupOpen = (groupCompanyId: string) => {
     setOpenGroups((prev) => ({
       ...prev,
@@ -57,11 +54,27 @@ const UserDomainsDrawer = ({
     }))
   }
 
+  const isGroupCompanySelected = (groupCompanyId: string) =>
+    draftAccessConfig.selectedGroupCompanyIds.includes(groupCompanyId)
+
   const getSelectedDomainsForGroup = (groupCompanyId: string) =>
     draftAccessConfig.selectedAccessByGroupCompany[groupCompanyId] ?? []
 
   const areAllDomainsSelectedForGroup = (groupCompanyId: string) =>
     getSelectedDomainsForGroup(groupCompanyId).length === domains.length
+
+  const handleToggleGroupCompany = (groupCompanyId: string) => {
+    const isSelected = isGroupCompanySelected(groupCompanyId)
+
+    const nextSelectedGroupCompanyIds = isSelected
+      ? draftAccessConfig.selectedGroupCompanyIds.filter((id) => id !== groupCompanyId)
+      : [...draftAccessConfig.selectedGroupCompanyIds, groupCompanyId]
+
+    onChange({
+      ...draftAccessConfig,
+      selectedGroupCompanyIds: nextSelectedGroupCompanyIds,
+    })
+  }
 
   const handleToggleDomain = (groupCompanyId: string, domainId: string) => {
     const selectedDomains = getSelectedDomainsForGroup(groupCompanyId)
@@ -109,15 +122,7 @@ const UserDomainsDrawer = ({
       >
         <div className="flex items-center justify-between px-6 py-5">
           <div className="flex min-w-0 flex-col gap-2">
-            <h2 className="text-[26px] leading-none font-semibold text-[#151718]">
-              Assigned Access
-            </h2>
-
-            <div className="flex items-center gap-2 text-[14px] text-[#8D959E]">
-              <span>{counts.gcsAccess} GCs</span>
-              <span>•</span>
-              <span>{counts.domainsAccess} Domains</span>
-            </div>
+            <h2 className="text-[24px] leading-none font-[500] text-[#111827]">Assigned Access</h2>
           </div>
 
           <button
@@ -133,14 +138,14 @@ const UserDomainsDrawer = ({
         <div className="mx-6 border-t border-[#DFE3E6]" />
 
         <div className="px-6 py-5">
-          <p className="mb-3 text-[14px] text-[#8D959E]">User name</p>
+          <p className="mb-3 text-[14px] font-[300] text-[#687076]">User name</p>
 
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E5E7EB] text-[12px] font-semibold text-[#374151]">
               {initials}
             </div>
 
-            <div className="truncate text-[16px] font-semibold text-[#151718]">
+            <div className="truncate text-[14px] font-[500] text-[#151718]">
               {user?.name || 'No user selected'}
             </div>
           </div>
@@ -153,6 +158,7 @@ const UserDomainsDrawer = ({
             {groupCompanies.map((gc) => {
               const selectedDomains = getSelectedDomainsForGroup(gc.id)
               const allSelected = areAllDomainsSelectedForGroup(gc.id)
+              const gcSelected = isGroupCompanySelected(gc.id)
 
               return (
                 <div
@@ -176,17 +182,14 @@ const UserDomainsDrawer = ({
 
                       <input
                         type="checkbox"
-                        checked={allSelected}
-                        onChange={() => handleToggleAllDomainsForGroup(gc.id)}
-                        className="h-4 w-4 rounded border-gray-300"
+                        checked={gcSelected}
+                        onChange={() => handleToggleGroupCompany(gc.id)}
+                        className="h-4 w-4 rounded-[2px] accent-[#0047BA]"
                       />
 
                       <div className="flex flex-col">
                         <span className="truncate text-[16px] font-medium text-[#5B6572]">
                           {gc.name}
-                        </span>
-                        <span className="text-[12px] text-[#8D959E]">
-                          {selectedDomains.length} selected
                         </span>
                       </div>
                     </div>
@@ -194,12 +197,12 @@ const UserDomainsDrawer = ({
                     <button
                       type="button"
                       onClick={() => toggleGroupOpen(gc.id)}
-                      className="flex items-center gap-1 text-[14px] font-medium text-[#0047BA]"
+                      className="flex items-center gap-1 text-[14px] font-[500] text-[#0047BA]"
                     >
                       <span>View</span>
                       <ChevronDown
                         className={clsx(
-                          'h-4 w-4 transition-transform duration-200',
+                          'h-5 w-5 transition-transform duration-200',
                           openGroups[gc.id] ? 'rotate-0' : '-rotate-90',
                         )}
                       />
@@ -209,7 +212,20 @@ const UserDomainsDrawer = ({
                   {openGroups[gc.id] && (
                     <>
                       <div className="border-t border-[#DFE3E6]" />
+
                       <div className="px-6 py-5">
+                        <div className="mb-4 text-[14px] font-[500] text-[#151718]">Domains</div>
+
+                        <label className="mb-4 flex cursor-pointer items-center gap-3 text-[14px] text-[#5B6572]">
+                          <input
+                            type="checkbox"
+                            checked={allSelected}
+                            onChange={() => handleToggleAllDomainsForGroup(gc.id)}
+                            className="h-4 w-4 rounded-[2px] accent-[#0047BA]"
+                          />
+                          <span>All</span>
+                        </label>
+
                         <div className="space-y-3">
                           {domains.map((domain) => (
                             <label
@@ -220,7 +236,7 @@ const UserDomainsDrawer = ({
                                 type="checkbox"
                                 checked={selectedDomains.includes(domain.id)}
                                 onChange={() => handleToggleDomain(gc.id, domain.id)}
-                                className="h-4 w-4 rounded border-gray-300"
+                                className="h-4 w-4 rounded-[2px] accent-[#0047BA]"
                               />
                               <span>{domain.name}</span>
                             </label>
@@ -241,7 +257,7 @@ const UserDomainsDrawer = ({
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="h-11 flex-1 rounded-full bg-[#E8EEFF] text-[16px] font-semibold text-[#151718]"
+            className="h-8 flex-1 rounded-[36px] bg-[linear-gradient(180deg,#EAEFFF_0%,#C7D6F9_100%)] text-[16px] font-semibold text-[#151718] shadow-[0_4px_8px_0_rgba(209,213,223,0.50)]"
           >
             Cancel
           </button>
@@ -249,7 +265,7 @@ const UserDomainsDrawer = ({
           <button
             type="button"
             onClick={onSave}
-            className="h-11 flex-1 rounded-full bg-gradient-to-r from-[#5B19FF] to-[#2D00F7] text-[16px] font-semibold text-white"
+            className="h-8 flex-1 rounded-full bg-[linear-gradient(180deg,#5B23FF_0%,#3C00EB_100%)] text-[16px] font-semibold text-white shadow-[0_4px_8px_0_rgba(209,213,223,0.50)]"
           >
             Save
           </button>

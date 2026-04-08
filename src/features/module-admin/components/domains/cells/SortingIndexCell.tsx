@@ -11,7 +11,7 @@ const SortingIndexCell = ({ row, onChange }: Props) => {
       type="number"
       value={row.sortingIndex}
       onChange={(e) => onChange?.(row.id, 'sortingIndex', e.target.value)}
-      className="w-full border-0 bg-transparent text-[16px] text-[#151718] outline-none"
+      className="w-full border-0 bg-transparent text-[16px] font-[500] text-[#151718] outline-none"
     />
   )
 }

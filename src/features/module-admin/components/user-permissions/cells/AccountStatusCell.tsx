@@ -7,8 +7,8 @@ const AccountStatusCell = ({ status }: Props) => {
 
   return (
     <span
-      className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
-        isActive ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'
+      className={`inline-flex rounded-full px-3 py-1 text-[12px] font-[400] text-[#151718] ${
+        isActive ? 'bg-[#DCFCE7]' : 'bg-[#E0E0E0]'
       }`}
     >
       {status}

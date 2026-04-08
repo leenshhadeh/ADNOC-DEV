@@ -1,4 +1,5 @@
 export type AccessConfig = {
+  selectedGroupCompanyIds: string[]
   selectedAccessByGroupCompany: Record<string, string[]>
 }
 

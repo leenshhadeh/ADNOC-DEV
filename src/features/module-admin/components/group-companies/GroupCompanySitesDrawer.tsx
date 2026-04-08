@@ -81,14 +81,17 @@ const GroupCompanySitesDrawer = ({ open, row, onOpenChange, onSave }: Props) => 
         <div className="mx-6 border-t border-[#DFE3E6]" />
 
         <div className="px-6 py-5">
-          <div className="grid grid-cols-[1fr_auto] items-center gap-4 border-b border-[#DFE3E6] pb-4">
+          <div className="flex items-center justify-between gap-4 border-b border-[#DFE3E6] pb-4">
             <div className="min-w-0">
-              <div className="text-[14px] text-[#8D959E]">Group company:</div>
-              <div className="truncate text-[16px] font-semibold text-[#151718]">{title}</div>
+              <div className="text-[14px] font-[300] text-[#687076]">Group company:</div>
+              <div className="truncate text-[14px] font-[500] text-[#151718]">{title}</div>
             </div>
 
-            <div className="text-[14px] whitespace-nowrap text-[#5B6572]">
-              Sites Number <span className="ml-2 font-semibold text-[#151718]">{totalSites}</span>
+            <div className="h-6 w-px bg-[#DFE3E6]" />
+
+            <div className="text-[14px] font-[400] whitespace-nowrap text-[#687076]">
+              Sites Number
+              <span className="ml-2 text-[14px] font-[500] text-[#151718]">{totalSites}</span>
             </div>
           </div>
         </div>
@@ -98,22 +101,29 @@ const GroupCompanySitesDrawer = ({ open, row, onOpenChange, onSave }: Props) => 
             {draftSites.map((site) => (
               <div key={site.id} className="flex items-end gap-3">
                 <div className="flex-1">
-                  <label className="mb-2 block text-[14px] text-[#5B6572]">Site name</label>
-                  <input
-                    value={site.name}
-                    onChange={(e) => handleChangeSite(site.id, e.target.value)}
-                    placeholder="Enter site name"
-                    className="h-12 w-full rounded-[18px] border border-[#DFE3E6] px-6 text-[16px] text-[#151718] outline-none placeholder:text-[#B0B7C3]"
-                  />
-                </div>
+                  <div className="flex justify-between">
+                    <label className="mb-2 block text-[16px] font-[400] text-[#889096]">
+                      Site name
+                    </label>
 
-                <button
-                  type="button"
-                  onClick={() => handleDeleteSite(site.id)}
-                  className="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#151718] hover:bg-[#F5F7FA]"
-                >
-                  <Trash2 className="h-5 w-5" />
-                </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteSite(site.id)}
+                      className="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#151718] hover:bg-[#F5F7FA]"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </button>
+                  </div>
+
+                  <div className="pr-8">
+                    <input
+                      value={site.name}
+                      onChange={(e) => handleChangeSite(site.id, e.target.value)}
+                      placeholder="Enter site name"
+                      className="placeholder:text-[#B0B7C3 h-12 w-full rounded-[18px] border border-[#DFE3E6] px-6 text-[16px] text-[#151718] outline-none"
+                    />
+                  </div>
+                </div>
               </div>
             ))}
 

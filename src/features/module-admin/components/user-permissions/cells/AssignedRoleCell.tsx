@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom'
-import { useRef } from 'react'
-import { ChevronDown, X } from 'lucide-react'
+import { useMemo, useRef, useState } from 'react'
+import { ChevronDown, Search, X } from 'lucide-react'
 
 import { availableRoles } from '../constants'
 import type { EditableField, PickerPosition, UserPermissionRow } from '../types'
@@ -27,6 +27,7 @@ const AssignedRoleCell = ({
   onRowChange,
 }: Props) => {
   const triggerRef = useRef<HTMLButtonElement | null>(null)
+  const [rolePickerSearch, setRolePickerSearch] = useState('')
 
   const roles = row.assignedRole ?? []
   const isOpen = openRolePickerRowId === row.id
@@ -38,6 +39,12 @@ const AssignedRoleCell = ({
 
     onRowChange?.(row.id, 'assignedRole', nextRoles)
   }
+
+  const filteredRoles = useMemo(() => {
+    return availableRoles.filter((role) =>
+      role.toLowerCase().includes(rolePickerSearch.toLowerCase()),
+    )
+  }, [rolePickerSearch])
 
   return (
     <div className="relative w-full">
@@ -58,7 +65,15 @@ const AssignedRoleCell = ({
 
           setOpenUserPickerRowId(null)
           setPickerPosition(null)
-          setOpenRolePickerRowId((prev) => (prev === row.id ? null : row.id))
+          setOpenRolePickerRowId((prev) => {
+            const next = prev === row.id ? null : row.id
+
+            if (next) {
+              setRolePickerSearch('')
+            }
+
+            return next
+          })
         }}
         className="flex min-h-10 w-full items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left transition-colors"
         style={{
@@ -71,7 +86,7 @@ const AssignedRoleCell = ({
             roles.map((role) => (
               <span
                 key={role}
-                className="inline-flex items-center gap-3 rounded-full border border-blue-300 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700"
+                className="inline-flex items-center gap-3 rounded-full border border-[#2F68D9] bg-[#DCE5F9] px-3 py-1 text-[12px] font-[400] text-[#151718]"
               >
                 <span>{role}</span>
                 <button
@@ -91,40 +106,57 @@ const AssignedRoleCell = ({
           )}
         </div>
 
-        <ChevronDown className="h-4 w-4 shrink-0 text-gray-500" />
+        <ChevronDown className="h-4 w-4 shrink-0 text-[#151718]" />
       </button>
 
       {isOpen &&
         rolePickerPosition &&
         createPortal(
           <div
-            className="fixed z-[9999] max-h-64 overflow-y-auto rounded-xl border border-gray-200 bg-white p-1 shadow-lg"
+            className="fixed z-[9999] rounded-2xl border border-gray-200 bg-white shadow-xl"
             style={{
               top: rolePickerPosition.top - window.scrollY,
               left: rolePickerPosition.left - window.scrollX,
-              width: rolePickerPosition.width,
+              width: Math.max(rolePickerPosition.width, 260),
             }}
           >
-            {availableRoles.map((role) => {
-              const selected = roles.includes(role)
+            <div className="flex items-center gap-2 border-b border-gray-100 px-3 py-2">
+              <Search className="h-4 w-4 text-gray-400" />
+              <input
+                autoFocus
+                value={rolePickerSearch}
+                onChange={(e) => setRolePickerSearch(e.target.value)}
+                placeholder="Search"
+                className="w-full border-0 bg-transparent text-sm outline-none placeholder:text-gray-400"
+              />
+            </div>
 
-              return (
-                <label
-                  key={role}
-                  className={`flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-gray-50 ${
-                    selected ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selected}
-                    onChange={() => toggleRole(role)}
-                    className="h-4 w-4 rounded border-gray-300"
-                  />
-                  <span className="flex-1">{role}</span>
-                </label>
-              )
-            })}
+            <div className="max-h-64 overflow-y-auto py-1">
+              {filteredRoles.length > 0 ? (
+                filteredRoles.map((role) => {
+                  const selected = roles.includes(role)
+
+                  return (
+                    <label
+                      key={role}
+                      className={`flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-[#DCE5F9] ${
+                        selected ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selected}
+                        onChange={() => toggleRole(role)}
+                        className="h-4 w-4 rounded border-gray-300"
+                      />
+                      <span className="flex-1">{role}</span>
+                    </label>
+                  )
+                })
+              ) : (
+                <div className="px-3 py-3 text-sm text-gray-400">No roles found</div>
+              )}
+            </div>
           </div>,
           document.body,
         )}

@@ -10,7 +10,7 @@ const DomainCodeCell = ({ row, onChange }: Props) => {
     <input
       value={row.code}
       onChange={(e) => onChange?.(row.id, 'code', e.target.value.toUpperCase())}
-      className="w-full border-0 bg-transparent text-[16px] text-[#151718] outline-none"
+      className="w-full border-0 bg-transparent text-[16px] font-[400] text-[#151718] outline-none"
     />
   )
 }
