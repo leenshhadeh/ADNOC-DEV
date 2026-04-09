@@ -169,36 +169,39 @@ const ModuleToolbar = ({
         {bulkMode && (
           <>
             {bulkMode.isActive ? (
-              <div className="border-primary/30 bg-primary/5 flex items-center gap-2 rounded-xl border px-3 py-1.5">
-                <span className="text-primary text-sm font-medium">
-                  {/* Show count-only on mobile, full label on sm+ */}
-                  <span className="sm:hidden">{bulkMode.selectedCount}</span>
-                  <span className="hidden sm:inline">{bulkMode.selectedCount} selected</span>
-                </span>
-                <Separator orientation="vertical" className="h-5" />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="text-primary hover:bg-primary/10 h-7 px-2 text-xs font-medium disabled:opacity-40"
-                  disabled={bulkMode.selectedCount === 0}
-                  onClick={bulkMode.onAction}
-                >
-                  {/* Label hidden on mobile — icon-only to save space */}
-                  <span className="hidden sm:inline">{bulkMode.actionLabel ?? 'Add multiple'}</span>
-                  <span className="sm:hidden">✓</span>
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  className="text-muted-foreground hover:text-foreground"
-                  aria-label="Exit bulk selection"
-                  onClick={bulkMode.onToggle}
-                >
-                  <X className="size-3.5" />
-                </Button>
-              </div>
+              bulkMode.onAction ? (
+                <div className="border-primary/30 bg-primary/5 flex items-center gap-2 rounded-xl border px-3 py-1.5">
+                  <span className="text-primary text-sm font-medium">
+                    <span className="sm:hidden">{bulkMode.selectedCount}</span>
+                    <span className="hidden sm:inline">{bulkMode.selectedCount} selected</span>
+                  </span>
+                  <Separator orientation="vertical" className="h-5" />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-primary hover:bg-primary/10 h-7 px-2 text-xs font-medium disabled:opacity-40"
+                    disabled={bulkMode.selectedCount === 0}
+                    onClick={bulkMode.onAction}
+                  >
+                    <span className="hidden sm:inline">
+                      {bulkMode.actionLabel ?? 'Add multiple'}
+                    </span>
+                    <span className="sm:hidden">✓</span>
+                  </Button>
+                  <Separator orientation="vertical" className="h-5" />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-xs"
+                    className="text-muted-foreground hover:text-foreground"
+                    aria-label="Exit bulk selection"
+                    onClick={bulkMode.onToggle}
+                  >
+                    <X className="size-3.5" />
+                  </Button>
+                </div>
+              ) : null
             ) : (
               <Button
                 type="button"

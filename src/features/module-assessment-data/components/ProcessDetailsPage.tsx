@@ -9,7 +9,6 @@ import {
 import ProcessDetails from './processDetailsComponents/ProcessDetails'
 import ModuleToolbar from '@/shared/components/ModuleToolbar'
 import { useParams } from 'react-router-dom'
-import { Label } from '@radix-ui/react-dropdown-menu'
 import GeneralInfoForm from './processDetailsComponents/GeneralInfoForm'
 
 // Genaral info about the process, can be fetched from API using processId
