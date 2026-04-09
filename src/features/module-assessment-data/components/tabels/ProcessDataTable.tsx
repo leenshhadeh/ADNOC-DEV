@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { ASSESSMENT_DATA } from '../../constants/assessment-data'
 import DataTable from '@/shared/components/data-table/DataTable'
@@ -9,13 +9,12 @@ import { EditableCell, RadioCell } from '@/shared/components/table-primitives'
 import { Maximize2, Tally1 } from 'lucide-react'
 import TagsList from '@/shared/components/table-primitives/TagsList'
 import SharedServicesSheet from '../sidePanels/SharedServicesSheet'
-
-import { useState } from 'react';
 import SelectCell from '@/shared/components/table-primitives/SelectCell'
 import TagsSelect from '@/shared/components/table-primitives/TagsSelect'
 import { ASSESSMENT_APPLICATIONS, DIGITAL_FP_USERS } from '../../constants/CurrentApplication'
 import MarkedAsReviewCell from '../cells/MarkedAsReviewCell'
 import BUSheet from '../sidePanels/BUSheet'
+import DigitalTeamSheet from '../sidePanels/DigitalTeamSheet'
 
 const toText = (value: unknown): string => {
   if (value == null) return ''
@@ -174,6 +173,7 @@ export const flattenAssessmentData = (data: DomainItem[]): FlatAssessmentRow[] =
 const ProcessDataTable = () => {
   const [isSharedServiceOpen, setIsSharedServiceOpen] = useState(false);
   const [isBUOpen, setIsBUOpen] = useState(false);
+  const [isDigitalTeamOpen,setIsDigitalTeamOpen]= useState(false);
   const onExpandSharedServices = () => {
     setIsSharedServiceOpen(true);
   }
@@ -374,7 +374,16 @@ const ProcessDataTable = () => {
         accessorKey: 'responsibleDigitalTeam',
         header: 'Responsible Digital Team',
         size: 250,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) =>    <div className="max-w-[290px] overflow-hidden">
+        <TagsList
+          tags={(info.row.original.responsibleDigitalTeam|| []).map((team: string, index: number) => ({
+            id: `${info.row.original.l4Code || info.row.original.l3Code}_responsibleDigitalTeam${index}`,
+            text: team,
+          }))}
+          allTags={[]}
+          onExpand={() => {setIsDigitalTeamOpen(true)}}
+        />
+      </div>,
       },
       {
         id: 'processCriticality',
@@ -784,6 +793,15 @@ const ProcessDataTable = () => {
         open={isBUOpen}
         handleOpenChange={(newVal:any) => {setIsBUOpen(false); console.log('BU sheet open state changed:', newVal)}}
       />
+
+      <DigitalTeamSheet
+      open={isDigitalTeamOpen}
+      handleOpenChange={(newVal:any) => {setIsDigitalTeamOpen(false);}}
+
+      />
+
+
+
     </>
   )
 }
