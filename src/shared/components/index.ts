@@ -1,3 +1,6 @@
 export { ErrorBoundary } from './ErrorBoundary'
 export { ErrorFallback } from './ErrorFallback'
 export { PermissionGuard } from './PermissionGuard'
+export { default as BaseModal } from './BaseModal'
+export type { BaseModalProps } from './BaseModal'
+export { SuccessToast } from './SuccessToast'

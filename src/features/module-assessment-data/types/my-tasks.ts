@@ -1,4 +1,4 @@
-import type { CatalogStatus } from '@features/module-process-catalog/components/cells/StatusBadgeCell'
+import type { CatalogStatus } from '@/shared/components/cells/StatusBadgeCell'
 
 export interface ChangeRecord {
   name?: string
@@ -13,6 +13,7 @@ export interface TaskItem {
   id: string
   processId?: string
   processName: string
+  processCode?: string
   groupCompany: string
   requestId: string
   domain: string

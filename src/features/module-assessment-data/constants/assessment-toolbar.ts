@@ -1,4 +1,4 @@
-import { Download, Settings2, Upload } from 'lucide-react'
+import { Download, Save, Send, Settings2, Upload } from 'lucide-react'
 
 import type { TabConfig, ToolbarAction } from '@/shared/components/ModuleToolbar'
 
@@ -8,8 +8,15 @@ export const ASSESSMENT_TABS: TabConfig[] = [
   { value: 'submittedRequests', label: 'Submitted Requests' },
 ]
 
-export const ASSESSMENT_ACTIONS: ToolbarAction[] = [
+/** Shown when bulk mode is NOT active */
+export const ASSESSMENT_DEFAULT_ACTIONS: ToolbarAction[] = [
   { id: 'manage-columns', label: 'Manage columns', icon: Settings2 },
   { id: 'import', label: 'Import', icon: Upload },
   { id: 'export', label: 'Export', icon: Download },
+]
+
+/** Shown when bulk mode IS active */
+export const ASSESSMENT_BULK_ACTIONS: ToolbarAction[] = [
+  { id: 'save', label: 'Save', icon: Save },
+  { id: 'submit', label: 'Submit', icon: Send },
 ]

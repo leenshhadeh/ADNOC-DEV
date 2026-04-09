@@ -1,5 +1,8 @@
-export { default as ProcessInfoCell } from './ProcessInfoCell'
-export { default as StageProgressCell } from './StageProgressCell'
-export { default as UserBadgeCell } from './UserBadgeCell'
-export { default as StatusBadgeCell } from './StatusBadgeCell'
-export type { CatalogStatus } from './StatusBadgeCell'
+// Re-export from shared — these cells are used cross-module
+export {
+  ProcessInfoCell,
+  StageProgressCell,
+  UserBadgeCell,
+  StatusBadgeCell,
+} from '@/shared/components/cells'
+export type { CatalogStatus } from '@/shared/components/cells'

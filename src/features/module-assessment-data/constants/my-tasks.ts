@@ -7,6 +7,7 @@ export const MY_TASKS: TaskItem[] = [
     processId: 'r1',
     groupCompany: 'ADNOC Onshore',
     processName: 'Establish fraud risk indicators',
+    processCode: 'EXP.1.1.3',
     requestId: '9377353',
     domain: 'Corporate Communications',
     stageCurrent: 1,
@@ -20,19 +21,22 @@ export const MY_TASKS: TaskItem[] = [
     changes: [
       {
         name: 'Automation level',
-        comment: 'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
+        comment:
+          'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
         oldValue: '10%',
         newValue: '40%',
       },
       {
         name: 'Automation level',
-        comment: 'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
+        comment:
+          'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
         oldValue: '10%',
         newValue: '40%',
       },
       {
         name: 'Automation level',
-        comment: 'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
+        comment:
+          'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
         oldValue: '10%',
         newValue: '40%',
       },
@@ -43,7 +47,8 @@ export const MY_TASKS: TaskItem[] = [
     processId: 'r2',
     groupCompany: 'ADNOC Onshore',
     processName: 'Prepare media materials and press releases',
-    requestId: '9377353',
+    processCode: 'CC.2.1.1',
+    requestId: '9377354',
     domain: 'Corporate Communications',
     stageCurrent: 1,
     stageTotal: 3,
@@ -53,13 +58,45 @@ export const MY_TASKS: TaskItem[] = [
     returnComment: 'Please revise section 2',
     actionRequired: 'Review and update',
     submittedOn: '08 Apr 2024',
-    changes: [{
-      name: 'Automation level',
-      comment: 'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
-      oldValue: '10%',
-      newValue: '40%'
-    }
+    changes: [
+      {
+        name: 'Automation level',
+        comment:
+          'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
+        oldValue: '10%',
+        newValue: '40%',
+      },
     ],
   }),
-
+  withSubRows({
+    id: 'task-3',
+    processId: 'r3',
+    groupCompany: 'ADNOC Gas',
+    processName: 'Conduct internal communications campaigns',
+    processCode: 'CC.3.2.4',
+    requestId: '9377355',
+    domain: 'Corporate Communications',
+    stageCurrent: 2,
+    stageTotal: 3,
+    stageText: 'Under review',
+    requester: 'Ahmed Al Muhairi',
+    status: 'Under review',
+    returnComment: undefined,
+    actionRequired: 'Approve or return',
+    submittedOn: '05 Apr 2024',
+    changes: [
+      {
+        name: 'Process Criticality',
+        comment: 'Criticality should be elevated given impact scope.',
+        oldValue: 'Low',
+        newValue: 'Medium',
+      },
+      {
+        name: 'Total Personnel Executing (FTE)',
+        comment: 'Updated FTE count based on latest org chart.',
+        oldValue: '3',
+        newValue: '5',
+      },
+    ],
+  }),
 ]

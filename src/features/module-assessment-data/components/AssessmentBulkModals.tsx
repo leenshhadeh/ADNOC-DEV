@@ -1,0 +1,787 @@
+/**
+ * AssessmentBulkModals — four modals for bulk actions on the Processes tab.
+ *
+ * Modals (Figma nodes):
+ *   6103-253903  BulkEditModal          — select field + text input
+ *   6103-253749  BulkCommentModal       — textarea for comment
+ *   6103-255506  CopyAssessmentData     — search + source process picker
+ *   6103-253829  MarkAsReviewedModal    — required comment textarea
+ */
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
+import { ChevronDown, Search } from 'lucide-react'
+
+import BaseModal from '@/shared/components/BaseModal'
+import { SuccessToast } from '@/shared/components/SuccessToast'
+import { Button } from '@/shared/components/ui/button'
+
+// ── Field type definitions ────────────────────────────────────────────────────
+
+type BulkFieldType = 'input' | 'number' | 'textarea' | 'dropdown' | 'drawer'
+
+interface BulkEditFieldConfig {
+  label: string
+  value: string
+  type: BulkFieldType
+  options?: { label: string; value: string }[]
+}
+
+const BULK_EDITABLE_FIELDS: BulkEditFieldConfig[] = [
+  { label: 'Automation Level (%)', value: 'automationLevel', type: 'number' },
+  {
+    label: 'Process Criticality',
+    value: 'processCriticality',
+    type: 'dropdown',
+    options: [
+      { label: 'High', value: 'high' },
+      { label: 'Medium', value: 'medium' },
+      { label: 'Low', value: 'low' },
+    ],
+  },
+  {
+    label: 'Scale of Process',
+    value: 'scaleOfProcess',
+    type: 'dropdown',
+    options: [
+      { label: 'Large', value: 'large' },
+      { label: 'Medium', value: 'medium' },
+      { label: 'Small', value: 'small' },
+    ],
+  },
+  {
+    label: 'Automation Maturity Level',
+    value: 'automationMaturityLevel',
+    type: 'dropdown',
+    options: [
+      { label: 'Initial', value: 'initial' },
+      { label: 'Developing', value: 'developing' },
+      { label: 'Defined', value: 'defined' },
+      { label: 'Managed', value: 'managed' },
+      { label: 'Optimizing', value: 'optimizing' },
+    ],
+  },
+  {
+    label: 'AI-Powered',
+    value: 'aiPowered',
+    type: 'dropdown',
+    options: [
+      { label: 'Yes', value: 'yes' },
+      { label: 'No', value: 'no' },
+    ],
+  },
+  { label: 'North Star Target Automation', value: 'northStarTargetAutomation', type: 'number' },
+  { label: 'Target Automation Level (%)', value: 'targetAutomationLevelPercent', type: 'number' },
+  {
+    label: 'Ongoing Automation / Digital Initiatives',
+    value: 'ongoingAutomationDigitalInitiatives',
+    type: 'textarea',
+  },
+  {
+    label: 'Business Recommendation for Automation',
+    value: 'businessRecommendationForAutomation',
+    type: 'textarea',
+  },
+  {
+    label: 'Key Challenges & Automation Needs',
+    value: 'keyChallengesAutomationNeeds',
+    type: 'textarea',
+  },
+  { label: 'SME Feedback', value: 'smeFeedback', type: 'textarea' },
+  { label: 'Business Unit', value: 'businessUnit', type: 'drawer' },
+]
+
+// ── Business unit options (drawer picker) ─────────────────────────────────────
+
+const BUSINESS_UNIT_OPTIONS = [
+  'Shared Services',
+  'Procurement',
+  'Supply Chain Management',
+  'Vendor Relations',
+  'Inventory Control',
+  'Finance & Accounting',
+  'Accounts Payable',
+  'Invoice Processing',
+  'Payment Processing',
+  'Vendor Reconciliation',
+  'Operations',
+  'Production',
+  'Logistics',
+  'Maintenance',
+  'Manufacturing',
+  'Financial Reporting',
+]
+
+// ── Shared field styles ───────────────────────────────────────────────────────
+
+const fieldLabel = 'text-muted-foreground mb-1.5 block text-sm'
+const fieldInput =
+  'border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring w-full rounded-xl border px-4 py-3 text-base outline-none focus-visible:ring-2'
+
+// ── Bulk Edit Modal ────────────────────────────────────────────────────────────
+
+interface BulkEditModalProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  selectedCount: number
+  onConfirm: (field: string, value: string) => void
+}
+
+export function BulkEditModal({
+  open,
+  onOpenChange,
+  selectedCount,
+  onConfirm,
+}: BulkEditModalProps) {
+  const [fieldValue, setFieldValue] = useState('')
+  const [value, setValue] = useState('')
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [drawerSearch, setDrawerSearch] = useState('')
+  const [drawerSelected, setDrawerSelected] = useState('')
+  const [showSuccess, setShowSuccess] = useState(false)
+
+  useEffect(() => {
+    if (!showSuccess) return
+    const t = setTimeout(() => setShowSuccess(false), 4000)
+    return () => clearTimeout(t)
+  }, [showSuccess])
+
+  const selectedField = BULK_EDITABLE_FIELDS.find((f) => f.value === fieldValue) ?? null
+  const isDrawer = selectedField?.type === 'drawer'
+  const isValueValid = isDrawer ? !!drawerSelected : !!value.trim()
+
+  const reset = () => {
+    setFieldValue('')
+    setValue('')
+    setDrawerOpen(false)
+    setDrawerSearch('')
+    setDrawerSelected('')
+  }
+
+  const close = () => {
+    reset()
+    onOpenChange(false)
+  }
+
+  const handleFieldChange = (next: string) => {
+    setFieldValue(next)
+    setValue('')
+    setDrawerSelected('')
+  }
+
+  const handleApply = (finalValue: string) => {
+    onConfirm(fieldValue, finalValue)
+    close()
+    setShowSuccess(true)
+  }
+
+  const filteredUnits = BUSINESS_UNIT_OPTIONS.filter((u) =>
+    u.toLowerCase().includes(drawerSearch.toLowerCase()),
+  )
+
+  const gradCancel =
+    'rounded-[36px] bg-gradient-to-r from-[#EAEFFF] to-[#C7D6F9] px-6 py-3 text-[14px] font-[500] text-[#151718] shadow transition-opacity hover:opacity-80 disabled:opacity-40'
+  const gradApply =
+    'rounded-full bg-gradient-to-r from-[#5B23FF] to-[#3C00EB] px-6 py-3 text-[14px] font-[500] text-white shadow transition-opacity hover:opacity-80 disabled:opacity-40'
+
+  return (
+    <>
+      <BaseModal
+        open={open}
+        onClose={close}
+        title={`Bulk edit to ${selectedCount} selected process${selectedCount !== 1 ? 'es' : ''}`}
+        subtitle="Changes will apply to all selected items."
+        footer={
+          <>
+            <button type="button" className={gradCancel} onClick={close}>
+              Cancel
+            </button>
+            {isDrawer ? (
+              <button
+                type="button"
+                className={gradApply}
+                disabled={!fieldValue}
+                onClick={() => setDrawerOpen(true)}
+              >
+                Next
+              </button>
+            ) : (
+              <button
+                type="button"
+                className={gradApply}
+                disabled={!fieldValue || !isValueValid}
+                onClick={() => handleApply(value)}
+              >
+                Apply changes
+              </button>
+            )}
+          </>
+        }
+      >
+        {/* Field / Column name */}
+        <div>
+          <label className={fieldLabel}>Field / Column name</label>
+          <div className="relative">
+            <select
+              value={fieldValue}
+              onChange={(e) => handleFieldChange(e.target.value)}
+              className={`${fieldInput} appearance-none pe-10`}
+            >
+              <option value="" disabled>
+                Select a field…
+              </option>
+              {BULK_EDITABLE_FIELDS.map((f) => (
+                <option key={f.value} value={f.value}>
+                  {f.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute end-3 top-1/2 size-4 -translate-y-1/2 text-[#687076]" />
+          </div>
+        </div>
+
+        {/* Dynamic value field — hidden for drawer-based fields and until a field is selected */}
+        {fieldValue && !isDrawer && (
+          <div>
+            <label className={fieldLabel}>Value</label>
+            {selectedField?.type === 'dropdown' && (
+              <div className="relative">
+                <select
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
+                  className={`${fieldInput} appearance-none pe-10`}
+                >
+                  <option value="" disabled>
+                    Select a value…
+                  </option>
+                  {selectedField.options?.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute end-3 top-1/2 size-4 -translate-y-1/2 text-[#687076]" />
+              </div>
+            )}
+            {selectedField?.type === 'textarea' && (
+              <textarea
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                rows={4}
+                placeholder="Enter value…"
+                className={`${fieldInput} resize-none`}
+              />
+            )}
+            {(selectedField?.type === 'input' || selectedField?.type === 'number') && (
+              <input
+                type={selectedField.type === 'number' ? 'number' : 'text'}
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                placeholder="Enter value…"
+                className={fieldInput}
+              />
+            )}
+          </div>
+        )}
+      </BaseModal>
+
+      {/* ── Drawer for drawer-based fields ───────────────────────────────── */}
+      {createPortal(
+        <>
+          {drawerOpen && (
+            <div
+              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px]"
+              onClick={() => setDrawerOpen(false)}
+            />
+          )}
+          <aside
+            className={`fixed inset-y-0 end-0 z-50 flex w-[480px] flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
+              drawerOpen ? 'translate-x-0' : 'translate-x-full'
+            }`}
+          >
+            {/* Header */}
+            <div className="px-6 pt-10 pb-0">
+              <h2 className="text-[24px] leading-snug font-[500] text-[#111827]">
+                {selectedField?.label ?? 'Select value'}
+              </h2>
+              <p className="mt-3 text-[16px] leading-normal font-[400] text-[#687076]">
+                This change will be applied to {selectedCount} selected process
+                {selectedCount !== 1 ? 'es' : ''}.
+              </p>
+            </div>
+
+            {/* Search */}
+            <div className="px-6 pt-6 pb-4">
+              <div className="relative">
+                <Search className="pointer-events-none absolute start-4 top-1/2 size-4 -translate-y-1/2 text-[#889096]" />
+                <input
+                  type="text"
+                  value={drawerSearch}
+                  onChange={(e) => setDrawerSearch(e.target.value)}
+                  placeholder="Search..."
+                  className="w-full rounded-2xl border border-[#DFE3E6] bg-white py-3 ps-11 pe-4 text-base text-[#151718] outline-none placeholder:text-[#889096]"
+                />
+              </div>
+            </div>
+
+            {/* Options list */}
+            <div className="flex-1 overflow-y-auto px-6 pb-4">
+              <div className="flex flex-col rounded-3xl bg-white shadow">
+                {filteredUnits.length === 0 ? (
+                  <p className="py-8 text-center text-sm text-[#889096]">No options found.</p>
+                ) : (
+                  filteredUnits.map((unit, idx) => (
+                    <button
+                      key={unit}
+                      type="button"
+                      onClick={() => setDrawerSelected(unit)}
+                      className={`flex items-center gap-3 px-6 py-4 text-left transition-colors hover:bg-[#F8F9FA] ${
+                        idx !== 0 ? 'border-t border-[#F1F3F5]' : ''
+                      } ${drawerSelected === unit ? 'bg-[#EEF2FF]' : ''}`}
+                    >
+                      {/* Checkbox indicator */}
+                      <span
+                        className={`flex size-4 shrink-0 items-center justify-center rounded border ${
+                          drawerSelected === unit
+                            ? 'border-[#5B23FF] bg-[#5B23FF]'
+                            : 'border-[#DFE3E6]'
+                        }`}
+                      >
+                        {drawerSelected === unit && (
+                          <svg viewBox="0 0 10 8" fill="none" className="size-2.5">
+                            <path
+                              d="M1 4l3 3 5-6"
+                              stroke="white"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                      </span>
+                      <span className="text-[16px] font-[400] text-[#151718]">{unit}</span>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Footer buttons */}
+            <div className="flex items-center justify-end gap-2 border-t border-[#F1F3F5] px-6 py-4">
+              <button type="button" className={gradCancel} onClick={() => setDrawerOpen(false)}>
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={gradApply}
+                disabled={!drawerSelected}
+                onClick={() => {
+                  setDrawerOpen(false)
+                  handleApply(drawerSelected)
+                }}
+              >
+                Apply changes
+              </button>
+            </div>
+          </aside>
+        </>,
+        document.body,
+      )}
+
+      {/* Success toast */}
+      <SuccessToast
+        open={showSuccess}
+        message="Bulk edit applied successfully."
+        onClose={() => setShowSuccess(false)}
+      />
+    </>
+  )
+}
+
+// ── Bulk Comment Modal ─────────────────────────────────────────────────────────
+
+interface BulkCommentModalProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  selectedCount: number
+  onConfirm: (comment: string) => void
+}
+
+export function BulkCommentModal({
+  open,
+  onOpenChange,
+  selectedCount,
+  onConfirm,
+}: BulkCommentModalProps) {
+  const [comment, setComment] = useState('')
+
+  const close = () => {
+    setComment('')
+    onOpenChange(false)
+  }
+
+  return (
+    <BaseModal
+      open={open}
+      onClose={close}
+      title={`Add comment — ${selectedCount} process${selectedCount !== 1 ? 'es' : ''}`}
+      subtitle="The comment will appear in the Comments tab for each selected process."
+      footer={
+        <>
+          <Button type="button" variant="secondary" className="h-12 rounded-full" onClick={close}>
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            className="h-12 rounded-full"
+            disabled={!comment.trim()}
+            onClick={() => {
+              onConfirm(comment.trim())
+              close()
+            }}
+          >
+            Add comment
+          </Button>
+        </>
+      }
+    >
+      <div>
+        <label className={fieldLabel}>Comment</label>
+        <textarea
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          rows={4}
+          placeholder="Enter comment…"
+          className={`${fieldInput} resize-none`}
+        />
+      </div>
+    </BaseModal>
+  )
+}
+
+// ── Copy Assessment Data Modal ─────────────────────────────────────────────────
+
+interface CopyAssessmentDataModalProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  selectedCount: number
+  onConfirm: (sourceId: string) => void
+}
+
+interface SourceProcess {
+  id: string
+  name: string
+  code: string
+  level: number
+  status: 'Published' | 'Draft' | 'In Review'
+}
+
+const MOCK_SOURCE_PROCESSES: SourceProcess[] = [
+  {
+    id: 'src-1',
+    name: 'Accounts Payable Invoice Processing',
+    code: 'ANN.1.1.3',
+    level: 3,
+    status: 'Published',
+  },
+  {
+    id: 'src-2',
+    name: 'Procurement Purchase Order Management',
+    code: 'SCM.2.3.1',
+    level: 3,
+    status: 'Published',
+  },
+  { id: 'src-3', name: 'HR Onboarding Process', code: 'HR.1.2.4', level: 4, status: 'Draft' },
+  {
+    id: 'src-4',
+    name: 'Asset Maintenance Scheduling',
+    code: 'OPS.3.1.2',
+    level: 3,
+    status: 'In Review',
+  },
+  {
+    id: 'src-5',
+    name: 'Budget Planning & Forecasting',
+    code: 'FIN.4.2.1',
+    level: 4,
+    status: 'Published',
+  },
+  {
+    id: 'src-6',
+    name: 'Supplier Evaluation & Selection',
+    code: 'SCM.1.4.3',
+    level: 3,
+    status: 'Draft',
+  },
+  {
+    id: 'src-7',
+    name: 'Capital Expenditure Approval',
+    code: 'FIN.2.1.5',
+    level: 4,
+    status: 'Published',
+  },
+]
+
+const LEVEL_OPTIONS = ['All levels', 'Level 3', 'Level 4']
+
+const STATUS_BADGE_STYLES: Record<SourceProcess['status'], string> = {
+  Published: 'bg-[#DFEBFF] text-[#151718]',
+  Draft: 'bg-[#F1F3F5] text-[#687076]',
+  'In Review': 'bg-[#FFF3D6] text-[#7A4F00]',
+}
+
+export function CopyAssessmentDataModal({
+  open,
+  onOpenChange,
+  selectedCount: _selectedCount,
+  onConfirm,
+}: CopyAssessmentDataModalProps) {
+  const [search, setSearch] = useState('')
+  const [selectedLevel, setSelectedLevel] = useState('All levels')
+  const [pendingSource, setPendingSource] = useState<SourceProcess | null>(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
+
+  // auto-dismiss success toast
+  useEffect(() => {
+    if (!showSuccess) return
+    const t = setTimeout(() => setShowSuccess(false), 4000)
+    return () => clearTimeout(t)
+  }, [showSuccess])
+
+  const closeDrawer = () => {
+    setSearch('')
+    setSelectedLevel('All levels')
+    setPendingSource(null)
+    setConfirmOpen(false)
+    onOpenChange(false)
+  }
+
+  const handleRowClick = (process: SourceProcess) => {
+    setPendingSource(process)
+    setConfirmOpen(true)
+  }
+
+  const handleConfirmCopy = () => {
+    if (pendingSource) {
+      onConfirm(pendingSource.id)
+    }
+    closeDrawer()
+    setShowSuccess(true)
+  }
+
+  const filtered = MOCK_SOURCE_PROCESSES.filter((p) => {
+    const matchesSearch =
+      p.name.toLowerCase().includes(search.toLowerCase()) ||
+      p.code.toLowerCase().includes(search.toLowerCase())
+    const matchesLevel = selectedLevel === 'All levels' || `Level ${p.level}` === selectedLevel
+    return matchesSearch && matchesLevel
+  })
+
+  return createPortal(
+    <>
+      {/* ── Overlay ── */}
+      {open && (
+        <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px]" onClick={closeDrawer} />
+      )}
+
+      {/* ── Side Drawer ── */}
+      <aside
+        className={`fixed inset-y-0 end-0 z-50 flex w-[480px] flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
+          open ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        {/* Header */}
+        <div className="px-6 pt-10 pb-0">
+          <h2 className="text-[24px] leading-snug font-[500] text-[#111827]">
+            Copy Assessment Data
+          </h2>
+          <p className="mt-3 text-[16px] leading-normal font-[400] text-[#687076]">
+            All copied fields will replace the current values in this draft.
+          </p>
+        </div>
+
+        {/* Search + Filters */}
+        <div className="px-6 pt-6 pb-8">
+          <div className="flex items-center gap-3">
+            {/* Search input */}
+            <div className="relative flex-1">
+              <Search className="pointer-events-none absolute start-4 top-1/2 size-4 -translate-y-1/2 text-[#889096]" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search processes…"
+                className={`w-full rounded-2xl border bg-white py-3 ps-11 pe-4 text-base text-[#151718] transition-colors outline-none placeholder:text-[#889096] ${
+                  search ? 'border-[#0047BA]' : 'border-[#DFE3E6]'
+                }`}
+              />
+            </div>
+
+            {/* Level filter */}
+            <div className="relative">
+              <select
+                value={selectedLevel}
+                onChange={(e) => setSelectedLevel(e.target.value)}
+                className="appearance-none rounded-2xl border border-[#DFE3E6] bg-white py-3 ps-4 pe-9 text-[18px] font-[500] text-[#151718] outline-none"
+              >
+                {LEVEL_OPTIONS.map((l) => (
+                  <option key={l} value={l}>
+                    {l}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="pointer-events-none absolute end-3 top-1/2 size-4 -translate-y-1/2 text-[#687076]" />
+            </div>
+          </div>
+        </div>
+
+        {/* Results */}
+        <div className="flex-1 overflow-y-auto px-6 pb-6">
+          {filtered.length === 0 ? (
+            <p className="py-8 text-center text-sm text-[#889096]">No processes found.</p>
+          ) : (
+            <div className="flex flex-col gap-8 rounded-3xl bg-white p-6 shadow">
+              {filtered.map((process, idx) => (
+                <button
+                  key={process.id}
+                  type="button"
+                  onClick={() => handleRowClick(process)}
+                  className={`flex w-full items-center justify-between text-left transition-opacity hover:opacity-80 ${
+                    idx !== 0 ? 'border-t border-[#F1F3F5] pt-8' : ''
+                  }`}
+                >
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[16px] font-[500] text-[#151718]">{process.name}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[14px] font-[400] text-[#889096]">
+                        Code: {process.code}
+                      </span>
+                      <span className="text-[14px] font-[400] text-[#889096]">
+                        Level: {process.level}
+                      </span>
+                    </div>
+                  </div>
+                  <span
+                    className={`shrink-0 rounded-full px-3 py-1 text-[12px] font-[500] ${STATUS_BADGE_STYLES[process.status]}`}
+                  >
+                    {process.status}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </aside>
+
+      {/* ── Confirmation Modal ── */}
+      {confirmOpen && pendingSource && (
+        <>
+          <div className="fixed inset-0 z-[60] bg-black/50" onClick={() => setConfirmOpen(false)} />
+          <div className="fixed inset-0 z-[61] flex items-center justify-center p-4">
+            <div className="w-full max-w-[540px] rounded-2xl bg-[#F1F3F5] p-8 shadow-2xl">
+              <h3 className="text-[24px] leading-snug font-[500] text-[#111827]">
+                Confirm copy from &ldquo;{pendingSource.name}&rdquo;
+              </h3>
+              <p className="mt-4 text-[16px] leading-normal font-[400] text-[#687076]">
+                Copying will overwrite your existing draft values. You can still edit the copied
+                data before submitting for review.
+              </p>
+              <div className="mt-8 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setConfirmOpen(false)}
+                  className="rounded-[36px] bg-gradient-to-r from-[#EAEFFF] to-[#C7D6F9] px-6 py-3 text-[14px] font-[500] text-[#151718] shadow transition-opacity hover:opacity-80"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmCopy}
+                  className="rounded-full bg-gradient-to-r from-[#5B23FF] to-[#3C00EB] px-6 py-3 text-[14px] font-[500] text-white shadow transition-opacity hover:opacity-80"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Success Toast ── */}
+      <SuccessToast
+        open={showSuccess}
+        message="Assessment data copied and applied successfully."
+        onClose={() => setShowSuccess(false)}
+      />
+    </>,
+    document.body,
+  )
+}
+
+// ── Mark As Reviewed Modal ─────────────────────────────────────────────────────
+
+interface MarkAsReviewedModalProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  selectedCount: number
+  onConfirm: (comment: string) => void
+}
+
+const MAX_REVIEW_CHARS = 500
+
+export function MarkAsReviewedModal({
+  open,
+  onOpenChange,
+  selectedCount,
+  onConfirm,
+}: MarkAsReviewedModalProps) {
+  const [comment, setComment] = useState('')
+
+  const close = () => {
+    setComment('')
+    onOpenChange(false)
+  }
+
+  return (
+    <BaseModal
+      open={open}
+      onClose={close}
+      title="Mark as reviewed"
+      subtitle={`The comment will appear in the Comments tab for each of the ${selectedCount} selected process${selectedCount !== 1 ? 'es' : ''}.`}
+      footer={
+        <>
+          <Button type="button" variant="secondary" className="h-12 rounded-full" onClick={close}>
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            className="h-12 rounded-full"
+            disabled={!comment.trim()}
+            onClick={() => {
+              onConfirm(comment.trim())
+              close()
+            }}
+          >
+            Mark as reviewed
+          </Button>
+        </>
+      }
+    >
+      <div>
+        <label className={fieldLabel}>
+          Comment <span className="text-destructive">*</span>
+        </label>
+        <textarea
+          value={comment}
+          onChange={(e) => setComment(e.target.value.slice(0, MAX_REVIEW_CHARS))}
+          rows={4}
+          placeholder="Enter review comment…"
+          className={`${fieldInput} resize-none`}
+        />
+        <p className="text-muted-foreground mt-1 text-right text-xs">
+          {comment.length} / {MAX_REVIEW_CHARS}
+        </p>
+      </div>
+    </BaseModal>
+  )
+}

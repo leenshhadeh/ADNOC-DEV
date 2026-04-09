@@ -8,12 +8,11 @@ import {
   StatusBadgeCell,
   type CatalogStatus,
   UserBadgeCell,
-} from '@features/module-process-catalog/components/cells'
+} from '@/shared/components/cells'
 import RequestDetailsSheet from '../sidePanels/RequestDetailsSheet'
 
 import type { RequestItem } from '@features/module-assessment-data/types/submitted-requests'
 import { useGetSubmittedRequests } from '@features/module-assessment-data/hooks/useGetSubmittedRequests'
-
 
 const SubmittedRequestsTable = () => {
   const { data: requests, isLoading, isError } = useGetSubmittedRequests()
@@ -98,7 +97,6 @@ const SubmittedRequestsTable = () => {
         header: 'Submitted On',
         size: 130,
       },
-     
     ],
     [],
   )
