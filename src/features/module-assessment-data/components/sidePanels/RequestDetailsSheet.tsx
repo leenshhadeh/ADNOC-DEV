@@ -166,7 +166,7 @@ const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsShee
   }
 
   return (
-    <ActionSheet title={request?.processName ?? ''} open={open} onOpenChange={handleOpenChange}>
+    <ActionSheet title={request?.processName ?? ''} open={open} onOpenChange={handleOpenChange} large>
       {request ? (
         // relative + overflow-hidden so the workflow-history overlay stays within the body
         <div className="relative flex-1 overflow-hidden">

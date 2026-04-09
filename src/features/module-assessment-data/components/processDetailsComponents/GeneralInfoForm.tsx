@@ -23,7 +23,7 @@ const GeneralInfoForm = () => {
 
         <div className="flex w-full flex-col">
           <label className="text-muted-foreground text-sm">Responsible Business Focal Point</label>
-          <div className="max-w-[100%] overflow-hidden rounded-md  border p-2">
+          <div className="flex h-10 w-full min-w-0 border-border bg-background text-sm text-foreground shadow-xs outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50 rounded-md border p-2">
             <TagsSelect
               tags={[
                 {
@@ -39,7 +39,7 @@ const GeneralInfoForm = () => {
 
         <div className="flex w-full flex-col">
           <label className="text-muted-foreground text-sm">Responsible Digital Focal Point</label>
-          <div className="max-w-[100%] overflow-hidden rounded-md border p-2">
+          <div className="flex h-10 w-full min-w-0 border-border bg-background text-sm text-foreground shadow-xs outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50 rounded-md border p-2">
             <TagsSelect
               tags={[
                 {
@@ -49,6 +49,7 @@ const GeneralInfoForm = () => {
                 },
               ]}
               allTags={DIGITAL_FP_USERS}
+              isInput={true}
             />{' '}
           </div>
         </div>
