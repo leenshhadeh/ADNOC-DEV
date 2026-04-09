@@ -1,8 +1,15 @@
 import { useMemo } from 'react'
-import { Eye } from 'lucide-react'
+import { ArrowLeftRight, Check, Eye, ExternalLink, MoreVertical, UserRoundCog } from 'lucide-react'
 import type { ColumnDef } from '@tanstack/react-table'
 
 import { Button } from '@/shared/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/shared/components/ui/dropdown-menu'
 import DataTable from '@/shared/components/data-table/DataTable'
 import {
   ProcessInfoCell,
@@ -10,32 +17,97 @@ import {
   StatusBadgeCell,
   type CatalogStatus,
   UserBadgeCell,
-} from '@features/module-process-catalog/components/cells'
+} from '@/shared/components/cells'
+import { hasPermission } from '@/shared/lib/permissions'
+import { useUserStore } from '@/shared/auth/useUserStore'
 
 import type { TaskItem } from '@features/module-assessment-data/types/my-tasks'
 import { useGetMyTasks } from '@features/module-assessment-data/hooks/useGetMyTasks'
 // import { useCatalogNavStore } from '@features/module-process-catalog/store/useCatalogNavStore'
 
- 
-
 const MyTasksTable = () => {
   const { data: tasks, isLoading, isError } = useGetMyTasks()
+  const userRole = useUserStore((s) => s.user.role)
   // const navigateToProcess = useCatalogNavStore((s) => s.navigateToProcess)
+
+  const canApprove = hasPermission(userRole, 'APPROVE_REQUEST')
+  const canReturn = hasPermission(userRole, 'RETURN_REQUEST')
+
   const columns = useMemo<ColumnDef<TaskItem, unknown>[]>(
     () => [
       {
         id: 'processName',
         accessorKey: 'processName',
         header: 'Process Name',
-        size: 200,
+        size: 320,
         meta: { isDivider: true },
         cell: (info) => {
           if (info.row.depth > 0) return null
           const row = info.row.original
-          return <ProcessInfoCell processName={row.processName} requestId={row.requestId} />
+          return (
+            <div className="flex w-full items-center gap-2">
+              <div className="min-w-0 flex-1">
+                <ProcessInfoCell
+                  processName={row.processName}
+                  requestId={row.requestId}
+                  processCode={row.processCode}
+                />
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    className="text-muted-foreground shrink-0 rounded-full"
+                    aria-label="Row actions"
+                  >
+                    <MoreVertical className="size-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-56 rounded-2xl bg-[#F1F3F5] p-0 shadow-[0px_10px_30px_rgba(0,0,0,0.2)]"
+                >
+                  <DropdownMenuItem className="gap-4 px-4 py-2">
+                    <Eye className="size-4 shrink-0" />
+                    View change details
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="my-0" />
+                  <DropdownMenuItem className="gap-4 px-4 py-2" disabled={!row.processId}>
+                    <ExternalLink className="size-4 shrink-0" />
+                    Go to record
+                  </DropdownMenuItem>
+                  {canApprove && (
+                    <>
+                      <DropdownMenuSeparator className="my-0" />
+                      <DropdownMenuItem className="gap-4 px-4 py-2">
+                        <UserRoundCog className="size-4 shrink-0" />
+                        Request endorsement
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="my-0" />
+                      <DropdownMenuItem className="gap-4 px-4 py-2">
+                        <Check className="size-4 shrink-0" />
+                        Approve
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  {canReturn && (
+                    <>
+                      <DropdownMenuSeparator className="my-0" />
+                      <DropdownMenuItem className="gap-4 px-4 py-2">
+                        <ArrowLeftRight className="size-4 shrink-0" />
+                        Return
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )
         },
       },
-  
+
       {
         id: 'domain',
         accessorKey: 'domain',
@@ -61,7 +133,7 @@ const MyTasksTable = () => {
           if (info.row.depth > 0) return null
           const row = info.row.original
           return <span className="text-foreground text-sm">{row.groupCompany}</span>
-        }
+        },
       },
       {
         id: 'requester',
@@ -110,7 +182,7 @@ const MyTasksTable = () => {
           )
         },
       },
-       {
+      {
         id: 'changeName',
         header: 'FIELD Name',
         size: 180,
@@ -120,7 +192,7 @@ const MyTasksTable = () => {
           return <span className="text-foreground text-sm">{change?.name ?? '—'}</span>
         },
       },
-    
+
       {
         id: 'oldValue',
         header: 'Old Value',
@@ -171,34 +243,8 @@ const MyTasksTable = () => {
           return <span className="text-foreground text-sm">{String(info.getValue() ?? '—')}</span>
         },
       },
-      {
-        id: 'goToAffect',
-        header: 'Go To Affected Record',
-        size: 120,
-        meta: { multiline: true },
-        cell: (info) => {
-          if (info.row.depth > 0) return null
-          const row = info.row.original
-          return (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="text-muted-foreground rounded-full"
-                disabled={!row.processId}
-                aria-label="Go to affected record"
-                onClick={() =>{} /* row.processId && navigateToProcess(row.processId) */}
-               // onClick={() => row.processId && navigateToProcess(row.processId)}
-              >
-                <Eye className="size-4" />
-              </Button>
-            </div>
-          )
-        },
-      },
     ],
-    [],
+    [canApprove, canReturn],
   )
 
   if (isError) {
@@ -225,7 +271,7 @@ const MyTasksTable = () => {
       data={tasks ?? []}
       density="comfortable"
       enableColumnDnd={false}
-      enableSorting={false}
+      enableSorting={true}
       initialColumnPinning={{ left: ['processName'] }}
       getSubRows={(row) => row.subRows}
       tableMeta={{ rowDividers: true }}

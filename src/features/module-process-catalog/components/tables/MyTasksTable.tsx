@@ -18,7 +18,7 @@ import {
   StatusBadgeCell,
   type CatalogStatus,
   UserBadgeCell,
-} from '@features/module-process-catalog/components/cells'
+} from '@/shared/components/cells'
 import {
   ApproveModal,
   ReturnModal,

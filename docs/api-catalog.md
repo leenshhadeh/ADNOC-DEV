@@ -1,6 +1,6 @@
 # Process Catalog — API Contract
 
-> **Version:** 1.1 &nbsp;|&nbsp; **Date:** 2026-04-03 &nbsp;|&nbsp; **Frontend Team**
+> **Version:** 1.2 &nbsp;|&nbsp; **Date:** 2026-04-09 &nbsp;|&nbsp; **Frontend Team**
 >
 > JSON contracts the frontend expects from the .NET backend for the **Process Catalog** module. All endpoints return the **ApiResponse** envelope.
 
@@ -23,6 +23,17 @@
    - 3.10 [POST /api/processes/:parentId/level4s](#310-post-apiprocessesparentidlevel4s)
    - 3.11 [PUT /api/level4/:id](#311-put-apilevel4id)
    - 3.12 [POST /api/process-catalog/:id/validate](#312-post-apiprocess-catalogidvalidate)
+   - 3.13 [PUT /api/processes/:parentId/level4s](#313-put-apiprocessesparentidlevel4s)
+   - 3.14 [DELETE /api/level4s/:id](#314-delete-apilevel4sid)
+   - 3.15 [GET /api/processes/:parentId/level4-names](#315-get-apiprocessesparentidlevel4-names)
+   - 3.16 [PUT /api/processes/bulk-edit](#316-put-apiprocessesbulk-edit)
+   - 3.17 [POST /api/processes/bulk-submit](#317-post-apiprocessesbulk-submit)
+   - 3.18 [POST /api/tasks/:taskId/approve](#318-post-apitaskstaskidapprove)
+   - 3.19 [POST /api/tasks/:taskId/return](#319-post-apitaskstaskidreturn)
+   - 3.20 [POST /api/tasks/:taskId/reject](#320-post-apitaskstaskidreject)
+   - 3.21 [POST /api/tasks/bulk-approve](#321-post-apitasksbulk-approve)
+   - 3.22 [POST /api/tasks/bulk-return](#322-post-apitasksbulk-return)
+   - 3.23 [POST /api/tasks/bulk-reject](#323-post-apitasksbulk-reject)
 4. [Enums & Shared Types](#4-enums--shared-types)
 5. [Error Handling](#5-error-handling)
 
@@ -544,6 +555,378 @@ Triggers validation / submission for approval on a Level 3 process.
 **Response — `data: null`**
 
 Returns `200 OK` with `"message": "Submitted for validation"`.
+
+---
+
+### 3.13 PUT `/api/processes/:parentId/level4s`
+
+Bulk save (create, update, or delete) Level 4 records under a Level 3 parent. Used when editing the L4 table inline and clicking "Save".
+
+**Path params:** `parentId` — UUID of the parent Level 3 row.
+
+**Request body:**
+
+```json
+{
+  "rows": [
+    {
+      "processCode": "EXP.1.1.1.1",
+      "processName": "Updated L4 Name",
+      "processDescription": "Updated description",
+      "status": "Draft"
+    },
+    {
+      "processCode": "EXP.1.1.1.5",
+      "processName": "New L4",
+      "processDescription": ""
+    }
+  ]
+}
+```
+
+| Field                | Type            | Required | Description                      |
+| -------------------- | --------------- | -------- | -------------------------------- |
+| `processCode`        | `string`        | ✅       | L4 code (e.g. `"EXP.1.1.1.1"`)   |
+| `processName`        | `string`        | ✅       | L4 name                          |
+| `processDescription` | `string`        | ❌       | Free-text description            |
+| `status`             | `ProcessStatus` | ❌       | Defaults to `"Draft"` if omitted |
+
+**Response — `data: SaveLevel4sResponse`**
+
+```json
+{
+  "data": {
+    "updated": 1,
+    "created": 1,
+    "deleted": 0
+  },
+  "message": "OK",
+  "success": true
+}
+```
+
+| Field     | Type     | Description                |
+| --------- | -------- | -------------------------- |
+| `updated` | `number` | Number of rows updated     |
+| `created` | `number` | Number of new rows created |
+| `deleted` | `number` | Number of rows deleted     |
+
+Returns `200 OK`.
+
+---
+
+### 3.14 DELETE `/api/level4s/:id`
+
+Deletes a single Level 4 record.
+
+**Path params:** `id` — UUID of the Level 4 record.
+
+**Request body:** _(none)_
+
+**Response — `data: DeleteLevel4Response`**
+
+```json
+{
+  "data": {
+    "id": "l4-001"
+  },
+  "message": "Deleted",
+  "success": true
+}
+```
+
+| Field | Type     | Description                   |
+| ----- | -------- | ----------------------------- |
+| `id`  | `string` | ID of the deleted Level 4 row |
+
+Returns `200 OK`.
+
+---
+
+### 3.15 GET `/api/processes/:parentId/level4-names`
+
+Returns a flat list of Level 4 process names under a Level 3 parent. Used for autocomplete / validation without fetching full L4 records.
+
+**Path params:** `parentId` — UUID of the parent Level 3 row.
+
+**Response — `data: string[]`**
+
+```json
+{
+  "data": ["Define basin framework", "Seismic interpretation", "Well correlation"],
+  "message": "OK",
+  "success": true
+}
+```
+
+Returns `200 OK`.
+
+---
+
+### 3.16 PUT `/api/processes/bulk-edit`
+
+Bulk-edit applicability for multiple Level 3 processes at once. Typically used when toggling a company/site column for many rows simultaneously.
+
+**Request body:**
+
+```json
+{
+  "processIds": ["550e8400-e29b-41d4-a716-446655440000", "660f9500-f39c-52e5-b827-557766551111"],
+  "companySite": "ADNOC HQ: General"
+}
+```
+
+| Field         | Type       | Required | Description                       |
+| ------------- | ---------- | -------- | --------------------------------- |
+| `processIds`  | `string[]` | ✅       | UUIDs of the Level 3 rows to edit |
+| `companySite` | `string`   | ✅       | `"Company: Site"` key to toggle   |
+
+**Response — `data: BulkProcessActionResponse`**
+
+```json
+{
+  "data": {
+    "processed": 2,
+    "failed": 0
+  },
+  "message": "OK",
+  "success": true
+}
+```
+
+| Field       | Type     | Description                        |
+| ----------- | -------- | ---------------------------------- |
+| `processed` | `number` | Number of rows successfully edited |
+| `failed`    | `number` | Number of rows that failed         |
+
+Returns `200 OK`.
+
+---
+
+### 3.17 POST `/api/processes/bulk-submit`
+
+Submits multiple Level 3 processes for approval in a single request.
+
+**Request body:**
+
+```json
+{
+  "processIds": ["550e8400-e29b-41d4-a716-446655440000", "660f9500-f39c-52e5-b827-557766551111"]
+}
+```
+
+| Field        | Type       | Required | Description                         |
+| ------------ | ---------- | -------- | ----------------------------------- |
+| `processIds` | `string[]` | ✅       | UUIDs of the Level 3 rows to submit |
+
+**Response — `data: BulkProcessActionResponse`**
+
+```json
+{
+  "data": {
+    "processed": 2,
+    "failed": 0
+  },
+  "message": "OK",
+  "success": true
+}
+```
+
+Returns `200 OK`.
+
+---
+
+### 3.18 POST `/api/tasks/:taskId/approve`
+
+Approves a single task assigned to the current user.
+
+**Path params:** `taskId` — ID of the task.
+
+**Request body:** _(none)_
+
+**Response — `data: TaskActionResponse`**
+
+```json
+{
+  "data": {
+    "taskId": "task-001",
+    "status": "approved",
+    "message": "Task approved successfully"
+  },
+  "message": "OK",
+  "success": true
+}
+```
+
+| Field     | Type     | Description                                  |
+| --------- | -------- | -------------------------------------------- |
+| `taskId`  | `string` | The task that was acted on                   |
+| `status`  | `string` | `"approved"` \| `"returned"` \| `"rejected"` |
+| `message` | `string` | Human-readable confirmation                  |
+
+Returns `200 OK`.
+
+---
+
+### 3.19 POST `/api/tasks/:taskId/return`
+
+Returns a task to the requester with a reason.
+
+**Path params:** `taskId` — ID of the task.
+
+**Request body:**
+
+```json
+{
+  "reason": "Missing description for the process"
+}
+```
+
+| Field    | Type     | Required | Description                |
+| -------- | -------- | -------- | -------------------------- |
+| `reason` | `string` | ✅       | Explanation for the return |
+
+**Response — `data: TaskActionResponse`**
+
+```json
+{
+  "data": {
+    "taskId": "task-001",
+    "status": "returned",
+    "message": "Task returned successfully"
+  },
+  "message": "OK",
+  "success": true
+}
+```
+
+Returns `200 OK`.
+
+---
+
+### 3.20 POST `/api/tasks/:taskId/reject`
+
+Rejects a task permanently.
+
+**Path params:** `taskId` — ID of the task.
+
+**Request body:**
+
+```json
+{
+  "reason": "Duplicate process entry"
+}
+```
+
+| Field    | Type     | Required | Description                   |
+| -------- | -------- | -------- | ----------------------------- |
+| `reason` | `string` | ✅       | Explanation for the rejection |
+
+**Response — `data: TaskActionResponse`**
+
+```json
+{
+  "data": {
+    "taskId": "task-001",
+    "status": "rejected",
+    "message": "Task rejected successfully"
+  },
+  "message": "OK",
+  "success": true
+}
+```
+
+Returns `200 OK`.
+
+---
+
+### 3.21 POST `/api/tasks/bulk-approve`
+
+Approves multiple tasks in a single request.
+
+**Request body:**
+
+```json
+{
+  "taskIds": ["task-001", "task-002", "task-003"]
+}
+```
+
+| Field     | Type       | Required | Description                 |
+| --------- | ---------- | -------- | --------------------------- |
+| `taskIds` | `string[]` | ✅       | IDs of the tasks to approve |
+
+**Response — `data: BulkActionResponse`**
+
+```json
+{
+  "data": {
+    "processed": 3,
+    "failed": 0
+  },
+  "message": "OK",
+  "success": true
+}
+```
+
+| Field       | Type     | Description                           |
+| ----------- | -------- | ------------------------------------- |
+| `processed` | `number` | Number of tasks successfully acted on |
+| `failed`    | `number` | Number of tasks that failed           |
+
+Returns `200 OK`.
+
+---
+
+### 3.22 POST `/api/tasks/bulk-return`
+
+Returns multiple tasks to their requesters with a shared reason.
+
+**Request body:**
+
+```json
+{
+  "taskIds": ["task-001", "task-002"],
+  "reason": "Incomplete process descriptions"
+}
+```
+
+| Field     | Type       | Required | Description                |
+| --------- | ---------- | -------- | -------------------------- |
+| `taskIds` | `string[]` | ✅       | IDs of the tasks to return |
+| `reason`  | `string`   | ✅       | Shared reason for return   |
+
+**Response — `data: BulkActionResponse`**
+
+Same shape as [3.21](#321-post-apitasksbulk-approve).
+
+Returns `200 OK`.
+
+---
+
+### 3.23 POST `/api/tasks/bulk-reject`
+
+Rejects multiple tasks with an optional shared reason.
+
+**Request body:**
+
+```json
+{
+  "taskIds": ["task-001", "task-002"],
+  "reason": "Duplicate entries"
+}
+```
+
+| Field     | Type       | Required | Description                      |
+| --------- | ---------- | -------- | -------------------------------- |
+| `taskIds` | `string[]` | ✅       | IDs of the tasks to reject       |
+| `reason`  | `string`   | ❌       | Optional shared rejection reason |
+
+**Response — `data: BulkActionResponse`**
+
+Same shape as [3.21](#321-post-apitasksbulk-approve).
+
+Returns `200 OK`.
 
 ---
 

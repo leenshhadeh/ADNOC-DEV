@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu'
-import StatusBadgeCell, { type CatalogStatus } from './cells/StatusBadgeCell'
+import { StatusBadgeCell, type CatalogStatus } from '@/shared/components/cells'
 import type { ProcessItem, YesNo } from '@features/module-process-catalog/types'
 import type { GroupCompany } from '@features/module-process-catalog/types'
 

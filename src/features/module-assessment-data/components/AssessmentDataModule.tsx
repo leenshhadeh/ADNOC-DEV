@@ -16,6 +16,7 @@ import { ASSESSMENT_BULK_ACTIONS, ASSESSMENT_TABS } from '../constants/assessmen
 import { ASSESSMENT_DATA } from '../constants/assessment-data'
 import { flattenAssessmentData } from './tabels/ProcessDataTable'
 import { useAssessmentExport } from '../hooks/useAssessmentExport'
+import { useMyTasksExport } from '../hooks/useMyTasksExport'
 import ProcessesMenu from '../../../shared/components/ProcessesMenu'
 import MyTasksTable from './tabels/MyTasksTable'
 import SubmittedRequestsTable from './tabels/SubmittedRequestsTable'
@@ -47,13 +48,20 @@ const AssessmentDataModule = () => {
   const [showExportToast, setShowExportToast] = useState(false)
 
   const { isExporting, exportRows } = useAssessmentExport()
+  const { isExporting: isExportingTasks, exportTasks } = useMyTasksExport()
 
   const tableData = useMemo(() => flattenAssessmentData(ASSESSMENT_DATA), [])
 
   const handleExport = async () => {
-    await exportRows(tableData)
+    if (activeTab === 'my-tasks') {
+      await exportTasks()
+    } else {
+      await exportRows(tableData)
+    }
     setShowExportToast(true)
   }
+
+  const currentIsExporting = activeTab === 'my-tasks' ? isExportingTasks : isExporting
 
   const defaultActions = useMemo<ToolbarAction[]>(
     () => [
@@ -61,14 +69,14 @@ const AssessmentDataModule = () => {
       { id: 'import', label: 'Import', icon: Upload },
       {
         id: 'export',
-        label: isExporting ? 'Exporting…' : 'Export',
-        icon: isExporting ? Loader2 : Download,
-        disabled: isExporting,
+        label: currentIsExporting ? 'Exporting…' : 'Export',
+        icon: currentIsExporting ? Loader2 : Download,
+        disabled: currentIsExporting,
         onClick: handleExport,
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isExporting],
+    [currentIsExporting],
   )
 
   const selectedIds = Object.keys(rowSelection)
@@ -162,7 +170,7 @@ const AssessmentDataModule = () => {
 
       {/* ── Table ──────────────────────────────────────────────────────── */}
       <div className="flex-1 overflow-auto px-6 py-1">
-        {isBulkMode && activeTab === 'processes' && (
+        {isBulkMode && (activeTab === 'processes' || activeTab === 'my-tasks') && (
           <AssessmentBulkActionBar
             selectedCount={selectedIds.length}
             onAction={(action) => {

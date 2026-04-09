@@ -1,4 +1,4 @@
-import type { CatalogStatus } from '@features/module-process-catalog/components/cells/StatusBadgeCell'
+import type { CatalogStatus } from '@/shared/components/cells/StatusBadgeCell'
 
 export interface WorkflowHistoryItem {
   id: string

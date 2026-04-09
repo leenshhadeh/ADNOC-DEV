@@ -11,7 +11,7 @@ import {
   StatusBadgeCell,
   type CatalogStatus,
   UserBadgeCell,
-} from '@features/module-process-catalog/components/cells'
+} from '@/shared/components/cells'
 import RequestDetailsSheet from './RequestDetailsSheet'
 
 import type { RequestItem } from '@features/module-process-catalog/types/submitted-requests'
