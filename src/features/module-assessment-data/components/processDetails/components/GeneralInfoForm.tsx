@@ -1,6 +1,6 @@
 import TagsSelect from '@/shared/components/table-primitives/TagsSelect'
 import { Input } from '@/shared/components/ui/input'
-import { DIGITAL_FP_USERS } from '../../constants/CurrentApplication'
+import { DIGITAL_FP_USERS } from '../../../constants/CurrentApplication'
 
 const GeneralInfoForm = () => {
   return (
