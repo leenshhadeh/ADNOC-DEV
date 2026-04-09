@@ -11,9 +11,15 @@ import TagsList from '@/shared/components/table-primitives/TagsList'
 import SharedServicesSheet from '../sidePanels/SharedServicesSheet'
 
 import { useState } from 'react';
+import SelectCell from '@/shared/components/table-primitives/SelectCell'
+import TagsSelect from '@/shared/components/table-primitives/TagsSelect'
+import { ASSESSMENT_APPLICATIONS, DIGITAL_FP_USERS } from '../../constants/CurrentApplication'
+import MarkedAsReviewCell from '../cells/MarkedAsReviewCell'
+import BUSheet from '../sidePanels/BUSheet'
 
 const ProcessDataTable = () => {
   const [isSharedServiceOpen, setIsSharedServiceOpen] = useState(false);
+  const [isBUOpen, setIsBUOpen] = useState(false);
   const toText = (value: unknown): string => {
     if (value == null) return ''
     if (Array.isArray(value)) return value.filter(Boolean).join(', ')
@@ -92,7 +98,7 @@ const ProcessDataTable = () => {
                 l4Code: l4Item?.level4Code,
                 groupCompany: toText(pickValue(l4Item?.groupCompany, l3Item.groupCompany)),
                 Site: toText(pickValue(l4Item?.site, l3Item.site)),
-                status: toText(pickValue(l4Item?.status, l3Item.status)),
+                status: l4Item?.status || l3Item.status || '',
                 description: toText(pickValue(l4Item?.description, l3Item.description)),
                 centrallyGovernedProcess: toText(
                   pickValue(l4Item?.centrallyGovernedProcess, l3Item.centrallyGovernedProcess),
@@ -101,18 +107,15 @@ const ProcessDataTable = () => {
                 businessUnit: l4Item?.businessUnit || l3Item.businessUnit || [],
                 responsibleDigitalTeam:
                   l4Item?.ResponsibleDigitalTeam || l3Item.ResponsibleDigitalTeam || [],
-                processCriticality: toText(
-                  pickValue(l4Item?.processCriticality, l3Item.processCriticality),
-                ),
+                processCriticality:  toText(pickValue(l4Item?.processCriticality ,l3Item.processCriticality)),
                 usersImpacted: toText(pickValue(l4Item?.UsersImpacted, l3Item.UsersImpacted)),
                 scaleOfProcess: toText(pickValue(l4Item?.scaleOfProcess, l3Item.scaleOfProcess)),
                 automationMaturityLevel: toText(
                   pickValue(l4Item?.automationMaturityLevel, l3Item.automationMaturityLevel),
                 ),
                 automationLevel: toText(pickValue(l4Item?.automationLevel, l3Item.automationLevel)),
-                currentApplicationsSystems: toText(
-                  pickValue(l4Item?.currentApplicationsSystems, l3Item.currentApplicationsSystems),
-                ),
+                currentApplicationsSystems: l4Item?.currentApplicationsSystems || l3Item.currentApplicationsSystems || [],
+                
                 ongoingAutomationDigitalInitiatives: toText(
                   pickValue(
                     l4Item?.OngoingAutomationDigitalInitiatives,
@@ -185,6 +188,7 @@ const ProcessDataTable = () => {
                 markedAsReviewed: toText(
                   pickValue(l4Item?.markedAsReviewed, l3Item.markedAsReviewed),
                 ),
+                reviewedOn: toText(pickValue(l4Item?.reviewedOn, l3Item.reviewedOn)),
                 businessFocalPoint: toText(
                   pickValue(l4Item?.businessFocalPoint, l3Item.businessFocalPoint),
                 ),
@@ -303,7 +307,7 @@ const ProcessDataTable = () => {
         accessorKey: 'status',
         header: 'Status',
         size: 180,
-        cell: (info) => <StatusBadgeCell status={info.getValue<string>() || '-'} />,
+        cell: (info) => <StatusBadgeCell status={info.row.original.status || '-'} />,
       },
       {
         id: 'description',
@@ -353,12 +357,12 @@ const ProcessDataTable = () => {
         cell: (info) => (
           <div className="max-w-[290px] overflow-hidden">
             <TagsList
-              tags={(info.getValue<string>() || []).map((bu: string, index: number) => ({
+              tags={(info.row.original.businessUnit|| []).map((bu: string, index: number) => ({
                 id: `${info.row.original.l4Code || info.row.original.l3Code}__businessUnit__${index}`,
                 text: bu,
               }))}
-              onRemoveTag={() => {}}
               allTags={[]}
+              onExpand={() => {setIsBUOpen(true)}}
             />
           </div>
         ),
@@ -376,42 +380,79 @@ const ProcessDataTable = () => {
         accessorKey: 'processCriticality',
         header: 'Process Criticality',
         size: 250,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={['Low','Standard','Critical']}
+          onValueChange={(newValue:string) => {
+            console.log('New process criticality:', newValue)
+          }}
+        />,
       },
       {
         id: 'usersImpacted',
         accessorKey: 'usersImpacted',
         header: 'Number of People/Users Impacted',
         size: 250,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={['High (500-1000)','Medium (50-500)','Small (1-50)']}
+          onValueChange={(newValue:string) => {
+            console.log('New users impacted:', newValue)
+          }}
+        />,
       },
       {
         id: 'scaleOfProcess',
         accessorKey: 'scaleOfProcess',
         header: 'Scale of the Process',
         size: 250,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={['Medium: (bigger team within one department)','Small: (100 - 200)','Site-specific']}
+          onValueChange={(newValue:string) => {
+            console.log('New scale of process:', newValue)
+          }}
+        />,
       },
       {
         id: 'automationMaturityLevel',
         accessorKey: 'automationMaturityLevel',
         header: 'Automation Maturity Level',
         size: 250,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={['Fully Automated','Opportunistic','Systematic','Managed','Optimized']}
+          onValueChange={(newValue:string) => {
+            console.log('New automation maturity level:', newValue)
+          }}
+        /> ,
       },
       {
         id: 'automationLevel',
         accessorKey: 'automationLevel',
         header: 'Automation Level (%)',
         size: 180,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) =><SelectCell  
+          defaultValue={info.getValue<string>()}
+          options={['25%','50%','75%','99%','100%']}
+          onValueChange={(newValue:string) => {
+            console.log('New automation level:', newValue)
+          }}
+        /> ,
       },
       {
         id: 'currentApplicationsSystems',
         accessorKey: 'currentApplicationsSystems',
         header: 'Current Applications/Systems',
         size: 260,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <TagsSelect
+        tags={info.row.original.currentApplicationsSystems.map((app: string, index: number) => ({
+            id: `${app.trim()}`,
+            name: app.trim(),
+          }))}
+          allTags={ASSESSMENT_APPLICATIONS}
+          isUsers={false}
+        /> 
       },
       {
         id: 'ongoingAutomationDigitalInitiatives',
@@ -425,7 +466,13 @@ const ProcessDataTable = () => {
         accessorKey: 'businessRecommendationForAutomation',
         header: 'Business Recommendation for Automation',
         size: 320,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={['Should be kept as is','should be automated','No Automation']}
+          onValueChange={(newValue:string) => {
+            console.log('New business recommendation for automation:', newValue)
+          }}
+        /> ,
       },
       {
         id: 'keyChallengesAutomationNeeds',
@@ -439,7 +486,15 @@ const ProcessDataTable = () => {
         accessorKey: 'aiPowered',
         header: 'AI-Powered - Y/N',
         size: 160,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <RadioCell
+          name={`${info.row.original.l4Code}__aiPowered`}
+          value={info.getValue<string>() ? true : false}
+          options={[
+            { label: 'Yes', value: 'yes' },
+            { label: 'No', value: 'no' },
+          ]}
+          onChange={() => {}}
+        />
       },
       {
         id: 'aiPoweredUseCase',
@@ -453,91 +508,177 @@ const ProcessDataTable = () => {
         accessorKey: 'autonomousUseCaseEnabled',
         header: 'Autonomous Use Case Enabled',
         size: 250,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <RadioCell
+          name={`${info.row.original.l4Code}__autonomousUseCaseEnabled`}
+          value={info.getValue<string>() ? true : false}
+          options={[
+            { label: 'Yes', value: 'yes' },
+            { label: 'No', value: 'no' },
+          ]}
+          onChange={() => {}}
+        />
       },
       {
         id: 'autonomousUseCaseDescriptionComment',
         accessorKey: 'autonomousUseCaseDescriptionComment',
         header: 'Autonomous Use Case Description/Comment',
         size: 320,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <EditableCell
+          value={info.getValue<string>()}
+          onChange={(newValue) => {
+            // Handle the change, e.g., update the data source or state
+            console.log('New autonomous use case description/comment:', newValue)
+          }}
+        />
       },
       {
         id: 'processCycle',
         accessorKey: 'processCycle',
         header: 'How Often the Process Happens (Cycle)',
         size: 280,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={['Daily','Weekly','Monthly','Quarterly','Annually','Ad-hoc']}
+          onValueChange={(newValue:string) => {
+            console.log('New process cycle:', newValue)
+          }}
+        /> ,
       },
       {
         id: 'processRepetitionWithinCycle',
         accessorKey: 'processRepetitionWithinCycle',
         header: 'Number of Times Repeated within Selected Cycle',
         size: 320,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={['1-5 times','6-10 times','11-20 times','More than 20 times']}
+          onValueChange={(newValue:string) => {
+            console.log('New process repetition within cycle:', newValue)
+          }}
+        /> ,
       },
       {
         id: 'totalPersonnelExecutingFTE',
         accessorKey: 'totalPersonnelExecutingFTE',
         header: 'Total Personnel Executing (FTE)',
         size: 240,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={['10','20','50','100','More than 100']}
+          onValueChange={(newValue:string) => {
+            console.log('New total personnel executing (FTE):', newValue)
+          }}
+        /> ,
       },
       {
         id: 'totalProcessDurationDays',
         accessorKey: 'totalProcessDurationDays',
         header: 'Total Process Duration (Days)',
         size: 220,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) =><SelectCell
+        defaultValue={info.getValue<string>()}
+        options={['10','20','50','100','More than 100']}
+        onValueChange={(newValue:string) => {
+          console.log('New total personnel executing (FTE):', newValue)
+        }}
+      /> ,
       },
       {
         id: 'timeSpentOnManualTasksPercent',
         accessorKey: 'timeSpentOnManualTasksPercent',
         header: 'Time Spent on Manual Tasks (%)',
         size: 240,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <SelectCell
+        defaultValue={info.getValue<string>()}
+        options={['10%','20%','50%','100%']}
+        onValueChange={(newValue:string) => {
+          console.log('New total personnel executing (FTE):', newValue)
+        }}
+      /> ,
+
       },
       {
         id: 'keyManualSteps',
         accessorKey: 'keyManualSteps',
         header: 'Key Manual Steps',
         size: 260,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <EditableCell
+          value={info.getValue<string>()}
+          onChange={(newValue) => {
+            // Handle the change, e.g., update the data source or state
+            console.log('New key manual steps:', newValue)
+          }}
+          type={'textArea'}
+        />
       },
       {
         id: 'northStarTargetAutomation',
         accessorKey: 'northStarTargetAutomation',
         header: '"North Star" Target Automation',
         size: 240,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <SelectCell
+        defaultValue={info.getValue<string>()}
+        options={['Keep as is', 'To be fully automated', 'To be intelligent']}
+        onValueChange={(newValue:string) => {
+          console.log('New total personnel executing (FTE):', newValue)
+        }}
+      />,
       },
       {
         id: 'targetAutomationLevelPercent',
         accessorKey: 'targetAutomationLevelPercent',
         header: 'Target Automation Level (%)',
         size: 220,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) =><SelectCell
+        defaultValue={info.getValue<string>()}
+        options={['10%','20%','50%','100%']}
+        onValueChange={(newValue:string) => {
+          console.log('New total personnel executing (FTE):', newValue)
+        }}
+      />
       },
       {
         id: 'smeFeedback',
         accessorKey: 'smeFeedback',
         header: 'SME Feedback',
         size: 280,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <EditableCell
+        value={info.getValue<string>()}
+        onChange={(newValue) => {
+          // Handle the change, e.g., update the data source or state
+          console.log('New key manual steps:', newValue)
+        }}
+        type={'textArea'}
+      />
       },
       {
         id: 'toBeAIPowered',
         accessorKey: 'toBeAIPowered',
         header: 'To be AI Powered - Y/N',
         size: 220,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) =>  <RadioCell
+                    name={`${info.getValue<string>()}__toBeAIPowered`}
+                    value={info.getValue<string>()}
+                    options={[
+                      { label: 'Yes', value: 'yes' },
+                      { label: 'No', value: 'no' },
+                    ]}
+                    onChange={() => {}}
+                  />
       },
       {
         id: 'toBeAIPoweredComments',
         accessorKey: 'toBeAIPoweredComments',
         header: 'To be AI Powered - Comments',
         size: 260,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <EditableCell
+        value={info.getValue<string>()}
+        onChange={(newValue) => {
+          // Handle the change, e.g., update the data source or state
+          console.log('New key manual steps:', newValue)
+        }}
+        type={'textArea'}
+      />,
       },
       {
         id: 'rateCardAED',
@@ -558,21 +699,40 @@ const ProcessDataTable = () => {
         accessorKey: 'markedAsReviewed',
         header: 'Marked as Reviewed?',
         size: 180,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <MarkedAsReviewCell
+         marked={info.getValue<string>() === 'true'?true:false}
+         date={info.row.original.reviewedOn}
+         id={`${info.row.original.l4Code}__markedAsReviewed`}
+          onChange={() => {}}
+        />
       },
       {
         id: 'businessFocalPoint',
         accessorKey: 'businessFocalPoint',
         header: 'Business Focal Point',
         size: 220,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <TagsSelect
+        tags={info.row.original.businessFocalPoint ? [{
+            id: `${info.row.original.businessFocalPoint.trim()}`,
+            name: info.row.original.businessFocalPoint.trim(),
+          }] : []}
+          allTags={DIGITAL_FP_USERS}
+          isUsers={false}
+        />
       },
       {
         id: 'digitalFocalPoint',
         accessorKey: 'digitalFocalPoint',
         header: 'Digital Focal Point',
         size: 220,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <TagsSelect
+        tags={info.row.original.digitalFocalPoint ? [{
+            id: `${info.row.original.digitalFocalPoint.trim()}`,
+            name: info.row.original.digitalFocalPoint.trim(),
+          }] : []}
+          allTags={DIGITAL_FP_USERS}
+          isUsers={true}
+        />
       },
       {
         id: 'publishedDate',
@@ -586,7 +746,8 @@ const ProcessDataTable = () => {
         accessorKey: 'submittedBy',
         header: 'Submitted By',
         size: 180,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => <div className="text-muted-foreground rounded-[99px] bg-[#F1F3F5] p-1 text-center">
+        {info.getValue<string>()}</div>,
       },
       {
         id: 'submittedOn',
@@ -613,9 +774,14 @@ const ProcessDataTable = () => {
       />
 
           {/* side panels */}
-          <SharedServicesSheet
+      <SharedServicesSheet
         open={isSharedServiceOpen}
         handleOpenChange={() => setIsSharedServiceOpen(false)}
+      />
+
+      <BUSheet
+        open={isBUOpen}
+        handleOpenChange={(newVal:any) => {setIsBUOpen(false); console.log('BU sheet open state changed:', newVal)}}
       />
     </>
   )

@@ -24,8 +24,8 @@
 
 @font-face {
   font-family: 'ADNOCSans';
-  src: url('../assets/fonts/ADNOCSansSemiBold.ttf') format('truetype');
+  src: url('../assets/fonts/ADNOCSansBold.ttf') format('truetype');
   font-weight: 600;
-  font-style: normal;
+  font-style: bold;
   font-display: swap;
 }

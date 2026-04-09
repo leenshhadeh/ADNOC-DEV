@@ -1,6 +1,6 @@
 export const ASSESSMENT_APPLICATIONS = [
-{id: 'app1', name: 'Audit Management System (RSA Archer)'},
-{id: 'app2', name: 'Audit Management'},
+{id: 'AuditManagementSystem(RSA Archer)', name: 'Audit Management System (RSA Archer)'},
+{id: 'AuditManagement', name: 'Audit Management'},
 {id: 'app3', name: 'Application 3'},
 {id: 'app4', name: 'Application 4'},
 {id: 'app5', name: 'Application 5'},
@@ -9,11 +9,7 @@ export const ASSESSMENT_APPLICATIONS = [
 {id: 'app8', name: 'Application 8'},
 {id: 'app9', name: 'Application 9'},
 {id: 'app10', name: 'Application 10'},
-{id: 'app11', name: 'Application 11'},
-{id: 'app12', name: 'Application 12'},
-{id: 'app13', name: 'Application 13'},
-{id: 'app14', name: 'Application 14'},
-{id: 'app15', name: 'Application 15'},
+
 
 
   ]

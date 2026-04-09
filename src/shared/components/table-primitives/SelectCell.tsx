@@ -28,7 +28,7 @@ const SelectCell = (props:SelectProps) => {
           className="inline-flex w-full text-left justify-between gap-2 rounded-md ps-2 pe-2 text-base text-foreground outline-none hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring"
           aria-label={`Selected value: ${value}`}
         >
-          <span>{value}</span>
+          <span className='whitespace-normal'>{value}</span>
           <ChevronDown className="size-4 text-muted-foreground" />
         </button>
       </DropdownMenuTrigger>
