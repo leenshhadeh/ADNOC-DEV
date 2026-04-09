@@ -7,6 +7,7 @@
 import type { ReactNode } from 'react'
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/shared/components/ui/sheet'
+import { cn } from '../lib/utils'
 
 interface ActionSheetProps {
   title: string
@@ -14,13 +15,13 @@ interface ActionSheetProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   children?: ReactNode
+  large?: boolean
 }
-
-const ActionSheet = ({ title, open, onOpenChange, subTitle, children }: ActionSheetProps) => (
+ const ActionSheet = ({ title, open, onOpenChange, subTitle, large=false, children }: ActionSheetProps) => (
   <Sheet open={open} onOpenChange={onOpenChange}>
     <SheetContent
       side="right"
-      className="flex w-full flex-col p-0 sm:max-w-[460px] lg:max-w-[600px]"
+      className={cn('flex w-full flex-col p-0 sm:max-w-[460px]', large?'lg:max-w-[600px]':'lg:max-w-[500px]')}
     >
       <SheetHeader className="border-border shrink-0 border-b px-6 py-5">
         <SheetTitle className="text-foreground text-2xl font-semibold">{title}</SheetTitle>

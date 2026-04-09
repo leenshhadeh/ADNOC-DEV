@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { Search, X } from 'lucide-react'
+import { ChevronDown, Search, X } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,9 +12,10 @@ interface TagsListProps {
   tags: { id: string; name: string; img?: string }[]
   allTags: { id: string; name: string; img?: string }[] // Assuming you have a list of all available tags
   isUsers?: boolean
+  isInput?: boolean
 }
 
-const TagsSelect: React.FC<TagsListProps> = ({ tags, allTags, isUsers }) => {
+const TagsSelect: React.FC<TagsListProps> = ({ tags, allTags, isUsers, isInput }) => {
   const [open, setOpen] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>(tags.map((tag) => tag.id))
   const [selectedTags, setSelectedTags] = useState(tags)
@@ -42,7 +43,8 @@ const TagsSelect: React.FC<TagsListProps> = ({ tags, allTags, isUsers }) => {
     <>
       <DropdownMenu modal={false} open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
-          <div className="flex gap-1">
+        <div className='flex justify-between item-center w-100 ' >
+          <div className="flex gap-1 overflow-hidden">
             {tags.map((tag) => (
               <div
                 key={tag.id}
@@ -56,7 +58,8 @@ const TagsSelect: React.FC<TagsListProps> = ({ tags, allTags, isUsers }) => {
                   <X size={16} />
                 </button>
               </div>
-            ))}
+            ))}</div>
+            <ChevronDown size={16} className="text-gray-500" />
           </div>
         </DropdownMenuTrigger>
 
