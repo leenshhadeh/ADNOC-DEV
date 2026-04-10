@@ -1,24 +1,22 @@
 import { Check } from 'lucide-react'
 import { cn } from '../lib/utils'
 
-
-interface StepProps{
-    id:string;
-    title:string;
-    status:string
-    owner?:string
-    progress?:string
+interface StepProps {
+  id: string
+  title: string
+  status: string
+  owner?: string
+  progress?: string
 }
 
-interface StepsProps{
-    steps:StepProps[]
+interface StepsProps {
+  steps: StepProps[]
 }
-
 
 const WorkflowStepper = (props: StepsProps) => {
   console.log('WorkflowStepper', props)
-  const {steps} = props;
-   return (
+  const { steps } = props
+  return (
     <div className="flex items-start">
       {steps.map((step: any, i: number) => {
         const stepIndex = i + 1
@@ -51,9 +49,7 @@ const WorkflowStepper = (props: StepsProps) => {
               <div className={cn('mx-2 h-0.5 flex-1', 'bg-[#D1D5DB]')}>
                 {(isCompleted || isActive) && (
                   <div
-                    className={cn(
-                      'h-0.5 flex-1 bg-[#0047BB]'
-                    )}
+                    className={cn('h-0.5 flex-1 bg-[#0047BB]')}
                     style={{ width: `${isCompleted ? '100%' : currentStepProgress}` }}
                   />
                 )}

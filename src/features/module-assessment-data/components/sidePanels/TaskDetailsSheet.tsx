@@ -1,6 +1,14 @@
 import { useState } from 'react'
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
-import { ArrowRight, ChevronDown, ChevronRight, ChevronUp, Clock, ExternalLink } from 'lucide-react'
+import {
+  ArrowRight,
+  ChevronDown,
+  ChevronRight,
+  ChevronUp,
+  Clock,
+  ExternalLink,
+  MessageSquare,
+} from 'lucide-react'
 
 import ActionSheet from '@/shared/components/ActionSheet'
 import { Accordion, AccordionContent, AccordionItem } from '@/shared/components/ui/accordion'
@@ -45,6 +53,7 @@ interface ChangeAccordionItemProps {
 
 function ChangeAccordionItem({ change, itemId, canComment }: ChangeAccordionItemProps) {
   const [comment, setComment] = useState(change.comment ?? '')
+  const [showComment, setShowComment] = useState(!!change.comment)
   const truncate = (str: string, n = 18) => (str.length > n ? str.slice(0, n) + '…' : str)
 
   return (
@@ -83,7 +92,17 @@ function ChangeAccordionItem({ change, itemId, canComment }: ChangeAccordionItem
               {change.newValue}
             </div>
           </div>
-          {canComment && (
+          {canComment && !showComment && (
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 self-start text-sm font-medium text-[#0047BB] hover:underline"
+              onClick={() => setShowComment(true)}
+            >
+              <MessageSquare className="size-4" />
+              Add comment
+            </button>
+          )}
+          {canComment && showComment && (
             <div>
               <p className="text-muted-foreground mb-1.5 text-sm">Comment</p>
               <textarea
@@ -116,7 +135,6 @@ const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) =
   const [approveOpen, setApproveOpen] = useState(false)
   const [returnOpen, setReturnOpen] = useState(false)
   const [rejectOpen, setRejectOpen] = useState(false)
-  const [comment, setComment] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
 
   const userRole = useUserStore((s) => s.user.role)
@@ -129,7 +147,6 @@ const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) =
       setShowMore(false)
       setShowWorkflowHistory(false)
       setWorkflowHistory([])
-      setComment('')
       setActionLoading(false)
     }
     onOpenChange(isOpen)
@@ -274,23 +291,6 @@ const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) =
                   </Accordion>
                 </section>
               )}
-
-              {/* Global comment */}
-              {isApprover && (
-                <section className="mt-6 pb-2">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-foreground shrink-0 text-base font-semibold">Comment</h3>
-                    <Separator className="flex-1" />
-                  </div>
-                  <textarea
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    placeholder="Add your comment..."
-                    rows={4}
-                    className="mt-3 w-full resize-none rounded-2xl border border-[#DFE3E6] bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#0047BB]"
-                  />
-                </section>
-              )}
             </div>
 
             {/* ── Approver sticky footer ────────────────────────────────────── */}
@@ -325,7 +325,7 @@ const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) =
         onConfirm={() => {
           if (!task) return
           setActionLoading(true)
-          approveTask(task.id, comment)
+          approveTask(task.id)
             .then(() => {
               setApproveOpen(false)
               onOpenChange(false)
@@ -341,7 +341,7 @@ const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) =
         onConfirm={(reason) => {
           if (!task) return
           setActionLoading(true)
-          returnTask(task.id, reason, comment)
+          returnTask(task.id, reason)
             .then(() => {
               setReturnOpen(false)
               onOpenChange(false)
@@ -358,7 +358,7 @@ const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) =
         onConfirm={(reason) => {
           if (!task) return
           setActionLoading(true)
-          rejectTask(task.id, reason, comment)
+          rejectTask(task.id, reason)
             .then(() => {
               setRejectOpen(false)
               onOpenChange(false)

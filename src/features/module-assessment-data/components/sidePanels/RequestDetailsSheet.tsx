@@ -1,14 +1,6 @@
 import { useState } from 'react'
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
-import {
-  ArrowRight,
-  ChevronDown,
-  ChevronRight,
-  ChevronUp,
-  Clock,
-  Eye,
-  X,
-} from 'lucide-react'
+import { ArrowRight, ChevronDown, ChevronRight, ChevronUp, Clock, Eye, X } from 'lucide-react'
 
 import ActionSheet from '@/shared/components/ActionSheet'
 import { Accordion, AccordionContent, AccordionItem } from '@/shared/components/ui/accordion'
@@ -166,7 +158,12 @@ const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsShee
   }
 
   return (
-    <ActionSheet title={request?.processName ?? ''} open={open} onOpenChange={handleOpenChange} large>
+    <ActionSheet
+      title={request?.processName ?? ''}
+      open={open}
+      onOpenChange={handleOpenChange}
+      large
+    >
       {request ? (
         // relative + overflow-hidden so the workflow-history overlay stays within the body
         <div className="relative flex-1 overflow-hidden">
