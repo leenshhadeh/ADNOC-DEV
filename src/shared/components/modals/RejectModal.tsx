@@ -63,7 +63,7 @@ export function RejectModal({
         <div className="flex gap-2 pt-4">
           <button
             type="button"
-            className="flex flex-1 items-center justify-center rounded-[36px] bg-gradient-to-r from-[#EAEFFF] to-[#C7D6F9] px-6 py-3 text-sm font-medium text-[#151718] shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90"
+            className="flex flex-1 items-center justify-center rounded-[36px] px-6 py-3 text-sm font-medium text-[#0047BA] transition-colors hover:bg-[#0047BA]/5"
             onClick={() => handleOpenChange(false)}
           >
             Cancel

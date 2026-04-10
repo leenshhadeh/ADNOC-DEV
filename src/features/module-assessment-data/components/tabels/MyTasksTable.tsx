@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { ArrowLeftRight, Check, Eye, ExternalLink, MoreVertical, UserRoundCog } from 'lucide-react'
 import type { ColumnDef } from '@tanstack/react-table'
 
@@ -23,6 +23,7 @@ import { useUserStore } from '@/shared/auth/useUserStore'
 
 import type { TaskItem } from '@features/module-assessment-data/types/my-tasks'
 import { useGetMyTasks } from '@features/module-assessment-data/hooks/useGetMyTasks'
+import TaskDetailsSheet from '@features/module-assessment-data/components/sidePanels/TaskDetailsSheet'
 // import { useCatalogNavStore } from '@features/module-process-catalog/store/useCatalogNavStore'
 
 const MyTasksTable = () => {
@@ -32,6 +33,9 @@ const MyTasksTable = () => {
 
   const canApprove = hasPermission(userRole, 'APPROVE_REQUEST')
   const canReturn = hasPermission(userRole, 'RETURN_REQUEST')
+
+  const [selectedTask, setSelectedTask] = useState<TaskItem | null>(null)
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
 
   const columns = useMemo<ColumnDef<TaskItem, unknown>[]>(
     () => [
@@ -46,13 +50,20 @@ const MyTasksTable = () => {
           const row = info.row.original
           return (
             <div className="flex w-full items-center gap-2">
-              <div className="min-w-0 flex-1">
+              <button
+                type="button"
+                className="min-w-0 flex-1 text-start"
+                onClick={() => {
+                  setSelectedTask(row)
+                  setIsSheetOpen(true)
+                }}
+              >
                 <ProcessInfoCell
                   processName={row.processName}
                   requestId={row.requestId}
                   processCode={row.processCode}
                 />
-              </div>
+              </button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -69,7 +80,14 @@ const MyTasksTable = () => {
                   align="end"
                   className="w-56 rounded-2xl bg-[#F1F3F5] p-0 shadow-[0px_10px_30px_rgba(0,0,0,0.2)]"
                 >
-                  <DropdownMenuItem className="gap-4 px-4 py-2">
+                  <DropdownMenuItem
+                    className="gap-4 px-4 py-2"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setSelectedTask(row)
+                      setIsSheetOpen(true)
+                    }}
+                  >
                     <Eye className="size-4 shrink-0" />
                     View change details
                   </DropdownMenuItem>
@@ -266,16 +284,19 @@ const MyTasksTable = () => {
   }
 
   return (
-    <DataTable
-      columns={columns}
-      data={tasks ?? []}
-      density="comfortable"
-      enableColumnDnd={false}
-      enableSorting={true}
-      initialColumnPinning={{ left: ['processName'] }}
-      getSubRows={(row) => row.subRows}
-      tableMeta={{ rowDividers: true }}
-    />
+    <>
+      <DataTable
+        columns={columns}
+        data={tasks ?? []}
+        density="comfortable"
+        enableColumnDnd={false}
+        enableSorting={true}
+        initialColumnPinning={{ left: ['processName'] }}
+        getSubRows={(row) => row.subRows}
+        tableMeta={{ rowDividers: true }}
+      />
+      <TaskDetailsSheet task={selectedTask} open={isSheetOpen} onOpenChange={setIsSheetOpen} />
+    </>
   )
 }
 
