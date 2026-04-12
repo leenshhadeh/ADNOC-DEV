@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { ASSESSMENT_DATA } from '../../constants/assessment-data'
 import DataTable from '@/shared/components/data-table/DataTable'
@@ -10,7 +10,6 @@ import { Maximize2, Tally1 } from 'lucide-react'
 import TagsList from '@/shared/components/table-primitives/TagsList'
 import SharedServicesSheet from '../sidePanels/SharedServicesSheet'
 import SelectCell from '@/shared/components/table-primitives/SelectCell'
-import TagsSelect from '@/shared/components/table-primitives/TagsSelect'
 import { ASSESSMENT_APPLICATIONS, DIGITAL_FP_USERS } from '../../constants/CurrentApplication'
 import MarkedAsReviewCell from '../cells/MarkedAsReviewCell'
 import BUSheet from '../sidePanels/BUSheet'
@@ -156,12 +155,8 @@ export const flattenAssessmentData = (data: DomainItem[]): FlatAssessmentRow[] =
                 pickValue(l4Item?.markedAsReviewed, l3Item.markedAsReviewed),
               ),
               reviewedOn: toText(pickValue(l4Item?.reviewedOn, l3Item.reviewedOn)),
-              businessFocalPoint: toText(
-                pickValue(l4Item?.businessFocalPoint, l3Item.businessFocalPoint),
-              ),
-              digitalFocalPoint: toText(
-                pickValue(l4Item?.digitalFocalPoint, l3Item.digitalFocalPoint),
-              ),
+              businessFocalPoint: l4Item?.businessFocalPoint || l3Item.businessFocalPoint || [],
+              digitalFocalPoint: l4Item?.digitalFocalPoint || l3Item.digitalFocalPoint || [],
               publishedDate: toText(pickValue(l4Item?.publishedDate, l3Item.publishedDate)),
               submittedBy: toText(pickValue(l4Item?.submittedBy, l3Item.submittedBy)),
               submittedOn: toText(pickValue(l4Item?.submittedOn, l3Item.submittedOn)),
@@ -787,44 +782,55 @@ const ProcessDataTable = () => {
         accessorKey: 'businessFocalPoint',
         header: 'Business Focal Point',
         size: 220,
-        cell: (info) => (
-          <TagsSelect
-            tags={
-              info.row.original.businessFocalPoint
-                ? [
-                    {
-                      id: `${info.row.original.businessFocalPoint.trim()}`,
-                      name: info.row.original.businessFocalPoint.trim(),
-                    },
-                  ]
-                : []
-            }
-            allTags={DIGITAL_FP_USERS}
-            isUsers={false}
-          />
-        ),
+        cell: (info) => {
+          const onUpdate = info.table.options.meta?.onUpdateDraftRow
+          return (
+            <TagsSelectCell
+              list={info.row.original.businessFocalPoint?.map((app: string) => ({
+                id: `${app.trim()}`,
+                name: app.trim(),
+              }))}
+              allTags={DIGITAL_FP_USERS}
+              isUsers={false}
+              onUpdate={(newTags: any) => {
+                const newValue = newTags.map((tag: any) => tag.name)
+                console.log('New current applications/systems:', newValue)
+                if (onUpdate) {
+                  onUpdate(info.row.original.id, 'businessFocalPoint', newValue)
+                  console.log('Updated row with id:', info.row.original.id, 'New value:', newValue)
+                }
+              }}
+            />
+          )
+        },
       },
       {
         id: 'digitalFocalPoint',
         accessorKey: 'digitalFocalPoint',
         header: 'Digital Focal Point',
         size: 220,
-        cell: (info) => (
-          <TagsSelect
-            tags={
-              info.row.original.digitalFocalPoint
-                ? [
-                    {
-                      id: `${info.row.original.digitalFocalPoint.trim()}`,
-                      name: info.row.original.digitalFocalPoint.trim(),
-                    },
-                  ]
-                : []
-            }
-            allTags={DIGITAL_FP_USERS}
-            isUsers={true}
-          />
-        ),
+        cell: (info) => {
+          const onUpdate = info.table.options.meta?.onUpdateDraftRow
+          return (
+            <TagsSelectCell
+              list={info.row.original.digitalFocalPoint?.map((app: string) => ({
+                id: `${app.trim()}`,
+                name: app.trim(),
+              }))}
+              allTags={DIGITAL_FP_USERS}
+              isUsers={true}
+              onUpdate={(newTags: any) => {
+                const newValue = newTags.map((tag: any) => tag.name)
+                console.log('New digitalFocalPoint:', newValue)
+                if (onUpdate) {
+                  onUpdate(info.row.original.id, 'digitalFocalPoint', newValue)
+                  console.log('Updated row with id:', info.row.original.id, 'New value:', newValue)
+                }
+              }}
+            />
+          )
+        },
+
       },
       {
         id: 'publishedDate',
@@ -862,7 +868,12 @@ const ProcessDataTable = () => {
   const handleUpdateDraftRow = useCallback(
     (
       id: string,
-      field: 'currentApplicationsSystems' | 'businessUnit' | 'responsibleDigitalTeam',
+      field:
+        | 'currentApplicationsSystems'
+        | 'businessUnit'
+        | 'responsibleDigitalTeam'
+        | 'businessFocalPoint'
+        | 'digitalFocalPoint',
       value: string,
     ) => {
       setUpdatedDataTable((prev) =>
@@ -871,7 +882,6 @@ const ProcessDataTable = () => {
     },
     [],
   )
-
 
   return (
     <>
