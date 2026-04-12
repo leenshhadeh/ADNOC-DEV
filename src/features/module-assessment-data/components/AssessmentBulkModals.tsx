@@ -7,7 +7,7 @@
  *   6103-255506  CopyAssessmentData     — search + source process picker
  *   6103-253829  MarkAsReviewedModal    — required comment textarea
  */
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ChevronDown, Search } from 'lucide-react'
 
@@ -138,12 +138,6 @@ export function BulkEditModal({
   const [drawerSearch, setDrawerSearch] = useState('')
   const [drawerSelected, setDrawerSelected] = useState('')
   const [showSuccess, setShowSuccess] = useState(false)
-
-  useEffect(() => {
-    if (!showSuccess) return
-    const t = setTimeout(() => setShowSuccess(false), 4000)
-    return () => clearTimeout(t)
-  }, [showSuccess])
 
   const selectedField = BULK_EDITABLE_FIELDS.find((f) => f.value === fieldValue) ?? null
   const isDrawer = selectedField?.type === 'drawer'
@@ -540,13 +534,6 @@ export function CopyAssessmentDataModal({
   const [pendingSource, setPendingSource] = useState<SourceProcess | null>(null)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
-
-  // auto-dismiss success toast
-  useEffect(() => {
-    if (!showSuccess) return
-    const t = setTimeout(() => setShowSuccess(false), 4000)
-    return () => clearTimeout(t)
-  }, [showSuccess])
 
   const closeDrawer = () => {
     setSearch('')

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Check, CornerDownLeft, Eye, MoreVertical, X as XIcon } from 'lucide-react'
 import type { ColumnDef, RowSelectionState } from '@tanstack/react-table'
 
@@ -19,12 +19,10 @@ import {
   type CatalogStatus,
   UserBadgeCell,
 } from '@/shared/components/cells'
-import {
-  ApproveModal,
-  ReturnModal,
-  RejectModal,
-  SuccessToast,
-} from '@features/module-process-catalog/components/modals'
+import { ApproveModal } from '@/shared/components/modals/ApproveModal'
+import { ReturnModal } from '@/shared/components/modals/ReturnModal'
+import { RejectModal } from '@/shared/components/modals/RejectModal'
+import { SuccessToast } from '@/shared/components/SuccessToast'
 import LevelsIcon from '@/assets/icons/Levels.svg?react'
 
 import TaskDetailsSheet from './TaskDetailsSheet'
@@ -70,13 +68,6 @@ const MyTasksTable = ({
   const [actionTask, setActionTask] = useState<TaskItem | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [isActionLoading, setIsActionLoading] = useState(false)
-
-  // auto-dismiss success toast
-  useEffect(() => {
-    if (!successMessage) return
-    const t = setTimeout(() => setSuccessMessage(null), 4000)
-    return () => clearTimeout(t)
-  }, [successMessage])
 
   const handleOpenDetails = (task: TaskItem) => {
     setSelectedTask(task)

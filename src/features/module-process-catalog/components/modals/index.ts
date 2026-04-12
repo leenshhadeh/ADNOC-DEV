@@ -1,5 +1,5 @@
-export { ApproveModal } from './ApproveModal'
+export { ApproveModal } from '@/shared/components/modals/ApproveModal'
 export { BulkEditModal } from './BulkEditModal'
-export { RejectModal } from './RejectModal'
-export { ReturnModal } from './ReturnModal'
+export { RejectModal } from '@/shared/components/modals/RejectModal'
+export { ReturnModal } from '@/shared/components/modals/ReturnModal'
 export { SuccessToast } from './SuccessToast'

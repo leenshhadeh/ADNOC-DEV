@@ -17,13 +17,23 @@ interface ActionSheetProps {
   children?: ReactNode
   large?: boolean
 }
- const ActionSheet = ({ title, open, onOpenChange, subTitle, large=false, children }: ActionSheetProps) => (
+const ActionSheet = ({
+  title,
+  open,
+  onOpenChange,
+  subTitle,
+  large = false,
+  children,
+}: ActionSheetProps) => (
   <Sheet open={open} onOpenChange={onOpenChange}>
     <SheetContent
       side="right"
-      className={cn('flex w-full flex-col p-0 sm:max-w-[460px]', large?'lg:max-w-[600px]':'lg:max-w-[500px]')}
+      className={cn(
+        'flex w-full flex-col p-0 sm:max-w-[460px]',
+        large ? 'lg:max-w-[600px]' : 'lg:max-w-[500px]',
+      )}
     >
-      <SheetHeader className="border-border shrink-0 border-b px-6 py-5">
+      <SheetHeader className="border-border shrink-0 px-6 py-5">
         <SheetTitle className="text-foreground text-2xl font-semibold">{title}</SheetTitle>
         {subTitle && <p className="text-muted-foreground text-[14px]">{subTitle}</p>}
       </SheetHeader>

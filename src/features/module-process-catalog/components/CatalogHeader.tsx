@@ -16,10 +16,9 @@ import {
   CATALOG_DRAFT_ACTIONS,
   CATALOG_FULL_REPORT_ACTIONS,
 } from '@features/module-process-catalog/constants/catalog-toolbar'
-import { Button } from '@/shared/components/ui/button'
 import { LayoutGrid, Table2 } from 'lucide-react'
-import { cn } from '@/shared/lib/utils'
 import { useCurrentUser } from '@/shared/auth/useUserStore'
+import ViewToggle from '@/shared/components/ViewToggle'
 import { hasPermission } from '@/shared/lib/permissions'
 import ProcessesMenu, { type ProcessViewOption } from '@/shared/components/ProcessesMenu'
 
@@ -158,42 +157,14 @@ const CatalogHeader = ({
 
         {/* ── View toggle icons — always visible on the Processes tab ─────── */}
         {activeTab === 'processes' && !hasDraftRows && (
-          <div className="border-border flex shrink-0 items-center gap-0.5 rounded-xl border p-1">
-            <div className="group relative">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label="View full report"
-                className={cn('size-9 rounded-lg')}
-                style={
-                  currentView === 'full-report' ? { background: 'var(--tab-active-bg)' } : undefined
-                }
-                onClick={() => onViewChange?.('full-report')}
-              >
-                <Table2 className="size-4" />
-              </Button>
-              {/* Tooltip */}
-              <span className="bg-foreground text-background pointer-events-none absolute top-full left-1/2 z-50 mt-1.5 -translate-x-1/2 rounded-md px-2 py-1 text-xs whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
-                View full report
-              </span>
-            </div>
-            <div className="group relative">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label="Default view"
-                className={cn('size-9 rounded-lg')}
-                style={
-                  currentView === 'default' ? { background: 'var(--tab-active-bg)' } : undefined
-                }
-                onClick={() => onViewChange?.('default')}
-              >
-                <LayoutGrid className="size-4" />
-              </Button>
-            </div>
-          </div>
+          <ViewToggle
+            options={[
+              { value: 'full-report', icon: Table2, label: 'View full report' },
+              { value: 'default', icon: LayoutGrid, label: 'Default view' },
+            ]}
+            value={currentView}
+            onChange={(v) => onViewChange?.(v as CatalogView)}
+          />
         )}
       </div>
     </header>

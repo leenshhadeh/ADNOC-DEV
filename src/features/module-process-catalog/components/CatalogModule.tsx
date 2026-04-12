@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { X } from 'lucide-react'
 import AddProcessesModal from './AddProcessesModal'
 import type { RowSelectionState } from '@tanstack/react-table'
 import CatalogHeader from './CatalogHeader'
@@ -17,6 +16,7 @@ import RenameModal from './RenameModal'
 import BulkActionBar, { type BulkAction } from './BulkActionBar'
 import ProcessBulkActionBar, { type ProcessBulkAction } from './ProcessBulkActionBar'
 import { ApproveModal, BulkEditModal, RejectModal, ReturnModal } from './modals'
+import { SuccessToast } from '@/shared/components/SuccessToast'
 import {
   bulkApproveTasks,
   bulkRejectTasks,
@@ -88,7 +88,6 @@ const CatalogModule = () => {
     } catch {
       setSuccessToast('Failed to apply bulk edit.')
     }
-    setTimeout(() => setSuccessToast(null), 4000)
     setRowSelection({})
     setIsBulkMode(false)
   }
@@ -101,7 +100,6 @@ const CatalogModule = () => {
     } catch {
       setSuccessToast('Failed to submit processes.')
     }
-    setTimeout(() => setSuccessToast(null), 4000)
     setRowSelection({})
     setIsBulkMode(false)
   }
@@ -145,7 +143,6 @@ const CatalogModule = () => {
     } catch {
       setSuccessToast(`Failed to approve requests.`)
     }
-    setTimeout(() => setSuccessToast(null), 4000)
     setTaskRowSelection({})
     setIsTaskBulkMode(false)
   }
@@ -158,7 +155,6 @@ const CatalogModule = () => {
     } catch {
       setSuccessToast(`Failed to reject requests.`)
     }
-    setTimeout(() => setSuccessToast(null), 4000)
     setTaskRowSelection({})
     setIsTaskBulkMode(false)
   }
@@ -171,7 +167,6 @@ const CatalogModule = () => {
     } catch {
       setSuccessToast(`Failed to return requests.`)
     }
-    setTimeout(() => setSuccessToast(null), 4000)
     setTaskRowSelection({})
     setIsTaskBulkMode(false)
   }
@@ -673,7 +668,6 @@ const CatalogModule = () => {
             parent: targetL3Item?.level3Code,
           })
           setSuccessToast('Level 4s added as draft. Submit Level 3s to publish.')
-          setTimeout(() => setSuccessToast(null), 4000)
         }}
       />
 
@@ -721,10 +715,8 @@ const CatalogModule = () => {
             setSuccessToast(
               `Level 4s saved — ${result.created} created, ${result.updated} updated, ${result.deleted} removed.`,
             )
-            setTimeout(() => setSuccessToast(null), 4000)
           } catch {
             setSuccessToast('Failed to save Level 4 changes.')
-            setTimeout(() => setSuccessToast(null), 4000)
           }
         }}
       />
@@ -757,33 +749,11 @@ const CatalogModule = () => {
       />
 
       {/* ── Success toast ── */}
-      {successToast && (
-        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
-          <div className="bg-foreground text-background flex items-center gap-3 rounded-xl px-5 py-3 shadow-2xl">
-            <svg
-              className="size-5 shrink-0 text-emerald-400"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span className="text-sm font-medium">{successToast}</span>
-            <button
-              type="button"
-              onClick={() => setSuccessToast(null)}
-              className="text-background/60 hover:text-background ml-2 transition-colors"
-              aria-label="Dismiss"
-            >
-              <X className="size-4" />
-            </button>
-          </div>
-        </div>
-      )}
+      <SuccessToast
+        open={!!successToast}
+        message={successToast ?? ''}
+        onClose={() => setSuccessToast(null)}
+      />
     </section>
   )
 }
