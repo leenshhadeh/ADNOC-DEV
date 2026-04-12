@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { ASSESSMENT_DATA } from '../../constants/assessment-data'
 import DataTable from '@/shared/components/data-table/DataTable'
@@ -15,6 +15,7 @@ import { ASSESSMENT_APPLICATIONS, DIGITAL_FP_USERS } from '../../constants/Curre
 import MarkedAsReviewCell from '../cells/MarkedAsReviewCell'
 import BUSheet from '../sidePanels/BUSheet'
 import DigitalTeamSheet from '../sidePanels/DigitalTeamSheet'
+import TagsSelectCell from '../cells/TagsSelectCell'
 
 const toText = (value: unknown): string => {
   if (value == null) return ''
@@ -172,9 +173,9 @@ export const flattenAssessmentData = (data: DomainItem[]): FlatAssessmentRow[] =
   )
 
 const ProcessDataTable = () => {
-  const [isSharedServiceOpen, setIsSharedServiceOpen] = useState(false);
-  const [isBUOpen, setIsBUOpen] = useState(false);
-  const [isDigitalTeamOpen,setIsDigitalTeamOpen]= useState(false);
+  const [isSharedServiceOpen, setIsSharedServiceOpen] = useState(false)
+  const [isBUOpen, setIsBUOpen] = useState(false)
+  const [isDigitalTeamOpen, setIsDigitalTeamOpen] = useState(false)
   const onExpandSharedServices = () => {
     setIsSharedServiceOpen(true)
   }
@@ -375,16 +376,22 @@ const ProcessDataTable = () => {
         accessorKey: 'responsibleDigitalTeam',
         header: 'Responsible Digital Team',
         size: 250,
-        cell: (info) =>    <div className="max-w-[290px] overflow-hidden">
-        <TagsList
-          tags={(info.row.original.responsibleDigitalTeam|| []).map((team: string, index: number) => ({
-            id: `${info.row.original.l4Code || info.row.original.l3Code}_responsibleDigitalTeam${index}`,
-            text: team,
-          }))}
-          allTags={[]}
-          onExpand={() => {setIsDigitalTeamOpen(true)}}
-        />
-      </div>,
+        cell: (info) => (
+          <div className="max-w-[290px] overflow-hidden">
+            <TagsList
+              tags={(info.row.original.responsibleDigitalTeam || []).map(
+                (team: string, index: number) => ({
+                  id: `${info.row.original.l4Code || info.row.original.l3Code}_responsibleDigitalTeam${index}`,
+                  text: team,
+                }),
+              )}
+              allTags={[]}
+              onExpand={() => {
+                setIsDigitalTeamOpen(true)
+              }}
+            />
+          </div>
+        ),
       },
       {
         id: 'processCriticality',
@@ -470,18 +477,27 @@ const ProcessDataTable = () => {
         accessorKey: 'currentApplicationsSystems',
         header: 'Current Applications/Systems',
         size: 260,
-        cell: (info) => (
-          <TagsSelect
-            tags={info.row.original.currentApplicationsSystems.map(
-              (app: string, index: number) => ({
+        cell: (info) => {
+          const onUpdate = info.table.options.meta?.onUpdateDraftRow
+          return (
+            <TagsSelectCell
+              list={info.row.original.currentApplicationsSystems.map((app: string) => ({
                 id: `${app.trim()}`,
                 name: app.trim(),
-              }),
-            )}
-            allTags={ASSESSMENT_APPLICATIONS}
-            isUsers={false}
-          />
-        ),
+              }))}
+              allTags={ASSESSMENT_APPLICATIONS}
+              isUsers={false}
+              onUpdate={(newTags: any) => {
+                const newValue = newTags.map((tag: any) => tag.name)
+                console.log('New current applications/systems:', newValue)
+                if (onUpdate) {
+                  onUpdate(info.row.original.id, 'currentApplicationsSystems', newValue)
+                  console.log('Updated row with id:', info.row.original.id, 'New value:', newValue)
+                }
+              }}
+            />
+          )
+        },
       },
       {
         id: 'ongoingAutomationDigitalInitiatives',
@@ -840,16 +856,32 @@ const ProcessDataTable = () => {
   )
 
   const tableData = useMemo(() => flattenAssessmentData(ASSESSMENT_DATA), [])
+  const [updatedDataTable, setUpdatedDataTable] = useState(tableData)
+
+  /** Updates a draft row field as the user types */
+  const handleUpdateDraftRow = useCallback(
+    (
+      id: string,
+      field: 'currentApplicationsSystems' | 'businessUnit' | 'responsibleDigitalTeam',
+      value: string,
+    ) => {
+      setUpdatedDataTable((prev) =>
+        prev.map((row) => (row.id === id ? { ...row, [field]: value } : row)),
+      )
+    },
+    [],
+  )
+
 
   return (
     <>
       <DataTable
         columns={columns}
-        data={tableData}
+        data={updatedDataTable}
         density="compact"
-        // enableColumnResizing
-        // columnResizeMode="onChange"
-        // getCommonCellStyles={getCommonPinningStyles}
+        tableMeta={{
+          onUpdateDraftRow: handleUpdateDraftRow,
+        }}
       />
 
       {/* side panels */}
@@ -867,13 +899,11 @@ const ProcessDataTable = () => {
       />
 
       <DigitalTeamSheet
-      open={isDigitalTeamOpen}
-      handleOpenChange={(newVal:any) => {setIsDigitalTeamOpen(false);}}
-
+        open={isDigitalTeamOpen}
+        handleOpenChange={(newVal: any) => {
+          setIsDigitalTeamOpen(false)
+        }}
       />
-
-
-
     </>
   )
 }
