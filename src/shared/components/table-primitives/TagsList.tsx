@@ -15,7 +15,7 @@ const TagsList: React.FC<TagsListProps> = ({ tags, onExpand , readOnly}) => {
       {tags.map((tag) => (
         <div
           key={tag.id}
-          className="flex items-center space-x-2 rounded-full border-[0.5px] border-[#2F68D9] bg-[#DCE5F9]  px-3  text-gray-800 "
+          className="flex items-center space-x-2 rounded-full border border-[0.5px] border-[#2F68D9] bg-[#DCE5F9] px-3 py-1 text-gray-80"
         >
           <span className="text-nowrap">{tag.text}</span>
         </div>

@@ -173,7 +173,7 @@ const TagsSelect: React.FC<TagsListProps> = ({
           </div>
         )}
 
-        <div className="mt-2 rounded-md border border-[#E0E0E0] p-0 shadow-sm">
+        <div className="mt-2 rounded-md border border-[#E0E0E0] p-0 shadow-[0px_8px_16px_rgba(0,0,0,0.15)]">
           <DropdownMenuLabel className="p-0 text-sm font-medium text-gray-700">
             <div className="rounded-md rounded-b-none border-[#E0E0E0] bg-[#F1F3F5] p-2">
               <div className="flex items-center gap-2 border-b border-gray-100">

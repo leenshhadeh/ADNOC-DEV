@@ -9,7 +9,7 @@ import {
 import ProcessDetails from './processDetails/components/ProcessDetails'
 import ModuleToolbar from '@/shared/components/ModuleToolbar'
 import { useParams } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import GeneralInfoTab from './processDetails/tabs/GeneralInfoTab'
 import AutomationParameterTab from './processDetails/tabs/AutomationParameterTab'
 
@@ -25,11 +25,38 @@ const processDetails = {
   processApplicapility: true,
   lastPublishedDate: '2024-01-01',
   markedReviewDate: '2024-12-31',
+  level1Name: 'Exploration',
+  level2Name: 'Regional studies',
+  level3Name: 'Basin Modeling',
+  level4Name: 'Define basin framework',
+  centrallyGovernedProcess: 'yes',
+  sharedServiceProcess: 'no',
+  customName: 'Default Name',
+  customDescription: 'Default Description',
+  processDescription: 'Default Process Description',
+  responsibleBusinessFocalPoint: [
+    {
+      id: 'user1',
+      name: 'Fatima Al Nuaimi',
+      img: 'https://t4.ftcdn.net/jpg/06/45/77/79/360_F_645777959_fNnaNoeVO4qxCNPW9MWr3gQlPFSGA9yL.jpg',
+    },
+  ],
+  responsibleDigitalFocalPoint: [
+    {
+      id: 'user12',
+      name: 'Ahmed Al Mansoori',
+      img: 'https://t4.ftcdn.net/jpg/06/45/77/79/360_F_645777959_fNnaNoeVO4qxCNPW9MWr3gQlPFSGA9yL.jpg',
+    },
+  ],
 }
 
 const ProcessDetailsPage = () => {
   const { processId } = useParams<{ processId: string }>()
   const [activeTab, setActiveTab] = useState('GeneralInfo')
+
+  useEffect(() => {
+    //TODO: call getProcessDetails(processId) API
+  })
 
   const processData = [
     { label: 'Group Company', value: processDetails.groupCompany },
@@ -50,21 +77,21 @@ const ProcessDetailsPage = () => {
     { label: 'Marked Review Date', value: processDetails.markedReviewDate },
   ]
   const processGeneralInfo = [
-    { label: 'Process Level 1', value: processDetails.groupCompany },
-    { label: 'Process Level 2', value: processDetails.domain },
-    { label: 'Process Level 3', value: processDetails.code },
+    { label: 'Process Level 1', value: processDetails.level1Name },
+    { label: 'Process Level 2', value: processDetails.level2Name },
+    { label: 'Process Level 3', value: processDetails.level3Name },
     {
       label: 'Process Level 4',
-      value: processDetails.status,
+      value: processDetails.level4Name,
     },
     {
       label: 'Centrally Governed Process',
-      value: processDetails.processApplicapility ? 'Yes' : 'No',
+      value: processDetails.centrallyGovernedProcess ? 'Yes' : 'No',
       isEditable: true,
     },
     {
       label: 'Shared Service process',
-      value: processDetails.lastPublishedDate ? 'Yes' : 'No',
+      value: processDetails.sharedServiceProcess ? 'Yes' : 'No',
       isEditable: true,
     },
   ]
@@ -118,8 +145,13 @@ const ProcessDetailsPage = () => {
         <div className="flex flex-col gap-0 overflow-hidden">
           <div className="mt-[24px] rounded-2xl bg-[linear-gradient(90.49deg,rgba(78,241,228,0.1)_0.03%,rgba(17,24,39,0.1)_99.89%)] p-[1px]">
             <div className="rounded-2xl bg-white p-[24px]">
+            
               {activeTab == 'GeneralInfo' && (
-                <GeneralInfoTab processGeneralInfo={processGeneralInfo} />
+                <GeneralInfoTab
+                  processGeneralInfo={processGeneralInfo}
+                  process={processDetails}
+                  onFormSubmit={() => {}}
+                />
               )}
               {activeTab == 'AutomationParameters' && <AutomationParameterTab />}
             </div>

@@ -2,6 +2,7 @@ import ActionSheet from '@/shared/components/ActionSheet'
 import { TreeSelect } from '@/shared/components/TreeSelect'
 import { Button } from '@/shared/components/ui/button'
 import { useState } from 'react'
+import { BUData } from '../../constants/org-mapping-data'
 
 const BUSheet = (props: any) => {
   const { open = true, handleOpenChange , title } = props
@@ -14,45 +15,7 @@ const BUSheet = (props: any) => {
         <div className="h-full overflow-y-auto m-6 p-6  rounded-md border">
           {/* tree select: Shared servise:{Procurement, Vendor Relations:{v1, v2}} */}
           <TreeSelect
-            data={[{label: 'Shared Service',
-              value: 'shared-service',
-              children: [
-                {
-                  label: 'Procurement',
-                  value: 'procurement',
-                  children: [
-                    {
-                      label: 'Strategic Sourcing',
-                      value: 'strategic-sourcing',
-                      children: [
-                        {
-                          label: 'Supplier Evaluation',
-                          value: 'supplier-evaluation',
-                        },
-                        {
-                          label: 'Contracting',
-                          value: 'contracting',
-                        },
-                      ],
-                    },
-                  ],
-                },
-                {
-                  label: 'Vendor Relations',
-                  value: 'vendor-relations',
-                  children: [
-                    {
-                      label: 'Tier 1 Vendors',
-                      value: 'tier-1-vendors',
-                      children: [
-                        { label: 'v1', value: 'v1' },
-                        { label: 'v2', value: 'v2' },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            }]}
+            data={BUData}
             selected={selected}
             onChange={setSelected}
           />

@@ -1,4 +1,3 @@
-import type { A } from "node_modules/vitest/dist/chunks/rpc.d.BFMWpdph"
 
 export type SharedService =
   | {
@@ -133,8 +132,8 @@ export type FlatAssessmentRow = {
   costOfManualEffortAED: string
   markedAsReviewed: string
   reviewedOn: string
-  businessFocalPoint: string
-  digitalFocalPoint: string
+  businessFocalPoint: string[]
+  digitalFocalPoint: string[]
   publishedDate: string
   submittedBy: string
   submittedOn: string

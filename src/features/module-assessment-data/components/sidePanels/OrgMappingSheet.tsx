@@ -1,95 +1,68 @@
 import ActionSheet from '@/shared/components/ActionSheet'
 import { TreeSelect } from '@/shared/components/TreeSelect'
 import { Button } from '@/shared/components/ui/button'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { BUData, DigitalTeam } from '../../constants/org-mapping-data'
 
 const OrgMappingSheet = (props: any) => {
-  const { open = true, handleOpenChange , title } = props
-  const [selected, setSelected] = useState<string[]>([])
+  const { open = true, handleOnSubmitData, title, handleOpenChange } = props
+  const [selectedBU, setSelectedBU] = useState<string[]>([])
+  const [selectedDT, setSelectedDT] = useState<string[]>([])
   const [activeStep, setActiveStep] = useState('unit') // 'unit' | 'team'
+  const [orgBUData, setOrgBUData] = useState<any>([])
+  const [orgDTData, setOrgDTData] = useState<any>([])
+
+  useEffect(() => {
+    // Call List of BU and Digital team
+    setOrgBUData(BUData)
+    setOrgDTData(DigitalTeam)
+  }, [])
 
   return (
-    <ActionSheet title={title} open={open} onOpenChange={handleOpenChange}
-   >
+    <ActionSheet title={title} open={open} onOpenChange={handleOpenChange}>
       <div className="relative flex-1 overflow-hidden">
+        {/* progress */}
+        <div>
+          {/* 2 bars + text "Step 2 of 4" (similar to the one in process details page) to indicate the progress of the mapping. */}
+          <div className="m-4 flex items-center gap-2">
+            <div className="h-2 w-[49%] w-full rounded-full bg-gray-200">
+              <div className="h-2 rounded-full bg-[#0047BA]"></div>
+            </div>
+            <div className="h-2 w-[49%] w-full rounded-full bg-gray-200">
+              {activeStep == 'team' && <div className="h-2 rounded-full bg-[#0047BA]"></div>}
+            </div>
+            <span className="text-foreground text-sm">
+              <span className="text-primary text-[14px] font-bold">
+                {activeStep == 'team' ? 2 : 1}
+              </span>
+              /2
+            </span>
+          </div>
+        </div>
 
-{/* progress */}
-<div>
-    {/* 2 bars + text "Step 2 of 4" (similar to the one in process details page) to indicate the progress of the mapping. */}
-    <div className="flex items-center gap-2 m-4">
-      <div className="w-full bg-gray-200 rounded-full h-2 w-[49%]">
-         <div className="bg-[#0047BA] h-2 rounded-full" ></div>
-      </div>
-      <div className="w-full bg-gray-200 rounded-full h-2 w-[49%]">
-      {activeStep=='team' &&  <div className="bg-[#0047BA] h-2 rounded-full"></div>}
-      </div>
-      <span className="text-sm text-foreground"><span className='text-primary font-bold text-[14px]'>{activeStep=='team'?2:1}</span>/2</span>
-    </div>
+        {/* title and search input */}
 
-</div>
-
-{/* title and search input */}
-
-    <div className="m-4">
-      <p className="text-md mb-1 text-muted-foreground">
-        {activeStep=='unit' ? 'Bussnes Unit' : 'Responsible Digital Team'}
-      </p>
-      {/* search input */}
-      <input
-        type="text"
-        placeholder={`Search...`}
-        className="flex h-8 w-full min-w-0 border-border bg-background text-sm text-foreground shadow-xs outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/40 rounded-md border px-2"
-      />
-     
-    </div>
-
+        <div className="m-4">
+          <p className="text-md text-muted-foreground mb-1">
+            {activeStep == 'unit' ? 'Bussnes Unit' : 'Responsible Digital Team'}
+          </p>
+          {/* search input */}
+          <input
+            type="text"
+            placeholder={`Search...`}
+            className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring/40 flex h-8 w-full min-w-0 rounded-md border px-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-3"
+          />
+        </div>
 
         {/* ── Main scrollable body ──────────────────────────────────────── */}
-        <div className="h-full overflow-y-scoll m-4 p-3 rounded-md border">
+        <div className="overflow-y-scoll m-4 h-full rounded-md border p-3">
           {/* tree select: Shared servise:{Procurement, Vendor Relations:{v1, v2}} */}
-          <TreeSelect
-            data={[{label: 'Shared Service',
-              value: 'shared-service',
-              children: [
-                {
-                  label: 'Procurement',
-                  value: 'procurement',
-                  children: [
-                    {
-                      label: 'Strategic Sourcing',
-                      value: 'strategic-sourcing',
-                      children: [
-                        {
-                          label: 'Supplier Evaluation',
-                          value: 'supplier-evaluation',
-                        },
-                        {
-                          label: 'Contracting',
-                          value: 'contracting',
-                        },
-                      ],
-                    },
-                  ],
-                },
-                {
-                  label: 'Vendor Relations',
-                  value: 'vendor-relations',
-                  children: [
-                    {
-                      label: 'Tier 1 Vendors',
-                      value: 'tier-1-vendors',
-                      children: [
-                        { label: 'v1', value: 'v1' },
-                        { label: 'v2', value: 'v2' },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            }]}
-            selected={selected}
-            onChange={setSelected}
-          />
+          {activeStep == 'unit' && orgBUData && (
+            <TreeSelect data={orgBUData} selected={selectedBU} onChange={setSelectedBU} />
+          )}
+          {activeStep != 'unit' && orgDTData && (
+            <TreeSelect data={orgDTData} selected={selectedDT} onChange={setSelectedDT} />
+          )}
         </div>
       </div>
       {/* Sticky footer */}
@@ -103,16 +76,25 @@ const OrgMappingSheet = (props: any) => {
           >
             Cancel
           </Button>
-          {
-            activeStep=='unit'? <>
-              <Button type="button" className="flex-1 rounded-full" onClick={()=>setActiveStep('team')}>
-            Next
-          </Button></>:
-            <Button type="button" className="flex-1 rounded-full" onClick={()=>handleOpenChange(selected)}>
-            Save
-          </Button>
-          }
-          
+          {activeStep == 'unit' ? (
+            <>
+              <Button
+                type="button"
+                className="flex-1 rounded-full"
+                onClick={() => setActiveStep('team')}
+              >
+                Next
+              </Button>
+            </>
+          ) : (
+            <Button
+              type="button"
+              className="flex-1 rounded-full"
+              onClick={() => handleOnSubmitData({BU:selectedBU,DT:selectedDT})}
+            >
+              Save
+            </Button>
+          )}
         </div>
       </div>
     </ActionSheet>
