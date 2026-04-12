@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 
 import DataTable from '@/shared/components/data-table/DataTable'
@@ -7,7 +7,7 @@ import NameCell from './cells/NameCell'
 import AccountStatusCell from './cells/AccountStatusCell'
 import AssignedRoleCell from './cells/AssignedRoleCell'
 import AssignedAccessCell from './cells/AssignedAccessCell'
-import type { PickerPosition, UserPermissionRow, UserPermissionsTableProps } from './types'
+import type { UserPermissionRow, UserPermissionsTableProps } from './types'
 
 const UserPermissionsTable = ({
   data,
@@ -18,13 +18,6 @@ const UserPermissionsTable = ({
   onRowSelectUser,
   onOpenDomainsDrawer,
 }: UserPermissionsTableProps) => {
-  const [openUserPickerRowId, setOpenUserPickerRowId] = useState<string | null>(null)
-  const [userPickerSearch, setUserPickerSearch] = useState('')
-  const [pickerPosition, setPickerPosition] = useState<PickerPosition | null>(null)
-
-  const [openRolePickerRowId, setOpenRolePickerRowId] = useState<string | null>(null)
-  const [rolePickerPosition, setRolePickerPosition] = useState<PickerPosition | null>(null)
-
   const filteredData = useMemo(() => {
     const value = searchValue.trim().toLowerCase()
 
@@ -48,14 +41,6 @@ const UserPermissionsTable = ({
         cell: ({ row }) => (
           <NameCell
             row={row.original}
-            openUserPickerRowId={openUserPickerRowId}
-            setOpenUserPickerRowId={setOpenUserPickerRowId}
-            userPickerSearch={userPickerSearch}
-            setUserPickerSearch={setUserPickerSearch}
-            pickerPosition={pickerPosition}
-            setPickerPosition={setPickerPosition}
-            setOpenRolePickerRowId={setOpenRolePickerRowId}
-            setRolePickerPosition={setRolePickerPosition}
             onRowSelectUser={onRowSelectUser}
             onView={onView}
             onDeactivate={onDeactivate}
@@ -70,18 +55,7 @@ const UserPermissionsTable = ({
       {
         accessorKey: 'assignedRole',
         header: 'ASSIGNED ROLE',
-        cell: ({ row }) => (
-          <AssignedRoleCell
-            row={row.original}
-            openRolePickerRowId={openRolePickerRowId}
-            setOpenRolePickerRowId={setOpenRolePickerRowId}
-            rolePickerPosition={rolePickerPosition}
-            setRolePickerPosition={setRolePickerPosition}
-            setOpenUserPickerRowId={setOpenUserPickerRowId}
-            setPickerPosition={setPickerPosition}
-            onRowChange={onRowChange}
-          />
-        ),
+        cell: ({ row }) => <AssignedRoleCell row={row.original} onRowChange={onRowChange} />,
       },
       {
         id: 'assignedAccess',
@@ -91,18 +65,7 @@ const UserPermissionsTable = ({
         ),
       },
     ],
-    [
-      userPickerSearch,
-      openUserPickerRowId,
-      pickerPosition,
-      openRolePickerRowId,
-      rolePickerPosition,
-      onView,
-      onDeactivate,
-      onRowChange,
-      onRowSelectUser,
-      onOpenDomainsDrawer,
-    ],
+    [onView, onDeactivate, onRowChange, onRowSelectUser, onOpenDomainsDrawer],
   )
 
   return (
