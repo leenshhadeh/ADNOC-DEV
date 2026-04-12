@@ -2,6 +2,7 @@ import ActionSheet from '@/shared/components/ActionSheet'
 import { TreeSelect } from '@/shared/components/TreeSelect'
 import { Button } from '@/shared/components/ui/button'
 import { useState } from 'react'
+import { DigitalTeam } from '../../constants/org-mapping-data'
 
 const DigitalTeamSheet = (props: any) => {
   const { open = true, handleOpenChange } = props
@@ -21,41 +22,7 @@ const DigitalTeamSheet = (props: any) => {
         <div className=" overflow-y-auto m-4 p-3 rounded-md border">
           {/* tree select: Shared servise:{Procurement, Vendor Relations:{v1, v2}} */}
           <TreeSelect
-            data={[{label: 'Business Support',
-              value: 'Business Support',
-              children: [
-                {
-                  label: 'Digital Operations',
-                  value: 'Digital Operations',
-                  children: [
-                    {
-                      label: 'Business Intelligence',
-                      value: 'Business Intelligence',
-                      children: [
-                        {
-                          label: 'Supplier Evaluation',
-                          value: 'supplier-evaluation',
-                        },
-                      ],
-                    },
-                  ],
-                },
-                {
-                  label: 'IT Service Management',
-                  value: 'IT Service Management',
-                  children: [
-                    {
-                      label: 'Enterprise Technology',
-                      value: 'tier-1-vendors',
-                      children: [
-                        { label: 'Cybersecurity', value: 'v1' },
-                        { label: 'Application Services', value: 'v2' },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            }]}
+            data={DigitalTeam}
             selected={selected}
             onChange={setSelected}
           />

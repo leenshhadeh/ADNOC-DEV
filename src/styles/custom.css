@@ -37,3 +37,18 @@ td {
   color: #fff;
   border-radius: 3px;
 }
+
+
+/* 
+table-light-styles 
+*/
+.table-light div.border-border, .table-light td, .table-light th {
+  border-width: 0px !important
+}
+.table-light td , .table-light th{
+  border-bottom-width: 1px !important;
+}
+.table-light table th{
+  background-color: #fff !important;
+}
+/* [End] - table-light-styles */

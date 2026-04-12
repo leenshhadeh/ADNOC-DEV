@@ -64,10 +64,11 @@ const TagsSelect: React.FC<TagsListProps> = ({ tags, allTags, isUsers, isInput }
         </DropdownMenuTrigger>
 
         <DropdownMenuContent
-          className="w-[350px] border-0 bg-transparent p-0 shadow-none"
+          className="w-[350px] border-0 bg-transparent p-0"
           align="start"
         >
-          <div className="flex flex-wrap items-center justify-start gap-1 rounded-md border border-[#E0E0E0] bg-[#F1F3F5] p-2 shadow-sm">
+          {/* Tags */}
+          <div className="flex flex-wrap items-center justify-start gap-1 rounded-md border border-primary bg-[#F1F3F5] p-2 shadow-sm">
             {selectedTags.map((tag) => (
               <div
                 key={tag.id}
@@ -86,7 +87,7 @@ const TagsSelect: React.FC<TagsListProps> = ({ tags, allTags, isUsers, isInput }
           </div>
 
           {/* multi checkbox: --------------------------------------------------------------------- */}
-          <div className="mt-2 rounded-md  border border-[#E0E0E0] p-0 shadow-sm">
+          <div className="mt-2 rounded-md  border border-[#E0E0E0] p-0 shadow-[0px_8px_16px_rgba(0,0,0,0.15)]">
             <DropdownMenuLabel className="p-0 text-sm font-medium text-gray-700">
               <div className="rounded-md  rounded-b-none border-[#E0E0E0] bg-[#F1F3F5] p-2">
                 {/* add search input to filter the list  */}

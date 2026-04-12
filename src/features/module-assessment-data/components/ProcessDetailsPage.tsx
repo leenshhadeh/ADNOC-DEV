@@ -6,10 +6,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/shared/components/ui/breadcrumb'
-import ProcessDetails from './processDetails/components/ProcessDetails'
+import ProcessDetails from './processDetails/components/ProcessDetails';
 import ModuleToolbar from '@/shared/components/ModuleToolbar'
 import { useParams } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import GeneralInfoTab from './processDetails/tabs/GeneralInfoTab'
 import AutomationParameterTab from './processDetails/tabs/AutomationParameterTab'
 
@@ -25,11 +25,22 @@ const processDetails = {
   processApplicapility: true,
   lastPublishedDate: '2024-01-01',
   markedReviewDate: '2024-12-31',
+  level1Name:'Exploration',
+  level2Name:'Regional studies',
+  level3Name:'Basin Modeling',
+  level4Name:'Define basin framework',
+  centrallyGovernedProcess:'yes',
+  sharedServiceProcess:'no'
 }
+
 
 const ProcessDetailsPage = () => {
   const { processId } = useParams<{ processId: string }>()
   const [activeTab, setActiveTab] = useState('GeneralInfo')
+
+  useEffect(()=>{
+    //TODO: call getProcessDetails(processId) API 
+  },)
 
   const processData = [
     { label: 'Group Company', value: processDetails.groupCompany },
@@ -50,21 +61,21 @@ const ProcessDetailsPage = () => {
     { label: 'Marked Review Date', value: processDetails.markedReviewDate },
   ]
   const processGeneralInfo = [
-    { label: 'Process Level 1', value: processDetails.groupCompany },
-    { label: 'Process Level 2', value: processDetails.domain },
-    { label: 'Process Level 3', value: processDetails.code },
+    { label: 'Process Level 1', value: processDetails.level1Name },
+    { label: 'Process Level 2', value: processDetails.level2Name },
+    { label: 'Process Level 3', value: processDetails.level3Name },
     {
       label: 'Process Level 4',
-      value: processDetails.status,
+      value: processDetails.level4Name,
     },
     {
       label: 'Centrally Governed Process',
-      value: processDetails.processApplicapility ? 'Yes' : 'No',
+      value: processDetails.centrallyGovernedProcess ? 'Yes' : 'No',
       isEditable: true,
     },
     {
       label: 'Shared Service process',
-      value: processDetails.lastPublishedDate ? 'Yes' : 'No',
+      value: processDetails.sharedServiceProcess ? 'Yes' : 'No',
       isEditable: true,
     },
   ]

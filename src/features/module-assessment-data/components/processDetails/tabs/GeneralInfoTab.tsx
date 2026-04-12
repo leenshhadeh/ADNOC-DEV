@@ -2,14 +2,90 @@ import ProcessDetails from '../components/ProcessDetails'
 import GeneralInfoForm from '../components/GeneralInfoForm'
 import { Separator } from '@/shared/components/ui/separator'
 import TreeIcon from '@/assets/icons/treeIcon.svg'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import OrgMappingSheet from '../../sidePanels/OrgMappingSheet'
 import TagsList from '@/shared/components/table-primitives/TagsList'
+import DataTable from '@/shared/components/data-table/DataTable'
+import type { ColumnDef } from '@tanstack/react-table'
 
 const GeneralInfoTab = (props: any) => {
   const { processGeneralInfo } = props
   const [openBUSheet, setOpenBUSheet] = useState(false)
   const [orgData, setOrgData] = useState<any>(null)
+
+  
+  useEffect(() => {
+    // TODO Call API to return Process org
+    setOrgData({
+      orgUnit: [
+        {
+          unit: 'Finance & Accounting - Payment Processing',
+          subUnit: ['Invoice Processing', 'Vendor Reconciliation'],
+        },
+        { unit: 'Finance & Accounting', subUnit: ['Contract Negotiation'] },
+      ],
+      digitalDept: [{ unit: 'dept1', team: ['team1', 'team2'] }],
+    })
+  }, [openBUSheet])
+
+  const columnsBU = useMemo<ColumnDef<any, unknown>[]>(() => [
+    {
+      id: 'unit',
+      accessorKey: 'unit',
+      header: 'ORG UNIT',
+      size: 250,
+      enableSorting: false,
+      meta: { isDivider: true },
+      cell: (info) => <p>{info.row.original.unit}</p>,
+    },
+    {
+      id: 'subUnit',
+      accessorKey: 'subUnit',
+      header: 'SUB UNIT',
+      size: 250,
+      enableSorting: false,
+      meta: { isDivider: true },
+      cell: (info) => (
+        <TagsList
+          tags={
+            info.row.original?.subUnit?.map((unit: string, teamIndex: number) => ({
+              id: `${unit}-${teamIndex}`,
+              text: unit,
+            })) || []
+          }
+          readOnly
+        />
+      ),
+    },
+  ])
+  const columnsTeam = useMemo<ColumnDef<any, unknown>[]>(() => [
+    {
+      id: 'unit',
+      accessorKey: 'unit',
+      header: 'Responsible Digital Department',
+      size: 250,
+      enableSorting: false,
+      cell: (info) => <p>{info.row.original.unit}</p>,
+    },
+    {
+      id: 'team',
+      accessorKey: 'team',
+      header: 'Team',
+      size: 250,
+      enableSorting: false,
+      cell: (info) => (
+        <TagsList
+          tags={
+            info.row.original?.team?.map((unit: string, teamIndex: number) => ({
+              id: `${unit}-${teamIndex}`,
+              text: unit,
+            })) || []
+          }
+          readOnly
+        />
+      ),
+    },
+  ])
 
   return (
     <>
@@ -24,74 +100,17 @@ const GeneralInfoTab = (props: any) => {
 
       {/* tabels for BU and TEam  */}
       {orgData && (
-        <div className="my-9">
+        <div className="table-light my-9">
           {orgData && orgData.orgUnit && (
             <div className="my-4">
-              <table className="w-full table-auto border-none">
-                <thead>
-                  <tr className="border-b border-gray-300">
-                    <th className="text-muted-foreground border-none px-4 py-2 text-left text-sm font-normal uppercase">
-                      Org Unit
-                    </th>
-                    <th className="text-muted-foreground border-none px-4 py-2 text-left text-sm font-normal uppercase">
-                      Sub Unit
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orgData.orgUnit.map((item: any, index: number) => (
-                    <tr key={index} className="border-b border-gray-200 last:border-0">
-                      <td className="border-none px-4 py-2" width={'500px'}>
-                        {item.unit}
-                      </td>
-                      <td className="border-none px-4 py-2">
-                        <TagsList
-                          tags={item.subUnit?.map((unit: string, teamIndex: number) => ({
-                            id: `${index}-${teamIndex}`,
-                            text: unit,
-                          }))}
-                          readOnly
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <DataTable columns={columnsBU} data={orgData.orgUnit} />
             </div>
           )}
 
+          {/* digital dept */}
           {orgData && orgData.digitalDept && (
-            <div className="my-8">
-              <table className="w-full table-auto border-none">
-                <thead>
-                  <tr className="border-b border-gray-300">
-                    <th className="text-muted-foreground border-none px-4 py-2 text-left text-sm font-normal uppercase">
-                      Responsible Digital Department
-                    </th>
-                    <th className="text-muted-foreground border-none px-4 py-2 text-left text-sm font-normal uppercase">
-                      Team
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orgData.digitalDept.map((item: any, index: number) => (
-                    <tr key={index}>
-                      <td className="border-none px-4 py-2" width={'500px'}>
-                        {item.unit}
-                      </td>
-                      <td className="border-none px-4 py-2">
-                        <TagsList
-                          tags={item.team.map((team: string, teamIndex: number) => ({
-                            id: `${index}-${teamIndex}`,
-                            text: team,
-                          }))}
-                          readOnly
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="table-light my-9">
+              <DataTable columns={columnsTeam} data={orgData.digitalDept} />
             </div>
           )}
         </div>
@@ -111,18 +130,11 @@ const GeneralInfoTab = (props: any) => {
       <OrgMappingSheet
         title="Organization mapping"
         open={openBUSheet}
-        handleOpenChange={(open: boolean) => {
-          setOrgData({
-            orgUnit: [
-              {
-                unit: 'Finance & Accounting - Payment Processing',
-                subUnit: ['Invoice Processing', 'Vendor Reconciliation'],
-              },
-              { unit: 'Finance & Accounting', subUnit: ['Contract Negotiation'] },
-            ],
-            digitalDept: [{ unit: 'dept1', team: ['team1', 'team2'] }],
-          })
+        handleOpenChange={() => setOpenBUSheet(false)}
+        handleOnSubmitData={(valuse: any) => {
           setOpenBUSheet(false)
+          // TODO: call API to update org mappaing based on selected valuse
+          console.log('updated Organization mapping data=', valuse)
         }}
       />
     </>
