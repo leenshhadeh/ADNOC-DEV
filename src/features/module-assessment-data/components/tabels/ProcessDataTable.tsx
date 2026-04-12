@@ -175,8 +175,6 @@ const ProcessDataTable = () => {
   const [isSharedServiceOpen, setIsSharedServiceOpen] = useState(false);
   const [isBUOpen, setIsBUOpen] = useState(false);
   const [isDigitalTeamOpen,setIsDigitalTeamOpen]= useState(false);
-  const [isSharedServiceOpen, setIsSharedServiceOpen] = useState(false)
-  const [isBUOpen, setIsBUOpen] = useState(false)
   const onExpandSharedServices = () => {
     setIsSharedServiceOpen(true)
   }
