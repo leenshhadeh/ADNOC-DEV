@@ -1,29 +1,41 @@
-export type AccessConfig = {
-  selectedGroupCompanyIds: string[]
-  selectedAccessByGroupCompany: Record<string, string[]>
+export type DomainAccessItem = {
+  publicId: string
+  code: string
+  name: string
 }
+
+export type GroupCompanyAccessItem = {
+  publicId: string
+  name: string
+  applicableDomains: DomainAccessItem[]
+}
+
+export type AccessConfigItem = {
+  groupCompany: GroupCompanyAccessItem
+}
+
+export type AccessConfig = AccessConfigItem[]
 
 export type UserPermissionRow = {
   id: string
+  userId: string
   name: string
   email: string
   accountStatus: 'Active' | 'Deactivated'
   assignedRole: string[]
-  gcsAccess: string
-  domainsAccess: string
-  accessConfig: AccessConfig
+  assignedAccess: AccessConfig
+  gcsAccess: number
+  domainsAccess: number
   isEditing?: boolean
 }
 
-export type EditableField = keyof Pick<
-  UserPermissionRow,
-  'name' | 'email' | 'assignedRole' | 'gcsAccess' | 'domainsAccess'
->
+export type EditableField = 'userId' | 'assignedRole'
 
 export type UserDirectoryItem = {
   id: string
   name: string
   email: string
+  img: string
 }
 
 export type PickerPosition = {
@@ -38,6 +50,6 @@ export type UserPermissionsTableProps = {
   onView?: (row: UserPermissionRow) => void
   onDeactivate?: (row: UserPermissionRow) => void
   onRowChange?: (rowId: string, field: EditableField, value: string | string[]) => void
-  onRowSelectUser?: (rowId: string, user: { name: string; email: string }) => void
+  onRowSelectUser?: (rowId: string, user: { id?: string; name: string; email: string }) => void
   onOpenDomainsDrawer?: (row: UserPermissionRow) => void
 }

@@ -1,13 +1,15 @@
 import { useCallback, useMemo, useState } from 'react'
-import { Download, Layers, Plus } from 'lucide-react'
+import { Download, Layers, Plus, Save, X } from 'lucide-react'
 
 import AdminToolbar from '../components/AdminToolbar'
 import UserPermissionsTable from '../components/user-permissions/UserPermessionsTable'
 import UserDomainsDrawer from '../components/user-permissions/UserDomainsDrawer'
+import { domains, groupCompanies } from '../components/user-permissions/constants'
 
 import type { ToolbarAction } from '@/shared/components/ModuleToolbar'
 import type {
   AccessConfig,
+  AccessConfigItem,
   EditableField,
   UserPermissionRow,
 } from '../components/user-permissions/types'
@@ -18,30 +20,56 @@ import {
   getAccessCounts,
 } from '../components/user-permissions/utils'
 
-const createMockAccess = ({
-  selectedGroupCompanyIds = [],
-  selectedAccessByGroupCompany = {},
-}: Partial<AccessConfig> = {}): AccessConfig => ({
-  selectedGroupCompanyIds,
-  selectedAccessByGroupCompany,
+const getGroupCompanyByName = (name: string) => {
+  const groupCompany = groupCompanies.find((item) => item.name === name)
+
+  if (!groupCompany) {
+    throw new Error(`Unknown group company: ${name}`)
+  }
+
+  return groupCompany
+}
+
+const getDomainsByCodes = (codes: string[]) =>
+  codes.map((code) => {
+    const domain = domains.find((item) => item.code === code)
+
+    if (!domain) {
+      throw new Error(`Unknown domain code: ${code}`)
+    }
+
+    return domain
+  })
+
+const createMockAccessItem = (
+  groupCompanyName: string,
+  domainCodes: string[],
+): AccessConfigItem => ({
+  groupCompany: {
+    ...getGroupCompanyByName(groupCompanyName),
+    applicableDomains: getDomainsByCodes(domainCodes),
+  },
 })
 
+const createMockAccess = (...items: AccessConfigItem[]): AccessConfig => items
+
 const createMockRow = (
-  row: Omit<UserPermissionRow, 'gcsAccess' | 'domainsAccess' | 'accessConfig'> & {
-    accessConfig?: AccessConfig
+  row: Omit<UserPermissionRow, 'gcsAccess' | 'domainsAccess' | 'assignedAccess'> & {
+    assignedAccess?: AccessConfig
   },
 ): UserPermissionRow => {
-  const accessConfig = row.accessConfig ?? createEmptyAccessConfig()
-  const counts = getAccessCounts(accessConfig)
+  const assignedAccess = row.assignedAccess ?? createEmptyAccessConfig()
+  const counts = getAccessCounts(assignedAccess)
 
   return {
     id: row.id,
+    userId: row.userId,
     name: row.name,
     email: row.email,
     accountStatus: row.accountStatus,
     assignedRole: row.assignedRole,
     isEditing: row.isEditing,
-    accessConfig,
+    assignedAccess,
     gcsAccess: counts.gcsAccess,
     domainsAccess: counts.domainsAccess,
   }
@@ -50,145 +78,116 @@ const createMockRow = (
 const initialUserPermissionsData: UserPermissionRow[] = [
   createMockRow({
     id: '1',
+    userId: 'u-1',
     name: 'Khalid Al-Nuaimi',
     email: 'knuaimi@adnoc.com',
     accountStatus: 'Active',
     assignedRole: ['Digital Focal Point', 'Digital Admin'],
-    accessConfig: createMockAccess({
-      selectedGroupCompanyIds: ['adnoc-hq', 'adnoc-onshore'],
-      selectedAccessByGroupCompany: {
-        'adnoc-hq': [
-          'exploration-and-planning',
-          'capital-projects',
-          'technical-engineering',
-          'finance',
-        ],
-        'adnoc-onshore': [
-          'production',
-          'human-capital',
-          'audit-and-assurance',
-          'business-support',
-          'digital-it-data-and-cybersecurity',
-        ],
-      },
-    }),
+    assignedAccess: createMockAccess(
+      createMockAccessItem('ADNOC HQ', ['EXP', 'CAP', 'ENG', 'FIN']),
+      createMockAccessItem('ADNOC Onshore', ['PRD', 'HR', 'AUD', 'BUS', 'IT']),
+    ),
   }),
   createMockRow({
     id: '2',
+    userId: 'u-2',
     name: 'Sarah Al-Mansoori',
     email: 'smansoori@adnoc.com',
     accountStatus: 'Active',
     assignedRole: ['Super Admin'],
-    accessConfig: createFullAccessConfig(),
+    assignedAccess: createFullAccessConfig(),
   }),
   createMockRow({
     id: '3',
+    userId: 'u-3',
     name: 'Layla Al-Balushi',
     email: 'lbalushi@adnoc.com',
     accountStatus: 'Active',
     assignedRole: ['Opportunity Evaluator', 'Super Admin'],
-    accessConfig: createMockAccess({
-      selectedGroupCompanyIds: ['adnoc-onshore'],
-      selectedAccessByGroupCompany: {
-        'adnoc-onshore': ['finance', 'gas-processing'],
-      },
-    }),
+    assignedAccess: createMockAccess(createMockAccessItem('ADNOC Onshore', ['FIN', 'GAS'])),
   }),
   createMockRow({
     id: '4',
+    userId: 'u-4',
     name: 'Ahmed Al-Suwaidi',
     email: 'asuwaidi@adnoc.com',
     accountStatus: 'Active',
     assignedRole: ['Opportunity Manager'],
-    accessConfig: createMockAccess({
-      selectedGroupCompanyIds: ['adnoc-hq', 'adnoc-onshore', 'adnoc-offshore'],
-      selectedAccessByGroupCompany: {
-        'adnoc-hq': ['exploration-and-planning', 'finance'],
-        'adnoc-onshore': ['production', 'retail-distribution'],
-        'adnoc-offshore': ['transportation-and-logistics'],
-      },
-    }),
+    assignedAccess: createMockAccess(
+      createMockAccessItem('ADNOC HQ', ['EXP', 'FIN']),
+      createMockAccessItem('ADNOC Onshore', ['PRD', 'RET']),
+      createMockAccessItem('ADNOC Offshore', ['LOG']),
+    ),
   }),
   createMockRow({
     id: '5',
+    userId: 'u-5',
     name: 'Fatima Al-Mazrouei',
     email: 'fmazrouei@adnoc.com',
     accountStatus: 'Active',
     assignedRole: ['Opportunity Evaluator'],
-    accessConfig: createMockAccess({
-      selectedGroupCompanyIds: ['adnoc-gas', 'adnoc-refining', 'borouge', 'adnoc-hq'],
-      selectedAccessByGroupCompany: {
-        'adnoc-gas': ['finance'],
-        'adnoc-refining': ['audit-and-assurance'],
-        borouge: ['integrated-risk-management'],
-        'adnoc-hq': ['legal-governance-and-compliance'],
-      },
-    }),
+    assignedAccess: createMockAccess(
+      createMockAccessItem('ADNOC Gas', ['FIN']),
+      createMockAccessItem('ADNOC Refining', ['AUD']),
+      createMockAccessItem('Borouge', ['IRM']),
+      createMockAccessItem('ADNOC HQ', ['LGC']),
+    ),
   }),
   createMockRow({
     id: '6',
+    userId: 'u-6',
     name: 'Khalid Al-Suwaidi',
     email: 'ksuwaidi@adnoc.com',
     accountStatus: 'Active',
     assignedRole: ['BPA Program Manager', 'Super Admin'],
-    accessConfig: createFullAccessConfig(),
+    assignedAccess: createFullAccessConfig(),
   }),
   createMockRow({
     id: '7',
+    userId: 'u-7',
     name: 'Mariam Al-Hashemi',
     email: 'mhashemi@adnoc.com',
     accountStatus: 'Active',
     assignedRole: ['Digital VP', 'Digital Admin'],
-    accessConfig: createMockAccess({
-      selectedGroupCompanyIds: ['adnoc-hq', 'adnoc-distribution', 'adnoc-gas'],
-      selectedAccessByGroupCompany: {
-        'adnoc-hq': ['digital-it-data-and-cybersecurity', 'strategy-and-corporate-planning'],
-        'adnoc-distribution': ['business-support', 'corporate-communications'],
-        'adnoc-gas': [
-          'finance',
-          'human-capital',
-          'audit-and-assurance',
-          'integrated-risk-management',
-        ],
-      },
-    }),
+    assignedAccess: createMockAccess(
+      createMockAccessItem('ADNOC HQ', ['IT', 'SCP']),
+      createMockAccessItem('ADNOC Distribution', ['BUS', 'COM']),
+      createMockAccessItem('ADNOC Gas', ['FIN', 'HR', 'AUD', 'IRM']),
+    ),
   }),
   createMockRow({
     id: '8',
+    userId: 'u-8',
     name: 'Omar Al-Mansoori',
     email: 'omansoori@adnoc.com',
     accountStatus: 'Active',
     assignedRole: ['Digital Admin', 'Super Admin'],
-    accessConfig: createFullAccessConfig(),
+    assignedAccess: createFullAccessConfig(),
   }),
   createMockRow({
     id: '9',
+    userId: 'u-9',
     name: 'Fatima Al-Hamadi',
     email: 'fhamadi@adnoc.com',
     accountStatus: 'Deactivated',
     assignedRole: ['Opportunity Evaluator', 'Digital Admin'],
-    accessConfig: createMockAccess({
-      selectedGroupCompanyIds: ['adnoc-hq', 'adnoc-offshore'],
-      selectedAccessByGroupCompany: {
-        'adnoc-hq': ['retail-distribution', 'finance'],
-        'adnoc-offshore': ['production'],
-      },
-    }),
+    assignedAccess: createMockAccess(
+      createMockAccessItem('ADNOC HQ', ['RET', 'FIN']),
+      createMockAccessItem('ADNOC Offshore', ['PRD']),
+    ),
   }),
   createMockRow({
     id: '10',
+    userId: 'u-10',
     name: 'Saif Al-Jaberi',
     email: 'saljaberi@adnoc.com',
     accountStatus: 'Deactivated',
     assignedRole: ['Business Focal Point'],
-    accessConfig: createMockAccess({
-      selectedGroupCompanyIds: ['adnoc-onshore', 'adnoc-drilling', 'adnoc-gas'],
-      selectedAccessByGroupCompany: {
-        'adnoc-onshore': ['gas-processing', 'refining'],
-        'adnoc-drilling': ['trading', 'transportation-and-logistics'],
-        'adnoc-gas': ['procurement-and-inventory', 'finance'],
-      },
-    }),
+    assignedAccess: createMockAccess(
+      createMockAccessItem('ADNOC Onshore', ['GAS', 'REF']),
+      createMockAccessItem('ADNOC Drilling', ['TRD', 'LOG']),
+      createMockAccessItem('ADNOC Gas', ['PIN', 'FIN']),
+    ),
   }),
 ]
 
@@ -203,22 +202,66 @@ const UserPermissionsPage = () => {
   const [draftAccessConfig, setDraftAccessConfig] =
     useState<AccessConfig>(createEmptyAccessConfig())
 
+  const editingRow = useMemo(() => rows.find((row) => row.isEditing), [rows])
+
   const handleAddNew = useCallback(() => {
+    if (editingRow) return
+
     setRows((prev) => [
       {
         id: String(Date.now()),
+        userId: '',
         name: '',
         email: '',
         accountStatus: 'Deactivated',
         assignedRole: [],
-        gcsAccess: '0',
-        domainsAccess: '0',
-        accessConfig: createEmptyAccessConfig(),
+        assignedAccess: createEmptyAccessConfig(),
+        gcsAccess: 0,
+        domainsAccess: 0,
         isEditing: true,
       },
       ...prev,
     ])
+  }, [editingRow])
+
+  const handleCancelNew = useCallback(() => {
+    setRows((prev) => prev.filter((row) => !row.isEditing))
   }, [])
+
+  const handleSaveNew = useCallback(() => {
+    if (!editingRow) return
+
+    const trimmedName = editingRow.name.trim()
+    const trimmedEmail = editingRow.email.trim()
+
+    if (!editingRow.userId || !trimmedName || !trimmedEmail) {
+      console.error('User selection is required before saving')
+      return
+    }
+
+    if (editingRow.assignedRole.length === 0) {
+      console.error('At least one role is required before saving')
+      return
+    }
+
+    const counts = getAccessCounts(editingRow.assignedAccess)
+
+    setRows((prev) =>
+      prev.map((row) =>
+        row.id === editingRow.id
+          ? {
+              ...row,
+              name: trimmedName,
+              email: trimmedEmail,
+              accountStatus: 'Active',
+              gcsAccess: counts.gcsAccess,
+              domainsAccess: counts.domainsAccess,
+              isEditing: false,
+            }
+          : row,
+      ),
+    )
+  }, [editingRow])
 
   const handleView = useCallback((user: UserPermissionRow) => {
     console.log('view', user)
@@ -238,12 +281,13 @@ const UserPermissionsPage = () => {
   )
 
   const handleRowSelectUser = useCallback(
-    (rowId: string, user: { name: string; email: string }) => {
+    (rowId: string, user: { id?: string; name: string; email: string }) => {
       setRows((prev) =>
         prev.map((row) =>
           row.id === rowId
             ? {
                 ...row,
+                userId: user.id ?? row.userId,
                 name: user.name,
                 email: user.email,
               }
@@ -256,7 +300,7 @@ const UserPermissionsPage = () => {
 
   const handleOpenDomainsDrawer = useCallback((user: UserPermissionRow) => {
     setSelectedUserForDomains(user)
-    setDraftAccessConfig(cloneAccessConfig(user.accessConfig))
+    setDraftAccessConfig(cloneAccessConfig(user.assignedAccess))
     setIsDomainsDrawerOpen(true)
   }, [])
 
@@ -277,9 +321,9 @@ const UserPermissionsPage = () => {
         row.id === selectedUserForDomains.id
           ? {
               ...row,
-              accessConfig: nextAccessConfig,
-              gcsAccess: counts.gcsAccess,
-              domainsAccess: counts.domainsAccess,
+              assignedAccess: nextAccessConfig,
+              gcsAccess: Number(counts.gcsAccess),
+              domainsAccess: Number(counts.domainsAccess),
             }
           : row,
       ),
@@ -289,27 +333,43 @@ const UserPermissionsPage = () => {
   }, [draftAccessConfig, handleCloseDomainsDrawer, selectedUserForDomains])
 
   const actions = useMemo<ToolbarAction[]>(
-    () => [
-      {
-        id: 'add-new',
-        label: 'Add new',
-        icon: Plus,
-        onClick: handleAddNew,
-      },
-      {
-        id: 'bulk-action',
-        label: 'Bulk action',
-        icon: Layers,
-        onClick: () => console.log('Bulk Action'),
-      },
-      {
-        id: 'export',
-        label: 'Export',
-        icon: Download,
-        onClick: () => console.log('Export'),
-      },
-    ],
-    [handleAddNew],
+    () =>
+      editingRow
+        ? [
+            {
+              id: 'save-new',
+              label: 'Save',
+              icon: Save,
+              onClick: handleSaveNew,
+            },
+            {
+              id: 'cancel-new',
+              label: 'Cancel',
+              icon: X,
+              onClick: handleCancelNew,
+            },
+          ]
+        : [
+            {
+              id: 'add-new',
+              label: 'Add new',
+              icon: Plus,
+              onClick: handleAddNew,
+            },
+            {
+              id: 'bulk-action',
+              label: 'Bulk action',
+              icon: Layers,
+              onClick: () => console.log('Bulk Action'),
+            },
+            {
+              id: 'export',
+              label: 'Export',
+              icon: Download,
+              onClick: () => console.log('Export'),
+            },
+          ],
+    [editingRow, handleAddNew, handleCancelNew, handleSaveNew],
   )
 
   return (

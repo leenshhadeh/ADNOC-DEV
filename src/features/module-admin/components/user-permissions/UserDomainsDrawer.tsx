@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ChevronDown, X } from 'lucide-react'
 import clsx from 'clsx'
 
@@ -28,13 +28,10 @@ const UserDomainsDrawer = ({
   onChange,
   onSave,
 }: Props) => {
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({})
+  const createInitialOpenGroups = () =>
+    Object.fromEntries(groupCompanies.map((gc) => [gc.publicId, false]))
 
-  useCallback(() => {
-    if (open) {
-      setOpenGroups(Object.fromEntries(groupCompanies.map((gc) => [gc.id, false])))
-    }
-  }, [open])
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(createInitialOpenGroups)
 
   const initials = useMemo(() => {
     if (!user?.name) return '--'
@@ -54,55 +51,81 @@ const UserDomainsDrawer = ({
     }))
   }
 
+  const handleClose = () => {
+    setOpenGroups(createInitialOpenGroups())
+    onOpenChange(false)
+  }
+
   const isGroupCompanySelected = (groupCompanyId: string) =>
-    draftAccessConfig.selectedGroupCompanyIds.includes(groupCompanyId)
+    draftAccessConfig.some(({ groupCompany }) => groupCompany.publicId === groupCompanyId)
 
   const getSelectedDomainsForGroup = (groupCompanyId: string) =>
-    draftAccessConfig.selectedAccessByGroupCompany[groupCompanyId] ?? []
+    draftAccessConfig.find(({ groupCompany }) => groupCompany.publicId === groupCompanyId)?.groupCompany
+      .applicableDomains ?? []
 
   const areAllDomainsSelectedForGroup = (groupCompanyId: string) =>
     getSelectedDomainsForGroup(groupCompanyId).length === domains.length
 
   const handleToggleGroupCompany = (groupCompanyId: string) => {
     const isSelected = isGroupCompanySelected(groupCompanyId)
+    const selectedGroupCompany = groupCompanies.find((gc) => gc.publicId === groupCompanyId)
 
-    const nextSelectedGroupCompanyIds = isSelected
-      ? draftAccessConfig.selectedGroupCompanyIds.filter((id) => id !== groupCompanyId)
-      : [...draftAccessConfig.selectedGroupCompanyIds, groupCompanyId]
+    if (!selectedGroupCompany) return
 
-    onChange({
-      ...draftAccessConfig,
-      selectedGroupCompanyIds: nextSelectedGroupCompanyIds,
-    })
+    onChange(
+      isSelected
+        ? draftAccessConfig.filter(({ groupCompany }) => groupCompany.publicId !== groupCompanyId)
+        : [
+            ...draftAccessConfig,
+            {
+              groupCompany: {
+                ...selectedGroupCompany,
+                applicableDomains: [],
+              },
+            },
+          ],
+    )
   }
 
   const handleToggleDomain = (groupCompanyId: string, domainId: string) => {
     const selectedDomains = getSelectedDomainsForGroup(groupCompanyId)
-    const isSelected = selectedDomains.includes(domainId)
+    const domain = domains.find((item) => item.publicId === domainId)
 
-    const nextSelectedDomains = isSelected
-      ? selectedDomains.filter((id) => id !== domainId)
-      : [...selectedDomains, domainId]
+    if (!domain) return
 
-    onChange({
-      ...draftAccessConfig,
-      selectedAccessByGroupCompany: {
-        ...draftAccessConfig.selectedAccessByGroupCompany,
-        [groupCompanyId]: nextSelectedDomains,
-      },
-    })
+    const isSelected = selectedDomains.some((item) => item.publicId === domainId)
+
+    onChange(
+      draftAccessConfig.map((entry) =>
+        entry.groupCompany.publicId === groupCompanyId
+          ? {
+              groupCompany: {
+                ...entry.groupCompany,
+                applicableDomains: isSelected
+                  ? entry.groupCompany.applicableDomains.filter((item) => item.publicId !== domainId)
+                  : [...entry.groupCompany.applicableDomains, domain],
+              },
+            }
+          : entry,
+      ),
+    )
   }
 
   const handleToggleAllDomainsForGroup = (groupCompanyId: string) => {
     const allSelected = areAllDomainsSelectedForGroup(groupCompanyId)
 
-    onChange({
-      ...draftAccessConfig,
-      selectedAccessByGroupCompany: {
-        ...draftAccessConfig.selectedAccessByGroupCompany,
-        [groupCompanyId]: allSelected ? [] : domains.map((domain) => domain.id),
-      },
-    })
+    onChange(
+      draftAccessConfig.map((entry) =>
+        entry.groupCompany.publicId === groupCompanyId
+          ? {
+              groupCompany: {
+                ...entry.groupCompany,
+                applicableDomains: allSelected ? [] : [...domains],
+              },
+            }
+          : entry,
+      ),
+    )
   }
 
   return (
@@ -111,7 +134,7 @@ const UserDomainsDrawer = ({
         'fixed inset-0 z-50 flex justify-end transition-colors duration-300',
         open ? 'pointer-events-auto bg-black/20' : 'pointer-events-none bg-black/0',
       )}
-      onClick={() => onOpenChange(false)}
+      onClick={handleClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -127,7 +150,7 @@ const UserDomainsDrawer = ({
 
           <button
             type="button"
-            onClick={() => onOpenChange(false)}
+            onClick={handleClose}
             className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#151718] transition hover:bg-[#F1F3F5]"
             aria-label="Close"
           >
@@ -156,26 +179,26 @@ const UserDomainsDrawer = ({
         <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
           <div className="space-y-3">
             {groupCompanies.map((gc) => {
-              const selectedDomains = getSelectedDomainsForGroup(gc.id)
-              const allSelected = areAllDomainsSelectedForGroup(gc.id)
-              const gcSelected = isGroupCompanySelected(gc.id)
+              const selectedDomains = getSelectedDomainsForGroup(gc.publicId)
+              const allSelected = areAllDomainsSelectedForGroup(gc.publicId)
+              const gcSelected = isGroupCompanySelected(gc.publicId)
 
               return (
                 <div
-                  key={gc.id}
+                  key={gc.publicId}
                   className="overflow-hidden rounded-[20px] border border-[#DFE3E6] bg-white"
                 >
                   <div className="flex items-center justify-between px-4 py-4">
                     <div className="flex min-w-0 items-center gap-3">
                       <button
                         type="button"
-                        onClick={() => toggleGroupOpen(gc.id)}
+                        onClick={() => toggleGroupOpen(gc.publicId)}
                         className="inline-flex h-6 w-6 items-center justify-center text-[#151718]"
                       >
                         <ChevronDown
                           className={clsx(
                             'h-4 w-4 transition-transform duration-200',
-                            openGroups[gc.id] ? 'rotate-0' : '-rotate-90',
+                            openGroups[gc.publicId] ? 'rotate-0' : '-rotate-90',
                           )}
                         />
                       </button>
@@ -183,7 +206,7 @@ const UserDomainsDrawer = ({
                       <input
                         type="checkbox"
                         checked={gcSelected}
-                        onChange={() => handleToggleGroupCompany(gc.id)}
+                        onChange={() => handleToggleGroupCompany(gc.publicId)}
                         className="h-4 w-4 rounded-[2px] accent-[#0047BA]"
                       />
 
@@ -196,20 +219,20 @@ const UserDomainsDrawer = ({
 
                     <button
                       type="button"
-                      onClick={() => toggleGroupOpen(gc.id)}
+                      onClick={() => toggleGroupOpen(gc.publicId)}
                       className="flex items-center gap-1 text-[14px] font-[500] text-[#0047BA]"
                     >
                       <span>View</span>
                       <ChevronDown
                         className={clsx(
                           'h-5 w-5 transition-transform duration-200',
-                          openGroups[gc.id] ? 'rotate-0' : '-rotate-90',
+                          openGroups[gc.publicId] ? 'rotate-0' : '-rotate-90',
                         )}
                       />
                     </button>
                   </div>
 
-                  {openGroups[gc.id] && (
+                  {openGroups[gc.publicId] && (
                     <>
                       <div className="border-t border-[#DFE3E6]" />
 
@@ -220,7 +243,7 @@ const UserDomainsDrawer = ({
                           <input
                             type="checkbox"
                             checked={allSelected}
-                            onChange={() => handleToggleAllDomainsForGroup(gc.id)}
+                            onChange={() => handleToggleAllDomainsForGroup(gc.publicId)}
                             className="h-4 w-4 rounded-[2px] accent-[#0047BA]"
                           />
                           <span>All</span>
@@ -229,13 +252,15 @@ const UserDomainsDrawer = ({
                         <div className="space-y-3">
                           {domains.map((domain) => (
                             <label
-                              key={`${gc.id}-${domain.id}`}
+                              key={`${gc.publicId}-${domain.publicId}`}
                               className="flex cursor-pointer items-center gap-3 text-[14px] text-[#5B6572]"
                             >
                               <input
                                 type="checkbox"
-                                checked={selectedDomains.includes(domain.id)}
-                                onChange={() => handleToggleDomain(gc.id, domain.id)}
+                                checked={selectedDomains.some(
+                                  (selectedDomain) => selectedDomain.publicId === domain.publicId,
+                                )}
+                                onChange={() => handleToggleDomain(gc.publicId, domain.publicId)}
                                 className="h-4 w-4 rounded-[2px] accent-[#0047BA]"
                               />
                               <span>{domain.name}</span>
@@ -256,7 +281,7 @@ const UserDomainsDrawer = ({
         <div className="flex items-center gap-3 px-6 py-5">
           <button
             type="button"
-            onClick={() => onOpenChange(false)}
+            onClick={handleClose}
             className="h-8 flex-1 rounded-[36px] bg-[linear-gradient(180deg,#EAEFFF_0%,#C7D6F9_100%)] text-[16px] font-semibold text-[#151718] shadow-[0_4px_8px_0_rgba(209,213,223,0.50)]"
           >
             Cancel
