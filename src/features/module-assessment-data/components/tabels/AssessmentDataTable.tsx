@@ -4,6 +4,7 @@ import Level4Cell from '../cells/Level4Cell'
 import { buildEntityLeafColumns, HIERARCHY_COLUMNS } from '../../constants/assessment-columns'
 import type { AssessmentDomain, EntityConfig, Level4Row } from '../../types'
 import { cn } from '@/shared/lib/utils'
+import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 import AssessmentTableBody from '../AssessmentTableBody'
 import CellMenuOptions from '../CellMenuOptions'
 import SharedServicesSheet from '../sidePanels/SharedServicesSheet'
@@ -84,7 +85,9 @@ function flattenDomains(domains: AssessmentDomain[]): FlatRow[] {
               l3Id: l3.id,
             }
             if (domainFirst) {
-              row.domainCell = { data: { value: domain.domain }, rowSpan: domainSpan }
+              const domainName =
+                DOMAINS_DATA.find((d) => d.id === domain.domain)?.name ?? domain.domain
+              row.domainCell = { data: { value: domainName }, rowSpan: domainSpan }
               domainFirst = false
             }
             // level1Cell

@@ -18,7 +18,7 @@ import {
 } from '@/shared/components/ui/dropdown-menu'
 import { StatusBadgeCell, type CatalogStatus } from '@/shared/components/cells'
 import type { ProcessItem, YesNo } from '@features/module-process-catalog/types'
-import type { GroupCompany } from '@features/module-process-catalog/types'
+import type { Domain, GroupCompany } from '@features/module-process-catalog/types'
 
 // Augment TanStack Table meta so isBulkMode is type-safe.
 declare module '@tanstack/react-table' {
@@ -493,6 +493,7 @@ export function buildCatalogColumns(
   rowActions?: CatalogColumnActions,
   groupCompanies: GroupCompany[] = [],
   fullReport = false,
+  domains: Domain[] = [],
 ): ColumnDef<ProcessItem, unknown>[] {
   // Actions for the Domain column context menu
   const domainActions: CatalogRowAction[] = rowActions
@@ -531,11 +532,11 @@ export function buildCatalogColumns(
       const rows = info.table.getRowModel().rows
       const prev = info.row.index > 0 ? rows[info.row.index - 1] : null
       if (prev?.original.domain === info.row.original.domain) return null
+      const domainName =
+        domains.find((d) => d.id === info.row.original.domain)?.name ?? info.row.original.domain
       return (
         <div className="flex w-full min-w-0 items-center gap-1">
-          <span className="text-foreground flex-1 truncate text-sm font-medium">
-            {info.row.original.domain}
-          </span>
+          <span className="text-foreground flex-1 truncate text-sm font-medium">{domainName}</span>
           {domainActions.length > 0 && (
             <CellRowActions item={info.row.original} actions={domainActions} />
           )}

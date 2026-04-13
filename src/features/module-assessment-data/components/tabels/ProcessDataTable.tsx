@@ -16,6 +16,7 @@ import TagsSelect from '@/shared/components/table-primitives/TagsSelect'
 import { ASSESSMENT_APPLICATIONS, DIGITAL_FP_USERS } from '../../constants/CurrentApplication'
 import MarkedAsReviewCell from '../cells/MarkedAsReviewCell'
 import BUSheet from '../sidePanels/BUSheet'
+import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 
 const toText = (value: unknown): string => {
   if (value == null) return ''
@@ -216,7 +217,11 @@ const ProcessDataTable = () => {
         size: 250,
         enableSorting: false,
         meta: { isDivider: true },
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => {
+          const domainId = info.getValue<string>()
+          const domainName = DOMAINS_DATA.find((d) => d.id === domainId)?.name ?? domainId
+          return <p>{domainName}</p>
+        },
       },
       {
         id: 'l1',

@@ -33,6 +33,7 @@ import {
   rejectTask,
   returnTask,
 } from '@features/module-assessment-data/api/processAssesmentService'
+import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 
 const WORKFLOW_STEPS = [
   { id: 'step1', title: 'Draft updates', status: 'completed', owner: 'Business FP' },
@@ -232,7 +233,9 @@ const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) =
                         <div className="border-border border-r border-b pe-4 pb-3">
                           <p className="text-muted-foreground text-xs">Domain</p>
                           <p className="text-foreground mt-0.5 font-semibold">
-                            {task.domain ?? '—'}
+                            {DOMAINS_DATA.find((d) => d.id === task.domain)?.name ??
+                              task.domain ??
+                              '—'}
                           </p>
                         </div>
                         <div className="border-border border-b ps-4 pb-3">

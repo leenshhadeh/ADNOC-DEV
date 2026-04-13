@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import type { FilterDefinition } from '@/shared/types/filters'
-import type { GroupCompany, ProcessItem } from '../types'
+import type { Domain, GroupCompany, ProcessItem } from '../types'
 import { PROCESS_STATUS_FILTER_OPTIONS } from '../constants/filter-definitions'
 
 /**
@@ -18,6 +18,7 @@ import { PROCESS_STATUS_FILTER_OPTIONS } from '../constants/filter-definitions'
 export function useProcessFilterDefinitions(
   groupCompanies: GroupCompany[] | undefined,
   rows: ProcessItem[] | undefined,
+  domains: Domain[] | undefined,
 ): FilterDefinition[] {
   return useMemo(() => {
     // Applicability options come from the API lookup — user-scoped.
@@ -29,8 +30,11 @@ export function useProcessFilterDefinitions(
     }))
 
     // Domain options are derived from the live rows — always reflects real data.
-    const uniqueDomains = [...new Set((rows ?? []).map((r) => r.domain))]
-    const domainOptions = uniqueDomains.map((domain) => ({ id: domain, label: domain }))
+    const uniqueDomainIds = [...new Set((rows ?? []).map((r) => r.domain))]
+    const domainOptions = uniqueDomainIds.map((domainId) => {
+      const found = (domains ?? []).find((d) => d.id === domainId)
+      return { id: domainId, label: found?.name ?? domainId }
+    })
 
     return [
       {
@@ -49,5 +53,5 @@ export function useProcessFilterDefinitions(
         options: domainOptions,
       },
     ]
-  }, [groupCompanies, rows])
+  }, [groupCompanies, rows, domains])
 }

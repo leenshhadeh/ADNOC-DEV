@@ -33,6 +33,7 @@ import { useUserStore } from '@/shared/auth/useUserStore'
 import type { TaskItem } from '@features/module-assessment-data/types/my-tasks'
 import { useGetMyTasks } from '@features/module-assessment-data/hooks/useGetMyTasks'
 import TaskDetailsSheet from '@features/module-assessment-data/components/sidePanels/TaskDetailsSheet'
+import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 // import { useCatalogNavStore } from '@features/module-process-catalog/store/useCatalogNavStore'
 
 export type TaskRowAction = 'approve' | 'return' | 'reject' | 'request-endorsement'
@@ -184,10 +185,12 @@ const MyTasksTable = ({
         size: 150,
         cell: (info) => {
           if (info.row.depth > 0) return null
+          const domainId = String(info.getValue())
+          const domainName = DOMAINS_DATA.find((d) => d.id === domainId)?.name ?? domainId
           return (
             <div className="flex min-h-[40px] flex-col justify-center">
               <span className="block max-w-[120px] font-normal break-words whitespace-normal text-[#687076]">
-                {String(info.getValue())}
+                {domainName}
               </span>
             </div>
           )

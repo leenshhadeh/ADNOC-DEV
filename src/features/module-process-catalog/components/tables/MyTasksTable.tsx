@@ -131,6 +131,14 @@ const MyTasksTable = ({
                   className="shrink-0"
                 />
               )}
+
+              <button
+                type="button"
+                className="focus-visible:ring-ring min-w-0 flex-1 cursor-pointer text-start outline-none focus-visible:ring-2"
+                onClick={() => handleOpenDetails(row)}
+              >
+                <ProcessInfoCell processName={row.processName} requestId={row.requestId} />
+              </button>
               {!isBulkMode && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -192,13 +200,6 @@ const MyTasksTable = ({
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
-              <button
-                type="button"
-                className="focus-visible:ring-ring min-w-0 flex-1 cursor-pointer text-start outline-none focus-visible:ring-2"
-                onClick={() => handleOpenDetails(row)}
-              >
-                <ProcessInfoCell processName={row.processName} requestId={row.requestId} />
-              </button>
             </div>
           )
         },

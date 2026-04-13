@@ -12,6 +12,7 @@ import { useParams } from 'react-router-dom'
 import { useState } from 'react'
 import GeneralInfoTab from './processDetails/tabs/GeneralInfoTab'
 import AutomationParameterTab from './processDetails/tabs/AutomationParameterTab'
+import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 
 // Genaral info about the process, can be fetched from API using processId
 const processDetails = {
@@ -33,7 +34,11 @@ const ProcessDetailsPage = () => {
 
   const processData = [
     { label: 'Group Company', value: processDetails.groupCompany },
-    { label: 'Domain', value: processDetails.domain },
+    {
+      label: 'Domain',
+      value:
+        DOMAINS_DATA.find((d) => d.id === processDetails.domain)?.name ?? processDetails.domain,
+    },
     { label: 'Process Code', value: processDetails.code, canCopy: true },
     {
       label: 'Status',
@@ -51,7 +56,11 @@ const ProcessDetailsPage = () => {
   ]
   const processGeneralInfo = [
     { label: 'Process Level 1', value: processDetails.groupCompany },
-    { label: 'Process Level 2', value: processDetails.domain },
+    {
+      label: 'Process Level 2',
+      value:
+        DOMAINS_DATA.find((d) => d.id === processDetails.domain)?.name ?? processDetails.domain,
+    },
     { label: 'Process Level 3', value: processDetails.code },
     {
       label: 'Process Level 4',

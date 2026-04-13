@@ -28,6 +28,7 @@ import {
 } from '@features/module-process-catalog/api/processBulkActionService'
 import { exportToExcel } from '@features/module-process-catalog/utils/exportToExcel'
 import { FILTER_SECTION_IDS } from '@features/module-process-catalog/constants/filter-definitions'
+import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 import {
   useProcessFilters,
   applyProcessFilters,
@@ -204,7 +205,7 @@ const CatalogModule = () => {
   const [firstDraftRowId, setFirstDraftRowId] = useState<string | undefined>()
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
-  const filterDefs = useProcessFilterDefinitions(groupCompanies, serverRows)
+  const filterDefs = useProcessFilterDefinitions(groupCompanies, serverRows, DOMAINS_DATA)
   const { pending, applied, activeCount, activePerSection, toggle, apply, reset } =
     useProcessFilters(FILTER_SECTION_IDS)
 
@@ -226,6 +227,7 @@ const CatalogModule = () => {
       await exportToExcel({
         rows: filteredData,
         groupCompanies: groupCompanies ?? [],
+        domains: DOMAINS_DATA,
         includeL4: true,
         filename: 'process-catalog-full-report',
       })
@@ -240,6 +242,7 @@ const CatalogModule = () => {
       await exportToExcel({
         rows: filteredData,
         groupCompanies: groupCompanies ?? [],
+        domains: DOMAINS_DATA,
         includeL4: false,
         filename: 'process-catalog',
       })
@@ -275,7 +278,9 @@ const CatalogModule = () => {
 
       const newRows: ProcessItem[] = Array.from({ length: count }, (_, i) => {
         const idx = maxIndex + i + 1
-        const level1Code = `${targetItem.domain.slice(0, 3).toUpperCase()}.${idx}`
+        const domainEntry = DOMAINS_DATA.find((d) => d.id === targetItem.domain)
+        const domainCode = domainEntry?.code ?? targetItem.domain.slice(0, 3).toUpperCase()
+        const level1Code = `${domainCode}.${idx}`
         const level2Code = `${level1Code}.1`
         const id = `draft-${level1Code}-${Date.now() + i}`
         return {
@@ -519,7 +524,13 @@ const CatalogModule = () => {
   // rowActions is intentionally omitted — its identity changes every render
   // but callbacks always close over the latest state via useState setters.
   const columns = useMemo(
-    () => buildCatalogColumns(rowActions, groupCompanies ?? [], currentView === 'full-report'),
+    () =>
+      buildCatalogColumns(
+        rowActions,
+        groupCompanies ?? [],
+        currentView === 'full-report',
+        DOMAINS_DATA,
+      ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [groupCompanies, currentView],
   )

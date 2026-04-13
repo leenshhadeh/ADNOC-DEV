@@ -3,7 +3,7 @@ import type { ProcessItem } from '@features/module-process-catalog/types'
 export const CATALOG_DATA: ProcessItem[] = [
   {
     id: 'r1',
-    domain: 'Exploration & Planning',
+    domain: 'dom-005',
     level1Name: 'Exploration',
     level1Code: 'EXP.1',
     level2Name: 'Regional studies',
@@ -20,7 +20,7 @@ export const CATALOG_DATA: ProcessItem[] = [
   },
   {
     id: 'r2',
-    domain: 'Exploration & Planning',
+    domain: 'dom-005',
     level1Name: 'Exploration',
     level1Code: 'EXP.1',
     level2Name: 'Regional studies',
@@ -38,7 +38,7 @@ export const CATALOG_DATA: ProcessItem[] = [
   },
   {
     id: 'r3',
-    domain: 'Exploration & Planning',
+    domain: 'dom-005',
     level1Name: 'Exploration',
     level1Code: 'EXP.1',
     level2Name: 'Regional studies',
@@ -55,7 +55,7 @@ export const CATALOG_DATA: ProcessItem[] = [
   },
   {
     id: 'r4',
-    domain: 'Exploration & Planning',
+    domain: 'dom-005',
     level1Name: 'Exploration',
     level1Code: 'EXP.1',
     level2Name: 'Regional studies',
@@ -72,7 +72,7 @@ export const CATALOG_DATA: ProcessItem[] = [
   },
   {
     id: 'r5',
-    domain: 'Exploration & Planning',
+    domain: 'dom-005',
     level1Name: 'Exploration',
     level1Code: 'EXP.1',
     level2Name: 'Play Assessment (PA)',
@@ -89,7 +89,7 @@ export const CATALOG_DATA: ProcessItem[] = [
   },
   {
     id: 'r6',
-    domain: 'Exploration & Planning',
+    domain: 'dom-005',
     level1Name: 'Exploration',
     level1Code: 'EXP.1',
     level2Name: 'Play Assessment (PA)',
@@ -106,7 +106,7 @@ export const CATALOG_DATA: ProcessItem[] = [
   },
   {
     id: 'r7',
-    domain: 'Exploration & Planning',
+    domain: 'dom-005',
     level1Name: 'Exploration',
     level1Code: 'EXP.1',
     level2Name: 'Play Assessment (PA)',
@@ -124,7 +124,7 @@ export const CATALOG_DATA: ProcessItem[] = [
   },
   {
     id: 'r8',
-    domain: 'Exploration & Planning',
+    domain: 'dom-005',
     level1Name: 'Field Development Planning',
     level1Code: 'EXP.2',
     level2Name: 'Subsurface Modeling',
@@ -141,7 +141,7 @@ export const CATALOG_DATA: ProcessItem[] = [
   },
   {
     id: 'r9',
-    domain: 'Exploration & Planning',
+    domain: 'dom-005',
     level1Name: 'Field Development Planning',
     level1Code: 'EXP.2',
     level2Name: 'Subsurface Modeling',

@@ -13,6 +13,7 @@ import RequestDetailsSheet from '../sidePanels/RequestDetailsSheet'
 
 import type { RequestItem } from '@features/module-assessment-data/types/submitted-requests'
 import { useGetSubmittedRequests } from '@features/module-assessment-data/hooks/useGetSubmittedRequests'
+import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 
 const SubmittedRequestsTable = () => {
   const { data: requests, isLoading, isError } = useGetSubmittedRequests()
@@ -52,10 +53,12 @@ const SubmittedRequestsTable = () => {
         size: 150,
         cell: (info) => {
           if (info.row.depth > 0) return null
+          const domainId = String(info.getValue())
+          const domainName = DOMAINS_DATA.find((d) => d.id === domainId)?.name ?? domainId
           return (
             <div className="flex min-h-[40px] flex-col justify-center">
               <span className="block max-w-[120px] font-normal break-words whitespace-normal text-[#687076]">
-                {String(info.getValue())}
+                {domainName}
               </span>
             </div>
           )

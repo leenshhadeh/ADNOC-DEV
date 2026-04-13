@@ -1,3 +1,11 @@
+// ── Domain ────────────────────────────────────────────────────────────────────
+
+export interface Domain {
+  id: string
+  name: string
+  code: string
+}
+
 export type YesNo = 'Yes' | 'No'
 
 export type ProcessStatus =
