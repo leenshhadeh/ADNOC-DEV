@@ -12,6 +12,8 @@ import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import GeneralInfoTab from './processDetails/tabs/GeneralInfoTab'
 import AutomationParameterTab from './processDetails/tabs/AutomationParameterTab'
+import ManualParametersTab from './processDetails/tabs/ManualParametersTab'
+// import { useGetProcessDetails } from '@features/module-assessment-data/hooks/useGetMyTasks'
 
 // Genaral info about the process, can be fetched from API using processId
 const processDetails = {
@@ -48,11 +50,27 @@ const processDetails = {
       img: 'https://t4.ftcdn.net/jpg/06/45/77/79/360_F_645777959_fNnaNoeVO4qxCNPW9MWr3gQlPFSGA9yL.jpg',
     },
   ],
+  numberOfPeopleInvolved: 'High (500-1000)',
+  scaleOfProcess: 'Medium: (bigger team within one department)',
+  automationMaturityLevel: 'Fully Automated',
+  automationLevel: '10%',
+  currentApplicationsSystems: ['Microsot Excel', 'Petrel'],
+  OngoingAutomationDigitalInitiatives: 'N/A',
+  businessRecommendationForAutomation: 'Should be kept as is',
+  keyChallengesAutomationNeeds: 'none',
+  AIPowered: 'No',
+  AIPoweredUseCase: '',
+  autonomousUseCaseEnabled: 'No',
+  AutonomousUseCaseDescriptionComment: 'N/A',
+  processCriticality:'Standard',
+  keyManualSteps:'1.Data collection, model setup, result interpretation',
+
 }
 
 const ProcessDetailsPage = () => {
   const { processId } = useParams<{ processId: string }>()
   const [activeTab, setActiveTab] = useState('GeneralInfo')
+  //  const { data: processDetails, isLoading, isError } = useGetProcessDetails()
 
   useEffect(() => {
     //TODO: call getProcessDetails(processId) API
@@ -131,7 +149,7 @@ const ProcessDetailsPage = () => {
             { label: 'Automation Parameters', value: 'AutomationParameters' },
             {
               label: 'Manual operations volume parameters',
-              value: 'Manual operations volume parameters',
+              value: 'ManualParameters',
             },
           ]}
           activeTab={activeTab}
@@ -145,7 +163,6 @@ const ProcessDetailsPage = () => {
         <div className="flex flex-col gap-0 overflow-hidden">
           <div className="mt-[24px] rounded-2xl bg-[linear-gradient(90.49deg,rgba(78,241,228,0.1)_0.03%,rgba(17,24,39,0.1)_99.89%)] p-[1px]">
             <div className="rounded-2xl bg-white p-[24px]">
-            
               {activeTab == 'GeneralInfo' && (
                 <GeneralInfoTab
                   processGeneralInfo={processGeneralInfo}
@@ -153,7 +170,8 @@ const ProcessDetailsPage = () => {
                   onFormSubmit={() => {}}
                 />
               )}
-              {activeTab == 'AutomationParameters' && <AutomationParameterTab />}
+              {activeTab == 'AutomationParameters' && <AutomationParameterTab  process={processDetails}/>}
+              {activeTab=='ManualParameters'&& <ManualParametersTab process={processDetails} />}
             </div>
           </div>
         </div>
