@@ -77,5 +77,27 @@ export const PROESS_DETAILS = [
         domain: 'Audit & Assurance',
       },
     ],
+    changes: [
+      {
+        name: 'Automation level',
+        comment:
+          'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
+        oldValue: '10%',
+        newValue: '40%',
+        changeType: 'Update',
+        modifiedBy: 'Leen Shehadeh',
+        modifiedOn: '2026-10-10',
+      },
+      {
+        name: 'Automation level',
+        comment:
+          'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
+        oldValue: '10%',
+        newValue: '40%',
+        changeType: 'Update',
+        modifiedBy: 'Leen Shehadeh',
+        modifiedOn: '2026-10-10',
+      },
+    ],
   },
 ]

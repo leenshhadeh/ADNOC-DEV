@@ -8,7 +8,7 @@
  */
 
 import type { LucideProps } from 'lucide-react'
-import { ChevronDown, Layers, Search, X } from 'lucide-react'
+import {Layers, Search, X } from 'lucide-react'
 
 import ShapeIcon from '@/assets/icons/Shape.svg?react'
 
@@ -17,6 +17,7 @@ import { Input } from './ui/input'
 import { Separator } from './ui/separator'
 import { Tabs, TabsList, TabsTrigger } from './ui/tabs'
 import { cn } from '../lib/utils'
+import Dropdown from './ui/Dropdown'
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -48,7 +49,7 @@ export interface ModuleToolbarProps {
   tabs: TabConfig[]
   activeTab: string
   onTabChange: (value: string) => void
-  more?: TabConfig[]
+  moreOptions?: TabConfig[]
 
   // ── Search ────────────────────────────────────────────────────────────────
   searchValue?: string
@@ -85,7 +86,7 @@ const ModuleToolbar = ({
   actions = [],
   showFilter = true,
   showSearch = true,
-  more
+  moreOptions,
 }: ModuleToolbarProps) => {
   return (
     /**
@@ -122,18 +123,18 @@ const ModuleToolbar = ({
                 {tab.label}
               </TabsTrigger>
             ))}
-            {more && more.length > 0 && <>
-              <div
-              
-                className={cn(
-                  'flex h-8 rounded-xl px-4',
-                  'font-light',
-                  'data-[state=active]:font-small',
-                )}
-              >
-                More <ChevronDown/>
-              </div>
-            </>}
+            {moreOptions && moreOptions.length > 0 && (
+              <div className={'flex h-8 rounded-xl'} >
+                  <Dropdown
+                    defaultValue={'More'}
+                    options={moreOptions}
+                    onValueChange={(newValue: string) => {
+                      onTabChange(newValue)
+                    }}
+                    activeTab={activeTab}
+                  />
+                </div>
+            )}
           </TabsList>
         </Tabs>
       </div>

@@ -111,13 +111,13 @@ const ProcessDetailsPage = () => {
                       label: 'Manual operations volume parameters',
                       value: 'ManualParameters',
                     },
-                    { label: 'Target Recommendations​', value: 'TargetRecommendations​​' },
-                    { label: 'Opportunities', value: 'Opportunities' },
+                   
                     
                   ]}
-                  more={[
-                    // { label: 'TargetRecommendations​ ', value: 'Target recommendations​ ' },
+                  moreOptions={[
+                    { label: 'Target Recommendations​', value: 'TargetRecommendations​​'},
                     { label: 'Opportunities', value: 'Opportunities' },
+                    { label: 'Recorded changes', value: 'RecordedChanges' }
                   ]}
                   activeTab={activeTab}
                   onTabChange={(newActiveTab) => {
