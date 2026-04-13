@@ -68,3 +68,9 @@ table-light-styles
 .text-editor .ql-editor {
   min-height: 160px;
 }
+
+select:disabled, input:disabled , textarea:disabled {
+  opacity: 100%;
+  background-color: #F1F3F5;
+  border: 1px solid #DFE3E6;
+}

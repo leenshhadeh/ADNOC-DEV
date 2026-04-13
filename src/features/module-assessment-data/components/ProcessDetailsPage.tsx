@@ -14,8 +14,8 @@ import GeneralInfoTab from './processDetails/tabs/GeneralInfoTab'
 import AutomationParameterTab from './processDetails/tabs/AutomationParameterTab'
 import ManualParametersTab from './processDetails/tabs/ManualParametersTab'
 import { useGetProcessDetails } from '@features/module-assessment-data/hooks/useGetProcessDetails'
-
-// Genaral info about the process, can be fetched from API using processId
+import TargerRecommendationsTab from './processDetails/tabs/TargerRecommendationsTab'
+import OpprtunitiesTab from './processDetails/tabs/OpprtunitiesTab'
 
 const ProcessDetailsPage = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -26,7 +26,6 @@ const ProcessDetailsPage = () => {
 
   useEffect(() => {
     //TODO: call getProcessDetails(processId) API
-    console.log('processDetails:', data)
     if (data) {
       setProcessData([
         { label: 'Group Company', value: data[0]?.groupCompany },
@@ -112,6 +111,13 @@ const ProcessDetailsPage = () => {
                       label: 'Manual operations volume parameters',
                       value: 'ManualParameters',
                     },
+                    { label: 'Target Recommendations​', value: 'TargetRecommendations​​' },
+                    { label: 'Opportunities', value: 'Opportunities' },
+                    
+                  ]}
+                  more={[
+                    // { label: 'TargetRecommendations​ ', value: 'Target recommendations​ ' },
+                    { label: 'Opportunities', value: 'Opportunities' },
                   ]}
                   activeTab={activeTab}
                   onTabChange={(newActiveTab) => {
@@ -123,7 +129,7 @@ const ProcessDetailsPage = () => {
 
                 <div className="flex flex-col gap-0 overflow-hidden">
                   <div className="mt-[24px] rounded-2xl bg-[linear-gradient(90.49deg,rgba(78,241,228,0.1)_0.03%,rgba(17,24,39,0.1)_99.89%)] p-[1px]">
-                    <div className="rounded-2xl bg-white p-[24px]">
+                    <div className="rounded-2xl bg-white p-[24px] relative">
                       {activeTab == 'GeneralInfo' && (
                         <GeneralInfoTab
                           processGeneralInfo={processGeneralInfo}
@@ -133,6 +139,8 @@ const ProcessDetailsPage = () => {
                       )}
                       {activeTab == 'AutomationParameters' && <AutomationParameterTab process={data[0]} /> }
                       {activeTab == 'ManualParameters' && <ManualParametersTab process={data[0]} />}
+                      {activeTab == 'TargetRecommendations​​' && <TargerRecommendationsTab process={data[0]} />}
+                      {activeTab == 'Opportunities' && <OpprtunitiesTab process={data[0]} />}
                     </div>
                   </div>
                 </div>
