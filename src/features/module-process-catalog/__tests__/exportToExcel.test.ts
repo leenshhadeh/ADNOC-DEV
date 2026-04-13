@@ -82,7 +82,7 @@ import type { ProcessItem, GroupCompany, Level4Item } from '../types'
 
 const makeProcess = (overrides: Partial<ProcessItem> = {}): ProcessItem => ({
   id: 'p1',
-  domain: 'Exploration',
+  domain: 'dom-005',
   level1Name: 'Resource Evaluation',
   level1Code: 'EXP.1',
   level2Name: 'Subsurface Studies',
@@ -261,7 +261,7 @@ describe('exportToExcel', () => {
 
       const [firstRow, secondRow] = addedRows as Array<Record<string, string>>
 
-      expect(firstRow.domain).toBe('Exploration')
+      expect(firstRow.domain).toBe('dom-005')
       expect(firstRow.l3Name).toBe('Seismic Interpretation')
       expect(secondRow.domain).toBe('')
       expect(secondRow.l3Name).toBe('')
@@ -315,7 +315,7 @@ describe('exportToExcel', () => {
 
     it('reads the entity value from the process entities map', async () => {
       const groupCompanies = [makeGroupCompany({ sites: ['Site A'] })]
-      const process = makeProcess({ entities: { 'ADNOC HQ': { 'Site A': 'Yes' } } })
+      const process = makeProcess({ entities: { gc1: { 'Site A': 'Yes' } } })
 
       await exportToExcel({ rows: [process], groupCompanies })
 

@@ -1,12 +1,18 @@
 import { exportSheet } from '@/shared/lib/excel'
 import type { SheetColumn } from '@/shared/lib/excel'
 import type { TaskItem } from '../types/my-tasks'
+import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 
 const MY_TASKS_COLUMNS: SheetColumn<TaskItem>[] = [
   { header: 'Process Name', key: 'processName', width: 36 },
   { header: 'Process Code', key: 'processCode', width: 18 },
   { header: 'Request ID', key: 'requestId', width: 16 },
-  { header: 'Domain', key: 'domain', width: 24 },
+  {
+    header: 'Domain',
+    key: 'domain',
+    width: 24,
+    getValue: (row) => DOMAINS_DATA.find((d) => d.id === row.domain)?.name ?? row.domain,
+  },
   { header: 'Group Company', key: 'groupCompany', width: 22 },
   { header: 'Requester', key: 'requester', width: 22 },
   { header: 'Status', key: 'status', width: 20 },

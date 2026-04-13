@@ -15,6 +15,7 @@ import MarkedAsReviewCell from '../cells/MarkedAsReviewCell'
 import BUSheet from '../sidePanels/BUSheet'
 import DigitalTeamSheet from '../sidePanels/DigitalTeamSheet'
 import TagsSelectCell from '../cells/TagsSelectCell'
+import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 
 const toText = (value: unknown): string => {
   if (value == null) return ''
@@ -212,7 +213,11 @@ const ProcessDataTable = () => {
         size: 250,
         enableSorting: false,
         meta: { isDivider: true },
-        cell: (info) => <p>{info.getValue<string>()}</p>,
+        cell: (info) => {
+          const domainId = info.getValue<string>()
+          const domainName = DOMAINS_DATA.find((d) => d.id === domainId)?.name ?? domainId
+          return <p>{domainName}</p>
+        },
       },
       {
         id: 'l1',
@@ -830,7 +835,6 @@ const ProcessDataTable = () => {
             />
           )
         },
-
       },
       {
         id: 'publishedDate',

@@ -63,7 +63,7 @@ export function useProcessFilters(sectionIds: readonly string[]): UseProcessFilt
  * Pure filter function — applies committed filter state to a row array.
  *
  * Filter semantics:
- * - Applicability: option id = group company name; a row matches if any site
+ * - Applicability: option id = group company id; a row matches if any site
  *   under the company is 'Yes'.
  * - Status: exact match on row.level3Status.
  * - Domain: exact match on row.domain.
@@ -85,8 +85,8 @@ export function applyProcessFilters(rows: ProcessItem[], applied: ProcessFilters
 
     // Applicability: at least one selected company has a 'Yes' site on this row
     if (applicability.length > 0) {
-      const matches = applicability.some((companyName) =>
-        Object.values(row.entities[companyName] ?? {}).some((v) => v === 'Yes'),
+      const matches = applicability.some((companyId) =>
+        Object.values(row.entities[companyId] ?? {}).some((v) => v === 'Yes'),
       )
       if (!matches) return false
     }

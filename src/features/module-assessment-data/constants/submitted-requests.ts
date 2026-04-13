@@ -15,7 +15,7 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
     submittedOn: '08 Apr 2024',
     // Detail-view fields
     processCategory: 'Dashboard',
-    domain: 'Exploration & Planning',
+    domain: 'dom-005',
     processLevel: 'Level 3',
     level1: 'Exploration',
     level2: 'Regional studies',
@@ -92,7 +92,7 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
   {
     id: 'request-2',
     processId: 'r5',
-    domain: 'Exploration & Planning',
+    domain: 'dom-005',
     processName: 'Define Budget and Schedule',
     requestId: '9377353',
     requester: 'Mohammed Al Hajeri',
@@ -126,7 +126,7 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
   {
     id: 'request-3',
     processId: 'r6',
-    domain: 'Exploration & Planning',
+    domain: 'dom-005',
     processName: 'Develop external communication',
     requestId: '9377353',
     requester: 'Noura Al Ghamdi',

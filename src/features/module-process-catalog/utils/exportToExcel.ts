@@ -19,7 +19,7 @@
 import type { ExcelSheetRow, SheetColumn } from '@/shared/lib/excel'
 import { exportSheet, ADNOC_EXCEL_COLORS } from '@/shared/lib/excel'
 import { getLevel4ByParent } from '../api/level4Service'
-import type { GroupCompany, Level4Item, ProcessItem } from '../types'
+import type { Domain, GroupCompany, Level4Item, ProcessItem } from '../types'
 
 // ── Catalog-specific colours ──────────────────────────────────────────────────
 
@@ -104,7 +104,7 @@ type EntityColDef = { entity: string; site: string; header: string }
 
 function buildEntityColDefs(groupCompanies: GroupCompany[]): EntityColDef[] {
   return groupCompanies.flatMap((gc) =>
-    gc.sites.map((site) => ({ entity: gc.name, site, header: `${gc.name}: ${site}` })),
+    gc.sites.map((site) => ({ entity: gc.id, site, header: `${gc.name}: ${site}` })),
   )
 }
 
@@ -113,6 +113,7 @@ function flattenCatalogRows(
   l4Map: Map<string, Level4Item[]>,
   entityColDefs: EntityColDef[],
   includeL4: boolean,
+  domains: Domain[],
 ): CatalogFlatRow[] {
   return rows.flatMap((item) => {
     const l4s = includeL4 ? (l4Map.get(item.id) ?? []) : []
@@ -125,8 +126,9 @@ function flattenCatalogRows(
     return Array.from({ length: rowCount }, (_, i) => {
       const l4 = l4s[i]
       const isFirstSubrow = i === 0
+      const domainName = domains.find((d) => d.id === item.domain)?.name ?? item.domain
       return {
-        domain: isFirstSubrow ? item.domain : '',
+        domain: isFirstSubrow ? domainName : '',
         l1Code: isFirstSubrow ? item.level1Code : '',
         l1Name: isFirstSubrow ? item.level1Name : '',
         l2Code: isFirstSubrow ? item.level2Code : '',
@@ -173,6 +175,7 @@ function catalogOnRowWritten(excelRow: ExcelSheetRow, row: CatalogFlatRow): void
 export interface ExportOptions {
   rows: ProcessItem[]
   groupCompanies: GroupCompany[]
+  domains?: Domain[]
   /** Filename without extension. Defaults to "process-catalog-full-report". */
   filename?: string
   /**
@@ -185,6 +188,7 @@ export interface ExportOptions {
 export async function exportToExcel({
   rows,
   groupCompanies,
+  domains = [],
   filename = 'process-catalog-full-report',
   includeL4 = true,
 }: ExportOptions): Promise<void> {
@@ -207,7 +211,7 @@ export async function exportToExcel({
   ]
 
   // 4. Flatten data
-  const flatRows = flattenCatalogRows(rows, l4Map, entityColDefs, includeL4)
+  const flatRows = flattenCatalogRows(rows, l4Map, entityColDefs, includeL4, domains)
 
   // 5. Export via shared engine
   await exportSheet({

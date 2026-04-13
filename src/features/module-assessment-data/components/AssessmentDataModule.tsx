@@ -33,11 +33,11 @@ import {
   MarkAsReviewedModal,
 } from './AssessmentBulkModals'
 import {
-  ApproveTasksModal,
-  ReturnTasksModal,
-  RejectTasksModal,
-  RequestEndorsementModal,
-} from './TaskBulkModals'
+  ApproveModal as ApproveTasksModal,
+  ReturnModal as ReturnTasksModal,
+  RejectModal as RejectTasksModal,
+} from '@/shared/components/modals'
+import { RequestEndorsementModal } from './TaskBulkModals'
 import {
   bulkEditProcesses,
   bulkCommentProcesses,
@@ -316,6 +316,8 @@ const AssessmentDataModule = () => {
       <ApproveTasksModal
         open={taskModal === 'approve'}
         selectedCount={singleActionTask ? 1 : taskSelectedIds.length}
+        title={`Approve ${singleActionTask ? 1 : taskSelectedIds.length} selected request${(singleActionTask ? 1 : taskSelectedIds.length) !== 1 ? 's' : ''}`}
+        description="These requests will be forwarded for Quality Manager Review. Are you sure you want to approve them?"
         onConfirm={() => {
           // TODO: wire to actual API call
           setTaskModal(null)
@@ -334,6 +336,7 @@ const AssessmentDataModule = () => {
       <ReturnTasksModal
         open={taskModal === 'return'}
         selectedCount={singleActionTask ? 1 : taskSelectedIds.length}
+        title={`Return ${singleActionTask ? 1 : taskSelectedIds.length} selected request${(singleActionTask ? 1 : taskSelectedIds.length) !== 1 ? 's' : ''}`}
         onConfirm={(_reason) => {
           // TODO: wire to actual API call with reason
           setTaskModal(null)
@@ -352,6 +355,9 @@ const AssessmentDataModule = () => {
       <RejectTasksModal
         open={taskModal === 'reject'}
         selectedCount={singleActionTask ? 1 : taskSelectedIds.length}
+        title={`Reject ${singleActionTask ? 1 : taskSelectedIds.length} selected request${(singleActionTask ? 1 : taskSelectedIds.length) !== 1 ? 's' : ''}`}
+        description="These requests will be marked as Rejected. Please add the rejection reason below."
+        requireReason
         onConfirm={(_reason) => {
           // TODO: wire to actual API call with reason
           setTaskModal(null)

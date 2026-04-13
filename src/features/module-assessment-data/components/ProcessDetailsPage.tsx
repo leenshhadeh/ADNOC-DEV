@@ -16,6 +16,8 @@ import ManualParametersTab from './processDetails/tabs/ManualParametersTab'
 import { useGetProcessDetails } from '@features/module-assessment-data/hooks/useGetProcessDetails'
 import TargerRecommendationsTab from './processDetails/tabs/TargerRecommendationsTab'
 import OpprtunitiesTab from './processDetails/tabs/OpprtunitiesTab'
+import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
+
 
 const ProcessDetailsPage = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -27,9 +29,10 @@ const ProcessDetailsPage = () => {
   useEffect(() => {
     //TODO: call getProcessDetails(processId) API
     if (data) {
+      const domainName = DOMAINS_DATA.find((d) => d.id === data[0]?.domain)?.name ?? data[0]?.domain
       setProcessData([
         { label: 'Group Company', value: data[0]?.groupCompany },
-        { label: 'Domain', value: data[0]?.domain },
+        { label: 'Domain', value: domainName },
         { label: 'Process Code', value: data[0]?.code, canCopy: true },
         {
           label: 'Status',
@@ -137,7 +140,9 @@ const ProcessDetailsPage = () => {
                           onFormSubmit={() => {}}
                         />
                       )}
-                      {activeTab == 'AutomationParameters' && <AutomationParameterTab process={data[0]} /> }
+                      {activeTab == 'AutomationParameters' && (
+                        <AutomationParameterTab process={data[0]} />
+                      )}
                       {activeTab == 'ManualParameters' && <ManualParametersTab process={data[0]} />}
                       {activeTab == 'TargetRecommendations​​' && <TargerRecommendationsTab process={data[0]} />}
                       {activeTab == 'Opportunities' && <OpprtunitiesTab process={data[0]} />}

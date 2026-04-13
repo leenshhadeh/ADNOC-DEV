@@ -13,6 +13,7 @@ import type {
   WorkflowHistoryItem,
 } from '@features/module-process-catalog/types/submitted-requests'
 import WorkflowStepper from '@/shared/components/WorkFlowStepper'
+import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 
 const WORKFLOW_STEPS = [
   { id: 'step1', title: 'Draft updates', status: 'completed', owner: 'Business FP' },
@@ -243,7 +244,9 @@ const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsShee
                       <div className="border-border border-r border-b pe-4 pb-3">
                         <p className="text-muted-foreground text-xs">Domain</p>
                         <p className="text-foreground mt-0.5 font-semibold">
-                          {request.domain ?? '—'}
+                          {DOMAINS_DATA.find((d) => d.id === request.domain)?.name ??
+                            request.domain ??
+                            '—'}
                         </p>
                       </div>
                       <div className="border-border border-b ps-4 pb-3">

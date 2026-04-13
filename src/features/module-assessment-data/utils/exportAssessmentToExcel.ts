@@ -11,6 +11,7 @@
 import { exportSheet } from '@/shared/lib/excel'
 import type { SheetColumn } from '@/shared/lib/excel'
 import type { FlatAssessmentRow } from '../types/process'
+import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 
 // ── Assessment-specific value serializers ─────────────────────────────────────
 
@@ -48,7 +49,12 @@ function resolveSharedService(value: unknown): string {
 // ── Column definitions ────────────────────────────────────────────────────────
 
 const ASSESSMENT_COLUMNS: SheetColumn<FlatAssessmentRow>[] = [
-  { header: 'Domain', key: 'domain', width: 20 },
+  {
+    header: 'Domain',
+    key: 'domain',
+    width: 20,
+    getValue: (row) => DOMAINS_DATA.find((d) => d.id === row.domain)?.name ?? row.domain,
+  },
   { header: 'Level 1', key: 'l1', width: 28 },
   { header: 'L1 Code', key: 'l1Code', width: 14, codeStyle: true },
   { header: 'Level 2', key: 'l2', width: 28 },

@@ -2,7 +2,7 @@
 export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data structure
   {
     id: 'd1',
-    domain: 'Exploration & Planning',
+    domain: 'dom-005',
     level1Items: [
       {
         id: 'l1-1',

@@ -18,7 +18,7 @@ import {
 } from '@/shared/components/ui/dropdown-menu'
 import { StatusBadgeCell, type CatalogStatus } from '@/shared/components/cells'
 import type { ProcessItem, YesNo } from '@features/module-process-catalog/types'
-import type { GroupCompany } from '@features/module-process-catalog/types'
+import type { Domain, GroupCompany } from '@features/module-process-catalog/types'
 
 // Augment TanStack Table meta so isBulkMode is type-safe.
 declare module '@tanstack/react-table' {
@@ -314,17 +314,17 @@ const Level3RowActions = ({
 
 function buildEntityColumns(groupCompanies: GroupCompany[]): ColumnDef<ProcessItem, unknown>[] {
   return groupCompanies.map((entity) => ({
-    id: `entity__${entity.name}`,
+    id: `entity__${entity.id}`,
     header: entity.name,
     meta: { isEntityGroup: true },
     columns: entity.sites.map((site) => ({
-      id: `entity__${entity.name}__${site}`,
+      id: `entity__${entity.id}__${site}`,
       header: site,
       size: 200,
       enableSorting: false,
       cell: (info: CellContext<ProcessItem, unknown>) => {
         const row = info.row.original
-        const siteValue = (row.entities[entity.name]?.[site] ?? 'No') as YesNo
+        const siteValue = (row.entities[entity.id]?.[site] ?? 'No') as YesNo
         // Use the row's level3Code as the parent code for Level 4 generation.
         // E.g. level3Code "EXP.1.1.1" → new L4 rows get "EXP.1.1.1.1", "EXP.1.1.1.2", …
         return (
@@ -357,13 +357,13 @@ function buildFullReportEntityColumns(
   groupCompanies: GroupCompany[],
 ): ColumnDef<ProcessItem, unknown>[] {
   return groupCompanies.map((entity) => ({
-    id: `entity__${entity.name}`,
+    id: `entity__${entity.id}`,
     header: entity.name,
     meta: { isEntityGroup: true },
     columns: [
       // "Shared Service process?" sub-column
       {
-        id: `entity__${entity.name}__sharedService`,
+        id: `entity__${entity.id}__sharedService`,
         header: 'Shared Service process?',
         size: 200,
         enableSorting: false,
@@ -374,12 +374,12 @@ function buildFullReportEntityColumns(
       // Site sub-columns
       ...entity.sites.map(
         (site): ColumnDef<ProcessItem, unknown> => ({
-          id: `entity__${entity.name}__${site}`,
+          id: `entity__${entity.id}__${site}`,
           header: site,
           size: 200,
           enableSorting: false,
           cell: (info: CellContext<ProcessItem, unknown>) => {
-            const val = (info.row.original.entities[entity.name]?.[site] ?? 'No') as string
+            const val = (info.row.original.entities[entity.id]?.[site] ?? 'No') as string
             return <ReadOnlyEntityCell value={val} />
           },
         }),
@@ -493,6 +493,7 @@ export function buildCatalogColumns(
   rowActions?: CatalogColumnActions,
   groupCompanies: GroupCompany[] = [],
   fullReport = false,
+  domains: Domain[] = [],
 ): ColumnDef<ProcessItem, unknown>[] {
   // Actions for the Domain column context menu
   const domainActions: CatalogRowAction[] = rowActions
@@ -531,11 +532,11 @@ export function buildCatalogColumns(
       const rows = info.table.getRowModel().rows
       const prev = info.row.index > 0 ? rows[info.row.index - 1] : null
       if (prev?.original.domain === info.row.original.domain) return null
+      const domainName =
+        domains.find((d) => d.id === info.row.original.domain)?.name ?? info.row.original.domain
       return (
         <div className="flex w-full min-w-0 items-center gap-1">
-          <span className="text-foreground flex-1 truncate text-sm font-medium">
-            {info.row.original.domain}
-          </span>
+          <span className="text-foreground flex-1 truncate text-sm font-medium">{domainName}</span>
           {domainActions.length > 0 && (
             <CellRowActions item={info.row.original} actions={domainActions} />
           )}

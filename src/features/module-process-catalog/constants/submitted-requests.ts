@@ -17,7 +17,7 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
     publishedOn: '-',
     // Detail-view fields
     processCategory: 'Dashboard',
-    domain: 'Exploration & Planning',
+    domain: 'dom-005',
     processLevel: 'Level 3',
     level1: 'Exploration',
     level2: 'Regional studies',

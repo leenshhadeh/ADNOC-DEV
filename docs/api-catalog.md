@@ -1,6 +1,6 @@
 # Process Catalog — API Contract
 
-> **Version:** 1.2 &nbsp;|&nbsp; **Date:** 2026-04-09 &nbsp;|&nbsp; **Frontend Team**
+> **Version:** 1.2 &nbsp;|&nbsp; **Date:** 2026-04-13 &nbsp;|&nbsp; **Frontend Team**
 >
 > JSON contracts the frontend expects from the .NET backend for the **Process Catalog** module. All endpoints return the **ApiResponse** envelope.
 
@@ -12,28 +12,29 @@
 2. [Authentication](#2-authentication)
 3. [Endpoints](#3-endpoints)
    - 3.1 [GET /api/process-catalog/rows](#31-get-apiprocess-catalogrows)
-   - 3.2 [GET /api/group-companies](#32-get-apigroup-companies)
-   - 3.3 [GET /api/processes/:parentId/level4s](#33-get-apiprocessesparentidlevel4s)
-   - 3.4 [GET /api/process-catalog/my-tasks](#34-get-apiprocess-catalogmy-tasks)
-   - 3.5 [GET /api/process-catalog/submitted-requests](#35-get-apiprocess-catalogsubmitted-requests)
-   - 3.6 [GET /api/process-catalog/recorded-changes/:processId](#36-get-apiprocess-catalogrecorded-changesprocessid)
-   - 3.7 [POST /api/process-catalog](#37-post-apiprocess-catalog)
-   - 3.8 [PATCH /api/process-catalog/:id/rename](#38-patch-apiprocess-catalogidrename)
-   - 3.9 [PATCH /api/process-catalog/entities](#39-patch-apiprocess-catalogentities)
-   - 3.10 [POST /api/processes/:parentId/level4s](#310-post-apiprocessesparentidlevel4s)
-   - 3.11 [PUT /api/level4/:id](#311-put-apilevel4id)
-   - 3.12 [POST /api/process-catalog/:id/validate](#312-post-apiprocess-catalogidvalidate)
-   - 3.13 [PUT /api/processes/:parentId/level4s](#313-put-apiprocessesparentidlevel4s)
-   - 3.14 [DELETE /api/level4s/:id](#314-delete-apilevel4sid)
-   - 3.15 [GET /api/processes/:parentId/level4-names](#315-get-apiprocessesparentidlevel4-names)
-   - 3.16 [PUT /api/processes/bulk-edit](#316-put-apiprocessesbulk-edit)
-   - 3.17 [POST /api/processes/bulk-submit](#317-post-apiprocessesbulk-submit)
-   - 3.18 [POST /api/tasks/:taskId/approve](#318-post-apitaskstaskidapprove)
-   - 3.19 [POST /api/tasks/:taskId/return](#319-post-apitaskstaskidreturn)
-   - 3.20 [POST /api/tasks/:taskId/reject](#320-post-apitaskstaskidreject)
-   - 3.21 [POST /api/tasks/bulk-approve](#321-post-apitasksbulk-approve)
-   - 3.22 [POST /api/tasks/bulk-return](#322-post-apitasksbulk-return)
-   - 3.23 [POST /api/tasks/bulk-reject](#323-post-apitasksbulk-reject)
+   - 3.2 [GET /api/domains](#32-get-apidomains)
+   - 3.3 [GET /api/group-companies](#33-get-apigroup-companies)
+   - 3.4 [GET /api/processes/:parentId/level4s](#34-get-apiprocessesparentidlevel4s)
+   - 3.5 [GET /api/process-catalog/my-tasks](#35-get-apiprocess-catalogmy-tasks)
+   - 3.6 [GET /api/process-catalog/submitted-requests](#36-get-apiprocess-catalogsubmitted-requests)
+   - 3.7 [GET /api/process-catalog/recorded-changes/:processId](#37-get-apiprocess-catalogrecorded-changesprocessid)
+   - 3.8 [POST /api/process-catalog](#38-post-apiprocess-catalog)
+   - 3.9 [PATCH /api/process-catalog/:id/rename](#39-patch-apiprocess-catalogidrename)
+   - 3.10 [PATCH /api/process-catalog/entities](#310-patch-apiprocess-catalogentities)
+   - 3.11 [POST /api/processes/:parentId/level4s](#311-post-apiprocessesparentidlevel4s)
+   - 3.12 [PUT /api/level4/:id](#312-put-apilevel4id)
+   - 3.13 [POST /api/process-catalog/:id/validate](#313-post-apiprocess-catalogidvalidate)
+   - 3.14 [PUT /api/processes/:parentId/level4s](#314-put-apiprocessesparentidlevel4s)
+   - 3.15 [DELETE /api/level4s/:id](#315-delete-apilevel4sid)
+   - 3.16 [GET /api/processes/:parentId/level4-names](#316-get-apiprocessesparentidlevel4-names)
+   - 3.17 [PUT /api/processes/bulk-edit](#317-put-apiprocessesbulk-edit)
+   - 3.18 [POST /api/processes/bulk-submit](#318-post-apiprocessesbulk-submit)
+   - 3.19 [POST /api/tasks/:taskId/approve](#319-post-apitaskstaskidapprove)
+   - 3.20 [POST /api/tasks/:taskId/return](#320-post-apitaskstaskidreturn)
+   - 3.21 [POST /api/tasks/:taskId/reject](#321-post-apitaskstaskidreject)
+   - 3.22 [POST /api/tasks/bulk-approve](#322-post-apitasksbulk-approve)
+   - 3.23 [POST /api/tasks/bulk-return](#323-post-apitasksbulk-return)
+   - 3.24 [POST /api/tasks/bulk-reject](#324-post-apitasksbulk-reject)
 4. [Enums & Shared Types](#4-enums--shared-types)
 5. [Error Handling](#5-error-handling)
 
@@ -90,7 +91,7 @@ Returns the full process hierarchy (Domain → Level 1 → Level 2 → Level 3) 
   "data": [
     {
       "id": "550e8400-e29b-41d4-a716-446655440000",
-      "domain": "Exploration",
+      "domain": "dom-005",
       "level1Name": "Sub-surface",
       "level1Code": "EXP.1",
       "level2Name": "G&G Studies",
@@ -101,11 +102,11 @@ Returns the full process hierarchy (Domain → Level 1 → Level 2 → Level 3) 
       "description": "Defines the structural framework of the basin...",
       "isSharedService": false,
       "entities": {
-        "ADNOC HQ": {
+        "gc-001": {
           "General": "Yes",
           "Site B": "No"
         },
-        "ADNOC Onshore": {
+        "gc-002": {
           "General": "Yes"
         }
       }
@@ -118,26 +119,59 @@ Returns the full process hierarchy (Domain → Level 1 → Level 2 → Level 3) 
 
 **`ProcessItem` field reference:**
 
-| Field             | Type                                    | Required | Description                                                                                                                                 |
-| ----------------- | --------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`              | `string` (UUID)                         | ✅       | Unique identifier for the Level 3 row                                                                                                       |
-| `domain`          | `string`                                | ✅       | Top-level domain name (e.g. `"Exploration"`)                                                                                                |
-| `level1Name`      | `string`                                | ✅       | Level 1 process name                                                                                                                        |
-| `level1Code`      | `string`                                | ✅       | Level 1 code (e.g. `"EXP.1"`)                                                                                                               |
-| `level2Name`      | `string`                                | ✅       | Level 2 process name                                                                                                                        |
-| `level2Code`      | `string`                                | ✅       | Level 2 code (e.g. `"EXP.1.1"`)                                                                                                             |
-| `level3Name`      | `string`                                | ✅       | Level 3 process name                                                                                                                        |
-| `level3Code`      | `string`                                | ✅       | Level 3 code (e.g. `"EXP.1.1.1"`)                                                                                                           |
-| `level3Status`    | `ProcessStatus`                         | ✅       | See [Enums](#4-enums--shared-types)                                                                                                         |
-| `description`     | `string`                                | ✅       | Free-text description (can be empty `""`)                                                                                                   |
-| `isSharedService` | `boolean`                               | ✅       | Whether this process is a shared service                                                                                                    |
-| `entities`        | `Record<string, Record<string, YesNo>>` | ✅       | Nested map: **Group Company name → Site name → `"Yes"` \| `"No"`**. Keys must match the group companies returned by `/api/group-companies`. |
+| Field             | Type                                    | Required | Description                                                                                                                                                                 |
+| ----------------- | --------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`              | `string` (UUID)                         | ✅       | Unique identifier for the Level 3 row                                                                                                                                       |
+| `domain`          | `string`                                | ✅       | Domain ID from `/api/domains` (e.g. `"dom-005"`). Use `Domain.name` only for display.                                                                                       |
+| `level1Name`      | `string`                                | ✅       | Level 1 process name                                                                                                                                                        |
+| `level1Code`      | `string`                                | ✅       | Level 1 code (e.g. `"EXP.1"`)                                                                                                                                               |
+| `level2Name`      | `string`                                | ✅       | Level 2 process name                                                                                                                                                        |
+| `level2Code`      | `string`                                | ✅       | Level 2 code (e.g. `"EXP.1.1"`)                                                                                                                                             |
+| `level3Name`      | `string`                                | ✅       | Level 3 process name                                                                                                                                                        |
+| `level3Code`      | `string`                                | ✅       | Level 3 code (e.g. `"EXP.1.1.1"`)                                                                                                                                           |
+| `level3Status`    | `ProcessStatus`                         | ✅       | See [Enums](#4-enums--shared-types)                                                                                                                                         |
+| `description`     | `string`                                | ✅       | Free-text description (can be empty `""`)                                                                                                                                   |
+| `isSharedService` | `boolean`                               | ✅       | Whether this process is a shared service                                                                                                                                    |
+| `entities`        | `Record<string, Record<string, YesNo>>` | ✅       | Nested map: **Group Company ID → Site name → `"Yes"` \| `"No"`**. Outer keys are `GroupCompany.id` values from `/api/group-companies`; inner keys remain site name strings. |
 
-> **Important:** The `entities` object is keyed by company **name** (not ID) and each inner object is keyed by **site name**. The frontend builds dynamic table columns from these keys.
+> **Important:** The `entities` object is keyed by company **ID** (not name). Use `GroupCompany.id` as the outer key and `GroupCompany.name` only for display. Inner site keys remain name strings. Switching to ID-based keys ensures rename safety.
 
 ---
 
-### 3.2 GET `/api/group-companies`
+### 3.2 GET `/api/domains`
+
+Returns the list of business domains. Used as a lookup to resolve `ProcessItem.domain` IDs to display names.
+
+**Response — `data: Domain[]`**
+
+```json
+{
+  "data": [
+    {
+      "id": "dom-005",
+      "name": "Exploration & Planning",
+      "code": "EXP"
+    },
+    {
+      "id": "dom-006",
+      "name": "Finance",
+      "code": "FIN"
+    }
+  ],
+  "message": "OK",
+  "success": true
+}
+```
+
+| Field  | Type     | Required | Description                                                   |
+| ------ | -------- | -------- | ------------------------------------------------------------- |
+| `id`   | `string` | ✅       | Unique domain identifier (used as FK in `ProcessItem.domain`) |
+| `name` | `string` | ✅       | Display name (e.g. `"Exploration & Planning"`)                |
+| `code` | `string` | ✅       | Short code used for level codes (e.g. `"EXP"`)                |
+
+---
+
+### 3.3 GET `/api/group-companies`
 
 Returns the group companies the authenticated user is authorised to see.
 
@@ -165,7 +199,7 @@ Returns the group companies the authenticated user is authorised to see.
 
 ---
 
-### 3.3 GET `/api/processes/:parentId/level4s`
+### 3.4 GET `/api/processes/:parentId/level4s`
 
 Returns Level 4 records under a given Level 3 process.
 
@@ -201,7 +235,7 @@ Returns Level 4 records under a given Level 3 process.
 
 ---
 
-### 3.4 GET `/api/process-catalog/my-tasks`
+### 3.5 GET `/api/process-catalog/my-tasks`
 
 Returns tasks assigned to the current user that need action.
 
@@ -216,7 +250,7 @@ Returns tasks assigned to the current user that need action.
       "processName": "Basin Modeling",
       "requestId": "REQ-001",
       "level": "L3",
-      "domain": "Exploration",
+      "domain": "dom-005",
       "stageCurrent": 2,
       "stageTotal": 4,
       "stageText": "Quality Review",
@@ -248,7 +282,7 @@ Returns tasks assigned to the current user that need action.
 | `processName`    | `string`         | ✅       | Display name                               |
 | `requestId`      | `string`         | ✅       | Associated change request ID               |
 | `level`          | `string`         | ✅       | e.g. `"L3"`, `"L4"`                        |
-| `domain`         | `string`         | ✅       | Domain name                                |
+| `domain`         | `string`         | ✅       | Domain ID from `/api/domains`              |
 | `stageCurrent`   | `number`         | ✅       | Current workflow stage (1-based)           |
 | `stageTotal`     | `number`         | ✅       | Total workflow stages                      |
 | `stageText`      | `string`         | ✅       | Label for current stage                    |
@@ -271,7 +305,7 @@ Returns tasks assigned to the current user that need action.
 
 ---
 
-### 3.5 GET `/api/process-catalog/submitted-requests`
+### 3.6 GET `/api/process-catalog/submitted-requests`
 
 Returns change requests submitted by (or visible to) the current user.
 
@@ -296,7 +330,7 @@ Returns change requests submitted by (or visible to) the current user.
       "publishedOn": "",
       "changes": [{ "id": "ch-1", "label": "Process Name", "oldValue": "v1", "newValue": "v2" }],
       "processCategory": "Exploration",
-      "domain": "Exploration",
+      "domain": "dom-005",
       "processLevel": "L3",
       "level1": "Sub-surface",
       "level2": "G&G Studies",
@@ -335,7 +369,7 @@ Returns change requests submitted by (or visible to) the current user.
 | `publishedOn`        | `string`                | ✅       | Publish date (empty if not published) |
 | `changes`            | `ChangeDetail[]`        | ✅       | Field-level changes                   |
 | `processCategory`    | `string`                | ❌       | Badge label for detail view           |
-| `domain`             | `string`                | ❌       | Domain name                           |
+| `domain`             | `string`                | ❌       | Domain ID from `/api/domains`         |
 | `processLevel`       | `string`                | ❌       | Level label                           |
 | `level1`             | `string`                | ❌       | Level 1 name                          |
 | `level2`             | `string`                | ❌       | Level 2 name                          |
@@ -364,7 +398,7 @@ Returns change requests submitted by (or visible to) the current user.
 
 ---
 
-### 3.6 GET `/api/process-catalog/recorded-changes/:processId`
+### 3.7 GET `/api/process-catalog/recorded-changes/:processId`
 
 Returns the change log for a specific Level 3 process — grouped by parent, current, and child levels.
 
@@ -412,7 +446,7 @@ Returns the change log for a specific Level 3 process — grouped by parent, cur
 
 ---
 
-### 3.7 POST `/api/process-catalog`
+### 3.8 POST `/api/process-catalog`
 
 Creates a new process row (Level 1, 2, or 3 depending on payload).
 
@@ -420,7 +454,7 @@ Creates a new process row (Level 1, 2, or 3 depending on payload).
 
 ```json
 {
-  "domain": "Exploration",
+  "domain": "dom-005",
   "level1Name": "Sub-surface",
   "level1Code": "EXP.1",
   "level2Name": "G&G Studies",
@@ -439,7 +473,7 @@ Returns `201 Created`.
 
 ---
 
-### 3.8 PATCH `/api/process-catalog/:id/rename`
+### 3.9 PATCH `/api/process-catalog/:id/rename`
 
 Renames a process at any level.
 
@@ -459,7 +493,7 @@ Returns `200 OK` with `"message": "Renamed"`.
 
 ---
 
-### 3.9 PATCH `/api/process-catalog/entities`
+### 3.10 PATCH `/api/process-catalog/entities`
 
 Bulk update entity applicability (the Yes/No toggles in the table).
 
@@ -470,7 +504,7 @@ Bulk update entity applicability (the Yes/No toggles in the table).
   "updates": [
     {
       "processId": "550e8400-...",
-      "company": "ADNOC HQ",
+      "company": "gc-001",
       "site": "General",
       "value": "Yes"
     }
@@ -478,12 +512,12 @@ Bulk update entity applicability (the Yes/No toggles in the table).
 }
 ```
 
-| Field       | Type     | Required | Description        |
-| ----------- | -------- | -------- | ------------------ |
-| `processId` | `string` | ✅       | Target Level 3 row |
-| `company`   | `string` | ✅       | Group company name |
-| `site`      | `string` | ✅       | Site name          |
-| `value`     | `YesNo`  | ✅       | `"Yes"` or `"No"`  |
+| Field       | Type     | Required | Description                          |
+| ----------- | -------- | -------- | ------------------------------------ |
+| `processId` | `string` | ✅       | Target Level 3 row                   |
+| `company`   | `string` | ✅       | Group company ID (`GroupCompany.id`) |
+| `site`      | `string` | ✅       | Site name                            |
+| `value`     | `YesNo`  | ✅       | `"Yes"` or `"No"`                    |
 
 **Response — `data: null`**
 
@@ -491,7 +525,7 @@ Returns `200 OK`.
 
 ---
 
-### 3.10 POST `/api/processes/:parentId/level4s`
+### 3.11 POST `/api/processes/:parentId/level4s`
 
 Creates one or more Level 4 records under a Level 3 parent.
 
@@ -501,7 +535,7 @@ Creates one or more Level 4 records under a Level 3 parent.
 
 ```json
 {
-  "groupCompany": "ADNOC HQ",
+  "groupCompany": "gc-001",
   "items": [
     {
       "processCode": "EXP.1.1.1.4",
@@ -518,7 +552,7 @@ Returns `201 Created`.
 
 ---
 
-### 3.11 PUT `/api/level4/:id`
+### 3.12 PUT `/api/level4/:id`
 
 Updates an existing Level 4 record.
 
@@ -540,7 +574,7 @@ Returns `200 OK`.
 
 ---
 
-### 3.12 POST `/api/process-catalog/:id/validate`
+### 3.13 POST `/api/process-catalog/:id/validate`
 
 Triggers validation / submission for approval on a Level 3 process.
 
@@ -558,7 +592,7 @@ Returns `200 OK` with `"message": "Submitted for validation"`.
 
 ---
 
-### 3.13 PUT `/api/processes/:parentId/level4s`
+### 3.14 PUT `/api/processes/:parentId/level4s`
 
 Bulk save (create, update, or delete) Level 4 records under a Level 3 parent. Used when editing the L4 table inline and clicking "Save".
 
@@ -615,7 +649,7 @@ Returns `200 OK`.
 
 ---
 
-### 3.14 DELETE `/api/level4s/:id`
+### 3.15 DELETE `/api/level4s/:id`
 
 Deletes a single Level 4 record.
 
@@ -643,7 +677,7 @@ Returns `200 OK`.
 
 ---
 
-### 3.15 GET `/api/processes/:parentId/level4-names`
+### 3.16 GET `/api/processes/:parentId/level4-names`
 
 Returns a flat list of Level 4 process names under a Level 3 parent. Used for autocomplete / validation without fetching full L4 records.
 
@@ -663,7 +697,7 @@ Returns `200 OK`.
 
 ---
 
-### 3.16 PUT `/api/processes/bulk-edit`
+### 3.17 PUT `/api/processes/bulk-edit`
 
 Bulk-edit applicability for multiple Level 3 processes at once. Typically used when toggling a company/site column for many rows simultaneously.
 
@@ -672,14 +706,14 @@ Bulk-edit applicability for multiple Level 3 processes at once. Typically used w
 ```json
 {
   "processIds": ["550e8400-e29b-41d4-a716-446655440000", "660f9500-f39c-52e5-b827-557766551111"],
-  "companySite": "ADNOC HQ: General"
+  "companySite": "gc-001: General"
 }
 ```
 
-| Field         | Type       | Required | Description                       |
-| ------------- | ---------- | -------- | --------------------------------- |
-| `processIds`  | `string[]` | ✅       | UUIDs of the Level 3 rows to edit |
-| `companySite` | `string`   | ✅       | `"Company: Site"` key to toggle   |
+| Field         | Type       | Required | Description                                                |
+| ------------- | ---------- | -------- | ---------------------------------------------------------- |
+| `processIds`  | `string[]` | ✅       | UUIDs of the Level 3 rows to edit                          |
+| `companySite` | `string`   | ✅       | `"CompanyId: Site"` key to toggle (uses `GroupCompany.id`) |
 
 **Response — `data: BulkProcessActionResponse`**
 
@@ -703,7 +737,7 @@ Returns `200 OK`.
 
 ---
 
-### 3.17 POST `/api/processes/bulk-submit`
+### 3.18 POST `/api/processes/bulk-submit`
 
 Submits multiple Level 3 processes for approval in a single request.
 
@@ -736,7 +770,7 @@ Returns `200 OK`.
 
 ---
 
-### 3.18 POST `/api/tasks/:taskId/approve`
+### 3.19 POST `/api/tasks/:taskId/approve`
 
 Approves a single task assigned to the current user.
 
@@ -768,7 +802,7 @@ Returns `200 OK`.
 
 ---
 
-### 3.19 POST `/api/tasks/:taskId/return`
+### 3.20 POST `/api/tasks/:taskId/return`
 
 Returns a task to the requester with a reason.
 
@@ -804,7 +838,7 @@ Returns `200 OK`.
 
 ---
 
-### 3.20 POST `/api/tasks/:taskId/reject`
+### 3.21 POST `/api/tasks/:taskId/reject`
 
 Rejects a task permanently.
 
@@ -840,7 +874,7 @@ Returns `200 OK`.
 
 ---
 
-### 3.21 POST `/api/tasks/bulk-approve`
+### 3.22 POST `/api/tasks/bulk-approve`
 
 Approves multiple tasks in a single request.
 
@@ -878,7 +912,7 @@ Returns `200 OK`.
 
 ---
 
-### 3.22 POST `/api/tasks/bulk-return`
+### 3.23 POST `/api/tasks/bulk-return`
 
 Returns multiple tasks to their requesters with a shared reason.
 
@@ -904,7 +938,7 @@ Returns `200 OK`.
 
 ---
 
-### 3.23 POST `/api/tasks/bulk-reject`
+### 3.24 POST `/api/tasks/bulk-reject`
 
 Rejects multiple tasks with an optional shared reason.
 

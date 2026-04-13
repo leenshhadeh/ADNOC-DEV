@@ -112,12 +112,11 @@ const ManualParametersForm = (props: any) => {
         <div className="col-span-2 flex w-full flex-col">
           <label className="text-muted-foreground text-sm">Key Manual Steps​</label>
           <div className="rounded-[16px] border border-[#DFE3E6]">
-
-          <Editor
-            value={formData.keyManualSteps}
-            onTextChange={(e: any) => handleChange(e.htmlValue)}
-            className='text-editor'
-          />
+            <Editor
+              value={formData.keyManualSteps}
+              onTextChange={(e: any) => handleChange(e.htmlValue)}
+              className="text-editor"
+            />
           </div>
         </div>
       </form>
