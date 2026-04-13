@@ -17,6 +17,8 @@ import { useGetProcessDetails } from '@features/module-assessment-data/hooks/use
 import TargerRecommendationsTab from './processDetails/tabs/TargerRecommendationsTab'
 import OpprtunitiesTab from './processDetails/tabs/OpprtunitiesTab'
 import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
+import RecordedChangesTab from './processDetails/tabs/RecordedChangesTab'
+import CommentsTab from './processDetails/tabs/CommentsTab'
 
 
 const ProcessDetailsPage = () => {
@@ -120,7 +122,8 @@ const ProcessDetailsPage = () => {
                   moreOptions={[
                     { label: 'Target Recommendations​', value: 'TargetRecommendations​​'},
                     { label: 'Opportunities', value: 'Opportunities' },
-                    { label: 'Recorded changes', value: 'RecordedChanges' }
+                    { label: 'Recorded changes', value: 'RecordedChanges' },
+                    { label: 'Comments', value: 'Comments' }
                   ]}
                   activeTab={activeTab}
                   onTabChange={(newActiveTab) => {
@@ -146,6 +149,8 @@ const ProcessDetailsPage = () => {
                       {activeTab == 'ManualParameters' && <ManualParametersTab process={data[0]} />}
                       {activeTab == 'TargetRecommendations​​' && <TargerRecommendationsTab process={data[0]} />}
                       {activeTab == 'Opportunities' && <OpprtunitiesTab process={data[0]} />}
+                      {activeTab == 'RecordedChanges' && <RecordedChangesTab process={data[0]} />}
+                      {activeTab == 'Comments' && <CommentsTab comments={data[0].comments}/>}
                     </div>
                   </div>
                 </div>

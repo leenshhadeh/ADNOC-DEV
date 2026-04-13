@@ -99,5 +99,24 @@ export const PROESS_DETAILS = [
         modifiedOn: '2026-10-10',
       },
     ],
+
+    comments:[
+      {
+        username:'Ali Abdullah',
+        userPrfileImg:'',
+        comment:'please fill out the sutomation steps ',
+        date:'2026-10-10',
+        status:'Draft',
+        markedAsReviewed:false
+      },
+      {
+        username:'Ahmad Al Ezz',
+        userPrfileImg:'',
+        comment:'All are up to date',
+        date:'2026-10-10',
+        status:'Published',
+        markedAsReviewed:true
+      }
+    ]
   },
 ]
