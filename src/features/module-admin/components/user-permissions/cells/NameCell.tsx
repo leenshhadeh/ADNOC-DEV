@@ -21,12 +21,23 @@ type SelectUserOption = {
 
 type Props = {
   row: UserPermissionRow
-  onRowSelectUser?: (rowId: string, user: { id: string; name: string; email: string }) => void
+  onRowSelectUser?: (rowId: string, user: { id?: string; name: string; email: string }) => void
   onView?: (row: UserPermissionRow) => void
   onDeactivate?: (row: UserPermissionRow) => void
+  isBulkEditMode?: boolean
+  isSelected?: boolean
+  onToggleSelection?: (checked: boolean) => void
 }
 
-const NameCell = ({ row, onRowSelectUser, onView, onDeactivate }: Props) => {
+const NameCell = ({
+  row,
+  onRowSelectUser,
+  onView,
+  onDeactivate,
+  isBulkEditMode = false,
+  isSelected = false,
+  onToggleSelection,
+}: Props) => {
   const { id, name, email, isEditing } = row
 
   const initials = useMemo(() => {
@@ -46,7 +57,6 @@ const NameCell = ({ row, onRowSelectUser, onView, onDeactivate }: Props) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        // only keep this line if userDirectory items actually include img
         img: 'img' in user ? user.img : undefined,
       })),
     [],
@@ -114,35 +124,45 @@ const NameCell = ({ row, onRowSelectUser, onView, onDeactivate }: Props) => {
         </div>
       </div>
 
-      <div className="shrink-0">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-[#DCE5F9]"
-            >
-              <MoreHorizontal className="h-4 w-4 text-gray-600" />
-            </button>
-          </DropdownMenuTrigger>
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center">
+        {isBulkEditMode ? (
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={(e) => onToggleSelection?.(e.target.checked)}
+            className="h-4 w-4 cursor-pointer rounded-[2px] accent-[#0047BA]"
+            aria-label={`Select ${name}`}
+          />
+        ) : (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-[#DCE5F9]"
+              >
+                <MoreHorizontal className="h-4 w-4 text-gray-600" />
+              </button>
+            </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="w-44 rounded-xl p-1">
-            <DropdownMenuItem
-              onClick={() => onView?.(row)}
-              className="flex cursor-pointer items-center gap-2 rounded-lg data-[highlighted]:bg-[#DCE5F9]"
-            >
-              <Eye className="h-4 w-4" />
-              <span>View</span>
-            </DropdownMenuItem>
+            <DropdownMenuContent align="end" className="w-44 rounded-xl p-1">
+              <DropdownMenuItem
+                onClick={() => onView?.(row)}
+                className="flex cursor-pointer items-center gap-2 rounded-lg data-[highlighted]:bg-[#DCE5F9]"
+              >
+                <Eye className="h-4 w-4" />
+                <span>View</span>
+              </DropdownMenuItem>
 
-            <DropdownMenuItem
-              onClick={() => onDeactivate?.(row)}
-              className="flex cursor-pointer items-center gap-2 rounded-lg text-red-600 data-[highlighted]:bg-[#DCE5F9] data-[highlighted]:text-red-600"
-            >
-              <Trash2 className="h-4 w-4" />
-              <span>Deactivate</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuItem
+                onClick={() => onDeactivate?.(row)}
+                className="flex cursor-pointer items-center gap-2 rounded-lg text-red-600 data-[highlighted]:bg-[#DCE5F9] data-[highlighted]:text-red-600"
+              >
+                <Trash2 className="h-4 w-4" />
+                <span>Deactivate</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
     </div>
   )

@@ -61,7 +61,8 @@ table-light-styles
   border-bottom: 1px solid #dfe3e6 !important;
 }
 
-.text-editor.ql-container , .ql-container.ql-snow {
+.text-editor.ql-container,
+.ql-container.ql-snow {
   border: none !important;
 }
 
@@ -69,8 +70,16 @@ table-light-styles
   min-height: 160px;
 }
 
-select:disabled, input:disabled , textarea:disabled {
+select:disabled,
+input:disabled,
+textarea:disabled {
   opacity: 100%;
-  background-color: #F1F3F5;
-  border: 1px solid #DFE3E6;
+  background-color: #f1f3f5;
+  border: 1px solid #dfe3e6;
+}
+
+button,
+a,
+input[type='checkbox'] {
+  cursor: pointer !important;
 }

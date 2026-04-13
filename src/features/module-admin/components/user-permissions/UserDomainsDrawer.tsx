@@ -18,6 +18,8 @@ type Props = {
   onOpenChange: (open: boolean) => void
   onChange: (next: AccessConfig) => void
   onSave: () => void
+  isBulkMode?: boolean
+  selectedUsersCount?: number
 }
 
 const UserDomainsDrawer = ({
@@ -27,6 +29,8 @@ const UserDomainsDrawer = ({
   onOpenChange,
   onChange,
   onSave,
+  isBulkMode = false,
+  selectedUsersCount = 0,
 }: Props) => {
   const createInitialOpenGroups = () =>
     Object.fromEntries(groupCompanies.map((gc) => [gc.publicId, false]))
@@ -60,8 +64,8 @@ const UserDomainsDrawer = ({
     draftAccessConfig.some(({ groupCompany }) => groupCompany.publicId === groupCompanyId)
 
   const getSelectedDomainsForGroup = (groupCompanyId: string) =>
-    draftAccessConfig.find(({ groupCompany }) => groupCompany.publicId === groupCompanyId)?.groupCompany
-      .applicableDomains ?? []
+    draftAccessConfig.find(({ groupCompany }) => groupCompany.publicId === groupCompanyId)
+      ?.groupCompany.applicableDomains ?? []
 
   const areAllDomainsSelectedForGroup = (groupCompanyId: string) =>
     getSelectedDomainsForGroup(groupCompanyId).length === domains.length
@@ -102,7 +106,9 @@ const UserDomainsDrawer = ({
               groupCompany: {
                 ...entry.groupCompany,
                 applicableDomains: isSelected
-                  ? entry.groupCompany.applicableDomains.filter((item) => item.publicId !== domainId)
+                  ? entry.groupCompany.applicableDomains.filter(
+                      (item) => item.publicId !== domainId,
+                    )
                   : [...entry.groupCompany.applicableDomains, domain],
               },
             }
@@ -161,17 +167,25 @@ const UserDomainsDrawer = ({
         <div className="mx-6 border-t border-[#DFE3E6]" />
 
         <div className="px-6 py-5">
-          <p className="mb-3 text-[14px] font-[300] text-[#687076]">User name</p>
+          <p className="mb-3 text-[14px] font-[300] text-[#687076]">
+            {isBulkMode ? 'Selected users' : 'User name'}
+          </p>
 
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E5E7EB] text-[12px] font-semibold text-[#374151]">
-              {initials}
-            </div>
-
+          {isBulkMode ? (
             <div className="truncate text-[14px] font-[500] text-[#151718]">
-              {user?.name || 'No user selected'}
+              {selectedUsersCount} selected users
             </div>
-          </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E5E7EB] text-[12px] font-semibold text-[#374151]">
+                {initials}
+              </div>
+
+              <div className="truncate text-[14px] font-[500] text-[#151718]">
+                {user?.name || 'No user selected'}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="mx-6 border-t border-[#DFE3E6]" />
