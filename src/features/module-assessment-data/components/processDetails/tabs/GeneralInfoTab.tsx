@@ -8,6 +8,11 @@ import TagsList from '@/shared/components/table-primitives/TagsList'
 import DataTable from '@/shared/components/data-table/DataTable'
 import type { ColumnDef } from '@tanstack/react-table'
 
+interface orgRows {
+  unit: string
+  subUnit?: string[]
+  team?: string[]
+}
 const GeneralInfoTab = (props: any) => {
   const { processGeneralInfo ,process , onFormSubmit} = props
   const [openBUSheet, setOpenBUSheet] = useState(false)
@@ -28,7 +33,7 @@ const GeneralInfoTab = (props: any) => {
     })
   }, [openBUSheet])
 
-  const columnsBU = useMemo<ColumnDef<any, unknown>[]>(() => [
+  const columnsBU = useMemo<ColumnDef<orgRows>[]>(() => [
     {
       id: 'unit',
       accessorKey: 'unit',
@@ -57,8 +62,10 @@ const GeneralInfoTab = (props: any) => {
         />
       ),
     },
-  ])
-  const columnsTeam = useMemo<ColumnDef<any, unknown>[]>(() => [
+  ], [])
+
+
+  const columnsTeam = useMemo<ColumnDef<orgRows, unknown>[]>(() => [
     {
       id: 'unit',
       accessorKey: 'unit',
@@ -85,7 +92,7 @@ const GeneralInfoTab = (props: any) => {
         />
       ),
     },
-  ])
+  ], [])
 
   return (
     <>

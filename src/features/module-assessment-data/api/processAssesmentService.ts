@@ -2,6 +2,7 @@ import type { TaskItem } from '../types/my-tasks'
 import type { WorkflowHistoryItem } from '../types/submitted-requests'
 import { MY_TASKS } from '../constants/my-tasks'
 import { SUBMITTED_REQUESTS } from '../constants/submitted-requests'
+import {PROESS_DETAILS} from '../constants/process-details'
 
 export function getMyTasks(): Promise<TaskItem[]> {
   return new Promise((resolve) => setTimeout(() => resolve(MY_TASKS), 500))
@@ -110,4 +111,10 @@ const MOCK_WORKFLOW_HISTORY: WorkflowHistoryItem[] = [
 export function getTaskWorkflowHistory(taskId: string): Promise<WorkflowHistoryItem[]> {
   void taskId
   return new Promise((resolve) => setTimeout(() => resolve(MOCK_WORKFLOW_HISTORY), 500))
+}
+
+
+export function getProcess(processId: string): Promise<any[]> {
+  void processId
+  return new Promise((resolve) => setTimeout(() => resolve(PROESS_DETAILS), 500))
 }
