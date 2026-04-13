@@ -1,33 +1,38 @@
 import { domains, groupCompanies } from './constants'
 import type { AccessConfig } from './types'
 
-export const createEmptyAccessConfig = (): AccessConfig => ({
-  selectedGroupCompanyIds: [],
-  selectedAccessByGroupCompany: {},
-})
+export const createEmptyAccessConfig = (): AccessConfig => []
 
-export const createFullAccessConfig = (): AccessConfig => ({
-  selectedGroupCompanyIds: groupCompanies.map((gc) => gc.id),
-  selectedAccessByGroupCompany: Object.fromEntries(
-    groupCompanies.map((gc) => [gc.id, domains.map((domain) => domain.id)]),
-  ),
-})
+export const createFullAccessConfig = (): AccessConfig =>
+  groupCompanies.map((groupCompany) => ({
+    groupCompany: {
+      ...groupCompany,
+      applicableDomains: [...domains],
+    },
+  }))
 
-export const cloneAccessConfig = (config: AccessConfig): AccessConfig => ({
-  selectedGroupCompanyIds: [...config.selectedGroupCompanyIds],
-  selectedAccessByGroupCompany: Object.fromEntries(
-    Object.entries(config.selectedAccessByGroupCompany).map(([gcId, domainIds]) => [
-      gcId,
-      [...domainIds],
-    ]),
-  ),
-})
+export const cloneAccessConfig = (config: AccessConfig): AccessConfig =>
+  config.map(({ groupCompany }) => ({
+    groupCompany: {
+      publicId: groupCompany.publicId,
+      name: groupCompany.name,
+      applicableDomains: groupCompany.applicableDomains.map((domain) => ({
+        publicId: domain.publicId,
+        code: domain.code,
+        name: domain.name,
+      })),
+    },
+  }))
 
 export const getAccessCounts = (config: AccessConfig) => {
-  const selectedDomainIds = new Set(Object.values(config.selectedAccessByGroupCompany).flat())
+  const selectedDomainIds = new Set(
+    config.flatMap(({ groupCompany }) =>
+      groupCompany.applicableDomains.map((domain) => domain.publicId),
+    ),
+  )
 
   return {
-    gcsAccess: String(config.selectedGroupCompanyIds.length),
-    domainsAccess: String(selectedDomainIds.size),
+    gcsAccess: config.length,
+    domainsAccess: selectedDomainIds.size,
   }
 }

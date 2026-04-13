@@ -2,27 +2,33 @@ import ActionSheet from '@/shared/components/ActionSheet'
 import { TreeSelect } from '@/shared/components/TreeSelect'
 import { Button } from '@/shared/components/ui/button'
 import { useState } from 'react'
-import { BUData } from '../../constants/org-mapping-data'
+import { DigitalTeam } from '../../constants/org-mapping-data'
 
-const BUSheet = (props: any) => {
-  const { open = true, handleOpenChange , title } = props
+const DigitalTeamSheet = (props: any) => {
+  const { open = true, handleOpenChange } = props
   const [selected, setSelected] = useState<string[]>([])
 
   return (
-    <ActionSheet title={title || "Business Unit"} open={open} onOpenChange={handleOpenChange}>
+    <ActionSheet title={'Responsible Digital Team'} open={open} onOpenChange={handleOpenChange}>
       <div className="relative flex-1 overflow-hidden">
+      <div className="m-4">
+      <input
+        type="text"
+        placeholder={`Search...`}
+        className="flex h-8 w-full min-w-0 border-border bg-background text-sm text-foreground shadow-xs outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/40 rounded-md border px-2"
+      />
+      </div>
         {/* ── Main scrollable body ──────────────────────────────────────── */}
-        <div className="h-full overflow-y-auto m-6 p-6  rounded-md border">
+        <div className=" overflow-y-auto m-4 p-3 rounded-md border">
           {/* tree select: Shared servise:{Procurement, Vendor Relations:{v1, v2}} */}
           <TreeSelect
-            data={BUData}
+            data={DigitalTeam}
             selected={selected}
             onChange={setSelected}
           />
         </div>
       </div>
-      {/* Sticky footer */}
-      <div className="border-border shrink-0 px-6 py-4">
+       <div className="border-border shrink-0 px-6 py-4">
         <div className="flex gap-3">
           <Button
             type="button"
@@ -41,4 +47,4 @@ const BUSheet = (props: any) => {
   )
 }
 
-export default BUSheet
+export default DigitalTeamSheet

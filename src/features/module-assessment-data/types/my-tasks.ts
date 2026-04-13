@@ -21,7 +21,7 @@ export interface TaskItem {
   stageTotal: number
   stageText: string
   requester: string
-  status: CatalogStatus
+  status: string
   returnComment?: string
   actionRequired?: string
   changes?: ChangeRecord[]

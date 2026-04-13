@@ -1,26 +1,26 @@
 @layer base {
-    * {
-      @apply border-border outline-ring/50;
-    }
-    body {
-      @apply bg-background text-foreground;
-    }
-    html {
-      @apply font-sans;
-    }
-    a {
-      color: #687076;
-    }
-  
-    /* Hide scrollbars globally while keeping scroll functionality */
-    * {
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* IE/Edge */
-    }
-    *::-webkit-scrollbar {
-      display: none; /* Chrome/Safari/WebKit */
-    }
+  * {
+    @apply border-border outline-ring/50;
   }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+  a {
+    color: #687076;
+  }
+
+  /* Hide scrollbars globally while keeping scroll functionality */
+  * {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+  *::-webkit-scrollbar {
+    display: none; /* Chrome/Safari/WebKit */
+  }
+}
 
 /* columns across all tables */
 td {
@@ -36,4 +36,35 @@ td {
   background-color: #0047ba;
   color: #fff;
   border-radius: 3px;
+}
+
+/* 
+table-light-styles 
+*/
+.table-light div.border-border,
+.table-light td,
+.table-light th {
+  border-width: 0px !important;
+}
+.table-light td,
+.table-light th {
+  border-bottom-width: 1px !important;
+}
+.table-light table th {
+  background-color: #fff !important;
+}
+/* [End] - table-light-styles */
+
+/* text-editor */
+.text-editor .ql-toolbar {
+  border: none !important;
+  border-bottom: 1px solid #dfe3e6 !important;
+}
+
+.text-editor.ql-container , .ql-container.ql-snow {
+  border: none !important;
+}
+
+.text-editor .ql-editor {
+  min-height: 160px;
 }
