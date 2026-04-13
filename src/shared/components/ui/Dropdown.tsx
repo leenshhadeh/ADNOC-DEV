@@ -24,10 +24,12 @@ interface DropdownProps {
 const Dropdown = (props: DropdownProps) => {
   const { defaultValue, onValueChange, options = [], activeTab } = props
   const [value, setValue] = useState<string>(defaultValue)
+  const [activeLabel, setActiveLabel] = useState<string>(defaultValue)
 
   const handleValueChange = (nextValue: any) => {
     setValue(nextValue)
     onValueChange?.(nextValue)
+
   }
 
   return (
@@ -42,7 +44,7 @@ const Dropdown = (props: DropdownProps) => {
           )}
           aria-label={`Selected value: ${value}`}
         >
-          <span className="whitespace-normal">{value}</span>
+          <span className="whitespace-normal">{activeLabel}</span>
           <ChevronDown className="text-muted-foreground size-4" />
         </button>
       </DropdownMenuTrigger>
@@ -55,7 +57,7 @@ const Dropdown = (props: DropdownProps) => {
         {options.map((option) => (
           <DropdownMenuItem
             key={option.value}
-            onSelect={() => handleValueChange(option.value)}
+            onSelect={() => {handleValueChange(option.value); setActiveLabel(option.label)}}
             className={cn(
               'rounded-none px-4 py-2.5 text-base text-sm font-normal',
               value === option.value && 'bg-accent text-accent-foreground',
