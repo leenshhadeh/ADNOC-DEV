@@ -14,8 +14,8 @@ export const CATALOG_DATA: ProcessItem[] = [
     description: 'Creating a concept involves basin simulation and tectonic assessment.',
     isSharedService: true,
     entities: {
-      'ADNOC HQ': { General: 'Yes', 'Site A': 'No', 'Site B': 'No' },
-      'ADNOC AL DHAFRA AND AL YASAT': { General: 'No', 'Site A': 'No' },
+      'gc-001': { General: 'Yes', 'Site A': 'No', 'Site B': 'No' },
+      'gc-002': { General: 'No', 'Site A': 'No' },
     },
   },
   {
@@ -32,8 +32,8 @@ export const CATALOG_DATA: ProcessItem[] = [
       'Geophysical data interpretation involves analyzing regional seismic surveys and well log data.',
     isSharedService: false,
     entities: {
-      'ADNOC HQ': { General: 'No', 'Site A': 'No', 'Site B': 'No' },
-      'ADNOC AL DHAFRA AND AL YASAT': { General: 'Yes', 'Site A': 'No' },
+      'gc-001': { General: 'No', 'Site A': 'No', 'Site B': 'No' },
+      'gc-002': { General: 'Yes', 'Site A': 'No' },
     },
   },
   {
@@ -49,8 +49,8 @@ export const CATALOG_DATA: ProcessItem[] = [
     description: 'Evaluate exploration data using interactive dashboards for quick insights.',
     isSharedService: true,
     entities: {
-      'ADNOC HQ': { General: 'No', 'Site A': 'No', 'Site B': 'No' },
-      'ADNOC AL DHAFRA AND AL YASAT': { General: 'No', 'Site A': 'No' },
+      'gc-001': { General: 'No', 'Site A': 'No', 'Site B': 'No' },
+      'gc-002': { General: 'No', 'Site A': 'No' },
     },
   },
   {
@@ -66,8 +66,8 @@ export const CATALOG_DATA: ProcessItem[] = [
     description: 'Compiles and presents results of play assessments in a structured report format.',
     isSharedService: false,
     entities: {
-      'ADNOC HQ': { General: 'No', 'Site A': 'No', 'Site B': 'No' },
-      'ADNOC AL DHAFRA AND AL YASAT': { General: 'No', 'Site A': 'No' },
+      'gc-001': { General: 'No', 'Site A': 'No', 'Site B': 'No' },
+      'gc-002': { General: 'No', 'Site A': 'No' },
     },
   },
   {
@@ -83,8 +83,8 @@ export const CATALOG_DATA: ProcessItem[] = [
     description: 'Define project scope and workflow for efficient exploration.',
     isSharedService: true,
     entities: {
-      'ADNOC HQ': { General: 'No', 'Site A': 'Yes', 'Site B': 'No' },
-      'ADNOC AL DHAFRA AND AL YASAT': { General: 'No', 'Site A': 'No' },
+      'gc-001': { General: 'No', 'Site A': 'Yes', 'Site B': 'No' },
+      'gc-002': { General: 'No', 'Site A': 'No' },
     },
   },
   {
@@ -100,8 +100,8 @@ export const CATALOG_DATA: ProcessItem[] = [
     description: 'Regional data gathering and QC involves collecting and validating regional data.',
     isSharedService: false,
     entities: {
-      'ADNOC HQ': { General: 'No', 'Site A': 'No', 'Site B': 'No' },
-      'ADNOC AL DHAFRA AND AL YASAT': { General: 'No', 'Site A': 'No' },
+      'gc-001': { General: 'No', 'Site A': 'No', 'Site B': 'No' },
+      'gc-002': { General: 'No', 'Site A': 'No' },
     },
   },
   {
@@ -118,8 +118,8 @@ export const CATALOG_DATA: ProcessItem[] = [
       'Documents play potential, risks, and key insights to support exploration decisions.',
     isSharedService: true,
     entities: {
-      'ADNOC HQ': { General: 'No', 'Site A': 'Yes', 'Site B': 'No' },
-      'ADNOC AL DHAFRA AND AL YASAT': { General: 'No', 'Site A': 'No' },
+      'gc-001': { General: 'No', 'Site A': 'Yes', 'Site B': 'No' },
+      'gc-002': { General: 'No', 'Site A': 'No' },
     },
   },
   {
@@ -135,8 +135,8 @@ export const CATALOG_DATA: ProcessItem[] = [
     description: 'Performs detailed subsurface interpretation to refine geological understanding.',
     isSharedService: true,
     entities: {
-      'ADNOC HQ': { General: 'No', 'Site A': 'No', 'Site B': 'No' },
-      'ADNOC AL DHAFRA AND AL YASAT': { General: 'No', 'Site A': 'No' },
+      'gc-001': { General: 'No', 'Site A': 'No', 'Site B': 'No' },
+      'gc-002': { General: 'No', 'Site A': 'No' },
     },
   },
   {
@@ -152,8 +152,8 @@ export const CATALOG_DATA: ProcessItem[] = [
     description: 'Builds geological models to represent subsurface structures and formations.',
     isSharedService: true,
     entities: {
-      'ADNOC HQ': { General: 'No', 'Site A': 'No', 'Site B': 'No' },
-      'ADNOC AL DHAFRA AND AL YASAT': { General: 'No', 'Site A': 'Yes' },
+      'gc-001': { General: 'No', 'Site A': 'No', 'Site B': 'No' },
+      'gc-002': { General: 'No', 'Site A': 'Yes' },
     },
   },
 ]

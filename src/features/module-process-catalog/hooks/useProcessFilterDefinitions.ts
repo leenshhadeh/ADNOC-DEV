@@ -21,10 +21,10 @@ export function useProcessFilterDefinitions(
 ): FilterDefinition[] {
   return useMemo(() => {
     // Applicability options come from the API lookup — user-scoped.
-    // We use gc.name as the option id so the filter can directly match
+    // We use gc.id as the option id so the filter can directly match
     // against row.entities keys without a secondary lookup.
     const applicabilityOptions = (groupCompanies ?? []).map((gc) => ({
-      id: gc.name,
+      id: gc.id,
       label: gc.name,
     }))
 

@@ -26,6 +26,11 @@ export interface TaskItem {
   actionRequired?: string
   changes?: ChangeRecord[]
   submittedOn?: string
+  level?: string
+  level1?: string
+  level2?: string
+  businessFocalPoint?: string
+  digitalFocalPoint?: string
   subRows?: TaskItem[]
 }
 

@@ -314,17 +314,17 @@ const Level3RowActions = ({
 
 function buildEntityColumns(groupCompanies: GroupCompany[]): ColumnDef<ProcessItem, unknown>[] {
   return groupCompanies.map((entity) => ({
-    id: `entity__${entity.name}`,
+    id: `entity__${entity.id}`,
     header: entity.name,
     meta: { isEntityGroup: true },
     columns: entity.sites.map((site) => ({
-      id: `entity__${entity.name}__${site}`,
+      id: `entity__${entity.id}__${site}`,
       header: site,
       size: 200,
       enableSorting: false,
       cell: (info: CellContext<ProcessItem, unknown>) => {
         const row = info.row.original
-        const siteValue = (row.entities[entity.name]?.[site] ?? 'No') as YesNo
+        const siteValue = (row.entities[entity.id]?.[site] ?? 'No') as YesNo
         // Use the row's level3Code as the parent code for Level 4 generation.
         // E.g. level3Code "EXP.1.1.1" → new L4 rows get "EXP.1.1.1.1", "EXP.1.1.1.2", …
         return (
@@ -357,13 +357,13 @@ function buildFullReportEntityColumns(
   groupCompanies: GroupCompany[],
 ): ColumnDef<ProcessItem, unknown>[] {
   return groupCompanies.map((entity) => ({
-    id: `entity__${entity.name}`,
+    id: `entity__${entity.id}`,
     header: entity.name,
     meta: { isEntityGroup: true },
     columns: [
       // "Shared Service process?" sub-column
       {
-        id: `entity__${entity.name}__sharedService`,
+        id: `entity__${entity.id}__sharedService`,
         header: 'Shared Service process?',
         size: 200,
         enableSorting: false,
@@ -374,12 +374,12 @@ function buildFullReportEntityColumns(
       // Site sub-columns
       ...entity.sites.map(
         (site): ColumnDef<ProcessItem, unknown> => ({
-          id: `entity__${entity.name}__${site}`,
+          id: `entity__${entity.id}__${site}`,
           header: site,
           size: 200,
           enableSorting: false,
           cell: (info: CellContext<ProcessItem, unknown>) => {
-            const val = (info.row.original.entities[entity.name]?.[site] ?? 'No') as string
+            const val = (info.row.original.entities[entity.id]?.[site] ?? 'No') as string
             return <ReadOnlyEntityCell value={val} />
           },
         }),

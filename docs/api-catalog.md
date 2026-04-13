@@ -101,11 +101,11 @@ Returns the full process hierarchy (Domain → Level 1 → Level 2 → Level 3) 
       "description": "Defines the structural framework of the basin...",
       "isSharedService": false,
       "entities": {
-        "ADNOC HQ": {
+        "gc-001": {
           "General": "Yes",
           "Site B": "No"
         },
-        "ADNOC Onshore": {
+        "gc-002": {
           "General": "Yes"
         }
       }
@@ -118,22 +118,22 @@ Returns the full process hierarchy (Domain → Level 1 → Level 2 → Level 3) 
 
 **`ProcessItem` field reference:**
 
-| Field             | Type                                    | Required | Description                                                                                                                                 |
-| ----------------- | --------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`              | `string` (UUID)                         | ✅       | Unique identifier for the Level 3 row                                                                                                       |
-| `domain`          | `string`                                | ✅       | Top-level domain name (e.g. `"Exploration"`)                                                                                                |
-| `level1Name`      | `string`                                | ✅       | Level 1 process name                                                                                                                        |
-| `level1Code`      | `string`                                | ✅       | Level 1 code (e.g. `"EXP.1"`)                                                                                                               |
-| `level2Name`      | `string`                                | ✅       | Level 2 process name                                                                                                                        |
-| `level2Code`      | `string`                                | ✅       | Level 2 code (e.g. `"EXP.1.1"`)                                                                                                             |
-| `level3Name`      | `string`                                | ✅       | Level 3 process name                                                                                                                        |
-| `level3Code`      | `string`                                | ✅       | Level 3 code (e.g. `"EXP.1.1.1"`)                                                                                                           |
-| `level3Status`    | `ProcessStatus`                         | ✅       | See [Enums](#4-enums--shared-types)                                                                                                         |
-| `description`     | `string`                                | ✅       | Free-text description (can be empty `""`)                                                                                                   |
-| `isSharedService` | `boolean`                               | ✅       | Whether this process is a shared service                                                                                                    |
-| `entities`        | `Record<string, Record<string, YesNo>>` | ✅       | Nested map: **Group Company name → Site name → `"Yes"` \| `"No"`**. Keys must match the group companies returned by `/api/group-companies`. |
+| Field             | Type                                    | Required | Description                                                                                                                                                                 |
+| ----------------- | --------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`              | `string` (UUID)                         | ✅       | Unique identifier for the Level 3 row                                                                                                                                       |
+| `domain`          | `string`                                | ✅       | Top-level domain name (e.g. `"Exploration"`)                                                                                                                                |
+| `level1Name`      | `string`                                | ✅       | Level 1 process name                                                                                                                                                        |
+| `level1Code`      | `string`                                | ✅       | Level 1 code (e.g. `"EXP.1"`)                                                                                                                                               |
+| `level2Name`      | `string`                                | ✅       | Level 2 process name                                                                                                                                                        |
+| `level2Code`      | `string`                                | ✅       | Level 2 code (e.g. `"EXP.1.1"`)                                                                                                                                             |
+| `level3Name`      | `string`                                | ✅       | Level 3 process name                                                                                                                                                        |
+| `level3Code`      | `string`                                | ✅       | Level 3 code (e.g. `"EXP.1.1.1"`)                                                                                                                                           |
+| `level3Status`    | `ProcessStatus`                         | ✅       | See [Enums](#4-enums--shared-types)                                                                                                                                         |
+| `description`     | `string`                                | ✅       | Free-text description (can be empty `""`)                                                                                                                                   |
+| `isSharedService` | `boolean`                               | ✅       | Whether this process is a shared service                                                                                                                                    |
+| `entities`        | `Record<string, Record<string, YesNo>>` | ✅       | Nested map: **Group Company ID → Site name → `"Yes"` \| `"No"`**. Outer keys are `GroupCompany.id` values from `/api/group-companies`; inner keys remain site name strings. |
 
-> **Important:** The `entities` object is keyed by company **name** (not ID) and each inner object is keyed by **site name**. The frontend builds dynamic table columns from these keys.
+> **Important:** The `entities` object is keyed by company **ID** (not name). Use `GroupCompany.id` as the outer key and `GroupCompany.name` only for display. Inner site keys remain name strings. Switching to ID-based keys ensures rename safety.
 
 ---
 
@@ -470,7 +470,7 @@ Bulk update entity applicability (the Yes/No toggles in the table).
   "updates": [
     {
       "processId": "550e8400-...",
-      "company": "ADNOC HQ",
+      "company": "gc-001",
       "site": "General",
       "value": "Yes"
     }
@@ -478,12 +478,12 @@ Bulk update entity applicability (the Yes/No toggles in the table).
 }
 ```
 
-| Field       | Type     | Required | Description        |
-| ----------- | -------- | -------- | ------------------ |
-| `processId` | `string` | ✅       | Target Level 3 row |
-| `company`   | `string` | ✅       | Group company name |
-| `site`      | `string` | ✅       | Site name          |
-| `value`     | `YesNo`  | ✅       | `"Yes"` or `"No"`  |
+| Field       | Type     | Required | Description                          |
+| ----------- | -------- | -------- | ------------------------------------ |
+| `processId` | `string` | ✅       | Target Level 3 row                   |
+| `company`   | `string` | ✅       | Group company ID (`GroupCompany.id`) |
+| `site`      | `string` | ✅       | Site name                            |
+| `value`     | `YesNo`  | ✅       | `"Yes"` or `"No"`                    |
 
 **Response — `data: null`**
 
@@ -501,7 +501,7 @@ Creates one or more Level 4 records under a Level 3 parent.
 
 ```json
 {
-  "groupCompany": "ADNOC HQ",
+  "groupCompany": "gc-001",
   "items": [
     {
       "processCode": "EXP.1.1.1.4",
@@ -672,14 +672,14 @@ Bulk-edit applicability for multiple Level 3 processes at once. Typically used w
 ```json
 {
   "processIds": ["550e8400-e29b-41d4-a716-446655440000", "660f9500-f39c-52e5-b827-557766551111"],
-  "companySite": "ADNOC HQ: General"
+  "companySite": "gc-001: General"
 }
 ```
 
-| Field         | Type       | Required | Description                       |
-| ------------- | ---------- | -------- | --------------------------------- |
-| `processIds`  | `string[]` | ✅       | UUIDs of the Level 3 rows to edit |
-| `companySite` | `string`   | ✅       | `"Company: Site"` key to toggle   |
+| Field         | Type       | Required | Description                                                |
+| ------------- | ---------- | -------- | ---------------------------------------------------------- |
+| `processIds`  | `string[]` | ✅       | UUIDs of the Level 3 rows to edit                          |
+| `companySite` | `string`   | ✅       | `"CompanyId: Site"` key to toggle (uses `GroupCompany.id`) |
 
 **Response — `data: BulkProcessActionResponse`**
 

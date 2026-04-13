@@ -315,7 +315,7 @@ describe('exportToExcel', () => {
 
     it('reads the entity value from the process entities map', async () => {
       const groupCompanies = [makeGroupCompany({ sites: ['Site A'] })]
-      const process = makeProcess({ entities: { 'ADNOC HQ': { 'Site A': 'Yes' } } })
+      const process = makeProcess({ entities: { gc1: { 'Site A': 'Yes' } } })
 
       await exportToExcel({ rows: [process], groupCompanies })
 

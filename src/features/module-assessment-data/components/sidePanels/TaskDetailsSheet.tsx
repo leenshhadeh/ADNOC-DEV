@@ -236,21 +236,54 @@ const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) =
                           </p>
                         </div>
                         <div className="border-border border-b ps-4 pb-3">
-                          <p className="text-muted-foreground text-xs">Group Company</p>
+                          <p className="text-muted-foreground text-xs">Process Level</p>
                           <p className="text-foreground mt-0.5 font-semibold">
-                            {task.groupCompany ?? '—'}
+                            {task.level ?? '—'}
                           </p>
                         </div>
                         <div className="border-border border-r pe-4 pt-3">
+                          <p className="text-muted-foreground text-xs">Level 1</p>
+                          <p className="text-foreground mt-0.5 font-semibold">
+                            {task.level1 ?? '—'}
+                          </p>
+                        </div>
+                        <div className="ps-4 pt-3">
+                          <p className="text-muted-foreground text-xs">Level 2</p>
+                          <p className="text-foreground mt-0.5 font-semibold">
+                            {task.level2 ?? '—'}
+                          </p>
+                        </div>
+                      </div>
+                    </section>
+
+                    <Separator className="my-4" />
+                    <section>
+                      <p className="text-muted-foreground mb-3 text-sm font-medium">
+                        People involved
+                      </p>
+                      <div className="grid grid-cols-2">
+                        <div className="border-border border-r border-b pe-4 pb-3">
                           <p className="text-muted-foreground text-xs">Requester</p>
                           <p className="text-foreground mt-0.5 font-semibold">
                             {task.requester ?? '—'}
                           </p>
                         </div>
-                        <div className="ps-4 pt-3">
+                        <div className="border-border border-b ps-4 pb-3">
+                          <p className="text-muted-foreground text-xs">Business Focal Point</p>
+                          <p className="text-foreground mt-0.5 font-semibold">
+                            {task.businessFocalPoint ?? '—'}
+                          </p>
+                        </div>
+                        <div className="border-border border-r pe-4 pt-3">
                           <p className="text-muted-foreground text-xs">Submitted On</p>
                           <p className="text-foreground mt-0.5 font-semibold">
                             {task.submittedOn ?? '—'}
+                          </p>
+                        </div>
+                        <div className="ps-4 pt-3">
+                          <p className="text-muted-foreground text-xs">Digital Focal Point</p>
+                          <p className="text-foreground mt-0.5 font-semibold">
+                            {task.digitalFocalPoint ?? '—'}
                           </p>
                         </div>
                       </div>
@@ -258,16 +291,6 @@ const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) =
                   </>
                 )}
               </div>
-
-              {/* Return reason box */}
-              {task.returnComment && (
-                <div className="mt-4 rounded-xl border border-[#F9D4E0] bg-[#FFF5F7] px-4 py-3">
-                  <p className="text-muted-foreground mb-1 text-xs font-medium">
-                    Reason for return
-                  </p>
-                  <p className="text-foreground text-sm">{task.returnComment}</p>
-                </div>
-              )}
 
               {/* Change details section */}
               {task.changes && task.changes.length > 0 && (
@@ -278,6 +301,15 @@ const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) =
                     </h3>
                     <Separator className="flex-1" />
                   </div>
+                  {/* Return reason box */}
+                  {task.returnComment && (
+                    <div className="mt-4 rounded-xl border border-[#F9D4E0] bg-[#FFF5F7] px-4 py-3">
+                      <p className="text-muted-foreground mb-1 text-xs font-medium">
+                        Reason for return
+                      </p>
+                      <p className="text-foreground text-sm">{task.returnComment}</p>
+                    </div>
+                  )}
 
                   <Accordion type="single" collapsible className="mt-3 w-full">
                     {task.changes.map((change, index) => (
