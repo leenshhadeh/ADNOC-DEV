@@ -131,7 +131,9 @@ const ProcessDetailsPage = () => {
                           onFormSubmit={() => {}}
                         />
                       )}
-                      {activeTab == 'AutomationParameters' && <AutomationParameterTab process={data[0]} /> }
+                      {activeTab == 'AutomationParameters' && (
+                        <AutomationParameterTab process={data[0]} />
+                      )}
                       {activeTab == 'ManualParameters' && <ManualParametersTab process={data[0]} />}
                     </div>
                   </div>
