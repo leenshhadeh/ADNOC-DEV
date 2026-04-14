@@ -1,5 +1,5 @@
 import type { CommentEntry, TaskItem } from '../types/my-tasks'
-import type { WorkflowHistoryItem } from '../types/submitted-requests'
+import type { RequestItem, WorkflowHistoryItem } from '../types/submitted-requests'
 import { MY_TASKS } from '../constants/my-tasks'
 import { SUBMITTED_REQUESTS } from '../constants/submitted-requests'
 import { PROESS_DETAILS } from '../constants/process-details'
@@ -9,7 +9,7 @@ export function getMyTasks(): Promise<TaskItem[]> {
 }
 
 // getSubmittedRequests
-export function getSubmittedRequests(): Promise<any[]> {
+export function getSubmittedRequests(): Promise<RequestItem[]> {
   return new Promise((resolve) => setTimeout(() => resolve(SUBMITTED_REQUESTS), 500))
 }
 

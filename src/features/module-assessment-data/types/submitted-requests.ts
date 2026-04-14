@@ -39,5 +39,9 @@ export interface RequestItem {
   level2?: string
   /** Falls back to approver when absent */
   businessFocalPoint?: string
+  /** Populated when status is "Returned draft" */
+  returnComment?: string
+  /** Populated when status is "Rejected" */
+  rejectComment?: string
   workflowHistory?: WorkflowHistoryItem[]
 }

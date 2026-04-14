@@ -32,6 +32,7 @@ export interface TaskItem {
   requester: string
   status: string
   returnComment?: string
+  rejectComment?: string
   actionRequired?: string
   changes?: ChangeRecord[]
   submittedOn?: string

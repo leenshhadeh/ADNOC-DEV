@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
 import { ArrowRight, ChevronDown, ChevronRight, ChevronUp, Clock, Eye, X } from 'lucide-react'
 
@@ -146,6 +147,7 @@ interface RequestDetailsSheetProps {
 }
 
 const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsSheetProps) => {
+  const navigate = useNavigate()
   const [showMore, setShowMore] = useState(false)
   const [showWorkflowHistory, setShowWorkflowHistory] = useState(false)
 
@@ -181,6 +183,12 @@ const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsShee
                 <button
                   type="button"
                   className="text-primary inline-flex items-center gap-1.5 text-sm font-medium hover:underline"
+                  onClick={() => {
+                    if (request.processId) {
+                      onOpenChange(false)
+                      navigate(`/assessment-data/process/${request.processId}`)
+                    }
+                  }}
                 >
                   <Eye className="size-4" />
                   View full card
@@ -298,8 +306,29 @@ const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsShee
             <section className="mt-6">
               <div className="flex items-center gap-3">
                 <h3 className="text-foreground shrink-0 text-xl font-semibold">Change details</h3>
+
                 <Separator className="flex-1" />
               </div>
+
+              {/* Return reason box */}
+              {request.returnComment && (
+                <div className="mt-4 rounded-xl border border-[#F9D4E0] bg-[#FFF5F7] px-4 py-3">
+                  <p className="text-muted-foreground mb-1 text-xs font-medium">
+                    Reason for return
+                  </p>
+                  <p className="text-foreground text-sm">{request.returnComment}</p>
+                </div>
+              )}
+
+              {/* Reject reason box */}
+              {request.rejectComment && (
+                <div className="mt-4 rounded-xl border border-[#F9D4E0] bg-[#FFF5F7] px-4 py-3">
+                  <p className="text-muted-foreground mb-1 text-xs font-medium">
+                    Reason for rejection
+                  </p>
+                  <p className="text-foreground text-sm">{request.rejectComment}</p>
+                </div>
+              )}
 
               <Accordion type="single" collapsible className="mt-3 w-full">
                 {request.changes.map((change: any) => (

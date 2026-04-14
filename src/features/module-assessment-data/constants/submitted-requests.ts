@@ -1,5 +1,4 @@
-import type { RequestItem } from "../types/submitted-requests";
-
+import type { RequestItem } from '../types/submitted-requests'
 
 export const SUBMITTED_REQUESTS: RequestItem[] = [
   {
@@ -101,6 +100,8 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
     stageTotal: 4,
     stageText: 'Pending updates',
     submittedOn: '09 Apr 2024',
+    returnComment:
+      'The process description needs more detail on the scope and budget allocation methodology. Please revise and resubmit.',
     changes: [
       {
         id: 'description',
@@ -157,5 +158,33 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
       { id: 'shared-service', label: 'Shared service', oldValue: 'Yes', newValue: 'Yes' },
     ],
   },
-
+  {
+    id: 'request-4',
+    processId: 'r7',
+    domain: 'dom-005',
+    processName: 'Establish fraud risk indicators',
+    requestId: '9377354',
+    requester: 'Ali Al Muhairi',
+    status: 'Rejected',
+    stageCurrent: 2,
+    stageTotal: 4,
+    stageText: 'Rejected',
+    submittedOn: '12 Apr 2024',
+    rejectComment:
+      'The proposed changes do not align with the current governance framework. Please consult with the compliance team before resubmitting.',
+    changes: [
+      {
+        id: 'description',
+        label: 'Process description',
+        oldValue: 'Current fraud risk process',
+        newValue: 'Updated fraud risk indicators methodology',
+      },
+      {
+        id: 'applicability',
+        label: 'Applicability',
+        oldValue: 'ADNOC – Onshore',
+        newValue: 'ADNOC – Group',
+      },
+    ],
+  },
 ]

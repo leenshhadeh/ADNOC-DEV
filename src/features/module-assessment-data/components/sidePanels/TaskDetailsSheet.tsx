@@ -12,6 +12,7 @@ import {
   SendHorizontal,
 } from 'lucide-react'
 
+import { useNavigate } from 'react-router-dom'
 import ActionSheet from '@/shared/components/ActionSheet'
 import { Accordion, AccordionContent, AccordionItem } from '@/shared/components/ui/accordion'
 import { Separator } from '@/shared/components/ui/separator'
@@ -196,6 +197,7 @@ interface TaskDetailsSheetProps {
 }
 
 const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) => {
+  const navigate = useNavigate()
   const [showMore, setShowMore] = useState(false)
   const [showWorkflowHistory, setShowWorkflowHistory] = useState(false)
   const [workflowHistory, setWorkflowHistory] = useState<WorkflowHistoryItem[]>([])
@@ -245,6 +247,12 @@ const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) =
                 <button
                   type="button"
                   className="inline-flex items-center gap-1.5 text-sm font-medium text-[#0047BB] hover:underline"
+                  onClick={() => {
+                    if (task.processId) {
+                      onOpenChange(false)
+                      navigate(`/assessment-data/process/${task.processId}`)
+                    }
+                  }}
                 >
                   <ExternalLink className="size-4" />
                   View full card
@@ -377,6 +385,16 @@ const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) =
                         Reason for return
                       </p>
                       <p className="text-foreground text-sm">{task.returnComment}</p>
+                    </div>
+                  )}
+
+                  {/* Reject reason box */}
+                  {task.rejectComment && (
+                    <div className="mt-4 rounded-xl border border-[#F9D4E0] bg-[#FFF5F7] px-4 py-3">
+                      <p className="text-muted-foreground mb-1 text-xs font-medium">
+                        Reason for rejection
+                      </p>
+                      <p className="text-foreground text-sm">{task.rejectComment}</p>
                     </div>
                   )}
 
