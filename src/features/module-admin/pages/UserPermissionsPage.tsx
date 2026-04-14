@@ -19,6 +19,7 @@ import {
   createFullAccessConfig,
   getAccessCounts,
 } from '../components/user-permissions/utils'
+import UserPermissionsBulkEditModal from '../components/user-permissions/UserPermissionsBulkEditModal'
 
 const getGroupCompanyByName = (name: string) => {
   const groupCompany = groupCompanies.find((item) => item.name === name)
@@ -202,10 +203,15 @@ const UserPermissionsPage = () => {
   const [draftAccessConfig, setDraftAccessConfig] =
     useState<AccessConfig>(createEmptyAccessConfig())
 
+  const [isBulkEditMode, setIsBulkEditMode] = useState(false)
+  const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
+  const [isBulkEditModalOpen, setIsBulkEditModalOpen] = useState(false)
+  const [isBulkAccessFlow, setIsBulkAccessFlow] = useState(false)
+
   const editingRow = useMemo(() => rows.find((row) => row.isEditing), [rows])
 
   const handleAddNew = useCallback(() => {
-    if (editingRow) return
+    if (editingRow || isBulkEditMode) return
 
     setRows((prev) => [
       {
@@ -222,7 +228,7 @@ const UserPermissionsPage = () => {
       },
       ...prev,
     ])
-  }, [editingRow])
+  }, [editingRow, isBulkEditMode])
 
   const handleCancelNew = useCallback(() => {
     setRows((prev) => prev.filter((row) => !row.isEditing))
@@ -302,12 +308,14 @@ const UserPermissionsPage = () => {
     setSelectedUserForDomains(user)
     setDraftAccessConfig(cloneAccessConfig(user.assignedAccess))
     setIsDomainsDrawerOpen(true)
+    setIsBulkAccessFlow(false)
   }, [])
 
   const handleCloseDomainsDrawer = useCallback(() => {
     setIsDomainsDrawerOpen(false)
     setSelectedUserForDomains(null)
     setDraftAccessConfig(createEmptyAccessConfig())
+    setIsBulkAccessFlow(false)
   }, [])
 
   const handleSaveDomains = useCallback(() => {
@@ -332,6 +340,84 @@ const UserPermissionsPage = () => {
     handleCloseDomainsDrawer()
   }, [draftAccessConfig, handleCloseDomainsDrawer, selectedUserForDomains])
 
+  const handleStartBulkEdit = useCallback(() => {
+    setIsBulkEditMode(true)
+    setSelectedRowIds([])
+  }, [])
+
+  const handleCancelBulkEdit = useCallback(() => {
+    setIsBulkEditMode(false)
+    setSelectedRowIds([])
+    setIsBulkEditModalOpen(false)
+    setIsBulkAccessFlow(false)
+  }, [])
+
+  const handleToggleRowSelection = useCallback((rowId: string, checked: boolean) => {
+    setSelectedRowIds((prev) => {
+      if (checked) {
+        return prev.includes(rowId) ? prev : [...prev, rowId]
+      }
+
+      return prev.filter((id) => id !== rowId)
+    })
+  }, [])
+
+  const handleOpenBulkModal = useCallback(() => {
+    setIsBulkEditModalOpen(true)
+  }, [])
+
+  const handleApplyBulkRoles = useCallback(
+    (roles: string[]) => {
+      setRows((prev) =>
+        prev.map((row) =>
+          selectedRowIds.includes(row.id)
+            ? {
+                ...row,
+                assignedRole: roles,
+              }
+            : row,
+        ),
+      )
+
+      setIsBulkEditModalOpen(false)
+      setIsBulkEditMode(false)
+      setSelectedRowIds([])
+    },
+    [selectedRowIds],
+  )
+
+  const handleNextBulkAccess = useCallback(() => {
+    setIsBulkEditModalOpen(false)
+    setIsBulkAccessFlow(true)
+    setSelectedUserForDomains(null)
+    setDraftAccessConfig(createEmptyAccessConfig())
+    setIsDomainsDrawerOpen(true)
+  }, [])
+
+  const handleSaveBulkDomains = useCallback(() => {
+    const nextAccessConfig = cloneAccessConfig(draftAccessConfig)
+    const counts = getAccessCounts(nextAccessConfig)
+
+    setRows((prev) =>
+      prev.map((row) =>
+        selectedRowIds.includes(row.id)
+          ? {
+              ...row,
+              assignedAccess: nextAccessConfig,
+              gcsAccess: Number(counts.gcsAccess),
+              domainsAccess: Number(counts.domainsAccess),
+            }
+          : row,
+      ),
+    )
+
+    setIsDomainsDrawerOpen(false)
+    setDraftAccessConfig(createEmptyAccessConfig())
+    setIsBulkAccessFlow(false)
+    setIsBulkEditMode(false)
+    setSelectedRowIds([])
+  }, [draftAccessConfig, selectedRowIds])
+
   const actions = useMemo<ToolbarAction[]>(
     () =>
       editingRow
@@ -349,27 +435,53 @@ const UserPermissionsPage = () => {
               onClick: handleCancelNew,
             },
           ]
-        : [
-            {
-              id: 'add-new',
-              label: 'Add new',
-              icon: Plus,
-              onClick: handleAddNew,
-            },
-            {
-              id: 'bulk-action',
-              label: 'Bulk action',
-              icon: Layers,
-              onClick: () => console.log('Bulk Action'),
-            },
-            {
-              id: 'export',
-              label: 'Export',
-              icon: Download,
-              onClick: () => console.log('Export'),
-            },
-          ],
-    [editingRow, handleAddNew, handleCancelNew, handleSaveNew],
+        : isBulkEditMode
+          ? [
+              {
+                id: 'edit',
+                label: 'Edit',
+                icon: Save,
+                onClick: handleOpenBulkModal,
+                disabled: selectedRowIds.length === 0,
+              },
+              {
+                id: 'cancel-bulk',
+                label: 'Cancel',
+                icon: X,
+                onClick: handleCancelBulkEdit,
+              },
+            ]
+          : [
+              {
+                id: 'add-new',
+                label: 'Add new',
+                icon: Plus,
+                onClick: handleAddNew,
+              },
+              {
+                id: 'bulk-action',
+                label: 'Bulk action',
+                icon: Layers,
+                onClick: handleStartBulkEdit,
+              },
+              {
+                id: 'export',
+                label: 'Export',
+                icon: Download,
+                onClick: () => console.log('Export'),
+              },
+            ],
+    [
+      editingRow,
+      handleAddNew,
+      handleCancelBulkEdit,
+      handleCancelNew,
+      handleOpenBulkModal,
+      handleSaveNew,
+      handleStartBulkEdit,
+      isBulkEditMode,
+      selectedRowIds.length,
+    ],
   )
 
   return (
@@ -390,15 +502,41 @@ const UserPermissionsPage = () => {
         onRowChange={handleRowChange}
         onRowSelectUser={handleRowSelectUser}
         onOpenDomainsDrawer={handleOpenDomainsDrawer}
+        isBulkEditMode={isBulkEditMode}
+        selectedRowIds={selectedRowIds}
+        onToggleRowSelection={handleToggleRowSelection}
+      />
+
+      <UserPermissionsBulkEditModal
+        open={isBulkEditModalOpen}
+        selectedCount={selectedRowIds.length}
+        onClose={() => setIsBulkEditModalOpen(false)}
+        onApplyRoles={handleApplyBulkRoles}
+        onNextAccess={handleNextBulkAccess}
       />
 
       <UserDomainsDrawer
         open={isDomainsDrawerOpen}
         user={selectedUserForDomains}
         draftAccessConfig={draftAccessConfig}
-        onOpenChange={setIsDomainsDrawerOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            if (isBulkAccessFlow) {
+              setIsDomainsDrawerOpen(false)
+              setDraftAccessConfig(createEmptyAccessConfig())
+              setIsBulkAccessFlow(false)
+            } else {
+              handleCloseDomainsDrawer()
+            }
+            return
+          }
+
+          setIsDomainsDrawerOpen(true)
+        }}
         onChange={setDraftAccessConfig}
-        onSave={handleSaveDomains}
+        onSave={isBulkAccessFlow ? handleSaveBulkDomains : handleSaveDomains}
+        isBulkMode={isBulkAccessFlow}
+        selectedUsersCount={selectedRowIds.length}
       />
     </div>
   )

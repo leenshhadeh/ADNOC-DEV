@@ -52,4 +52,8 @@ export type UserPermissionsTableProps = {
   onRowChange?: (rowId: string, field: EditableField, value: string | string[]) => void
   onRowSelectUser?: (rowId: string, user: { id?: string; name: string; email: string }) => void
   onOpenDomainsDrawer?: (row: UserPermissionRow) => void
+
+  isBulkEditMode?: boolean
+  selectedRowIds?: string[]
+  onToggleRowSelection?: (rowId: string, checked: boolean) => void
 }

@@ -835,7 +835,6 @@ const ProcessDataTable = () => {
             />
           )
         },
-
       },
       {
         id: 'publishedDate',

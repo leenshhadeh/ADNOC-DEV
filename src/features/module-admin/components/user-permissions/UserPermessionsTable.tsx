@@ -17,6 +17,9 @@ const UserPermissionsTable = ({
   onRowChange,
   onRowSelectUser,
   onOpenDomainsDrawer,
+  isBulkEditMode = false,
+  selectedRowIds = [],
+  onToggleRowSelection,
 }: UserPermissionsTableProps) => {
   const filteredData = useMemo(() => {
     const value = searchValue.trim().toLowerCase()
@@ -44,6 +47,9 @@ const UserPermissionsTable = ({
             onRowSelectUser={onRowSelectUser}
             onView={onView}
             onDeactivate={onDeactivate}
+            isBulkEditMode={isBulkEditMode}
+            isSelected={selectedRowIds.includes(row.original.id)}
+            onToggleSelection={(checked) => onToggleRowSelection?.(row.original.id, checked)}
           />
         ),
       },
@@ -65,7 +71,16 @@ const UserPermissionsTable = ({
         ),
       },
     ],
-    [onView, onDeactivate, onRowChange, onRowSelectUser, onOpenDomainsDrawer],
+    [
+      onRowSelectUser,
+      onView,
+      onDeactivate,
+      isBulkEditMode,
+      selectedRowIds,
+      onToggleRowSelection,
+      onRowChange,
+      onOpenDomainsDrawer,
+    ],
   )
 
   return (

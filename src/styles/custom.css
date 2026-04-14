@@ -61,10 +61,25 @@ table-light-styles
   border-bottom: 1px solid #dfe3e6 !important;
 }
 
-.text-editor.ql-container , .ql-container.ql-snow {
+.text-editor.ql-container,
+.ql-container.ql-snow {
   border: none !important;
 }
 
 .text-editor .ql-editor {
   min-height: 160px;
+}
+
+select:disabled,
+input:disabled,
+textarea:disabled {
+  opacity: 100%;
+  background-color: #f1f3f5;
+  border: 1px solid #dfe3e6;
+}
+
+button,
+a,
+input[type='checkbox'] {
+  cursor: pointer !important;
 }

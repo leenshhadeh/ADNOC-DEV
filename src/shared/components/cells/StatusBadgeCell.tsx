@@ -12,7 +12,8 @@ export type CatalogStatus =
   | '-'
 
 interface StatusBadgeCellProps {
-  status: CatalogStatus
+  status: CatalogStatus 
+  isSmall?: boolean
 }
 
 const statusStyles: Record<CatalogStatus, string> = {
@@ -31,7 +32,7 @@ const bpaPmStatusOverrides: Partial<Record<CatalogStatus, string>> = {
   'Pending signoff': 'border-transparent bg-[#FFFAC7] text-[#5E570C]',
 }
 
-const StatusBadgeCell = ({ status }: StatusBadgeCellProps) => {
+const StatusBadgeCell = ({ status ,isSmall}: StatusBadgeCellProps) => {
   const { role } = useCurrentUser()
   const isBpaPm = role === 'BPA Program Manager'
 
@@ -40,7 +41,8 @@ const StatusBadgeCell = ({ status }: StatusBadgeCellProps) => {
   return (
     <Badge
       className={cn(
-        'flex h-7 min-w-[120px] items-center justify-center px-5 text-xs font-normal whitespace-nowrap',
+        isSmall ? 'min-w-[auto] h-5':'min-w-[120px] h-7',
+        'flex items-center justify-center px-5 text-xs font-normal whitespace-nowrap',
         style,
       )}
     >
