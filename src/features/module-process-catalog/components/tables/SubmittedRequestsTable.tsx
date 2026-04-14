@@ -165,6 +165,7 @@ const SubmittedRequestsTable = () => {
       <DataTable
         columns={columns}
         data={requests ?? []}
+        className="table-light"
         density="comfortable"
         className="overflow-x-auto"
         initialColumnPinning={{ left: ['processName'] }}

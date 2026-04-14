@@ -15,6 +15,7 @@ export const ROLES = [
   'BPA Process Catalog Custodian',
   'Business Focal Point',
   'Digital Focal Point',
+  'Quality Manager',
   'Super Admin',
 ] as const
 
@@ -40,6 +41,7 @@ export const ACTIONS = [
   'MANAGE_USER_PERMISSIONS',
   'MANAGE_GROUP_COMPANIES',
   'APPLY_DIRECT_CHANGES',
+  'COMMENT_ON_FIELD',
 ] as const
 
 export type Action = (typeof ACTIONS)[number]
@@ -64,13 +66,14 @@ export const PERMISSIONS: Record<Action, Role[]> = {
   ],
   REQUEST_PROCESS_CHANGE: ['Business Focal Point', 'Digital Focal Point'],
   SUBMIT_REQUEST: ['Business Focal Point', 'Digital Focal Point', 'BPA Process Catalog Custodian'],
-  APPROVE_REQUEST: ['BPA Program Manager', 'BPA Process Catalog Custodian'],
-  REJECT_REQUEST: ['BPA Program Manager', 'BPA Process Catalog Custodian'],
-  RETURN_REQUEST: ['BPA Program Manager', 'BPA Process Catalog Custodian'],
+  APPROVE_REQUEST: ['BPA Program Manager', 'BPA Process Catalog Custodian', 'Quality Manager'],
+  REJECT_REQUEST: ['BPA Program Manager', 'BPA Process Catalog Custodian', 'Quality Manager'],
+  RETURN_REQUEST: ['BPA Program Manager', 'BPA Process Catalog Custodian', 'Quality Manager'],
   // ── Administration (Super Admin wildcard covers these) ──────────────────────
   MANAGE_USER_PERMISSIONS: [],
   MANAGE_GROUP_COMPANIES: [],
   APPLY_DIRECT_CHANGES: [],
+  COMMENT_ON_FIELD: ['Quality Manager'],
 }
 
 // ─── Permission check ─────────────────────────────────────────────────────────

@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   ArrowLeftRight,
   Check,
   Eye,
   ExternalLink,
+  MessageSquare,
   MoreVertical,
   UserRoundCog,
   X,
@@ -30,35 +32,45 @@ import {
 import { hasPermission } from '@/shared/lib/permissions'
 import { useUserStore } from '@/shared/auth/useUserStore'
 
-import type { TaskItem } from '@features/module-assessment-data/types/my-tasks'
+import type { ChangeRecord, TaskItem } from '@features/module-assessment-data/types/my-tasks'
 import { useGetMyTasks } from '@features/module-assessment-data/hooks/useGetMyTasks'
 import TaskDetailsSheet from '@features/module-assessment-data/components/sidePanels/TaskDetailsSheet'
 import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
-// import { useCatalogNavStore } from '@features/module-process-catalog/store/useCatalogNavStore'
+import CommentIcon from '@/assets/icons/comment.svg?react'
 
 export type TaskRowAction = 'approve' | 'return' | 'reject' | 'request-endorsement'
 
 interface MyTasksTableProps {
   isBulkMode?: boolean
+  isCommentMode?: boolean
   rowSelection?: RowSelectionState
   onRowSelectionChange?: (
     updater: RowSelectionState | ((prev: RowSelectionState) => RowSelectionState),
   ) => void
   onRowAction?: (task: TaskItem, action: TaskRowAction) => void
+  onFieldClick?: (change: ChangeRecord, fieldName: string, parentTask?: TaskItem) => void
 }
 
 const MyTasksTable = ({
   isBulkMode = false,
+  isCommentMode = false,
   rowSelection,
   onRowSelectionChange,
   onRowAction,
+  onFieldClick,
 }: MyTasksTableProps) => {
+  const navigate = useNavigate()
   const { data: tasks, isLoading, isError } = useGetMyTasks()
   const userRole = useUserStore((s) => s.user.role)
-  // const navigateToProcess = useCatalogNavStore((s) => s.navigateToProcess)
 
   const canApprove = hasPermission(userRole, 'APPROVE_REQUEST')
   const canReturn = hasPermission(userRole, 'RETURN_REQUEST')
+  const canReject = hasPermission(userRole, 'REJECT_REQUEST')
+
+  const navigateToRecord = useCallback(
+    (processId: string) => navigate(`/assessment-data/process/${processId}`),
+    [navigate],
+  )
 
   const [selectedTask, setSelectedTask] = useState<TaskItem | null>(null)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
@@ -126,7 +138,11 @@ const MyTasksTable = ({
                       View change details
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="my-0" />
-                    <DropdownMenuItem className="gap-4 px-4 py-2" disabled={!row.processId}>
+                    <DropdownMenuItem
+                      className="gap-4 px-4 py-2"
+                      disabled={!row.processId}
+                      onClick={() => row.processId && navigateToRecord(row.processId)}
+                    >
                       <ExternalLink className="size-4 shrink-0" />
                       Go to record
                     </DropdownMenuItem>
@@ -162,14 +178,18 @@ const MyTasksTable = ({
                         </DropdownMenuItem>
                       </>
                     )}
-                    <DropdownMenuSeparator className="my-0" />
-                    <DropdownMenuItem
-                      className="gap-4 px-4 py-2 text-[#EB3865]"
-                      onClick={() => onRowAction?.(row, 'reject')}
-                    >
-                      <X className="size-4 shrink-0" />
-                      Reject
-                    </DropdownMenuItem>
+                    {canReject && (
+                      <>
+                        <DropdownMenuSeparator className="my-0" />
+                        <DropdownMenuItem
+                          className="gap-4 px-4 py-2 text-[#EB3865]"
+                          onClick={() => onRowAction?.(row, 'reject')}
+                        >
+                          <X className="size-4 shrink-0" />
+                          Reject
+                        </DropdownMenuItem>
+                      </>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
@@ -261,38 +281,69 @@ const MyTasksTable = ({
         cell: (info) => {
           if (info.row.depth === 0) return null
           const change = info.row.original.changes?.[0]
-          return <span className="text-foreground text-sm">{change?.name ?? '—'}</span>
+          const name = change?.name ?? '—'
+          if (isCommentMode && change) {
+            const parentRow = info.row.getParentRow()
+            const parentTask = parentRow?.original
+            return (
+              <button
+                type="button"
+                className="flex items-center gap-1.5 text-sm font-medium"
+                onClick={() => onFieldClick?.(change, name, parentTask)}
+                aria-label="Comment on field"
+              >
+                <span>{name}</span>
+                <span className="flex size-6 shrink-0 items-center justify-center rounded-full border border-[#DADDE0] bg-[#EDEDED]">
+                  <CommentIcon className="size-3.5" />
+                </span>
+              </button>
+            )
+          }
+          return <span className="text-foreground block text-center text-sm">{name}</span>
         },
       },
 
       {
         id: 'oldValue',
         header: 'Old Value',
-        size: 130,
+        size: 100,
         cell: (info) => {
           if (info.row.depth === 0) return null
           const change = info.row.original.changes?.[0]
-          return <span className="text-muted-foreground text-sm">{change?.oldValue ?? '—'}</span>
+          return (
+            <span className="text-muted-foreground block text-center text-sm">
+              {change?.oldValue ?? '—'}
+            </span>
+          )
         },
       },
       {
         id: 'newValue',
         header: 'New Value',
-        size: 200,
+        size: 100,
         cell: (info) => {
           if (info.row.depth === 0) return null
           const change = info.row.original.changes?.[0]
-          return <span className="text-foreground text-sm">{change?.newValue ?? '—'}</span>
+          return (
+            <span className="text-foreground block text-center text-sm">
+              {change?.newValue ?? '—'}
+            </span>
+          )
         },
       },
       {
         id: 'comment',
         header: 'field Comment',
-        size: 110,
+        size: 240,
         cell: (info) => {
           if (info.row.depth === 0) return null
           const change = info.row.original.changes?.[0]
-          return <span className="text-foreground text-sm">{change?.comment ?? '—'}</span>
+          const comment = change?.comment ?? '—'
+          return (
+            <span className="text-foreground block truncate text-center text-sm" title={comment}>
+              {comment}
+            </span>
+          )
         },
       },
       {
@@ -315,8 +366,33 @@ const MyTasksTable = ({
           return <span className="text-foreground text-sm">{String(info.getValue() ?? '—')}</span>
         },
       },
+      {
+        id: 'goToRecord',
+        header: 'Go To Record',
+        size: 120,
+        meta: { multiline: true },
+        cell: (info) => {
+          if (info.row.depth > 0) return null
+          const row = info.row.original
+          return (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="text-muted-foreground rounded-full"
+                disabled={!row.processId}
+                aria-label="Go to record"
+                onClick={() => row.processId && navigateToRecord(row.processId)}
+              >
+                <Eye className="size-4" />
+              </Button>
+            </div>
+          )
+        },
+      },
     ],
-    [canApprove, canReturn, isBulkMode, onRowAction],
+    [canApprove, canReturn, isBulkMode, isCommentMode, navigateToRecord, onFieldClick, onRowAction],
   )
 
   if (isError) {
@@ -342,6 +418,7 @@ const MyTasksTable = ({
       <DataTable
         columns={columns}
         data={tasks ?? []}
+        className="table-light"
         density="comfortable"
         enableColumnDnd={false}
         enableSorting={true}

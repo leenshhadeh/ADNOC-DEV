@@ -35,6 +35,8 @@ const DataTableRow = <TData,>({
       <TableRow
         data-row-id={row.id}
         className={cn(
+          level > 0 && 'border-0 [&>td]:!border-0',
+          expanded && hasSubRows && 'border-b-0 [&>td]:!border-b-0',
           row.getIsSelected() ? 'ring-primary/30 bg-orange-50/50 ring-1 ring-inset' : undefined,
           isDraft ? 'bg-blue-50/30' : undefined,
           isHighlighted ? 'ring-primary/60 bg-primary/5 ring-2 ring-inset' : undefined,
@@ -79,7 +81,7 @@ const DataTableRow = <TData,>({
               row={subRow}
               level={level + 1}
               density={density}
-              rowDividers={rowDividers}
+              rowDividers={false}
               getRowActions={getRowActions}
             />
           ))

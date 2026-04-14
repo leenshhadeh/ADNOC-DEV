@@ -20,6 +20,7 @@ export const MY_TASKS: TaskItem[] = [
     submittedOn: '08 Apr 2024',
     changes: [
       {
+        id: 'c1-0',
         name: 'Automation level',
         comment:
           'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
@@ -27,6 +28,7 @@ export const MY_TASKS: TaskItem[] = [
         newValue: '40%',
       },
       {
+        id: 'c1-1',
         name: 'Automation level',
         comment:
           'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
@@ -34,6 +36,7 @@ export const MY_TASKS: TaskItem[] = [
         newValue: '40%',
       },
       {
+        id: 'c1-2',
         name: 'Automation level',
         comment:
           'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
@@ -60,6 +63,7 @@ export const MY_TASKS: TaskItem[] = [
     submittedOn: '08 Apr 2024',
     changes: [
       {
+        id: 'c2-0',
         name: 'Automation level',
         comment:
           'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
@@ -86,12 +90,14 @@ export const MY_TASKS: TaskItem[] = [
     submittedOn: '05 Apr 2024',
     changes: [
       {
+        id: 'c3-0',
         name: 'Process Criticality',
         comment: 'Criticality should be elevated given impact scope.',
         oldValue: 'Low',
         newValue: 'Medium',
       },
       {
+        id: 'c3-1',
         name: 'Total Personnel Executing (FTE)',
         comment: 'Updated FTE count based on latest org chart.',
         oldValue: '3',
