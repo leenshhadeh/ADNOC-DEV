@@ -1,7 +1,7 @@
 import { Input } from '@/shared/components/ui/input'
 import { Select } from '@/shared/components/ui/select'
 import React, { useState } from 'react'
-import { Editor } from 'primereact/editor'
+import RichTextEditor from '@/shared/components/ui/RichTextEditor'
 
 const ManualParametersForm = (props: any) => {
   const { process } = props
@@ -23,6 +23,9 @@ const ManualParametersForm = (props: any) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+  const handleKeyStepsChange = (val:String) => {
+    setFormData((prev) => ({ ...prev, keyManualSteps: val }))
   }
 
   return (
@@ -111,11 +114,10 @@ const ManualParametersForm = (props: any) => {
         {/* row 3  */}
         <div className="col-span-2 flex w-full flex-col">
           <label className="text-muted-foreground text-sm">Key Manual Steps​</label>
-          <div className="rounded-[16px] border border-[#DFE3E6]">
-            <Editor
+          <div className="">
+            <RichTextEditor
               value={formData.keyManualSteps}
-              onTextChange={(e: any) => handleChange(e.htmlValue)}
-              className="text-editor"
+              onChange={(text: any) => handleKeyStepsChange(text)}
             />
           </div>
         </div>
