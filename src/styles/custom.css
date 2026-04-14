@@ -22,11 +22,16 @@
   }
 }
 
-/* columns across all tables */
-td {
-  border-width: 1px;
+/* table-hierarchy */
+.table-hierarchy td {
+  border-right-width: 1px;
+  border-top-width: 1px;
   padding: 10px 16px !important;
 }
+.table-hierarchy td:has(.rowspan) {
+  border-top-width: 0px !important;
+}
+
 [role='menuitemcheckbox'] span.pointer-events-none {
   border: 1px solid #a9afb3;
   border-radius: 3px;

@@ -216,7 +216,7 @@ const ProcessDataTable = () => {
         cell: (info) => {
           const domainId = info.getValue<string>()
           const domainName = DOMAINS_DATA.find((d) => d.id === domainId)?.name ?? domainId
-          return <p>{domainName}</p>
+          return <p className={domainName?'':'rowspan'}>{domainName}</p>
         },
       },
       {
@@ -226,7 +226,7 @@ const ProcessDataTable = () => {
         size: 220,
         enableSorting: false,
         cell: (info) => (
-          <div className="flex flex-col gap-0.5">
+          <div className={info.getValue<string>()?"flex flex-col gap-0.5":"rowspan"}>
             <span className="text-foreground text-sm font-medium">{info.getValue<string>()}</span>
             <span className="text-muted-foreground text-xs">
               {info.getValue<string>() ? info.row.original.l1Code : ''}
@@ -241,7 +241,7 @@ const ProcessDataTable = () => {
         size: 220,
         enableSorting: false,
         cell: (info) => (
-          <div className="flex flex-col gap-0.5">
+          <div className={info.getValue<string>()?"flex flex-col gap-0.5":'rowspan'}>
             <span className="text-foreground text-sm font-medium">{info.getValue<string>()}</span>
             <span className="text-muted-foreground text-xs">
               {info.getValue<string>() ? info.row.original.l2Code : ''}
@@ -258,7 +258,7 @@ const ProcessDataTable = () => {
         pinnedCol: true,
         meta: { pinnedCol: true },
         cell: (info) => (
-          <div className="flex items-center justify-between gap-2">
+          <div className={info.getValue<string>()?"flex items-center justify-between gap-2":"rowspan"}>
             <div className="flex flex-col gap-0.5">
               <span className="text-foreground text-sm font-medium">{info.getValue<string>()}</span>
               <span className="text-muted-foreground text-xs">
@@ -276,7 +276,7 @@ const ProcessDataTable = () => {
         header: 'Level 4',
         size: 300,
         pinnedCol: true,
-        meta: { pinnedCol: true, offset: 256 },
+        meta: { pinnedCol: true, offset: 300 },
         cell: (info) => (
           <div className="flex items-center justify-between gap-2">
             <div className="flex flex-col gap-0.5">
@@ -888,7 +888,7 @@ const ProcessDataTable = () => {
   )
 
   return (
-    <>
+    <div className='table-hierarchy'>
       <DataTable
         columns={columns}
         data={updatedDataTable}
@@ -918,7 +918,7 @@ const ProcessDataTable = () => {
           setIsDigitalTeamOpen(false)
         }}
       />
-    </>
+    </div>
   )
 }
 
