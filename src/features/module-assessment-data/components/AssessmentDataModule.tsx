@@ -263,32 +263,44 @@ const AssessmentDataModule = () => {
             searchValue={search}
             onSearchChange={setSearch}
             bulkMode={
-              activeTab === 'my-tasks'
-                ? hasTaskBulkActions
-                  ? {
-                      isActive: isTaskBulkMode,
-                      selectedCount: taskSelectedIds.length,
+              activeTab === 'submittedRequests'
+                ? undefined
+                : activeTab === 'my-tasks'
+                  ? hasTaskBulkActions
+                    ? {
+                        isActive: isTaskBulkMode,
+                        selectedCount: taskSelectedIds.length,
+                        onToggle: () => {
+                          setIsTaskBulkMode((v) => !v)
+                          setTaskRowSelection({})
+                        },
+                      }
+                    : undefined
+                  : {
+                      isActive: isBulkMode,
+                      selectedCount: selectedIds.length,
                       onToggle: () => {
-                        setIsTaskBulkMode((v) => !v)
-                        setTaskRowSelection({})
+                        setIsBulkMode((v) => !v)
+                        setRowSelection({})
                       },
                     }
-                  : undefined
-                : {
-                    isActive: isBulkMode,
-                    selectedCount: selectedIds.length,
-                    onToggle: () => {
-                      setIsBulkMode((v) => !v)
-                      setRowSelection({})
-                    },
-                  }
             }
             actions={
               activeTab === 'my-tasks'
                 ? myTasksActions
-                : isBulkMode
-                  ? ASSESSMENT_BULK_ACTIONS
-                  : defaultActions
+                : activeTab === 'submittedRequests'
+                  ? [
+                      {
+                        id: 'export',
+                        label: currentIsExporting ? 'Exporting…' : 'Export',
+                        icon: currentIsExporting ? Loader2 : Download,
+                        disabled: currentIsExporting,
+                        onClick: handleExport,
+                      },
+                    ]
+                  : isBulkMode
+                    ? ASSESSMENT_BULK_ACTIONS
+                    : defaultActions
             }
             showFilter={false}
           />
