@@ -39,6 +39,7 @@ import type { TaskRowAction } from './tabels/MyTasksTable'
 import type { ChangeRecord, TaskItem } from '../types/my-tasks'
 import SubmittedRequestsTable from './tabels/SubmittedRequestsTable'
 import ProcessDataTable from './tabels/ProcessDataTable'
+import ProcessDataReport from './tabels/ProcessDataReport'
 import AssessmentBulkActionBar from './AssessmentBulkActionBar'
 import TaskBulkActionBar from './TaskBulkActionBar'
 import {
@@ -343,13 +344,19 @@ const AssessmentDataModule = () => {
             />
           )}
           {activeTab == 'processes' ? (
-            <ProcessDataTable
-              isBulkMode={isBulkMode}
-              rowSelection={rowSelection}
-              onRowSelectionChange={(updater) =>
-                setRowSelection((prev) => (typeof updater === 'function' ? updater(prev) : updater))
-              }
-            />
+            activeView === 'report' ? (
+              <ProcessDataReport />
+            ) : (
+              <ProcessDataTable
+                isBulkMode={isBulkMode}
+                rowSelection={rowSelection}
+                onRowSelectionChange={(updater) =>
+                  setRowSelection((prev) =>
+                    typeof updater === 'function' ? updater(prev) : updater,
+                  )
+                }
+              />
+            )
           ) : activeTab == 'my-tasks' ? (
             <MyTasksTable
               isBulkMode={isTaskBulkMode}
