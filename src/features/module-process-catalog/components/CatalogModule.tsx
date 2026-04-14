@@ -579,6 +579,7 @@ const CatalogModule = () => {
           <DataTable
             columns={columns}
             data={filteredData}
+            className="table-light"
             density="compact"
             enableColumnDnd={false}
             enableSorting={false}

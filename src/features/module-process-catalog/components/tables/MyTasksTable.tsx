@@ -403,6 +403,7 @@ const MyTasksTable = ({
       <DataTable
         columns={columns}
         data={tasks ?? []}
+        className="table-light"
         density="comfortable"
         enableColumnDnd={false}
         enableSorting={false}

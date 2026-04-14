@@ -1,5 +1,13 @@
 import type { CatalogStatus } from '@/shared/components/cells/StatusBadgeCell'
 
+export interface CommentEntry {
+  id: string
+  author: string
+  role: string
+  text: string
+  timestamp: string
+}
+
 export interface ChangeRecord {
   name?: string
   comment: string
@@ -7,6 +15,7 @@ export interface ChangeRecord {
   newValue: string
   id?: string
   label?: string
+  comments?: CommentEntry[]
 }
 
 export interface TaskItem {

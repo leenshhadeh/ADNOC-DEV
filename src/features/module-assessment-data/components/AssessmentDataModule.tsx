@@ -1,5 +1,18 @@
 import { useMemo, useState } from 'react'
-import { Download, FileText, Info, Loader2, Settings2, Table2, Upload } from 'lucide-react'
+import {
+  Check,
+  Download,
+  FileText,
+  Info,
+  Loader2,
+  MessageSquare,
+  RotateCcw,
+  Save,
+  Settings2,
+  Table2,
+  Upload,
+  X as XIcon,
+} from 'lucide-react'
 import ViewToggle from '@/shared/components/ViewToggle'
 import type { RowSelectionState } from '@tanstack/react-table'
 import {
@@ -13,6 +26,8 @@ import {
 import ModuleToolbar from '@/shared/components/ModuleToolbar'
 import type { ToolbarAction } from '@/shared/components/ModuleToolbar'
 import { SuccessToast } from '@/shared/components/SuccessToast'
+import { hasPermission } from '@/shared/lib/permissions'
+import { useUserStore } from '@/shared/auth/useUserStore'
 import { ASSESSMENT_BULK_ACTIONS, ASSESSMENT_TABS } from '../constants/assessment-toolbar'
 import { ASSESSMENT_DATA } from '../constants/assessment-data'
 import { flattenAssessmentData } from './tabels/ProcessDataTable'
@@ -21,7 +36,7 @@ import { useMyTasksExport } from '../hooks/useMyTasksExport'
 import ProcessesMenu from '../../../shared/components/ProcessesMenu'
 import MyTasksTable from './tabels/MyTasksTable'
 import type { TaskRowAction } from './tabels/MyTasksTable'
-import type { TaskItem } from '../types/my-tasks'
+import type { ChangeRecord, TaskItem } from '../types/my-tasks'
 import SubmittedRequestsTable from './tabels/SubmittedRequestsTable'
 import ProcessDataTable from './tabels/ProcessDataTable'
 import AssessmentBulkActionBar from './AssessmentBulkActionBar'
@@ -38,6 +53,7 @@ import {
   RejectModal as RejectTasksModal,
 } from '@/shared/components/modals'
 import { RequestEndorsementModal } from './TaskBulkModals'
+import FieldCommentSheet from './sidePanels/FieldCommentSheet'
 import {
   bulkEditProcesses,
   bulkCommentProcesses,
@@ -45,6 +61,17 @@ import {
   bulkSubmitProcesses,
   bulkMarkAsReviewed,
 } from '../api/processAssesmentService'
+import {
+  useApproveTask,
+  useReturnTask,
+  useRejectTask,
+  useRequestEndorsement,
+  useSaveTaskFieldComments,
+  useBulkApproveTasks,
+  useBulkReturnTasks,
+  useBulkRejectTasks,
+  useBulkRequestEndorsement,
+} from '../hooks/useTaskActions'
 
 type ActiveModal = 'edit' | 'comment' | 'copy' | 'review' | null
 type TaskModal = 'approve' | 'return' | 'reject' | 'request-endorsement' | null
@@ -63,6 +90,29 @@ const AssessmentDataModule = () => {
   const [showTaskActionToast, setShowTaskActionToast] = useState(false)
   const [taskActionMessage, setTaskActionMessage] = useState('')
   const [singleActionTask, setSingleActionTask] = useState<TaskItem | null>(null)
+
+  const userRole = useUserStore((s) => s.user.role)
+  const canCommentOnField = hasPermission(userRole, 'COMMENT_ON_FIELD')
+  const canApprove = hasPermission(userRole, 'APPROVE_REQUEST')
+  const canReturn = hasPermission(userRole, 'RETURN_REQUEST')
+  const canReject = hasPermission(userRole, 'REJECT_REQUEST')
+  const hasTaskBulkActions = canApprove || canReturn || canReject
+
+  const [isCommentMode, setIsCommentMode] = useState(false)
+  const [commentSheetOpen, setCommentSheetOpen] = useState(false)
+  const [commentSheetChange, setCommentSheetChange] = useState<ChangeRecord | null>(null)
+  const [commentSheetFieldName, setCommentSheetFieldName] = useState('')
+
+  // ── Task action mutations ──────────────────────────────────────────────────
+  const approveTaskMutation = useApproveTask()
+  const returnTaskMutation = useReturnTask()
+  const rejectTaskMutation = useRejectTask()
+  const requestEndorsementMutation = useRequestEndorsement()
+  const saveFieldCommentsMutation = useSaveTaskFieldComments()
+  const bulkApproveMutation = useBulkApproveTasks()
+  const bulkReturnMutation = useBulkReturnTasks()
+  const bulkRejectMutation = useBulkRejectTasks()
+  const bulkEndorsementMutation = useBulkRequestEndorsement()
 
   const { isExporting, exportRows } = useAssessmentExport()
   const { isExporting: isExportingTasks, exportTasks } = useMyTasksExport()
@@ -97,17 +147,67 @@ const AssessmentDataModule = () => {
   )
 
   const myTasksActions = useMemo<ToolbarAction[]>(
-    () => [
-      {
-        id: 'export',
-        label: isExportingTasks ? 'Exporting…' : 'Export',
-        icon: isExportingTasks ? Loader2 : Download,
-        disabled: isExportingTasks,
-        onClick: handleExport,
-      },
-    ],
+    () =>
+      isCommentMode
+        ? [
+            {
+              id: 'save',
+              label: 'Save',
+              icon: Save,
+              onClick: () => {
+                if (singleActionTask) {
+                  saveFieldCommentsMutation.mutate(
+                    { taskId: singleActionTask.id },
+                    {
+                      onSuccess: () => {
+                        setTaskActionMessage('Comments saved successfully.')
+                        setShowTaskActionToast(true)
+                      },
+                    },
+                  )
+                }
+              },
+            },
+            {
+              id: 'approve-request',
+              label: 'Approve request',
+              icon: Check,
+              onClick: () => setTaskModal('approve'),
+            },
+            {
+              id: 'return-request',
+              label: 'Return request',
+              icon: RotateCcw,
+              onClick: () => setTaskModal('return'),
+            },
+            {
+              id: 'reject-request',
+              label: 'Reject request',
+              icon: XIcon,
+              onClick: () => setTaskModal('reject'),
+            },
+          ]
+        : [
+            ...(canCommentOnField
+              ? [
+                  {
+                    id: 'comment-on-field',
+                    label: 'Comment on field',
+                    icon: MessageSquare,
+                    onClick: () => setIsCommentMode(true),
+                  } satisfies ToolbarAction,
+                ]
+              : []),
+            {
+              id: 'export',
+              label: isExportingTasks ? 'Exporting…' : 'Export',
+              icon: isExportingTasks ? Loader2 : Download,
+              disabled: isExportingTasks,
+              onClick: handleExport,
+            },
+          ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isExportingTasks],
+    [isExportingTasks, canCommentOnField, isCommentMode],
   )
 
   const selectedIds = Object.keys(rowSelection)
@@ -118,6 +218,11 @@ const AssessmentDataModule = () => {
     setRowSelection({})
     setIsTaskBulkMode(false)
     setTaskRowSelection({})
+    setIsCommentMode(false)
+    setCommentSheetOpen(false)
+    setCommentSheetChange(null)
+    setCommentSheetFieldName('')
+    setSingleActionTask(null)
   }
 
   return (
@@ -158,14 +263,16 @@ const AssessmentDataModule = () => {
             onSearchChange={setSearch}
             bulkMode={
               activeTab === 'my-tasks'
-                ? {
-                    isActive: isTaskBulkMode,
-                    selectedCount: taskSelectedIds.length,
-                    onToggle: () => {
-                      setIsTaskBulkMode((v) => !v)
-                      setTaskRowSelection({})
-                    },
-                  }
+                ? hasTaskBulkActions
+                  ? {
+                      isActive: isTaskBulkMode,
+                      selectedCount: taskSelectedIds.length,
+                      onToggle: () => {
+                        setIsTaskBulkMode((v) => !v)
+                        setTaskRowSelection({})
+                      },
+                    }
+                  : undefined
                 : {
                     isActive: isBulkMode,
                     selectedCount: selectedIds.length,
@@ -207,59 +314,86 @@ const AssessmentDataModule = () => {
         </span>
       </div>
 
-      {/* ── Table ──────────────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-auto px-6 py-1">
-        {isBulkMode && activeTab === 'processes' && (
-          <AssessmentBulkActionBar
-            selectedCount={selectedIds.length}
-            onAction={(action) => {
-              if (action === 'submit') {
-                bulkSubmitProcesses(selectedIds).then(() => setRowSelection({}))
-              } else if (action === 'copy-assessment-data') {
-                setActiveModal('copy')
-              } else if (action === 'mark-as-reviewed') {
-                setActiveModal('review')
-              } else {
-                setActiveModal(action)
+      {/* ── Table + Comment panel ─────────────────────────────────────── */}
+      <div className="flex min-h-0 flex-1 gap-4 px-6 py-1">
+        {/* ── Main table area ──────────────────────────────────────────── */}
+        <div className="min-w-0 flex-1 overflow-auto">
+          {isBulkMode && activeTab === 'processes' && (
+            <AssessmentBulkActionBar
+              selectedCount={selectedIds.length}
+              onAction={(action) => {
+                if (action === 'submit') {
+                  bulkSubmitProcesses(selectedIds).then(() => setRowSelection({}))
+                } else if (action === 'copy-assessment-data') {
+                  setActiveModal('copy')
+                } else if (action === 'mark-as-reviewed') {
+                  setActiveModal('review')
+                } else {
+                  setActiveModal(action)
+                }
+              }}
+              onCancel={exitBulkMode}
+            />
+          )}
+          {isTaskBulkMode && activeTab === 'my-tasks' && (
+            <TaskBulkActionBar
+              selectedCount={taskSelectedIds.length}
+              onAction={(action) => setTaskModal(action)}
+              onCancel={exitBulkMode}
+            />
+          )}
+          {activeTab == 'processes' ? (
+            <ProcessDataTable
+              isBulkMode={isBulkMode}
+              rowSelection={rowSelection}
+              onRowSelectionChange={(updater) =>
+                setRowSelection((prev) => (typeof updater === 'function' ? updater(prev) : updater))
               }
-            }}
-            onCancel={exitBulkMode}
-          />
-        )}
-        {isTaskBulkMode && activeTab === 'my-tasks' && (
-          <TaskBulkActionBar
-            selectedCount={taskSelectedIds.length}
-            onAction={(action) => setTaskModal(action)}
-            onCancel={exitBulkMode}
-          />
-        )}
-        {activeTab == 'processes' ? (
-          <ProcessDataTable
-            isBulkMode={isBulkMode}
-            rowSelection={rowSelection}
-            onRowSelectionChange={(updater) =>
-              setRowSelection((prev) => (typeof updater === 'function' ? updater(prev) : updater))
+            />
+          ) : activeTab == 'my-tasks' ? (
+            <MyTasksTable
+              isBulkMode={isTaskBulkMode}
+              isCommentMode={isCommentMode}
+              rowSelection={taskRowSelection}
+              onRowSelectionChange={(updater) =>
+                setTaskRowSelection((prev) =>
+                  typeof updater === 'function' ? updater(prev) : updater,
+                )
+              }
+              onRowAction={(task: TaskItem, action: TaskRowAction) => {
+                setSingleActionTask(task)
+                setTaskModal(action)
+              }}
+              onFieldClick={(change, fieldName, parentTask) => {
+                setCommentSheetChange(change)
+                setCommentSheetFieldName(fieldName)
+                setCommentSheetOpen(true)
+                if (parentTask) {
+                  setSingleActionTask(parentTask)
+                }
+              }}
+            />
+          ) : activeTab == 'submittedRequests' ? (
+            <SubmittedRequestsTable />
+          ) : (
+            <p className="text-foreground text-sm italic">No data found</p>
+          )}
+        </div>
+
+        {/* ── Inline comment panel (right side) ────────────────────────── */}
+        <FieldCommentSheet
+          open={commentSheetOpen}
+          onOpenChange={(open) => {
+            setCommentSheetOpen(open)
+            if (!open) {
+              setIsCommentMode(false)
+              setSingleActionTask(null)
             }
-          />
-        ) : activeTab == 'my-tasks' ? (
-          <MyTasksTable
-            isBulkMode={isTaskBulkMode}
-            rowSelection={taskRowSelection}
-            onRowSelectionChange={(updater) =>
-              setTaskRowSelection((prev) =>
-                typeof updater === 'function' ? updater(prev) : updater,
-              )
-            }
-            onRowAction={(task: TaskItem, action: TaskRowAction) => {
-              setSingleActionTask(task)
-              setTaskModal(action)
-            }}
-          />
-        ) : activeTab == 'submittedRequests' ? (
-          <SubmittedRequestsTable />
-        ) : (
-          <p className="text-foreground text-sm italic">No data found</p>
-        )}
+          }}
+          fieldName={commentSheetFieldName}
+          taskId={singleActionTask?.id}
+          change={commentSheetChange}
+        />
       </div>
 
       <BulkEditModal
@@ -319,12 +453,34 @@ const AssessmentDataModule = () => {
         title={`Approve ${singleActionTask ? 1 : taskSelectedIds.length} selected request${(singleActionTask ? 1 : taskSelectedIds.length) !== 1 ? 's' : ''}`}
         description="These requests will be forwarded for Quality Manager Review. Are you sure you want to approve them?"
         onConfirm={() => {
-          // TODO: wire to actual API call
-          setTaskModal(null)
-          setSingleActionTask(null)
-          setTaskRowSelection({})
-          setTaskActionMessage('Approved and forwarded for Quality Manager.')
-          setShowTaskActionToast(true)
+          const ids = singleActionTask ? [singleActionTask.id] : taskSelectedIds
+          if (singleActionTask) {
+            approveTaskMutation.mutate(
+              { taskId: singleActionTask.id },
+              {
+                onSuccess: () => {
+                  setTaskModal(null)
+                  setSingleActionTask(null)
+                  setTaskRowSelection({})
+                  setTaskActionMessage('Approved and forwarded for Quality Manager.')
+                  setShowTaskActionToast(true)
+                },
+              },
+            )
+          } else {
+            bulkApproveMutation.mutate(
+              { taskIds: ids },
+              {
+                onSuccess: () => {
+                  setTaskModal(null)
+                  setSingleActionTask(null)
+                  setTaskRowSelection({})
+                  setTaskActionMessage('Approved and forwarded for Quality Manager.')
+                  setShowTaskActionToast(true)
+                },
+              },
+            )
+          }
         }}
         onOpenChange={(open) => {
           if (!open) {
@@ -337,13 +493,35 @@ const AssessmentDataModule = () => {
         open={taskModal === 'return'}
         selectedCount={singleActionTask ? 1 : taskSelectedIds.length}
         title={`Return ${singleActionTask ? 1 : taskSelectedIds.length} selected request${(singleActionTask ? 1 : taskSelectedIds.length) !== 1 ? 's' : ''}`}
-        onConfirm={(_reason) => {
-          // TODO: wire to actual API call with reason
-          setTaskModal(null)
-          setSingleActionTask(null)
-          setTaskRowSelection({})
-          setTaskActionMessage('Selected requests have been returned.')
-          setShowTaskActionToast(true)
+        onConfirm={(reason) => {
+          const ids = singleActionTask ? [singleActionTask.id] : taskSelectedIds
+          if (singleActionTask) {
+            returnTaskMutation.mutate(
+              { taskId: singleActionTask.id, reason: reason ?? '' },
+              {
+                onSuccess: () => {
+                  setTaskModal(null)
+                  setSingleActionTask(null)
+                  setTaskRowSelection({})
+                  setTaskActionMessage('Selected requests have been returned.')
+                  setShowTaskActionToast(true)
+                },
+              },
+            )
+          } else {
+            bulkReturnMutation.mutate(
+              { taskIds: ids, reason: reason ?? '' },
+              {
+                onSuccess: () => {
+                  setTaskModal(null)
+                  setSingleActionTask(null)
+                  setTaskRowSelection({})
+                  setTaskActionMessage('Selected requests have been returned.')
+                  setShowTaskActionToast(true)
+                },
+              },
+            )
+          }
         }}
         onOpenChange={(open) => {
           if (!open) {
@@ -358,13 +536,35 @@ const AssessmentDataModule = () => {
         title={`Reject ${singleActionTask ? 1 : taskSelectedIds.length} selected request${(singleActionTask ? 1 : taskSelectedIds.length) !== 1 ? 's' : ''}`}
         description="These requests will be marked as Rejected. Please add the rejection reason below."
         requireReason
-        onConfirm={(_reason) => {
-          // TODO: wire to actual API call with reason
-          setTaskModal(null)
-          setSingleActionTask(null)
-          setTaskRowSelection({})
-          setTaskActionMessage('Selected requests have been rejected.')
-          setShowTaskActionToast(true)
+        onConfirm={(reason) => {
+          const ids = singleActionTask ? [singleActionTask.id] : taskSelectedIds
+          if (singleActionTask) {
+            rejectTaskMutation.mutate(
+              { taskId: singleActionTask.id, reason: reason ?? '' },
+              {
+                onSuccess: () => {
+                  setTaskModal(null)
+                  setSingleActionTask(null)
+                  setTaskRowSelection({})
+                  setTaskActionMessage('Selected requests have been rejected.')
+                  setShowTaskActionToast(true)
+                },
+              },
+            )
+          } else {
+            bulkRejectMutation.mutate(
+              { taskIds: ids, reason: reason ?? '' },
+              {
+                onSuccess: () => {
+                  setTaskModal(null)
+                  setSingleActionTask(null)
+                  setTaskRowSelection({})
+                  setTaskActionMessage('Selected requests have been rejected.')
+                  setShowTaskActionToast(true)
+                },
+              },
+            )
+          }
         }}
         onOpenChange={(open) => {
           if (!open) {
@@ -376,13 +576,35 @@ const AssessmentDataModule = () => {
       <RequestEndorsementModal
         open={taskModal === 'request-endorsement'}
         selectedCount={singleActionTask ? 1 : taskSelectedIds.length}
-        onConfirm={(_names, _reason) => {
-          // TODO: wire to actual API call with names and reason
-          setTaskModal(null)
-          setSingleActionTask(null)
-          setTaskRowSelection({})
-          setTaskActionMessage('Endorsement request has been sent.')
-          setShowTaskActionToast(true)
+        onConfirm={(names, reason) => {
+          const ids = singleActionTask ? [singleActionTask.id] : taskSelectedIds
+          if (singleActionTask) {
+            requestEndorsementMutation.mutate(
+              { taskId: singleActionTask.id, endorserNames: names, reason: reason ?? '' },
+              {
+                onSuccess: () => {
+                  setTaskModal(null)
+                  setSingleActionTask(null)
+                  setTaskRowSelection({})
+                  setTaskActionMessage('Endorsement request has been sent.')
+                  setShowTaskActionToast(true)
+                },
+              },
+            )
+          } else {
+            bulkEndorsementMutation.mutate(
+              { taskIds: ids, endorserNames: names, reason: reason ?? '' },
+              {
+                onSuccess: () => {
+                  setTaskModal(null)
+                  setSingleActionTask(null)
+                  setTaskRowSelection({})
+                  setTaskActionMessage('Endorsement request has been sent.')
+                  setShowTaskActionToast(true)
+                },
+              },
+            )
+          }
         }}
         onOpenChange={(open) => {
           if (!open) {

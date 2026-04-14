@@ -7,7 +7,9 @@ import {
   ChevronUp,
   Clock,
   ExternalLink,
+  Loader2,
   MessageSquare,
+  SendHorizontal,
 } from 'lucide-react'
 
 import ActionSheet from '@/shared/components/ActionSheet'
@@ -34,6 +36,10 @@ import {
   returnTask,
 } from '@features/module-assessment-data/api/processAssesmentService'
 import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
+import {
+  useFieldComments,
+  useAddFieldComment,
+} from '@features/module-assessment-data/hooks/useFieldComments'
 
 const WORKFLOW_STEPS = [
   { id: 'step1', title: 'Draft updates', status: 'completed', owner: 'Business FP' },
@@ -49,13 +55,33 @@ const WORKFLOW_STEPS = [
 interface ChangeAccordionItemProps {
   change: ChangeRecord
   itemId: string
+  taskId: string
   canComment: boolean
 }
 
-function ChangeAccordionItem({ change, itemId, canComment }: ChangeAccordionItemProps) {
-  const [comment, setComment] = useState(change.comment ?? '')
-  const [showComment, setShowComment] = useState(!!change.comment)
+function ChangeAccordionItem({ change, itemId, taskId, canComment }: ChangeAccordionItemProps) {
+  const [showCommentInput, setShowCommentInput] = useState(false)
+  const [commentText, setCommentText] = useState('')
   const truncate = (str: string, n = 18) => (str.length > n ? str.slice(0, n) + '…' : str)
+
+  const changeId = change.id ?? itemId
+  const { data: comments = [] } = useFieldComments(taskId, changeId)
+  const { mutate: addComment, isPending: isAdding } = useAddFieldComment()
+
+  const handleSubmitComment = () => {
+    const trimmed = commentText.trim()
+    if (!trimmed) return
+    addComment({ taskId, changeId, text: trimmed })
+    setCommentText('')
+    setShowCommentInput(false)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSubmitComment()
+    }
+  }
 
   return (
     <AccordionItem value={itemId}>
@@ -93,27 +119,67 @@ function ChangeAccordionItem({ change, itemId, canComment }: ChangeAccordionItem
               {change.newValue}
             </div>
           </div>
-          {canComment && !showComment && (
-            <button
-              type="button"
-              className="inline-flex items-center gap-1.5 self-start text-sm font-medium text-[#0047BB] hover:underline"
-              onClick={() => setShowComment(true)}
-            >
-              <MessageSquare className="size-4" />
-              Add comment
-            </button>
-          )}
-          {canComment && showComment && (
-            <div>
-              <p className="text-muted-foreground mb-1.5 text-sm">Comment</p>
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Add your comment..."
-                rows={3}
-                className="border-border focus:ring-ring w-full resize-none rounded-xl border bg-white px-3 py-2.5 text-sm outline-none focus:ring-2"
-              />
+
+          {/* ── Existing comments ─────────────────────────────────────── */}
+          {comments.length > 0 && (
+            <div className="flex flex-col gap-2">
+              <Separator />
+              <p className="text-muted-foreground text-sm font-medium">Comments</p>
+              {comments.map((c) => (
+                <div key={c.id} className="rounded-xl border border-[#DFE3E6] bg-white px-3 py-2.5">
+                  <div className="flex items-center justify-between">
+                    <p className="text-foreground text-sm font-semibold">{c.author}</p>
+                    <p className="text-muted-foreground text-xs">{c.timestamp}</p>
+                  </div>
+                  <p className="text-foreground mt-1 text-sm">{c.text}</p>
+                </div>
+              ))}
             </div>
+          )}
+
+          {/* ── Add comment ───────────────────────────────────────────── */}
+          {canComment && (
+            <>
+              <Separator />
+              {!showCommentInput ? (
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1.5 self-start text-sm font-medium text-[#0047BB] hover:underline"
+                  onClick={() => setShowCommentInput(true)}
+                >
+                  <MessageSquare className="size-4" />
+                  Add comment
+                </button>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <p className="text-muted-foreground text-sm">Add your comment</p>
+                  <div className="flex gap-4">
+                    <textarea
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      placeholder="Add your comment"
+                      disabled={isAdding}
+                      rows={3}
+                      className="flex-1 resize-none rounded-2xl border border-[#DFE3E6] bg-white px-6 py-4 text-base font-medium text-[#151718] outline-none placeholder:text-[#687076]"
+                    />
+                    <button
+                      type="button"
+                      disabled={!commentText.trim() || isAdding}
+                      onClick={handleSubmitComment}
+                      className="shrink-0 self-end text-[#687076] transition-colors hover:text-[#151718] disabled:opacity-40"
+                      aria-label="Send comment"
+                    >
+                      {isAdding ? (
+                        <Loader2 className="size-5 animate-spin" />
+                      ) : (
+                        <SendHorizontal className="size-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </AccordionContent>
@@ -320,6 +386,7 @@ const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) =
                         key={change.id ?? `change-${index}`}
                         itemId={change.id ?? `change-${index}`}
                         change={change}
+                        taskId={task.id}
                         canComment={isApprover}
                       />
                     ))}
