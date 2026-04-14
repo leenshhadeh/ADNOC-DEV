@@ -61,7 +61,7 @@ export function ReturnModal({
         <div className="flex gap-2 pt-4">
           <button
             type="button"
-            className="flex flex-1 items-center justify-center rounded-[36px] px-6 py-3 text-sm font-medium text-[#0047BA] transition-colors hover:bg-[#0047BA]/5"
+            className="flex flex-1 items-center justify-center rounded-full bg-gradient-to-b from-[#EAEFFF] to-[#C7D6F9] px-6 py-3 text-sm font-medium text-[#151718] shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90"
             onClick={() => handleOpenChange(false)}
           >
             Cancel
@@ -69,7 +69,7 @@ export function ReturnModal({
           <button
             type="button"
             disabled={reason.trim().length === 0}
-            className="flex flex-1 items-center justify-center rounded-full bg-gradient-to-r px-6 py-3 text-sm font-medium text-[#EB3865] shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="flex flex-1 items-center justify-center rounded-full border border-[#55213E] bg-gradient-to-b from-[#EAEFFF] to-[#C7D6F9] px-6 py-3 text-sm font-medium text-[#EB3865] shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90 disabled:opacity-50"
             onClick={() => {
               onConfirm(reason.trim())
               handleOpenChange(false)
