@@ -3,7 +3,6 @@ import { z } from 'zod'
 // ── Add Level 4s (multi-step flow from L3 dropdown) ───────────────────────────
 
 export const addLevel4ItemSchema = z.object({
-  processCode: z.string(),
   processName: z.string().min(1, 'Required'),
   processDescription: z.string().optional(),
 })
@@ -30,7 +29,6 @@ export type AddLevel4sSelectionValues = z.infer<typeof addLevel4sSelectionSchema
 // ── Edit Level 4s ─────────────────────────────────────────────────────────────
 
 export const editLevel4RowSchema = z.object({
-  processCode: z.string().min(1, 'Required'),
   processName: z.string().min(1, 'Required'),
   processDescription: z.string().optional(),
   status: z.enum(['Published', 'Draft']).default('Draft'),

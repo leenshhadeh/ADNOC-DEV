@@ -14,15 +14,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Info, MoreVertical, Plus, Search, X } from 'lucide-react'
+import { Info, Plus, Search, Trash2, X } from 'lucide-react'
 
 import { cn } from '@/shared/lib/utils'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/shared/components/ui/dropdown-menu'
 import {
   editLevel4sFormSchema,
   type EditLevel4sFormValues,
@@ -76,11 +70,6 @@ interface ProcessNameSuggestionsProps {
 function ProcessNameSuggestions({ suggestions, onSelect }: ProcessNameSuggestionsProps) {
   const [search, setSearch] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    // Auto-focus the search input when the dropdown opens
-    inputRef.current?.focus()
-  }, [])
 
   const filtered = suggestions.filter((s) => s.toLowerCase().includes(search.toLowerCase()))
 
@@ -146,23 +135,30 @@ function Level4RowItem({
   onRemove,
 }: Level4RowProps) {
   const [showSuggestions, setShowSuggestions] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
   const hasSuggestions = previousProcessNames && previousProcessNames.length > 0
+  const { onBlur: rhfOnBlur, ...registerRest } = register(`rows.${index}.processName`)
 
   return (
     <div className="flex min-h-[56px] border-b border-[#DFE3E6] last:border-b-0">
       {/* Process Code */}
-      <div className="flex w-[140px] shrink-0 items-center border-r border-[#DFE3E6] px-4 py-2">
+      <div className="flex w-[140px] shrink-0 items-center px-4 py-2">
         <span className="text-sm font-normal text-[#687076]">{processCode}</span>
       </div>
 
       {/* Process Name */}
-      <div className="relative flex flex-1 items-center border-r border-[#DFE3E6] px-4 py-2">
+      <div ref={containerRef} className="relative flex flex-1 items-center px-4 py-2">
         <input
-          {...register(`rows.${index}.processName`)}
+          {...registerRest}
           placeholder="Start writing..."
           aria-label="Process name"
           onFocus={() => hasSuggestions && setShowSuggestions(true)}
-          onBlur={() => setShowSuggestions(false)}
+          onBlur={(e) => {
+            rhfOnBlur(e)
+            // Keep dropdown open when focus moves within the suggestions container
+            if (containerRef.current?.contains(e.relatedTarget as Node)) return
+            setShowSuggestions(false)
+          }}
           className={cn(
             'w-full bg-transparent text-sm font-normal text-[#151718] outline-none',
             'placeholder:font-light placeholder:text-[#687076]',
@@ -181,7 +177,7 @@ function Level4RowItem({
       </div>
 
       {/* Process Description */}
-      <div className="flex flex-1 items-center border-r border-[#DFE3E6] px-4 py-2">
+      <div className="flex flex-1 items-center px-4 py-2">
         <input
           {...register(`rows.${index}.processDescription`)}
           placeholder="Start writing..."
@@ -191,35 +187,20 @@ function Level4RowItem({
       </div>
 
       {/* Status */}
-      <div className="flex w-[100px] shrink-0 items-center border-r border-[#DFE3E6] px-4 py-2">
+      <div className="flex w-[100px] shrink-0 items-center px-4 py-2">
         <StatusBadge status={status} />
       </div>
 
       {/* Actions */}
       <div className="flex w-[56px] shrink-0 items-center justify-center py-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              className="rounded-full p-1 text-[#151718] transition-colors hover:bg-[#DFE3E6]"
-              aria-label="Row actions"
-            >
-              <MoreVertical className="size-4" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            sideOffset={4}
-            className="w-40 rounded-2xl border border-[#DFE3E6] bg-white p-0 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]"
-          >
-            <DropdownMenuItem
-              className="cursor-pointer px-3 py-2 text-sm font-normal text-[#EB3865] focus:bg-[#F1F3F5]"
-              onClick={onRemove}
-            >
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <button
+          type="button"
+          className="rounded-full p-1 text-[#EB3865] transition-colors hover:bg-[#DFE3E6]"
+          aria-label="Delete row"
+          onClick={onRemove}
+        >
+          <Trash2 className="size-4" />
+        </button>
       </div>
     </div>
   )
@@ -237,14 +218,13 @@ export const EditLevel4sModal = ({
   isLoading = false,
   onSave,
 }: EditLevel4sModalProps) => {
-  const makeEmptyRow = (index: number): Level4Row => ({
-    processCode: `${parentCode}.${index}`,
+  const makeEmptyRow = (): Level4Row => ({
     processName: '',
     processDescription: '',
     status: 'Draft',
   })
 
-  const defaultRows: Level4Row[] = initialRows.length > 0 ? initialRows : [makeEmptyRow(1)]
+  const defaultRows: Level4Row[] = initialRows.length > 0 ? initialRows : [makeEmptyRow()]
 
   const {
     register,
@@ -263,14 +243,14 @@ export const EditLevel4sModal = ({
   useEffect(() => {
     if (open && !isLoading) {
       reset({
-        rows: initialRows.length > 0 ? initialRows : [makeEmptyRow(1)],
+        rows: initialRows.length > 0 ? initialRows : [makeEmptyRow()],
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, isLoading, initialRows.length])
 
   const handleAddRow = () => {
-    append(makeEmptyRow(fields.length + 1))
+    append(makeEmptyRow())
   }
 
   const handleSave = handleSubmit((data) => {

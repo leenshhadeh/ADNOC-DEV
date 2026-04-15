@@ -3,7 +3,12 @@ import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import { ChevronDown, Eye, MoreHorizontal, Pencil, Plus, RotateCcw } from 'lucide-react'
 
 import { EditLevel4sModal } from './EditLevel4sModal'
-import { useGetLevel4s } from '@features/module-process-catalog/hooks/useGetLevel4s'
+import {
+  useGetLevel4s,
+  useGetLevel4Names,
+} from '@features/module-process-catalog/hooks/useGetLevel4s'
+import { saveLevel4s } from '@features/module-process-catalog/api/level4Service'
+import { SuccessToast } from '@/shared/components/SuccessToast'
 import { PermissionGuard } from '@/shared/components/PermissionGuard'
 import { includeListFilterFn, firstCharFilterFn } from '@/shared/components/data-table/ColumnFilter'
 
@@ -117,12 +122,13 @@ const EntitySiteCell = ({
 }) => {
   const [value, setValue] = useState<YesNo>(initialValue)
   const [editOpen, setEditOpen] = useState(false)
+  const [toastMsg, setToastMsg] = useState<string | null>(null)
 
   // Fetch L4s scoped to this L3 row — only runs when the modal is open
   const { data: level4s, isLoading: isLoadingL4s } = useGetLevel4s(editOpen ? parentId : undefined)
+  const { data: previousL4Names } = useGetLevel4Names(editOpen ? parentId : undefined)
 
   const initialRows = level4s?.map((l4) => ({
-    processCode: l4.processCode,
     processName: l4.name,
     processDescription: l4.description,
   }))
@@ -175,7 +181,31 @@ const EntitySiteCell = ({
             parentLabel={`${entityName} - ${siteName}`}
             parentCode={parentCode}
             initialRows={initialRows}
+            previousProcessNames={previousL4Names}
             isLoading={isLoadingL4s}
+            onSave={async (rows) => {
+              try {
+                const result = await saveLevel4s(
+                  parentId,
+                  rows.map((r) => ({
+                    processName: r.processName,
+                    processDescription: r.processDescription,
+                    status: r.status,
+                  })),
+                )
+                setToastMsg(
+                  `Level 4s saved — ${result.created} created, ${result.updated} updated, ${result.deleted} removed.`,
+                )
+              } catch {
+                setToastMsg('Failed to save Level 4 changes.')
+              }
+            }}
+          />
+
+          <SuccessToast
+            open={!!toastMsg}
+            message={toastMsg ?? ''}
+            onClose={() => setToastMsg(null)}
           />
         </>
       )}

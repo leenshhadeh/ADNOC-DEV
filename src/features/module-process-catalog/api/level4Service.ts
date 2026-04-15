@@ -13,7 +13,7 @@
  * │    Resp:  { data: Level4Item[], success, message }                         │
  * │                                                                            │
  * │  POST /api/processes/:parentId/level4s                                     │
- * │    Body:  { items: CreateLevel4Request[] }                                 │
+ * │    Body:  { selectedCompanySites: string[], items: CreateLevel4Request[] } │
  * │    Resp:  { data: Level4Item[], success, message }                         │
  * │                                                                            │
  * │  PUT  /api/processes/:parentId/level4s                                     │
@@ -43,14 +43,12 @@ const SIMULATED_LATENCY_MS = 800
 
 /** POST /api/processes/:parentId/level4s — create new L4 rows */
 export interface CreateLevel4Request {
-  processCode: string
   processName: string
   processDescription?: string
 }
 
 /** PUT /api/processes/:parentId/level4s — full replacement of L4 rows */
 export interface UpdateLevel4Request {
-  processCode: string
   processName: string
   processDescription?: string
   status?: 'Published' | 'Draft'
@@ -113,7 +111,7 @@ export function createLevel4s(
 
       const created: Level4Item[] = items.map((item, i) => ({
         id: `l4-new-${Date.now()}-${i}`,
-        processCode: item.processCode,
+        processCode: `AUTO.${Date.now()}.${i + 1}`,
         name: item.processName,
         description: item.processDescription ?? '',
         status: 'Draft',
@@ -149,12 +147,12 @@ export function saveLevel4s(
       }
 
       const existing = MOCK_LEVEL4_DATA.filter((item) => item.parentId === parentId)
-      const existingCodes = new Set(existing.map((e) => e.processCode))
-      const incomingCodes = new Set(rows.map((r) => r.processCode))
+      const existingNames = new Set(existing.map((e) => e.name))
+      const incomingNames = new Set(rows.map((r) => r.processName))
 
-      const created = rows.filter((r) => !existingCodes.has(r.processCode)).length
-      const updated = rows.filter((r) => existingCodes.has(r.processCode)).length
-      const deleted = existing.filter((e) => !incomingCodes.has(e.processCode)).length
+      const created = rows.filter((r) => !existingNames.has(r.processName)).length
+      const updated = rows.filter((r) => existingNames.has(r.processName)).length
+      const deleted = existing.filter((e) => !incomingNames.has(e.name)).length
 
       resolve({ updated, created, deleted })
     }, SIMULATED_LATENCY_MS)

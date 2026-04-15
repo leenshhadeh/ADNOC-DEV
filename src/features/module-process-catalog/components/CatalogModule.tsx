@@ -708,7 +708,6 @@ const CatalogModule = () => {
         isLoading={isLoadingL4s}
         previousProcessNames={previousL4Names}
         initialRows={existingL4s?.map((l4) => ({
-          processCode: l4.processCode,
           processName: l4.name,
           processDescription: l4.description,
         }))}
@@ -718,7 +717,6 @@ const CatalogModule = () => {
             const result = await saveLevel4s(
               targetL3Item.id,
               rows.map((r) => ({
-                processCode: r.processCode,
                 processName: r.processName,
                 processDescription: r.processDescription,
                 status: r.status,

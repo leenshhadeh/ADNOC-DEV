@@ -293,7 +293,7 @@ const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sM
     defaultValues: {
       groupCompany: '',
       selectedCompanySites: [],
-      items: [{ processCode: `${parentCode}.1`, processName: '', processDescription: '' }],
+      items: [{ processName: '', processDescription: '' }],
     },
   })
 
@@ -308,7 +308,7 @@ const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sM
       reset({
         groupCompany: '',
         selectedCompanySites: [],
-        items: [{ processCode: `${parentCode}.1`, processName: '', processDescription: '' }],
+        items: [{ processName: '', processDescription: '' }],
       })
     }
   }, [open, parentCode, reset])
@@ -387,7 +387,7 @@ const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sM
     reset({
       groupCompany: selectedArr[0],
       selectedCompanySites: selectedArr,
-      items: [{ processCode: `${parentCode}.1`, processName: '', processDescription: '' }],
+      items: [{ processName: '', processDescription: '' }],
     })
     setStep('form')
   }
@@ -400,7 +400,6 @@ const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sM
 
   const handleAddRow = () => {
     append({
-      processCode: `${parentCode}.${fields.length + 1}`,
       processName: '',
       processDescription: '',
     })
