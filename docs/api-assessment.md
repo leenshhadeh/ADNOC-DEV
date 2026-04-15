@@ -14,7 +14,8 @@
    - 3.1 [GET /api/process-Assesssment/rows](#31-get-apiprocess-Assesssmentrows)
    - 3.2 [GET /api/process-Assesssment/my-tasks](#32-get-apiprocess-Assesssmentmy-tasks)
    - 3.3 [GET /api/process-Assesssment/submitted-requests](#33-get-apiprocess-Assesssmentsubmitted-requests)
-   - 3.4 [GET /api/process-Assesssment/process/:processDetails](#34-get-apiprocess-Assesssmentsubmitted-requests)
+   - 3.4 [GET /api/process-Assesssment/process/:processDetails](#34-get-processDetails)
+   - 3.5 [GET /api/process-Assesssment/process/:processDetails/opportunities](#35-get-apiprocess-requests-opportunities)
 
 
 ---
@@ -115,18 +116,18 @@ Returns the full process hierarchy (Domain → Level 1 → Level 2 → Level 3 �
                   "totalPersonnelExecutingFTE": "5",
                   "totalProcessDurationDays": "30",
                   "timeSpentOnManualTasksPercent": "80%",
-                  "keyManualSteps": "1.Data collection, model setup, result interpretation",
+                  "keyManualSteps": "<p>1.Data collection</p>",
                   "northStarTargetAutomation": "Keep as is",
                   "targetAutomationLevelPercent": "60%",
-                  "SMEFeedback": "Significant time spent on manual data collection and model setup. Automation could free up time for more value-added analysis.",
+                  "SMEFeedback": "",
                   "toBeAIPowered": "Yes",
-                  "toBeAIPoweredComments": "AI could be used to assist with result interpretation and identify patterns in the data.",
+                  "toBeAIPoweredComments": "",
                   "rateCardAED": "500 AED",
                   "costOfManualEffortAED": "120000 AED",
                   "markedAsReviewed": "false",
                   "reviewedOn": "",
-                  "businessFocalPoint": ["John Doe"],
-                  "digitalFocalPoint": ["Jane Smith"],
+                  "businessFocalPoint": ["name1","name2"],
+                  "digitalFocalPoint": ["name1","name2"],
                   "publishedDate": "2024-01-15",
                   "submittedBy": "John Doe",
                   "submittedOn": "2024-01-10",
@@ -164,7 +165,7 @@ Returns the full process hierarchy (Domain → Level 1 → Level 2 → Level 3 �
                       "totalPersonnelExecutingFTE": "5",
                       "totalProcessDurationDays": "30",
                       "timeSpentOnManualTasksPercent": "80%",
-                      "keyManualSteps": "1.Data collection, model setup, result interpretation",
+                      "keyManualSteps": "<p>1.Data collection</p>",
                       "northStarTargetAutomation": "Keep as is",
                       "targetAutomationLevelPercent": "60%",
                       "SMEFeedback": "Significant time spent.",
@@ -174,8 +175,8 @@ Returns the full process hierarchy (Domain → Level 1 → Level 2 → Level 3 �
                       "costOfManualEffortAED": "120000 AED",
                       "markedAsReviewed": "false",
                       "reviewedOn": "",
-                      "businessFocalPoint": ["John Doe"],
-                      "digitalFocalPoint": ["Jane Smith"],
+                      "businessFocalPoint": ["name1","name2"],
+                      "digitalFocalPoint": ["name1","name2","name"],
                       "publishedDate": "2024-01-15",
                       "submittedBy": "John Doe",
                       "submittedOn": "2024-01-10"
@@ -267,5 +268,133 @@ Returns tasks assigned to the current user that need action.
 
 ### 3.3 GET `/api/process-Assesssment/submitted-requests`
 
+**Response — `data:[]`**
 Returns change requests submitted by (or visible to) the current user.
 
+```json
+{
+  "data": [
+
+  {
+    "id": "",
+    "processId": "",
+    "processCode":"",
+    "domain": "",
+    "processName": '"",
+    "requestId": "",
+    "requester": "",
+    "status": "",
+    "stageCurrent": 1,
+    "stageTotal": 1,
+    "stageText": "",
+    "submittedOn": "",
+    "returnComment":"",
+    "changes": [
+      {
+        "id": "",
+        "label": "",
+        "oldValue": "",
+        "newValue": "",
+      }
+    ],
+  },
+  ]
+}
+```
+
+### 3.4 GET processDetails
+
+
+```json
+{
+  "data": [
+  {
+    "name": "",
+    "groupCompany": "",
+    "domain":"",
+    "code": "",
+    "status": "",
+    "stageCurrent": "",
+    "stageTotal": "",
+    "processApplicapility": true,
+    "lastPublishedDate": "",
+    "markedReviewDate": "",
+    "level1Name": "",
+    "level2Name": "",
+    "level3Name":"",
+    "level4Name": "",
+    "centrallyGovernedProcess": "yes",
+    "sharedServiceProcess": "no",
+    "customName":"",
+    "customDescription": "",
+    "processDescription": "",
+    "responsibleBusinessFocalPoint": [
+      {
+        "id": "",
+        "name": "",
+        "img": "url",
+      },
+    ],
+    "responsibleDigitalFocalPoint": [
+      {
+         "id": "",
+        "name": "",
+        "img": "url",
+      },
+    ],
+    "numberOfPeopleInvolved": "",
+    "scaleOfProcess": "",
+    "automationMaturityLevel":  "",
+    "automationLevel":  "",
+    "currentApplicationsSystems": ["","",""],
+    "OngoingAutomationDigitalInitiatives":  "",
+    "businessRecommendationForAutomation":  "",
+    "keyChallengesAutomationNeeds":  "",
+    "AIPowered":  "No",
+    "AIPoweredUseCase":  "",
+    "autonomousUseCaseEnabled": "No",
+    "AutonomousUseCaseDescriptionComment":  "",
+    "processCriticality":  "",
+    "keyManualSteps":  "<p>test</p>",
+    "northStarTargetAutomation": "",
+    "targetAutomationLevelPercent": "",
+    "SMEFeedback":"",
+    "toBeAIPowered":"",
+    "toBeAIPoweredComments":"",
+    "opportunities": [
+      {
+        "id": "",
+        "opportunity": "",
+        "description":"",
+        "domain": "",
+      },
+      
+    ],
+    "changes": [
+      {
+        "name": "",
+        "comment":"",
+        "oldValue": "",
+        "newValue": "",
+        "changeType": "",
+        "modifiedBy":"",
+        "modifiedOn": "",
+      },
+  
+    ],
+
+    "comments":[
+      {
+        "username":"",
+        "userPrfileImg":"",
+        "comment":"",
+        "date":"",
+        "status":"",
+        "markedAsReviewed":false
+      },
+   
+    ]
+  },
+]
+}
+```
