@@ -4,6 +4,7 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
   {
     id: 'request-1',
     processId: 'r4',
+    processCode:'EXP.1.1.3',
     processName: 'Play-based exploration (concept) 2',
     requestId: '9377353',
     requester: 'Maryam Al Shamsi',
@@ -91,6 +92,7 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
   {
     id: 'request-2',
     processId: 'r5',
+    processCode:'EXP.2.5.0',
     domain: 'dom-005',
     processName: 'Define Budget and Schedule',
     requestId: '9377353',

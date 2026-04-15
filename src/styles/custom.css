@@ -23,6 +23,9 @@
 }
 
 /* table-hierarchy */
+td {
+  border-right-width: 1px;
+}
 .table-hierarchy td {
   border-right-width: 1px;
   border-top-width: 1px;

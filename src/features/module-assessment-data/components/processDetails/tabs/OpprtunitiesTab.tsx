@@ -1,7 +1,7 @@
 import DataTable from '@/shared/components/data-table/DataTable'
 import type { ColumnDef } from '@tanstack/react-table'
-import { useMemo } from 'react'
-
+import { useMemo, useState } from 'react'
+import OpportunityDetailsSheet from '../../sidePanels/OpportunityDetailsSheet'
 
 interface oppRows {
   opportunity: string
@@ -12,37 +12,54 @@ interface oppRows {
 
 const OpprtunitiesTab = (props: any) => {
   const { process } = props
+  const [openSheet, setOpenSheet] = useState(false)
+  const [selectedItem, setSelectedItem] = useState<any>()
 
+  const openOpportunitySheet = (row: any) => {
+    setOpenSheet(true)
+    setSelectedItem(row)
+  }
 
-  const columns = useMemo<ColumnDef<oppRows, unknown>[]>(() => [
-    {
-      id: 'opportunity',
-      accessorKey: 'opportunity',
-      header: 'Opportunity',
-      size: 250,
-      enableSorting: false,
-      cell: (info) => <div><p className='text-foreground'>{info.row.original.opportunity}</p><span className='text-muted-foreground'>{info.row.original.id}</span></div>,
-    },
-    {
-      id: 'description',
-      accessorKey: 'description',
-      header: 'Description',
-      size: 650,
-      enableSorting: false,
-      cell: (info) => <p className='text-muted-foreground text-wrap'>{info.row.original.description}</p>,
-    },
-    {
-      id: 'domain',
-      accessorKey: 'domain',
-      header: 'Domain',
-      // size: 250,
-      enableSorting: false,
-      cell: (info) => <p className='text-muted-foreground'>{info.row.original.domain}</p>,
-    },
-  ], [])
-
-
-
+  const columns = useMemo<ColumnDef<oppRows, unknown>[]>(
+    () => [
+      {
+        id: 'opportunity',
+        accessorKey: 'opportunity',
+        header: 'Opportunity',
+        size: 250,
+        enableSorting: false,
+        cell: (info) => (
+          <div
+            onClick={() => {
+              openOpportunitySheet(info.row.original)
+            }}
+          >
+            <p className="text-foreground">{info.row.original.opportunity}</p>
+            <span className="text-muted-foreground">{info.row.original.id}</span>
+          </div>
+        ),
+      },
+      {
+        id: 'description',
+        accessorKey: 'description',
+        header: 'Description',
+        size: 650,
+        enableSorting: false,
+        cell: (info) => (
+          <p className="text-muted-foreground text-wrap">{info.row.original.description}</p>
+        ),
+      },
+      {
+        id: 'domain',
+        accessorKey: 'domain',
+        header: 'Domain',
+        // size: 250,
+        enableSorting: false,
+        cell: (info) => <p className="text-muted-foreground">{info.row.original.domain}</p>,
+      },
+    ],
+    [],
+  )
 
   return (
     <>
@@ -51,18 +68,21 @@ const OpprtunitiesTab = (props: any) => {
         Read only
       </span>
       {/* table: */}
-      {process.opportunities && process.opportunities.length>0 ?
-       <div className="table-light ">
-            <DataTable
-        columns={columns}
-        data={process.opportunities || []}
-        />
-       </div>
-    
-        :<></>
-      }
-    
-     
+      {process.opportunities && process.opportunities.length > 0 ? (
+        <div className="table-light">
+          <DataTable columns={columns} data={process.opportunities || []} />
+        </div>
+      ) : (
+        <></>
+      )}
+
+      <OpportunityDetailsSheet
+        request={selectedItem}
+        open={openSheet}
+        onOpenChange={() => {
+          setOpenSheet(false)
+        }}
+      />
     </>
   )
 }
