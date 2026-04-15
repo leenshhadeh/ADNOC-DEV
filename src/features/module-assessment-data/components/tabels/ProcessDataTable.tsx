@@ -1,21 +1,10 @@
-import { useCallback, useMemo, useState } from 'react'
-import type { ColumnDef } from '@tanstack/react-table'
-import { ASSESSMENT_DATA } from '../../constants/assessment-data'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import DataTable from '@/shared/components/data-table/DataTable'
 import type { DomainItem, FlatAssessmentRow, SharedService } from '../../types/process'
-import CellMenuOptions from '../CellMenuOptions'
-import { StatusBadgeCell } from '@/shared/components/cells'
-import { EditableCell, RadioCell } from '@/shared/components/table-primitives'
-import { Maximize2, Tally1 } from 'lucide-react'
-import TagsList from '@/shared/components/table-primitives/TagsList'
 import SharedServicesSheet from '../sidePanels/SharedServicesSheet'
-import SelectCell from '@/shared/components/table-primitives/SelectCell'
-import { ASSESSMENT_APPLICATIONS, DIGITAL_FP_USERS } from '../../constants/CurrentApplication'
-import MarkedAsReviewCell from '../cells/MarkedAsReviewCell'
 import BUSheet from '../sidePanels/BUSheet'
 import DigitalTeamSheet from '../sidePanels/DigitalTeamSheet'
-import TagsSelectCell from '../cells/TagsSelectCell'
-import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
+import { getProcessTableColumns } from './process-table-columns'
 
 const toText = (value: unknown): string => {
   if (value == null) return ''
@@ -28,7 +17,7 @@ const formatSharedService = (value: SharedService): any => {
   if (!value) return ''
   if (typeof value === 'string') return value
 
-  return { services: value.services, shared: value.shared }
+  return { services: value?.services, shared: value?.shared }
 }
 
 const pickValue = <T,>(l4Value: T | undefined, l3Value: T | undefined): T | undefined =>
@@ -44,21 +33,37 @@ export const flattenAssessmentData = (data: DomainItem[]): FlatAssessmentRow[] =
               rowId:
                 l4Item?.id ?? `${domainItem.id}-${l1Item.id}-${l2Item.id}-${l3Item.id}-${l4Index}`,
               id: `${domainItem.id}-${l1Item.id}-${l2Item.id}-${l3Item.id}-${l4Item?.id ?? '0'}`,
-              domain:
-                l1Index === 0 && l2Index === 0 && l3Index === 0 && l4Index === 0
-                  ? (domainItem.domain ?? '')
-                  : '',
+              
 
-              l1: l2Index === 0 && l3Index === 0 && l4Index === 0 ? (l1Item.level1Name ?? '') : '',
-              l1Code: l1Item.level1Code,
+                  // ✅ REAL values (always filled)
+            domain: domainItem.domain ?? '',
+            l1: l1Item.level1Name ?? '',
+            l2: l2Item.level2Name ?? '',
+            l3: l3Item.level3Name ?? '',
+            l4: l4Item?.level4Name ?? '',
 
-              l2: l3Index === 0 && l4Index === 0 ? (l2Item.level2Name ?? '') : '',
-              l2Code: l2Item.level2Code,
+            // ✅ DISPLAY values (only first occurrence)
+            displayDomain:
+              l1Index === 0 && l2Index === 0 && l3Index === 0 && l4Index === 0
+                ? domainItem.domain ?? ''
+                : '',
 
-              l3: l4Index === 0 ? (l3Item.level3Name ?? '') : '',
-              l3Code: l3Item.level3Code,
+            displayL1:
+              l2Index === 0 && l3Index === 0 && l4Index === 0
+                ? l1Item.level1Name ?? ''
+                : '',
 
-              l4: l4Item?.level4Name ?? '',
+            displayL2:
+              l3Index === 0 && l4Index === 0
+                ? l2Item.level2Name ?? ''
+                : '',
+
+            displayL3:
+              l4Index === 0
+                ? l3Item.level3Name ?? ''
+                : '',
+
+
               l4Code: l4Item?.level4Code,
               groupCompany: toText(pickValue(l4Item?.groupCompany, l3Item.groupCompany)),
               Site: toText(pickValue(l4Item?.site, l3Item.site)),
@@ -168,727 +173,62 @@ export const flattenAssessmentData = (data: DomainItem[]): FlatAssessmentRow[] =
     ),
   )
 
-const ProcessDataTable = () => {
+  export type DisplayAssessmentRow = FlatAssessmentRow & {
+    displayDomain: string
+    displayL1: string
+    displayL2: string
+    displayL3: string
+  }
+  
+
+const ProcessDataTable = (props:any) => {
+  const {data} = props
   const [isSharedServiceOpen, setIsSharedServiceOpen] = useState(false)
   const [isBUOpen, setIsBUOpen] = useState(false)
   const [isDigitalTeamOpen, setIsDigitalTeamOpen] = useState(false)
-  const onExpandSharedServices = () => {
-    setIsSharedServiceOpen(true)
-  }
+  const [selectedRowId, setSelectedRowId] = useState('')
 
-  const getSharedCellValue = (item: any) => {
-    let parsedValue: any
-    try {
-      parsedValue = {
-        services: item?.services ?? 0,
-        shared: item?.shared ?? 0,
-      }
-    } catch {
-      parsedValue = {}
-    }
-    if (parsedValue.services && parsedValue.shared) {
-      return (
-        <div className="flex items-center justify-between">
-          <span className="pe-[7px]">{parsedValue.services}</span>
-          <Tally1 className="mt-[7px] rotate-[25deg] text-[#DFE3E6]" />
-          <span className="text-muted-foreground pe-[7px]">{parsedValue.shared} Shared</span>
-          <Tally1 className="text-[#DFE3E6]" />
-          <Maximize2
-            className="size-4 cursor-pointer"
-            strokeWidth={2}
-            onClick={onExpandSharedServices}
-          />
-        </div>
-      )
-    }
-    return <></>
-  }
-
-  const columns = useMemo<ColumnDef<FlatAssessmentRow, unknown>[]>(
-    () => [
-      {
-        id: 'domain',
-        accessorKey: 'domain',
-        header: 'Domain',
-        size: 250,
-        enableSorting: false,
-        meta: { isDivider: true },
-        cell: (info) => {
-          const domainId = info.getValue<string>()
-          const domainName = DOMAINS_DATA.find((d) => d.id === domainId)?.name ?? domainId
-          return <p className={domainName?'':'rowspan'}>{domainName}</p>
+  const columns = useMemo(
+    () =>
+      getProcessTableColumns({
+        onDescChanged: () => {},
+        onCentrallyGovernedProcessChanged: () => {},
+        onBUExpand: (rowId: string) => {
+          setIsBUOpen(true)
+          setSelectedRowId(rowId)
         },
-      },
-      {
-        id: 'l1',
-        accessorKey: 'l1',
-        header: 'Level 1',
-        size: 220,
-        enableSorting: false,
-        cell: (info) => (
-          <div className={info.getValue<string>()?"flex flex-col gap-0.5":"rowspan"}>
-            <span className="text-foreground text-sm font-medium">{info.getValue<string>()}</span>
-            <span className="text-muted-foreground text-xs">
-              {info.getValue<string>() ? info.row.original.l1Code : ''}
-            </span>
-          </div>
-        ),
-      },
-      {
-        id: 'l2',
-        accessorKey: 'l2',
-        header: 'Level 2',
-        size: 220,
-        enableSorting: false,
-        cell: (info) => (
-          <div className={info.getValue<string>()?"flex flex-col gap-0.5":'rowspan'}>
-            <span className="text-foreground text-sm font-medium">{info.getValue<string>()}</span>
-            <span className="text-muted-foreground text-xs">
-              {info.getValue<string>() ? info.row.original.l2Code : ''}
-            </span>
-          </div>
-        ),
-      },
-      {
-        id: 'l3',
-        accessorKey: 'l3',
-        header: 'Level 3',
-        size: 300,
-        enableSorting: false,
-        pinnedCol: true,
-        meta: { pinnedCol: true },
-        cell: (info) => (
-          <div className={info.getValue<string>()?"flex items-center justify-between gap-2":"rowspan"}>
-            <div className="flex flex-col gap-0.5">
-              <span className="text-foreground text-sm font-medium">{info.getValue<string>()}</span>
-              <span className="text-muted-foreground text-xs">
-                {info.getValue<string>() ? info.row.original.l3Code : ''}
-              </span>
-            </div>
-            {/* if there is l4 , remove the menu actins */}
-            {!info.row.original.l4Code && <CellMenuOptions item={info.row.original} />}
-          </div>
-        ),
-      },
-      {
-        id: 'l4',
-        accessorKey: 'l4',
-        header: 'Level 4',
-        size: 300,
-        pinnedCol: true,
-        meta: { pinnedCol: true, offset: 300 },
-        cell: (info) => (
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex flex-col gap-0.5">
-              <span className="text-foreground text-sm font-medium">{info.getValue<string>()}</span>
-              {info.getValue<string>() ? (
-                <span className="text-muted-foreground text-xs">{info.row.original.l4Code} </span>
-              ) : (
-                <span className="text-muted-foreground text-sm italic">No Level 4 processes</span>
-              )}
-            </div>
-            {info.getValue<string>() && <CellMenuOptions item={info.row.original} />}
-          </div>
-        ),
-      },
-      {
-        id: 'groupCompany',
-        accessorKey: 'groupCompany',
-        header: 'Group Company',
-        size: 250,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
-      },
-      {
-        id: 'Site',
-        accessorKey: 'Site',
-        header: 'Site',
-        size: 120,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
-      },
-      {
-        id: 'status',
-        accessorKey: 'status',
-        header: 'Status',
-        size: 180,
-        cell: (info) => <StatusBadgeCell status={info.row.original.status || '-'} />,
-      },
-      {
-        id: 'description',
-        accessorKey: 'description',
-        header: 'Description',
-        size: 320,
-        cell: (info) => (
-          <EditableCell
-            value={info.getValue<string>()}
-            onChange={(newValue) => {
-              // Handle the change, e.g., update the data source or state
-              console.log('New description:', newValue)
-            }}
-          />
-        ),
-      },
-      {
-        id: 'centrallyGovernedProcess',
-        accessorKey: 'centrallyGovernedProcess',
-        header: 'Centrally Governed Process',
-        size: 250,
-        cell: (info) => (
-          <RadioCell
-            name={`${info.row.original.l4Code}__centrallyGovernedProcess`}
-            value={info.getValue<string>() ? true : false}
-            options={[
-              { label: 'Yes', value: 'yes' },
-              { label: 'No', value: 'no' },
-            ]}
-            onChange={() => {}}
-          />
-        ),
-      },
-      {
-        id: 'sharedService',
-        accessorKey: 'sharedService',
-        header: 'Shared Service',
-        size: 250,
-        cell: (info) => <>{getSharedCellValue(info.getValue<string>())}</>,
-      },
-      {
-        id: 'businessUnit',
-        accessorKey: 'businessUnit',
-        header: 'Business Unit',
-        size: 250,
-        cell: (info) => (
-          <div className="max-w-[290px] overflow-hidden">
-            <TagsList
-              tags={(info.row.original.businessUnit || []).map((bu: string, index: number) => ({
-                id: `${info.row.original.l4Code || info.row.original.l3Code}__businessUnit__${index}`,
-                text: bu,
-              }))}
-              allTags={[]}
-              onExpand={() => {
-                setIsBUOpen(true)
-              }}
-            />
-          </div>
-        ),
-      },
-      {
-        id: 'responsibleDigitalTeam',
-        accessorKey: 'responsibleDigitalTeam',
-        header: 'Responsible Digital Team',
-        size: 250,
-        cell: (info) => (
-          <div className="max-w-[290px] overflow-hidden">
-            <TagsList
-              tags={(info.row.original.responsibleDigitalTeam || []).map(
-                (team: string, index: number) => ({
-                  id: `${info.row.original.l4Code || info.row.original.l3Code}_responsibleDigitalTeam${index}`,
-                  text: team,
-                }),
-              )}
-              allTags={[]}
-              onExpand={() => {
-                setIsDigitalTeamOpen(true)
-              }}
-            />
-          </div>
-        ),
-      },
-      {
-        id: 'processCriticality',
-        accessorKey: 'processCriticality',
-        header: 'Process Criticality',
-        size: 250,
-        cell: (info) => (
-          <SelectCell
-            defaultValue={info.getValue<string>()}
-            options={['Low', 'Standard', 'Critical']}
-            onValueChange={(newValue: string) => {
-              console.log('New process criticality:', newValue)
-            }}
-          />
-        ),
-      },
-      {
-        id: 'usersImpacted',
-        accessorKey: 'usersImpacted',
-        header: 'Number of People/Users Impacted',
-        size: 250,
-        cell: (info) => (
-          <SelectCell
-            defaultValue={info.getValue<string>()}
-            options={['High (500-1000)', 'Medium (50-500)', 'Small (1-50)']}
-            onValueChange={(newValue: string) => {
-              console.log('New users impacted:', newValue)
-            }}
-          />
-        ),
-      },
-      {
-        id: 'scaleOfProcess',
-        accessorKey: 'scaleOfProcess',
-        header: 'Scale of the Process',
-        size: 250,
-        cell: (info) => (
-          <SelectCell
-            defaultValue={info.getValue<string>()}
-            options={[
-              'Medium: (bigger team within one department)',
-              'Small: (100 - 200)',
-              'Site-specific',
-            ]}
-            onValueChange={(newValue: string) => {
-              console.log('New scale of process:', newValue)
-            }}
-          />
-        ),
-      },
-      {
-        id: 'automationMaturityLevel',
-        accessorKey: 'automationMaturityLevel',
-        header: 'Automation Maturity Level',
-        size: 250,
-        cell: (info) => (
-          <SelectCell
-            defaultValue={info.getValue<string>()}
-            options={['Fully Automated', 'Opportunistic', 'Systematic', 'Managed', 'Optimized']}
-            onValueChange={(newValue: string) => {
-              console.log('New automation maturity level:', newValue)
-            }}
-          />
-        ),
-      },
-      {
-        id: 'automationLevel',
-        accessorKey: 'automationLevel',
-        header: 'Automation Level (%)',
-        size: 180,
-        cell: (info) => (
-          <SelectCell
-            defaultValue={info.getValue<string>()}
-            options={['25%', '50%', '75%', '99%', '100%']}
-            onValueChange={(newValue: string) => {
-              console.log('New automation level:', newValue)
-            }}
-          />
-        ),
-      },
-      {
-        id: 'currentApplicationsSystems',
-        accessorKey: 'currentApplicationsSystems',
-        header: 'Current Applications/Systems',
-        size: 260,
-        cell: (info) => {
-          const onUpdate = info.table.options.meta?.onUpdateDraftRow
-          return (
-            <TagsSelectCell
-              list={info.row.original.currentApplicationsSystems.map((app: string) => ({
-                id: `${app.trim()}`,
-                name: app.trim(),
-              }))}
-              allTags={ASSESSMENT_APPLICATIONS}
-              isUsers={false}
-              onUpdate={(newTags: any) => {
-                const newValue = newTags.map((tag: any) => tag.name)
-                console.log('New current applications/systems:', newValue)
-                if (onUpdate) {
-                  onUpdate(info.row.original.id, 'currentApplicationsSystems', newValue)
-                  console.log('Updated row with id:', info.row.original.id, 'New value:', newValue)
-                }
-              }}
-            />
-          )
+        onDigitalTeamExpand: (rowId: string) => {
+          setSelectedRowId(rowId)
+          setIsDigitalTeamOpen(true)
         },
-      },
-      {
-        id: 'ongoingAutomationDigitalInitiatives',
-        accessorKey: 'ongoingAutomationDigitalInitiatives',
-        header: 'Ongoing Automation / Digital Initiatives',
-        size: 320,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
-      },
-      {
-        id: 'businessRecommendationForAutomation',
-        accessorKey: 'businessRecommendationForAutomation',
-        header: 'Business Recommendation for Automation',
-        size: 320,
-        cell: (info) => (
-          <SelectCell
-            defaultValue={info.getValue<string>()}
-            options={['Should be kept as is', 'should be automated', 'No Automation']}
-            onValueChange={(newValue: string) => {
-              console.log('New business recommendation for automation:', newValue)
-            }}
-          />
-        ),
-      },
-      {
-        id: 'keyChallengesAutomationNeeds',
-        accessorKey: 'keyChallengesAutomationNeeds',
-        header: 'Key Challenges & Automation Needs',
-        size: 300,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
-      },
-      {
-        id: 'aiPowered',
-        accessorKey: 'aiPowered',
-        header: 'AI-Powered - Y/N',
-        size: 160,
-        cell: (info) => (
-          <RadioCell
-            name={`${info.row.original.l4Code}__aiPowered`}
-            value={info.getValue<string>() ? true : false}
-            options={[
-              { label: 'Yes', value: 'yes' },
-              { label: 'No', value: 'no' },
-            ]}
-            onChange={() => {}}
-          />
-        ),
-      },
-      {
-        id: 'aiPoweredUseCase',
-        accessorKey: 'aiPoweredUseCase',
-        header: 'AI-Powered Use Case',
-        size: 250,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
-      },
-      {
-        id: 'autonomousUseCaseEnabled',
-        accessorKey: 'autonomousUseCaseEnabled',
-        header: 'Autonomous Use Case Enabled',
-        size: 250,
-        cell: (info) => (
-          <RadioCell
-            name={`${info.row.original.l4Code}__autonomousUseCaseEnabled`}
-            value={info.getValue<string>() ? true : false}
-            options={[
-              { label: 'Yes', value: 'yes' },
-              { label: 'No', value: 'no' },
-            ]}
-            onChange={() => {}}
-          />
-        ),
-      },
-      {
-        id: 'autonomousUseCaseDescriptionComment',
-        accessorKey: 'autonomousUseCaseDescriptionComment',
-        header: 'Autonomous Use Case Description/Comment',
-        size: 320,
-        cell: (info) => (
-          <EditableCell
-            value={info.getValue<string>()}
-            onChange={(newValue) => {
-              // Handle the change, e.g., update the data source or state
-              console.log('New autonomous use case description/comment:', newValue)
-            }}
-          />
-        ),
-      },
-      {
-        id: 'processCycle',
-        accessorKey: 'processCycle',
-        header: 'How Often the Process Happens (Cycle)',
-        size: 280,
-        cell: (info) => (
-          <SelectCell
-            defaultValue={info.getValue<string>()}
-            options={['Daily', 'Weekly', 'Monthly', 'Quarterly', 'Annually', 'Ad-hoc']}
-            onValueChange={(newValue: string) => {
-              console.log('New process cycle:', newValue)
-            }}
-          />
-        ),
-      },
-      {
-        id: 'processRepetitionWithinCycle',
-        accessorKey: 'processRepetitionWithinCycle',
-        header: 'Number of Times Repeated within Selected Cycle',
-        size: 320,
-        cell: (info) => (
-          <SelectCell
-            defaultValue={info.getValue<string>()}
-            options={['1-5 times', '6-10 times', '11-20 times', 'More than 20 times']}
-            onValueChange={(newValue: string) => {
-              console.log('New process repetition within cycle:', newValue)
-            }}
-          />
-        ),
-      },
-      {
-        id: 'totalPersonnelExecutingFTE',
-        accessorKey: 'totalPersonnelExecutingFTE',
-        header: 'Total Personnel Executing (FTE)',
-        size: 240,
-        cell: (info) => (
-          <SelectCell
-            defaultValue={info.getValue<string>()}
-            options={['10', '20', '50', '100', 'More than 100']}
-            onValueChange={(newValue: string) => {
-              console.log('New total personnel executing (FTE):', newValue)
-            }}
-          />
-        ),
-      },
-      {
-        id: 'totalProcessDurationDays',
-        accessorKey: 'totalProcessDurationDays',
-        header: 'Total Process Duration (Days)',
-        size: 220,
-        cell: (info) => (
-          <SelectCell
-            defaultValue={info.getValue<string>()}
-            options={['10', '20', '50', '100', 'More than 100']}
-            onValueChange={(newValue: string) => {
-              console.log('New total personnel executing (FTE):', newValue)
-            }}
-          />
-        ),
-      },
-      {
-        id: 'timeSpentOnManualTasksPercent',
-        accessorKey: 'timeSpentOnManualTasksPercent',
-        header: 'Time Spent on Manual Tasks (%)',
-        size: 240,
-        cell: (info) => (
-          <SelectCell
-            defaultValue={info.getValue<string>()}
-            options={['10%', '20%', '50%', '100%']}
-            onValueChange={(newValue: string) => {
-              console.log('New total personnel executing (FTE):', newValue)
-            }}
-          />
-        ),
-      },
-      {
-        id: 'keyManualSteps',
-        accessorKey: 'keyManualSteps',
-        header: 'Key Manual Steps',
-        size: 260,
-        cell: (info) => (
-          <EditableCell
-            value={info.getValue<string>()}
-            onChange={(newValue) => {
-              // Handle the change, e.g., update the data source or state
-              console.log('New key manual steps:', newValue)
-            }}
-            type={'textArea'}
-          />
-        ),
-      },
-      {
-        id: 'northStarTargetAutomation',
-        accessorKey: 'northStarTargetAutomation',
-        header: '"North Star" Target Automation',
-        size: 240,
-        cell: (info) => (
-          <SelectCell
-            defaultValue={info.getValue<string>()}
-            options={['Keep as is', 'To be fully automated', 'To be intelligent']}
-            onValueChange={(newValue: string) => {
-              console.log('New total personnel executing (FTE):', newValue)
-            }}
-          />
-        ),
-      },
-      {
-        id: 'targetAutomationLevelPercent',
-        accessorKey: 'targetAutomationLevelPercent',
-        header: 'Target Automation Level (%)',
-        size: 220,
-        cell: (info) => (
-          <SelectCell
-            defaultValue={info.getValue<string>()}
-            options={['10%', '20%', '50%', '100%']}
-            onValueChange={(newValue: string) => {
-              console.log('New total personnel executing (FTE):', newValue)
-            }}
-          />
-        ),
-      },
-      {
-        id: 'smeFeedback',
-        accessorKey: 'smeFeedback',
-        header: 'SME Feedback',
-        size: 280,
-        cell: (info) => (
-          <EditableCell
-            value={info.getValue<string>()}
-            onChange={(newValue) => {
-              // Handle the change, e.g., update the data source or state
-              console.log('New key manual steps:', newValue)
-            }}
-            type={'textArea'}
-          />
-        ),
-      },
-      {
-        id: 'toBeAIPowered',
-        accessorKey: 'toBeAIPowered',
-        header: 'To be AI Powered - Y/N',
-        size: 220,
-        cell: (info) => (
-          <RadioCell
-            name={`${info.getValue<string>()}__toBeAIPowered`}
-            value={info.getValue<string>()}
-            options={[
-              { label: 'Yes', value: 'yes' },
-              { label: 'No', value: 'no' },
-            ]}
-            onChange={() => {}}
-          />
-        ),
-      },
-      {
-        id: 'toBeAIPoweredComments',
-        accessorKey: 'toBeAIPoweredComments',
-        header: 'To be AI Powered - Comments',
-        size: 260,
-        cell: (info) => (
-          <EditableCell
-            value={info.getValue<string>()}
-            onChange={(newValue) => {
-              // Handle the change, e.g., update the data source or state
-              console.log('New key manual steps:', newValue)
-            }}
-            type={'textArea'}
-          />
-        ),
-      },
-      {
-        id: 'rateCardAED',
-        accessorKey: 'rateCardAED',
-        header: 'Rate Card (AED)',
-        size: 180,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
-      },
-      {
-        id: 'costOfManualEffortAED',
-        accessorKey: 'costOfManualEffortAED',
-        header: 'Cost of Manual Effort (AED)',
-        size: 220,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
-      },
-      {
-        id: 'markedAsReviewed',
-        accessorKey: 'markedAsReviewed',
-        header: 'Marked as Reviewed?',
-        size: 180,
-        cell: (info) => (
-          <MarkedAsReviewCell
-            marked={info.getValue<string>() === 'true' ? true : false}
-            date={info.row.original.reviewedOn}
-            id={`${info.row.original.l4Code}__markedAsReviewed`}
-            onChange={() => {}}
-          />
-        ),
-      },
-      {
-        id: 'businessFocalPoint',
-        accessorKey: 'businessFocalPoint',
-        header: 'Business Focal Point',
-        size: 220,
-        cell: (info) => {
-          const onUpdate = info.table.options.meta?.onUpdateDraftRow
-          return (
-            <TagsSelectCell
-              list={info.row.original.businessFocalPoint?.map((app: string) => ({
-                id: `${app.trim()}`,
-                name: app.trim(),
-              }))}
-              allTags={DIGITAL_FP_USERS}
-              isUsers={false}
-              onUpdate={(newTags: any) => {
-                const newValue = newTags.map((tag: any) => tag.name)
-                console.log('New current applications/systems:', newValue)
-                if (onUpdate) {
-                  onUpdate(info.row.original.id, 'businessFocalPoint', newValue)
-                  console.log('Updated row with id:', info.row.original.id, 'New value:', newValue)
-                }
-              }}
-            />
-          )
+        onExpandSharedServices: (rowId: string) => {
+          setSelectedRowId(rowId)
+          setIsSharedServiceOpen(true)
         },
-      },
-      {
-        id: 'digitalFocalPoint',
-        accessorKey: 'digitalFocalPoint',
-        header: 'Digital Focal Point',
-        size: 220,
-        cell: (info) => {
-          const onUpdate = info.table.options.meta?.onUpdateDraftRow
-          return (
-            <TagsSelectCell
-              list={info.row.original.digitalFocalPoint?.map((app: string) => ({
-                id: `${app.trim()}`,
-                name: app.trim(),
-              }))}
-              allTags={DIGITAL_FP_USERS}
-              isUsers={true}
-              onUpdate={(newTags: any) => {
-                const newValue = newTags.map((tag: any) => tag.name)
-                console.log('New digitalFocalPoint:', newValue)
-                if (onUpdate) {
-                  onUpdate(info.row.original.id, 'digitalFocalPoint', newValue)
-                  console.log('Updated row with id:', info.row.original.id, 'New value:', newValue)
-                }
-              }}
-            />
-          )
-        },
-      },
-      {
-        id: 'publishedDate',
-        accessorKey: 'publishedDate',
-        header: 'Published Date',
-        size: 180,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
-      },
-      {
-        id: 'submittedBy',
-        accessorKey: 'submittedBy',
-        header: 'Submitted By',
-        size: 180,
-        cell: (info) => (
-          <div className="text-muted-foreground rounded-[99px] bg-[#F1F3F5] p-1 text-center">
-            {info.getValue<string>()}
-          </div>
-        ),
-      },
-      {
-        id: 'submittedOn',
-        accessorKey: 'submittedOn',
-        header: 'Submitted On',
-        size: 180,
-        cell: (info) => <p>{info.getValue<string>()}</p>,
-      },
-    ],
+      }),
     [],
   )
-
-  const tableData = useMemo(() => flattenAssessmentData(ASSESSMENT_DATA), [])
-  const [updatedDataTable, setUpdatedDataTable] = useState(tableData)
+  const [updatedDataTable, setUpdatedDataTable] = useState(data) // changed every time user edit table values
+useEffect(()=>{
+  setUpdatedDataTable(data)
+},[data])
 
   /** Updates a draft row field as the user types */
   const handleUpdateDraftRow = useCallback(
     (
       id: string,
-      field:
-        | 'currentApplicationsSystems'
-        | 'businessUnit'
-        | 'responsibleDigitalTeam'
-        | 'businessFocalPoint'
-        | 'digitalFocalPoint',
+      field:string,
       value: string,
     ) => {
-      setUpdatedDataTable((prev) =>
-        prev.map((row) => (row.id === id ? { ...row, [field]: value } : row)),
+      setUpdatedDataTable((prev:any) =>
+        prev.map((row:any) => (row.id === id ? { ...row, [field]: value } : row)),
       )
     },
     [],
   )
 
   return (
-    <div className='table-hierarchy-test'>
+    <div className="table-hierarchy">
       <DataTable
         columns={columns}
         data={updatedDataTable}
@@ -916,6 +256,7 @@ const ProcessDataTable = () => {
         open={isDigitalTeamOpen}
         handleOpenChange={(newVal: any) => {
           setIsDigitalTeamOpen(false)
+          handleUpdateDraftRow(selectedRowId, 'responsibleDigitalTeam', newVal ||[])
         }}
       />
     </div>
