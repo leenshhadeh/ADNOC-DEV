@@ -53,7 +53,17 @@ export const router = createBrowserRouter([
       },
       {
         path: 'automation-targets',
-        element: <PlaceholderPage title="Automation Targets" />,
+        lazy: () =>
+          import('@features/module-automation-targets').then((m) => ({
+            Component: m.AutomationTargetsModule,
+          })),
+      },
+      {
+        path: 'automation-targets/process/:processId',
+        lazy: () =>
+          import('@features/module-automation-targets').then((m) => ({
+            Component: m.AutomationProcessDetailsPage,
+          })),
       },
       {
         path: 'process-catalog',
