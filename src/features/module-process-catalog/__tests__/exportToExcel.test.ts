@@ -109,7 +109,10 @@ const makeL4 = (overrides: Partial<Level4Item> = {}): Level4Item => ({
 const makeGroupCompany = (overrides: Partial<GroupCompany> = {}): GroupCompany => ({
   id: 'gc1',
   name: 'ADNOC HQ',
-  sites: ['Abu Dhabi', 'Dubai'],
+  sites: [
+    { id: 's-001', name: 'Abu Dhabi' },
+    { id: 's-002', name: 'Dubai' },
+  ],
   ...overrides,
 })
 
@@ -281,8 +284,18 @@ describe('exportToExcel', () => {
   describe('entity columns', () => {
     it('builds one column per group-company × site combination', async () => {
       const groupCompanies: GroupCompany[] = [
-        makeGroupCompany({ name: 'ADNOC HQ', sites: ['Abu Dhabi', 'Dubai'] }),
-        makeGroupCompany({ id: 'gc2', name: 'ADNOC Drilling', sites: ['Ruwais'] }),
+        makeGroupCompany({
+          name: 'ADNOC HQ',
+          sites: [
+            { id: 's-001', name: 'Abu Dhabi' },
+            { id: 's-002', name: 'Dubai' },
+          ],
+        }),
+        makeGroupCompany({
+          id: 'gc2',
+          name: 'ADNOC Drilling',
+          sites: [{ id: 's-003', name: 'Ruwais' }],
+        }),
       ]
 
       await exportToExcel({ rows: [makeProcess()], groupCompanies })
@@ -303,7 +316,7 @@ describe('exportToExcel', () => {
     })
 
     it('uses "No" as the default entity value when entities map is absent', async () => {
-      const groupCompanies = [makeGroupCompany({ sites: ['Site A'] })]
+      const groupCompanies = [makeGroupCompany({ sites: [{ id: 's-010', name: 'Site A' }] })]
       // process has empty entities map
       const process = makeProcess({ entities: {} })
 
@@ -314,7 +327,7 @@ describe('exportToExcel', () => {
     })
 
     it('reads the entity value from the process entities map', async () => {
-      const groupCompanies = [makeGroupCompany({ sites: ['Site A'] })]
+      const groupCompanies = [makeGroupCompany({ sites: [{ id: 's-010', name: 'Site A' }] })]
       const process = makeProcess({ entities: { gc1: { 'Site A': 'Yes' } } })
 
       await exportToExcel({ rows: [process], groupCompanies })

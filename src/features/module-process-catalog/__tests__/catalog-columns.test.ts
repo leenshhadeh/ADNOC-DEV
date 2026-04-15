@@ -2,7 +2,14 @@ import { buildCatalogColumns, CATALOG_PINNED_LEFT } from '../components/catalog-
 import type { GroupCompany } from '../types'
 
 const MOCK_GROUP_COMPANIES: GroupCompany[] = [
-  { id: 'gc-001', name: 'ADNOC HQ', sites: ['General', 'Site A'] },
+  {
+    id: 'gc-001',
+    name: 'ADNOC HQ',
+    sites: [
+      { id: 's-001', name: 'General' },
+      { id: 's-002', name: 'Site A' },
+    ],
+  },
 ]
 
 describe('CATALOG_PINNED_LEFT', () => {

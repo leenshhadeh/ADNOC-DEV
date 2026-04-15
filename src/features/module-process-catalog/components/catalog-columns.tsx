@@ -348,20 +348,20 @@ function buildEntityColumns(groupCompanies: GroupCompany[]): ColumnDef<ProcessIt
     header: entity.name,
     meta: { isEntityGroup: true },
     columns: entity.sites.map((site) => ({
-      id: `entity__${entity.id}__${site}`,
-      header: site,
+      id: `entity__${entity.id}__${site.id}`,
+      header: site.name,
       size: 200,
       enableSorting: false,
       cell: (info: CellContext<ProcessItem, unknown>) => {
         const row = info.row.original
-        const siteValue = (row.entities[entity.id]?.[site] ?? 'No') as YesNo
+        const siteValue = (row.entities[entity.id]?.[site.name] ?? 'No') as YesNo
         // Use the row's level3Code as the parent code for Level 4 generation.
         // E.g. level3Code "EXP.1.1.1" → new L4 rows get "EXP.1.1.1.1", "EXP.1.1.1.2", …
         return (
           <EntitySiteCell
             initialValue={siteValue}
             entityName={entity.name}
-            siteName={site}
+            siteName={site.name}
             parentCode={row.level3Code}
             parentId={row.id}
           />
@@ -404,12 +404,12 @@ function buildFullReportEntityColumns(
       // Site sub-columns
       ...entity.sites.map(
         (site): ColumnDef<ProcessItem, unknown> => ({
-          id: `entity__${entity.id}__${site}`,
-          header: site,
+          id: `entity__${entity.id}__${site.id}`,
+          header: site.name,
           size: 200,
           enableSorting: false,
           cell: (info: CellContext<ProcessItem, unknown>) => {
-            const val = (info.row.original.entities[entity.id]?.[site] ?? 'No') as string
+            const val = (info.row.original.entities[entity.id]?.[site.name] ?? 'No') as string
             return <ReadOnlyEntityCell value={val} />
           },
         }),

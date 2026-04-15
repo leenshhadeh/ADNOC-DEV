@@ -13,7 +13,7 @@
  * │    Resp:  { data: Level4Item[], success, message }                         │
  * │                                                                            │
  * │  POST /api/processes/:parentId/level4s                                     │
- * │    Body:  { selectedCompanySites: string[], items: CreateLevel4Request[] } │
+ * │    Body:  { companySites: CompanySiteRef[], items: CreateLevel4Request[] } │
  * │    Resp:  { data: Level4Item[], success, message }                         │
  * │                                                                            │
  * │  PUT  /api/processes/:parentId/level4s                                     │
@@ -34,7 +34,7 @@
  *   }
  */
 
-import type { Level4Item } from '../types'
+import type { Level4Item, CompanySiteRef } from '../types'
 import { MOCK_LEVEL4_DATA } from './mock-data'
 
 const SIMULATED_LATENCY_MS = 800
@@ -91,11 +91,12 @@ export function getLevel4ByParent(parentId: string): Promise<Level4Item[]> {
  *
  * Replace the mock body with:
  *   return apiClient.post<ApiResponse<Level4Item[]>>(
- *     `/processes/${parentId}/level4s`, { items }
+ *     `/processes/${parentId}/level4s`, { companySites, items }
  *   ).then(r => r.data)
  */
 export function createLevel4s(
   parentId: string,
+  _companySites: CompanySiteRef[],
   items: CreateLevel4Request[],
 ): Promise<Level4Item[]> {
   return new Promise((resolve, reject) => {

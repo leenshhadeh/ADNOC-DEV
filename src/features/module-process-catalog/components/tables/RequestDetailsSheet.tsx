@@ -8,6 +8,7 @@ import { Badge } from '@/shared/components/ui/badge'
 import { Separator } from '@/shared/components/ui/separator'
 import { cn } from '@/shared/lib/utils'
 
+import { useCatalogNavStore } from '@features/module-process-catalog/store/useCatalogNavStore'
 import type {
   RequestItem,
   WorkflowHistoryItem,
@@ -201,6 +202,7 @@ interface RequestDetailsSheetProps {
 const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsSheetProps) => {
   const [showMore, setShowMore] = useState(false)
   const [showWorkflowHistory, setShowWorkflowHistory] = useState(false)
+  const navigateToProcess = useCatalogNavStore((s) => s.navigateToProcess)
 
   // Reset sub-panel state when the sheet closes
   const handleOpenChange = (isOpen: boolean) => {
@@ -220,22 +222,29 @@ const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsShee
           <div className="h-full overflow-y-auto p-6">
             {/* Badge + action links */}
             <div className="space-y-3 pe-2">
-              {request.processCategory && (
+              {/* {request.processCategory && (
                 <Badge variant="secondary" className="h-7 rounded-full px-3 text-sm font-medium">
                   {request.processCategory}
                 </Badge>
-              )}
+              )} */}
               <div className="grid grid-cols-2">
                 <button
                   type="button"
-                  className="text-primary inline-flex items-center gap-1.5 text-sm font-medium hover:underline"
+                  className="text-sidebar-primary inline-flex items-center gap-1.5 text-sm font-medium hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+                  disabled={!request.processId}
+                  onClick={() => {
+                    if (request.processId) {
+                      navigateToProcess(request.processId)
+                      onOpenChange(false)
+                    }
+                  }}
                 >
                   <Eye className="size-4" />
                   Go to affected record
                 </button>
                 <button
                   type="button"
-                  className="text-primary inline-flex items-center justify-end gap-1.5 text-sm font-medium hover:underline"
+                  className="text-sidebar-primary inline-flex items-center justify-end gap-1.5 text-sm font-medium hover:underline"
                   onClick={() => setShowWorkflowHistory(true)}
                 >
                   <Clock className="size-4" />
@@ -270,7 +279,7 @@ const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsShee
               {/* More / Hide toggle */}
               <button
                 type="button"
-                className="text-primary mx-auto flex w-full items-center justify-center gap-1 text-sm font-medium"
+                className="text-sidebar-primary mx-auto flex w-full items-center justify-center gap-1 text-sm font-medium"
                 onClick={() => setShowMore((v) => !v)}
               >
                 {showMore ? (

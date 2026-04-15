@@ -154,10 +154,7 @@ const LevelBars = ({ num }: { num: number }) => (
 
 const SectionHeaderRow = ({ label, colSpan }: { label: string; colSpan: number }) => (
   <tr>
-    <td
-      colSpan={colSpan}
-      className="bg-muted/40 text-muted-foreground px-4 py-2 text-xs font-medium"
-    >
+    <td colSpan={colSpan} className="text-muted-foreground bg-accent px-4 py-2 text-xs font-medium">
       {label}
     </td>
   </tr>

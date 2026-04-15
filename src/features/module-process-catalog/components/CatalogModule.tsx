@@ -215,9 +215,7 @@ const CatalogModule = () => {
   // Derive company/site options for the bulk edit "Applicable to" dropdown
   const companySiteOptions = useMemo(
     () =>
-      (groupCompanies ?? []).flatMap((gc) =>
-        (gc.sites ?? []).map((s: string) => `${gc.name} - ${s}`),
-      ),
+      (groupCompanies ?? []).flatMap((gc) => (gc.sites ?? []).map((s) => `${gc.name} - ${s.name}`)),
     [groupCompanies],
   )
 
@@ -258,7 +256,7 @@ const CatalogModule = () => {
 
   // Fetch previously added L4 names for suggestion dropdown
   const { data: previousL4Names } = useGetLevel4Names(
-    isEditL4sModalOpen ? (targetL3Item?.id ?? undefined) : undefined,
+    isEditL4sModalOpen || isAddL4sModalOpen ? (targetL3Item?.id ?? undefined) : undefined,
   )
 
   /** Called when the user clicks "Add" in the modal */
@@ -672,10 +670,11 @@ const CatalogModule = () => {
             ? { level3Name: targetL3Item.level3Name, level3Code: targetL3Item.level3Code }
             : null
         }
-        onSave={(selectedCompanySites, items) => {
+        previousProcessNames={previousL4Names}
+        onSave={(companySites, items) => {
           // Wire to a POST /api/level4s call here when the backend is ready.
           console.log('Save L4s (Entry A)', {
-            selectedCompanySites,
+            companySites,
             items,
             parent: targetL3Item?.level3Code,
           })

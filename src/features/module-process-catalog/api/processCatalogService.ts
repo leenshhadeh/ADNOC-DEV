@@ -21,12 +21,42 @@ import { SUBMITTED_REQUESTS } from '../constants/submitted-requests'
 // the authenticated user is authorised to see (typically 1–13 entries).
 
 const MOCK_GROUP_COMPANIES: GroupCompany[] = [
-  { id: 'gc-001', name: 'ADNOC HQ', sites: ['General', 'Bisher test', 'Site B', 'Site c'] },
-  { id: 'gc-002', name: 'ADNOC AL DHAFRA AND AL YASAT', sites: ['General', 'Site A'] },
-  { id: 'gc-003', name: 'ADNOC Onshore', sites: ['General'] },
-  { id: 'gc-004', name: 'ADNOC Offshore', sites: ['General', 'Site A'] },
-  { id: 'gc-005', name: 'ADNOC Gas Processing', sites: ['General'] },
-  { id: 'gc-006', name: 'ADNOC Drilling', sites: ['General', 'Site A'] },
+  {
+    id: 'gc-001',
+    name: 'ADNOC HQ',
+    sites: [
+      { id: 's-001', name: 'General' },
+      { id: 's-002', name: 'Bisher test' },
+      { id: 's-003', name: 'Site B' },
+      { id: 's-004', name: 'Site c' },
+    ],
+  },
+  {
+    id: 'gc-002',
+    name: 'ADNOC AL DHAFRA AND AL YASAT',
+    sites: [
+      { id: 's-005', name: 'General' },
+      { id: 's-006', name: 'Site A' },
+    ],
+  },
+  { id: 'gc-003', name: 'ADNOC Onshore', sites: [{ id: 's-007', name: 'General' }] },
+  {
+    id: 'gc-004',
+    name: 'ADNOC Offshore',
+    sites: [
+      { id: 's-008', name: 'General' },
+      { id: 's-009', name: 'Site A' },
+    ],
+  },
+  { id: 'gc-005', name: 'ADNOC Gas Processing', sites: [{ id: 's-010', name: 'General' }] },
+  {
+    id: 'gc-006',
+    name: 'ADNOC Drilling',
+    sites: [
+      { id: 's-011', name: 'General' },
+      { id: 's-012', name: 'Site A' },
+    ],
+  },
 ]
 
 // ── Service functions ─────────────────────────────────────────────────────────

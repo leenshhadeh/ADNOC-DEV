@@ -7,18 +7,23 @@ export const addLevel4ItemSchema = z.object({
   processDescription: z.string().optional(),
 })
 
+/** Company-site reference — maps to backend { groupCompanyId, siteId } */
+export const companySiteRefSchema = z.object({
+  groupCompanyId: z.string().min(1),
+  siteId: z.string().min(1),
+})
+
 /** Step 1 – select group companies & sites (multi-select) */
 export const addLevel4sSelectionSchema = z.object({
-  /** Array of "CompanyName - SiteName" strings */
-  selectedCompanySites: z
-    .array(z.string())
+  companySites: z
+    .array(companySiteRefSchema)
     .min(1, 'Please select at least one group company / site'),
 })
 
 /** Step 2 – add L4 rows */
 export const addLevel4sFormSchema = z.object({
   groupCompany: z.string().min(1, 'Please select a group company'),
-  selectedCompanySites: z.array(z.string()).min(1),
+  companySites: z.array(companySiteRefSchema).min(1),
   items: z.array(addLevel4ItemSchema).min(1),
 })
 

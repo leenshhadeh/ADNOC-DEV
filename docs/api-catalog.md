@@ -183,7 +183,11 @@ Returns the group companies the authenticated user is authorised to see.
     {
       "id": "gc-001",
       "name": "ADNOC HQ",
-      "sites": ["General", "Site B", "Site C"]
+      "sites": [
+        { "id": "s-001", "name": "General" },
+        { "id": "s-002", "name": "Site B" },
+        { "id": "s-003", "name": "Site C" }
+      ]
     }
   ],
   "message": "OK",
@@ -191,11 +195,13 @@ Returns the group companies the authenticated user is authorised to see.
 }
 ```
 
-| Field   | Type       | Required | Description                    |
-| ------- | ---------- | -------- | ------------------------------ |
-| `id`    | `string`   | ✅       | Unique company identifier      |
-| `name`  | `string`   | ✅       | Display name (used as map key) |
-| `sites` | `string[]` | ✅       | List of site names             |
+| Field          | Type     | Required | Description                    |
+| -------------- | -------- | -------- | ------------------------------ |
+| `id`           | `string` | ✅       | Unique company identifier      |
+| `name`         | `string` | ✅       | Display name (used as map key) |
+| `sites`        | `Site[]` | ✅       | List of sites                  |
+| `sites[].id`   | `string` | ✅       | Unique site identifier (GUID)  |
+| `sites[].name` | `string` | ✅       | Site display name              |
 
 ---
 
@@ -535,7 +541,16 @@ Creates one or more Level 4 records under a Level 3 parent.
 
 ```json
 {
-  "selectedCompanySites": ["ADNOC HQ - General", "ADNOC HQ - Site B"],
+  "companySites": [
+    {
+      "groupCompanyId": "gc-001",
+      "siteId": "s-001"
+    },
+    {
+      "groupCompanyId": "gc-001",
+      "siteId": "s-002"
+    }
+  ],
   "items": [
     {
       "processName": "New L4 Process",
@@ -545,11 +560,13 @@ Creates one or more Level 4 records under a Level 3 parent.
 }
 ```
 
-| Field                        | Type       | Required | Description                                           |
-| ---------------------------- | ---------- | -------- | ----------------------------------------------------- |
-| `selectedCompanySites`       | `string[]` | ✅       | Array of `"CompanyName - SiteName"` pairs to apply to |
-| `items[].processName`        | `string`   | ✅       | L4 process name                                       |
-| `items[].processDescription` | `string`   | ❌       | Free-text description                                 |
+| Field                           | Type               | Required | Description                    |
+| ------------------------------- | ------------------ | -------- | ------------------------------ |
+| `companySites`                  | `CompanySiteRef[]` | ✅       | Array of company/site ID pairs |
+| `companySites[].groupCompanyId` | `string`           | ✅       | Group company ID (GUID)        |
+| `companySites[].siteId`         | `string`           | ✅       | Site ID (GUID)                 |
+| `items[].processName`           | `string`           | ✅       | L4 process name                |
+| `items[].processDescription`    | `string`           | ❌       | Free-text description          |
 
 **Response — `data: Level4Item[]`** (the created records)
 

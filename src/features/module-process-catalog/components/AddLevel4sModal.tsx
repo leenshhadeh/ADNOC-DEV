@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ChevronDown, ChevronRight, Info, Minus, Plus, Trash2, X } from 'lucide-react'
+import { ChevronDown, ChevronRight, Info, Plus, Search, Trash2, X } from 'lucide-react'
 
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/components/ui/button'
@@ -12,7 +12,7 @@ import {
   type AddLevel4sFormValues,
   type AddLevel4Item,
 } from '@features/module-process-catalog/schemas/catalog.schemas'
-import type { GroupCompany } from '@features/module-process-catalog/types'
+import type { GroupCompany, CompanySiteRef } from '@features/module-process-catalog/types'
 
 export type { AddLevel4Item }
 
@@ -22,14 +22,15 @@ export interface AddLevel4sModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   parentItem: { level3Name: string; level3Code: string } | null
-  onSave?: (selectedCompanySites: string[], items: AddLevel4Item[]) => void
+  previousProcessNames?: string[]
+  onSave?: (companySites: CompanySiteRef[], items: AddLevel4Item[]) => void
 }
 
 type Step = 'select' | 'form'
 
-// ── Helper: build "Company - Site" key ────────────────────────────────────────
+// ── Helper: build a unique key for a company + site pair ──────────────────────
 
-const compSiteKey = (companyName: string, site: string) => `${companyName} - ${site}`
+const compSiteKey = (companyId: string, siteId: string) => `${companyId}::${siteId}`
 
 // ── Step 1: Company / Site multi-select ───────────────────────────────────────
 
@@ -37,19 +38,9 @@ interface SelectStepProps {
   groupCompanies: GroupCompany[]
   selected: Set<string>
   onToggle: (key: string) => void
-  onToggleCompany: (company: GroupCompany) => void
-  isCompanyFullySelected: (company: GroupCompany) => boolean
-  isCompanyPartiallySelected: (company: GroupCompany) => boolean
 }
 
-const CompanySiteSelect = ({
-  groupCompanies,
-  selected,
-  onToggle,
-  onToggleCompany,
-  isCompanyFullySelected,
-  isCompanyPartiallySelected,
-}: SelectStepProps) => {
+const CompanySiteSelect = ({ groupCompanies, selected, onToggle }: SelectStepProps) => {
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
 
   const toggleExpand = (id: string) =>
@@ -63,36 +54,15 @@ const CompanySiteSelect = ({
     <div className="border-border max-h-[260px] overflow-y-auto rounded-2xl border bg-white shadow-lg">
       {groupCompanies.map((gc) => {
         const isExpanded = expanded.has(gc.id)
-        const isFull = isCompanyFullySelected(gc)
-        const isPartial = isCompanyPartiallySelected(gc)
 
         return (
           <div key={gc.id} className="border-border border-b last:border-0">
-            {/* Company row */}
+            {/* Company row — expand/collapse only */}
             <button
               type="button"
               onClick={() => toggleExpand(gc.id)}
               className="flex w-full items-center gap-3 px-3 py-2.5 text-start transition-colors hover:bg-[#ECEDEE]"
             >
-              {isPartial ? (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onToggleCompany(gc)
-                  }}
-                  className="border-primary bg-primary text-primary-foreground flex size-4 shrink-0 items-center justify-center rounded-[4px] border"
-                >
-                  <Minus className="size-3" />
-                </button>
-              ) : (
-                <Checkbox
-                  checked={isFull}
-                  onCheckedChange={() => onToggleCompany(gc)}
-                  onClick={(e) => e.stopPropagation()}
-                  className="size-4"
-                />
-              )}
               <span className="text-foreground flex-1 text-sm font-medium">{gc.name}</span>
               {gc.sites.length > 0 &&
                 (isExpanded ? (
@@ -105,7 +75,7 @@ const CompanySiteSelect = ({
             {/* Sites */}
             {isExpanded &&
               gc.sites.map((site) => {
-                const key = compSiteKey(gc.name, site)
+                const key = compSiteKey(gc.id, site.id)
                 return (
                   <button
                     key={key}
@@ -117,7 +87,7 @@ const CompanySiteSelect = ({
                     )}
                   >
                     <Checkbox checked={selected.has(key)} className="size-4" />
-                    <span className="text-foreground text-sm">{site}</span>
+                    <span className="text-foreground text-sm">{site.name}</span>
                   </button>
                 )
               })}
@@ -131,24 +101,24 @@ const CompanySiteSelect = ({
 // ── Selected tags display ─────────────────────────────────────────────────────
 
 const SelectedTags = ({
-  selected,
+  items,
   onRemove,
 }: {
-  selected: string[]
+  items: { key: string; label: string }[]
   onRemove: (key: string) => void
 }) => (
   <div className="flex flex-wrap gap-1.5">
-    {selected.map((key) => (
+    {items.map(({ key, label }) => (
       <span
         key={key}
         className="inline-flex items-center gap-1.5 rounded-full border border-[#2F68D9]/50 bg-[#DCE5F9] px-3 py-1 text-xs"
       >
-        <span className="text-foreground max-w-[200px] truncate">{key}</span>
+        <span className="text-foreground max-w-[200px] truncate">{label}</span>
         <button
           type="button"
           onClick={() => onRemove(key)}
           className="text-foreground/70 hover:text-foreground transition-colors"
-          aria-label={`Remove ${key}`}
+          aria-label={`Remove ${label}`}
         >
           <X className="size-3" />
         </button>
@@ -157,13 +127,165 @@ const SelectedTags = ({
   </div>
 )
 
-// ── Step 2: editable L4 table ─────────────────────────────────────────────────
+// ── Searchable suggestions dropdown ───────────────────────────────────────────
+
+interface ProcessNameSuggestionsProps {
+  suggestions: string[]
+  onSelect: (name: string) => void
+}
+
+function ProcessNameSuggestions({ suggestions, onSelect }: ProcessNameSuggestionsProps) {
+  const [search, setSearch] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const filtered = suggestions.filter((s) => s.toLowerCase().includes(search.toLowerCase()))
+
+  return (
+    <div className="absolute top-full left-0 z-20 mt-1 w-full overflow-hidden rounded-2xl border border-[#DFE3E6] bg-white shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]">
+      {/* Search row */}
+      <div className="flex items-center gap-2 border-b border-[#DFE3E6] bg-[#F1F3F5] px-3 py-2">
+        <Search className="size-4 shrink-0 text-[#0047BA]" />
+        <input
+          ref={inputRef}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search"
+          className="flex-1 bg-transparent text-xs font-normal text-[#687076] outline-none placeholder:text-[#687076]"
+        />
+      </div>
+
+      {/* Suggestion items */}
+      <div className="max-h-[200px] overflow-y-auto">
+        {filtered.length > 0 ? (
+          filtered.map((name, i) => (
+            <button
+              key={i}
+              type="button"
+              className="flex w-full items-center border-b border-[#DFE3E6]/50 px-3 py-2 text-left text-sm font-normal text-[#687076] transition-colors last:border-b-0 hover:bg-[#F1F3F5]"
+              onMouseDown={(e) => {
+                e.preventDefault()
+                onSelect(name)
+              }}
+            >
+              {name}
+            </button>
+          ))
+        ) : (
+          <div className="px-3 py-2 text-xs text-[#687076]">No matches</div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ── Single-row sub-component ──────────────────────────────────────────────────
+
+interface AddLevel4RowProps {
+  index: number
+  processCode: string
+  nameError?: string
+  register: ReturnType<typeof useForm<AddLevel4sFormValues>>['register']
+  previousProcessNames?: string[]
+  onSelectSuggestion: (name: string) => void
+  onRemove: () => void
+}
+
+function AddLevel4RowItem({
+  index,
+  processCode,
+  nameError,
+  register,
+  previousProcessNames,
+  onSelectSuggestion,
+  onRemove,
+}: AddLevel4RowProps) {
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const hasSuggestions = previousProcessNames && previousProcessNames.length > 0
+  const { onBlur: rhfOnBlur, ...registerRest } = register(`items.${index}.processName`)
+
+  return (
+    <div className="flex min-h-[56px] border-b border-[#DFE3E6] last:border-b-0">
+      {/* Process Code */}
+      <div className="flex w-[140px] shrink-0 items-center px-4 py-2">
+        <span className="text-sm font-normal text-[#687076]">{processCode}</span>
+      </div>
+
+      {/* Process Name */}
+      <div ref={containerRef} className="relative flex flex-1 items-center px-4 py-2">
+        <input
+          {...registerRest}
+          placeholder="Start writing..."
+          aria-label="Process name"
+          onFocus={() => hasSuggestions && setShowSuggestions(true)}
+          onBlur={(e) => {
+            rhfOnBlur(e)
+            if (containerRef.current?.contains(e.relatedTarget as Node)) return
+            setShowSuggestions(false)
+          }}
+          className={cn(
+            'w-full bg-transparent text-sm font-normal text-[#151718] outline-none',
+            'placeholder:font-light placeholder:text-[#687076]',
+            nameError && 'text-[#EB3865]',
+          )}
+        />
+        {showSuggestions && hasSuggestions && (
+          <ProcessNameSuggestions
+            suggestions={previousProcessNames}
+            onSelect={(name) => {
+              onSelectSuggestion(name)
+              setShowSuggestions(false)
+            }}
+          />
+        )}
+      </div>
+
+      {/* Process Description */}
+      <div className="flex flex-1 items-center px-4 py-2">
+        <input
+          {...register(`items.${index}.processDescription`)}
+          placeholder="Start writing..."
+          aria-label="Process description"
+          className="w-full bg-transparent text-sm font-normal text-[#151718] outline-none placeholder:font-light placeholder:text-[#687076]"
+        />
+      </div>
+
+      {/* Status */}
+      <div className="flex w-[100px] shrink-0 items-center px-4 py-2">
+        <span
+          className={cn(
+            'inline-flex items-center justify-center rounded-full px-1.5 text-xs leading-[13px] font-normal text-[#151718]',
+            'bg-[#E0E0E0]',
+          )}
+        >
+          Draft
+        </span>
+      </div>
+
+      {/* Actions */}
+      <div className="flex w-[56px] shrink-0 items-center justify-center py-2">
+        <button
+          type="button"
+          className="rounded-full p-1 text-[#EB3865] transition-colors hover:bg-[#DFE3E6]"
+          aria-label="Delete row"
+          onClick={onRemove}
+        >
+          <Trash2 className="size-4" />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ── Step 2: editable L4 form (flex layout — matches EditLevel4sModal) ─────────
 
 interface FormStepProps {
   parentCode: string
   register: ReturnType<typeof useForm<AddLevel4sFormValues>>['register']
   fields: { id: string }[]
   errors: ReturnType<typeof useForm<AddLevel4sFormValues>>['formState']['errors']
+  previousProcessNames?: string[]
+  onSelectSuggestion: (index: number, name: string) => void
   onRemove: (index: number) => void
   onAddRow: () => void
 }
@@ -173,97 +295,67 @@ const Level4FormTable = ({
   register,
   fields,
   errors,
+  previousProcessNames,
+  onSelectSuggestion,
   onRemove,
   onAddRow,
 }: FormStepProps) => (
   <div className="flex min-h-0 flex-1 flex-col gap-3">
     {/* Info banner */}
-    <div className="flex items-start gap-1.5">
-      <Info className="text-foreground mt-0.5 size-4 shrink-0" />
-      <span className="text-foreground text-sm">
+    <div className="flex items-center gap-1">
+      <Info className="size-4 shrink-0 text-[#151718]" />
+      <span className="text-sm font-normal text-[#151718]">
         Level 4 changes will be applied when Level 3 is submitted.
       </span>
     </div>
 
-    {/* Table */}
-    <div className="border-border min-h-0 flex-1 overflow-y-auto rounded-2xl border bg-white">
-      <table className="w-full table-fixed border-collapse">
-        <thead className="sticky top-0 z-10 bg-white">
-          <tr className="border-border/60 border-b">
-            <th className="text-muted-foreground w-32 px-4 py-3 text-start text-xs font-medium tracking-wide uppercase">
-              L4 Code
-            </th>
-            <th className="text-muted-foreground px-4 py-3 text-start text-xs font-medium tracking-wide uppercase">
-              L4 Name
-            </th>
-            <th className="text-muted-foreground px-4 py-3 text-start text-xs font-medium tracking-wide uppercase">
-              L4 Description
-            </th>
-            <th className="text-muted-foreground w-16 px-4 py-3 text-start text-xs font-medium tracking-wide uppercase">
-              Status
-            </th>
-            <th className="w-10 py-3" />
-          </tr>
-        </thead>
-        <tbody>
-          {fields.map((field, index) => {
-            const code = `${parentCode}.${index + 1}`
-            const nameErr = errors.items?.[index]?.processName?.message
-            return (
-              <tr key={field.id} className="group border-border/60 border-b last:border-0">
-                <td className="px-4 py-2 align-middle">
-                  <span className="text-muted-foreground text-sm">{code}</span>
-                </td>
-                <td className="px-4 py-2 align-middle">
-                  <input
-                    {...register(`items.${index}.processName`)}
-                    placeholder="Start writing..."
-                    className={cn(
-                      'text-foreground placeholder:text-muted-foreground/60 w-full bg-transparent text-sm outline-none',
-                      nameErr && 'text-destructive',
-                    )}
-                  />
-                  {nameErr && <p className="text-destructive mt-0.5 text-xs">{nameErr}</p>}
-                </td>
-                <td className="px-4 py-2 align-middle">
-                  <input
-                    {...register(`items.${index}.processDescription`)}
-                    placeholder="Start writing..."
-                    className="text-foreground placeholder:text-muted-foreground/60 w-full bg-transparent text-sm outline-none"
-                  />
-                </td>
-                <td className="px-4 py-2 align-middle">
-                  <span className="inline-block rounded-full bg-[#E0E0E0] px-2 py-0.5 text-xs">
-                    Draft
-                  </span>
-                </td>
-                <td className="px-4 py-2 align-middle">
-                  {fields.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => onRemove(index)}
-                      className="text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
-                      aria-label="Remove row"
-                    >
-                      <Trash2 className="text-destructive/70 size-4" />
-                    </button>
-                  )}
-                </td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+    {/* Table card */}
+    <div className="min-h-0 flex-1 overflow-hidden rounded-2xl border border-[#DFE3E6] bg-white">
+      <div className="flex h-full flex-col overflow-y-auto px-4 py-3">
+        {/* Header */}
+        <div className="flex min-h-[56px] border-b border-[#DFE3E6]">
+          <div className="flex w-[140px] shrink-0 items-center px-4 py-2">
+            <span className="text-xs font-normal text-[#687076] uppercase">Process code</span>
+          </div>
+          <div className="flex flex-1 items-center px-4 py-2">
+            <span className="text-xs font-normal text-[#687076] uppercase">Process name</span>
+          </div>
+          <div className="flex flex-1 items-center px-4 py-2">
+            <span className="text-xs font-normal text-[#687076] uppercase">
+              Process Description
+            </span>
+          </div>
+          <div className="flex w-[100px] shrink-0 items-center px-4 py-2">
+            <span className="text-xs font-normal text-[#687076] uppercase">Status</span>
+          </div>
+          <div className="w-[56px] shrink-0" />
+        </div>
 
-      <div className="px-4 py-3">
-        <button
-          type="button"
-          onClick={onAddRow}
-          className="flex items-center gap-1.5 text-sm font-medium text-[#0047BA] hover:underline"
-        >
-          <Plus className="size-4" />
-          Add Row
-        </button>
+        {/* Data rows */}
+        {fields.map((field, index) => (
+          <AddLevel4RowItem
+            key={field.id}
+            index={index}
+            processCode={`${parentCode}.${index + 1}`}
+            nameError={errors.items?.[index]?.processName?.message}
+            register={register}
+            previousProcessNames={previousProcessNames}
+            onSelectSuggestion={(name) => onSelectSuggestion(index, name)}
+            onRemove={() => onRemove(index)}
+          />
+        ))}
+
+        {/* Add row trigger */}
+        <div className="py-3">
+          <button
+            type="button"
+            onClick={onAddRow}
+            className="flex items-center gap-1 text-sm font-medium text-[#0047BA] hover:underline focus-visible:underline focus-visible:outline-none"
+          >
+            <Plus className="size-4" />
+            Add Level 4
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -271,7 +363,13 @@ const Level4FormTable = ({
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sModalProps) => {
+const AddLevel4sModal = ({
+  open,
+  onOpenChange,
+  parentItem,
+  previousProcessNames = [],
+  onSave,
+}: AddLevel4sModalProps) => {
   const parentCode = parentItem?.level3Code ?? ''
   const { data: groupCompanies } = useGetGroupCompanies()
 
@@ -287,12 +385,13 @@ const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sM
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<AddLevel4sFormValues>({
     resolver: zodResolver(addLevel4sFormSchema),
     defaultValues: {
       groupCompany: '',
-      selectedCompanySites: [],
+      companySites: [],
       items: [{ processName: '', processDescription: '' }],
     },
   })
@@ -307,7 +406,7 @@ const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sM
       setShowDropdown(false)
       reset({
         groupCompany: '',
-        selectedCompanySites: [],
+        companySites: [],
         items: [{ processName: '', processDescription: '' }],
       })
     }
@@ -336,32 +435,6 @@ const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sM
     })
   }, [])
 
-  const toggleCompany = useCallback((gc: GroupCompany) => {
-    setSelected((prev) => {
-      const next = new Set(prev)
-      const allKeys = gc.sites.map((s) => compSiteKey(gc.name, s))
-      const allSelected = allKeys.every((k) => next.has(k))
-      if (allSelected) {
-        allKeys.forEach((k) => next.delete(k))
-      } else {
-        allKeys.forEach((k) => next.add(k))
-      }
-      return next
-    })
-  }, [])
-
-  const isCompanyFullySelected = useCallback(
-    (gc: GroupCompany) => gc.sites.every((s) => selected.has(compSiteKey(gc.name, s))),
-    [selected],
-  )
-
-  const isCompanyPartiallySelected = useCallback(
-    (gc: GroupCompany) =>
-      gc.sites.some((s) => selected.has(compSiteKey(gc.name, s))) &&
-      !gc.sites.every((s) => selected.has(compSiteKey(gc.name, s))),
-    [selected],
-  )
-
   const removeSite = useCallback((key: string) => {
     setSelected((prev) => {
       const next = new Set(prev)
@@ -371,22 +444,41 @@ const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sM
   }, [])
 
   // ── Computed summary ──
-  const selectedArr = useMemo(() => Array.from(selected), [selected])
+  const selectedKeys = useMemo(() => Array.from(selected), [selected])
+
+  /** Build CompanySiteRef[] from the selected key set */
+  const companySiteRefs = useMemo<CompanySiteRef[]>(
+    () =>
+      selectedKeys.map((key) => {
+        const [groupCompanyId, siteId] = key.split('::')
+        return { groupCompanyId, siteId }
+      }),
+    [selectedKeys],
+  )
+
+  /** Build display labels for tags from the key set */
+  const selectedLabels = useMemo(() => {
+    const lookup = new Map<string, string>()
+    for (const gc of companies) {
+      for (const site of gc.sites) {
+        lookup.set(compSiteKey(gc.id, site.id), `${gc.name} - ${site.name}`)
+      }
+    }
+    return selectedKeys.map((key) => ({ key, label: lookup.get(key) ?? key }))
+  }, [selectedKeys, companies])
+
   const selectedSummary = useMemo(() => {
     const companySet = new Set<string>()
-    selectedArr.forEach((key) => {
-      const parts = key.split(' - ')
-      if (parts.length >= 2) companySet.add(parts[0])
-    })
-    return { companies: companySet.size, sites: selectedArr.length }
-  }, [selectedArr])
+    companySiteRefs.forEach((ref) => companySet.add(ref.groupCompanyId))
+    return { companies: companySet.size, sites: companySiteRefs.length }
+  }, [companySiteRefs])
 
   // ── Navigation ──
   const handleNext = () => {
     if (selected.size === 0) return
     reset({
-      groupCompany: selectedArr[0],
-      selectedCompanySites: selectedArr,
+      groupCompany: companySiteRefs[0]?.groupCompanyId ?? '',
+      companySites: companySiteRefs,
       items: [{ processName: '', processDescription: '' }],
     })
     setStep('form')
@@ -406,7 +498,7 @@ const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sM
   }
 
   const onSubmit = (data: AddLevel4sFormValues) => {
-    onSave?.(data.selectedCompanySites, data.items)
+    onSave?.(data.companySites, data.items)
     onOpenChange(false)
   }
 
@@ -464,12 +556,12 @@ const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sM
                 )}
               >
                 <div className="flex min-h-[28px] flex-1 flex-wrap gap-1.5">
-                  {selectedArr.length === 0 ? (
+                  {selectedLabels.length === 0 ? (
                     <span className="text-muted-foreground text-base">
                       Select group companies & sites…
                     </span>
                   ) : (
-                    <SelectedTags selected={selectedArr} onRemove={removeSite} />
+                    <SelectedTags items={selectedLabels} onRemove={removeSite} />
                   )}
                 </div>
                 <ChevronDown
@@ -486,9 +578,6 @@ const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sM
                     groupCompanies={companies}
                     selected={selected}
                     onToggle={toggleSite}
-                    onToggleCompany={toggleCompany}
-                    isCompanyFullySelected={isCompanyFullySelected}
-                    isCompanyPartiallySelected={isCompanyPartiallySelected}
                   />
                 </div>
               )}
@@ -528,6 +617,10 @@ const AddLevel4sModal = ({ open, onOpenChange, parentItem, onSave }: AddLevel4sM
               register={register}
               fields={fields}
               errors={errors}
+              previousProcessNames={previousProcessNames}
+              onSelectSuggestion={(index, name) =>
+                setValue(`items.${index}.processName`, name, { shouldValidate: true })
+              }
               onRemove={remove}
               onAddRow={handleAddRow}
             />

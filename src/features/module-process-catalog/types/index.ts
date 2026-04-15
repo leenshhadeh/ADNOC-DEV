@@ -48,6 +48,11 @@ export interface Level4Item {
 
 // ── Group Company ─────────────────────────────────────────────────────────────
 
+export interface Site {
+  id: string
+  name: string
+}
+
 /**
  * Represents a group company / subsidiary entity.
  * The full list is fetched from the API as a lookup (getGroupCompanies).
@@ -56,5 +61,12 @@ export interface Level4Item {
 export interface GroupCompany {
   id: string
   name: string
-  sites: string[]
+  sites: Site[]
+}
+
+// ── Company-site reference (used in POST/PUT level4s payloads) ────────────────
+
+export interface CompanySiteRef {
+  groupCompanyId: string
+  siteId: string
 }

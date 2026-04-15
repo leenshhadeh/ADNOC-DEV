@@ -104,7 +104,11 @@ type EntityColDef = { entity: string; site: string; header: string }
 
 function buildEntityColDefs(groupCompanies: GroupCompany[]): EntityColDef[] {
   return groupCompanies.flatMap((gc) =>
-    gc.sites.map((site) => ({ entity: gc.id, site, header: `${gc.name}: ${site}` })),
+    gc.sites.map((site) => ({
+      entity: gc.id,
+      site: site.name,
+      header: `${gc.name}: ${site.name}`,
+    })),
   )
 }
 

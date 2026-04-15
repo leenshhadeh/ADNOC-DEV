@@ -45,7 +45,7 @@ export function SuccessToast({
   const { border, bg, icon: Icon } = VARIANT_STYLES[variant]
 
   return createPortal(
-    <div className="animate-in fade-in slide-in-from-top-2 fixed top-6 left-1/2 z-[9999] -translate-x-1/2 duration-300">
+    <div className="animate-in fade-in slide-in-from-bottom-2 fixed bottom-6 left-1/2 z-[9999] -translate-x-1/2 duration-300">
       <div
         className={cn(
           'flex items-start gap-2 rounded-[20px] border-[0.5px] p-5 shadow-[0px_10px_30px_0px_rgba(0,0,0,0.20)]',
