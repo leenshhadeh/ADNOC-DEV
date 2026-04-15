@@ -888,7 +888,7 @@ const ProcessDataTable = () => {
   )
 
   return (
-    <div className='table-hierarchy'>
+    <div className='table-hierarchy-test'>
       <DataTable
         columns={columns}
         data={updatedDataTable}

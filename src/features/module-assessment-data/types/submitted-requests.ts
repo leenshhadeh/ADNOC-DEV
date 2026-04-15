@@ -16,6 +16,7 @@ export interface RequestItem {
   id: string
   /** ID of the corresponding ProcessItem in the catalog — used for deep-link navigation. */
   processId?: string
+  processCode?:string
   processName: string
   requestId: string
   requester: string

@@ -31,7 +31,7 @@ const SubmittedRequestsTable = () => {
         id: 'processName',
         accessorKey: 'processName',
         header: 'Process Name',
-        size: 200,
+        size: 330,
         meta: { isDivider: true },
         cell: (info) => {
           const row = info.row.original
@@ -41,7 +41,7 @@ const SubmittedRequestsTable = () => {
               className="focus-visible:ring-ring w-full cursor-pointer text-start outline-none focus-visible:ring-2"
               onClick={() => handleOpenDetails(row)}
             >
-              <ProcessInfoCell processName={row.processName} requestId={row.requestId} />
+              <ProcessInfoCell processName={row.processName} requestId={row.requestId} processCode={row.processCode} />
             </button>
           )
         },
