@@ -82,6 +82,7 @@ const OpprtunitiesTab = (props: any) => {
         onOpenChange={() => {
           setOpenSheet(false)
         }}
+        title={selectedItem?.opportunity}
       />
     </>
   )

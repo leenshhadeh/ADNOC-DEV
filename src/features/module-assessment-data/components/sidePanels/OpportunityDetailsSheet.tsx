@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+// import { useNavigate } from 'react-router-dom'
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
 import { ChevronDown, ChevronRight, ChevronUp, Eye } from 'lucide-react'
 
@@ -11,6 +11,9 @@ import { cn } from '@/shared/lib/utils'
 
 import WorkflowStepper from '@/shared/components/WorkFlowStepper'
 import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
+import PrimaryInformation from '../processDetails/processOpportunties/PrimaryInformation'
+import EstimationAndPrioritization from '../processDetails/processOpportunties/EstimationAndPrioritization'
+import ValueEstimation from '../processDetails/processOpportunties/ValueEstimation'
 
 const WORKFLOW_STEPS = [
   { id: 'step1', title: 'Draft updates', status: 'completed', owner: 'Business FP' },
@@ -24,8 +27,7 @@ const WORKFLOW_STEPS = [
   { id: 'step3', title: 'Program manager signoff', status: '' },
 ]
 
-  function OpportunityAccordionItem({ title }: { title: string}) {
-
+function OpportunityAccordionItem({ title }: { title: string }) {
   return (
     <AccordionItem value={title}>
       <AccordionPrimitive.Header className="flex">
@@ -35,16 +37,16 @@ const WORKFLOW_STEPS = [
             'focus-visible:ring-ring focus-visible:rounded focus-visible:ring-2',
           )}
         >
-          {/* Chevron LEFT — rotates to ∧ when open */}
           <ChevronRight className="text-muted-foreground mt-0.5 size-4 shrink-0 transition-transform duration-200 group-data-[state=open]/ch:-rotate-90" />
-
           <div className="min-w-0 flex-1">{title}</div>
         </AccordionPrimitive.Trigger>
       </AccordionPrimitive.Header>
 
       {/* Expanded — two labeled value boxes */}
       <AccordionContent className="ps-6">
-        <div className="flex flex-col gap-3 pb-4">content</div>
+        {title == 'Primary Information' && <PrimaryInformation />}
+        {title == 'Estimation And Prioritization' && <EstimationAndPrioritization />}
+        {title == 'Value Estimation' && <ValueEstimation />}
       </AccordionContent>
     </AccordionItem>
   )
@@ -57,10 +59,11 @@ interface RequestDetailsSheetProps {
   request: any | null
   open: boolean
   onOpenChange: (open: boolean) => void
+  title: string
 }
 
-const OpportunityDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsSheetProps) => {
-  const navigate = useNavigate()
+const OpportunityDetailsSheet = ({ request, open, onOpenChange , title }: RequestDetailsSheetProps) => {
+  // const navigate = useNavigate()
   const [showMore, setShowMore] = useState(false)
 
   // Reset sub-panel state when the sheet closes
@@ -73,7 +76,7 @@ const OpportunityDetailsSheet = ({ request, open, onOpenChange }: RequestDetails
 
   return (
     <ActionSheet
-      title={request?.processName ?? ''}
+      title={title}
       open={open}
       onOpenChange={handleOpenChange}
       large
@@ -90,20 +93,21 @@ const OpportunityDetailsSheet = ({ request, open, onOpenChange }: RequestDetails
                   {request.processCategory}
                 </Badge>
               )}
+
+              {/* TODO: to be added after implementing the opportunity table  */}
               <div className="grid grid-cols-2">
-                <button
+                {/* <button
                   type="button"
                   className="text-primary inline-flex items-center gap-1.5 text-sm font-medium hover:underline"
                   onClick={() => {
                     if (request.processId) {
                       onOpenChange(false)
-                      navigate(`/assessment-data/process/${request.processId}`)
+                      navigate(`/opportunity-data/opportunity/${request.processId}`)
                     }
-                  }}
-                >
-                  <Eye className="size-4" />
+                  }}> 
+                    <Eye className="size-4" />
                   View full card
-                </button>
+                </button> */}
               </div>
             </div>
 
@@ -200,10 +204,12 @@ const OpportunityDetailsSheet = ({ request, open, onOpenChange }: RequestDetails
             </div>
 
             <section className="mt-6">
-               <Accordion type="single" collapsible className="mt-3 w-full">
-               <OpportunityAccordionItem title='Primary Information' />
-               <OpportunityAccordionItem title='Estimation and Prioritization' />
-               <OpportunityAccordionItem title='Value Estimation' />
+              <Accordion type="single" collapsible className="mt-3 w-full">
+                {/* TODO: to be updated after implemeting the opportunites data  */}
+                
+                <OpportunityAccordionItem title="Primary Information" />
+                <OpportunityAccordionItem title="Estimation And Prioritization" />
+                <OpportunityAccordionItem title="Value Estimation" />
               </Accordion>
             </section>
           </div>
