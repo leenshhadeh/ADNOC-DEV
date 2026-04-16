@@ -1,6 +1,5 @@
 import { createColumnHelper } from '@tanstack/react-table'
 import StatusBadgeCell from '@/shared/components/cells/StatusBadgeCell'
-import EditablePercentCell from '../components/cells/EditablePercentCell'
 import EditableTextCell from '../components/cells/EditableTextCell'
 import EditableSelectCell from '../components/cells/EditableSelectCell'
 import type { AutomationTargetRow } from '../types'
@@ -8,6 +7,19 @@ import type { AutomationTargetRow } from '../types'
 const col = createColumnHelper<AutomationTargetRow>()
 
 const TO_BE_AI_OPTIONS = ['Yes', 'No']
+const TARGET_AUTOMATION_PERCENT_OPTIONS = [
+  '0%',
+  '10%',
+  '20%',
+  '30%',
+  '40%',
+  '50%',
+  '60%',
+  '70%',
+  '80%',
+  '90%',
+  '100%',
+]
 
 export interface AutomationTableMeta {
   onCellChange?: (rowId: string, field: string, value: string) => void
@@ -171,8 +183,10 @@ export const automationTargetColumns = [
       if (row.original.isL3GroupHeader) return null
       const meta = table.options.meta as AutomationTableMeta | undefined
       return (
-        <EditablePercentCell
+        <EditableSelectCell
           value={row.original.targetAutomationLevelPercent}
+          options={TARGET_AUTOMATION_PERCENT_OPTIONS}
+          placeholder="Select %"
           onChange={(val) =>
             meta?.onCellChange?.(row.original.id, 'targetAutomationLevelPercent', val)
           }
@@ -251,7 +265,11 @@ export const automationTargetColumns = [
     size: 160,
     cell: ({ row }) => {
       if (row.original.isL3GroupHeader) return null
-      return <span className="text-sm">{row.original.submittedBy || '—'}</span>
+      return (
+        <span className="bg-accent inline-flex h-7 items-center rounded-2xl border px-4 text-sm">
+          {row.original.submittedBy || '—'}
+        </span>
+      )
     },
   }),
   col.accessor('submittedDate', {

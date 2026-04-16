@@ -43,8 +43,14 @@ const DataTableHeader = <TData, TValue>({
     ...(isPinned === 'left'
       ? { position: 'sticky', left: leftOffset, zIndex: 20 }
       : { transform: CSS.Transform.toString(transform), transition }),
-      ...(column.columnDef?.meta?.pinnedCol ? { position: 'sticky', left: column.columnDef?.meta?.offset || 0, zIndex: 12 ,backgroundColor:'#F1F3F5'} : {}),
-
+    ...(column.columnDef?.meta?.pinnedCol
+      ? {
+          position: 'sticky',
+          left: column.columnDef?.meta?.offset || 0,
+          zIndex: 12,
+          backgroundColor: '#F1F3F5',
+        }
+      : {}),
   }
 
   const headClassName = cn(
@@ -99,7 +105,7 @@ const DataTableHeader = <TData, TValue>({
       style={style}
       className={cn(
         headClassName,
-        isMultiline ? 'py-1' : 'h-8 py-1',
+        'py-1',
         !!(column.columnDef.meta as { isDivider?: boolean } | undefined)?.isDivider &&
           'border-r-border/60 border-r-2',
       )}
@@ -127,18 +133,13 @@ const DataTableHeader = <TData, TValue>({
             type="button"
             variant="ghost"
             size="sm"
-            className={cn(
-              'px-1.5 text-xs font-normal tracking-wide uppercase',
-              isMultiline ? 'h-auto min-h-7 whitespace-normal' : 'h-7',
-            )}
+            className="h-auto min-h-7 w-full min-w-0 px-1.5 text-xs font-normal tracking-wide whitespace-normal uppercase"
             onClick={
               enableSorting && column.getCanSort() ? column.getToggleSortingHandler() : undefined
             }
             aria-label={enableSorting && column.getCanSort() ? `Sort by ${column.id}` : undefined}
           >
-            <span
-              className={isMultiline ? 'text-center leading-4 whitespace-normal' : 'truncate pr-1'}
-            >
+            <span className="min-w-0 flex-1 pr-1 leading-4 whitespace-normal">
               {flexRender(column.columnDef.header, header.getContext())}
             </span>
             {column.getCanFilter() ? (
