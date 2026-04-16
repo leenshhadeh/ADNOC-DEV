@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import type { RateCardsTableProps, FlattenedRateCardRow } from './types'
+import RateCardValueCell from './RateCardValueCell'
 
 type DisplayRow = FlattenedRateCardRow & {
   groupCompanyRowSpan: number
@@ -169,6 +170,7 @@ const RateCardsTable = ({
   selectedRowIds = [],
   onToggleRowSelection,
   onRateCardValueChange,
+  onEditRateCardRow,
 }: RateCardsTableProps) => {
   const displayRows = useMemo(() => getRowSpans(data), [data])
 
@@ -277,12 +279,13 @@ const RateCardsTable = ({
                   </td>
 
                   <td className={`${cellClass} min-w-[140px] border-r-0`}>
-                    <input
-                      type="number"
+                    <RateCardValueCell
+                      rowId={row.id}
                       value={row.rateCardValue}
-                      onChange={(e) => onRateCardValueChange?.(row.id, e.target.value)}
-                      disabled={isBulkEditMode}
-                      className="w-full border-0 bg-transparent text-[16px] font-[500] text-[#151718] outline-none disabled:cursor-not-allowed disabled:text-[#98A2B3]"
+                      isEditing={row.isEditing}
+                      isBulkEditMode={isBulkEditMode}
+                      onChange={onRateCardValueChange}
+                      onEdit={onEditRateCardRow}
                     />
                   </td>
                 </tr>

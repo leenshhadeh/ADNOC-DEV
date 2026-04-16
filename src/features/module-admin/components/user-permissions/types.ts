@@ -56,4 +56,5 @@ export type UserPermissionsTableProps = {
   isBulkEditMode?: boolean
   selectedRowIds?: string[]
   onToggleRowSelection?: (rowId: string, checked: boolean) => void
+  onRoleBlur?: (rowId: string) => void
 }

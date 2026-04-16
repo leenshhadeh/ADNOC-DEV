@@ -23,6 +23,7 @@ interface TagsListProps {
   placeholder?: string
   variant?: 'tags' | 'user'
   onChange?: (selected: TagItem[]) => void
+  onOpenChange?: (open: boolean) => void
 }
 
 const TagsSelect: React.FC<TagsListProps> = ({
@@ -33,12 +34,18 @@ const TagsSelect: React.FC<TagsListProps> = ({
   placeholder = 'Select',
   variant = 'tags',
   onChange,
+  onOpenChange,
 }) => {
   const [open, setOpen] = useState(false)
   const [tagSearch, setTagSearch] = useState('')
 
   const selectedTags = tags
   const selectedIds = useMemo(() => tags.map((tag) => tag.id), [tags])
+
+  const handleDropdownOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen)
+    onOpenChange?.(nextOpen)
+  }
 
   const handleToggleTag = (id: string, checked: boolean) => {
     const selectedTag = allTags.find((tag) => tag.id === id)
@@ -47,7 +54,7 @@ const TagsSelect: React.FC<TagsListProps> = ({
     if (singleSelect) {
       const nextTags = checked ? [selectedTag] : []
       onChange?.(nextTags)
-      setOpen(false)
+      handleDropdownOpenChange(false)
       return
     }
 
@@ -106,7 +113,7 @@ const TagsSelect: React.FC<TagsListProps> = ({
     }
 
     return (
-      <div className="flex flex-wrap gap-1">
+      <div className="flex gap-1 overflow-x-auto">
         {selectedTags.map((tag) => (
           <div
             key={tag.id}
@@ -142,7 +149,7 @@ const TagsSelect: React.FC<TagsListProps> = ({
   }
 
   return (
-    <DropdownMenu modal={false} open={open} onOpenChange={setOpen}>
+    <DropdownMenu modal={false} open={open} onOpenChange={handleDropdownOpenChange}>
       <DropdownMenuTrigger asChild>
         <button type="button" className="flex min-w-0 flex-1 text-left">
           {renderTriggerContent()}
@@ -162,6 +169,7 @@ const TagsSelect: React.FC<TagsListProps> = ({
               >
                 <span className="text-[12px]">{tag.name}</span>
                 <button
+                  type="button"
                   onClick={() => handleToggleTag(tag.id, false)}
                   className="text-gray-500 hover:text-gray-800"
                   aria-label={`Remove ${tag.name}`}

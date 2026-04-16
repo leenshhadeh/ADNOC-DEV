@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Plus, Trash2, X } from 'lucide-react'
 import clsx from 'clsx'
 
@@ -11,25 +11,38 @@ type Props = {
   onSave: (rowId: string, sites: GroupCompanySite[]) => void
 }
 
-const createSite = (name = ''): GroupCompanySite => ({
+const GENERAL_SITE_NAME = 'General'
+
+const createSite = (name = '', isDefault = false): GroupCompanySite => ({
   id: `${Date.now()}-${Math.random()}`,
   name,
+  isDefault,
 })
 
-const GroupCompanySitesDrawer = ({ open, row, onOpenChange, onSave }: Props) => {
-  const [draftSites, setDraftSites] = useState<GroupCompanySite[]>([])
+const ensureGeneralSite = (sites: GroupCompanySite[]): GroupCompanySite[] => {
+  const defaultSite = sites.find((site) => site.isDefault)
+  const otherSites = sites.filter((site) => !site.isDefault)
 
-  useCallback(() => {
-    if (open && row) {
-      setDraftSites(row.sites.length ? row.sites : [createSite('')])
-    }
-  }, [open, row])
+  return [defaultSite ?? createSite(GENERAL_SITE_NAME, true), ...otherSites]
+}
+
+const GroupCompanySitesDrawer = ({ open, row, onOpenChange, onSave }: Props) => {
+  const initialSites = useMemo(() => {
+    if (!row) return [createSite(GENERAL_SITE_NAME, true)]
+    return ensureGeneralSite(row.sites ?? [])
+  }, [row])
+
+  const [draftSites, setDraftSites] = useState<GroupCompanySite[]>(initialSites)
 
   const totalSites = draftSites.filter((site) => site.name.trim()).length
 
+  const isGeneralSite = (site: GroupCompanySite) => Boolean(site.isDefault)
+
   const handleChangeSite = (siteId: string, value: string) => {
     setDraftSites((prev) =>
-      prev.map((site) => (site.id === siteId ? { ...site, name: value } : site)),
+      prev.map((site) =>
+        site.id === siteId && !isGeneralSite(site) ? { ...site, name: value } : site,
+      ),
     )
   }
 
@@ -38,18 +51,22 @@ const GroupCompanySitesDrawer = ({ open, row, onOpenChange, onSave }: Props) => 
   }
 
   const handleDeleteSite = (siteId: string) => {
-    setDraftSites((prev) => prev.filter((site) => site.id !== siteId))
+    setDraftSites((prev) => prev.filter((site) => site.id !== siteId || isGeneralSite(site)))
   }
 
   const handleSave = () => {
     if (!row) return
 
-    const cleanedSites = draftSites.filter((site) => site.name.trim())
+    const cleanedSites = ensureGeneralSite(draftSites.filter((site) => site.name.trim()))
     onSave(row.id, cleanedSites)
     onOpenChange(false)
   }
 
-  const title = useMemo(() => row?.groupCompany ?? '-', [row])
+  const handleDrawerClose = () => {
+    onOpenChange(false)
+  }
+
+  const title = row?.groupCompany ?? '-'
 
   return (
     <div
@@ -57,7 +74,7 @@ const GroupCompanySitesDrawer = ({ open, row, onOpenChange, onSave }: Props) => 
         'fixed inset-0 z-50 flex justify-end transition-colors duration-300',
         open ? 'pointer-events-auto bg-black/40' : 'pointer-events-none bg-black/0',
       )}
-      onClick={() => onOpenChange(false)}
+      onClick={handleDrawerClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -71,7 +88,7 @@ const GroupCompanySitesDrawer = ({ open, row, onOpenChange, onSave }: Props) => 
 
           <button
             type="button"
-            onClick={() => onOpenChange(false)}
+            onClick={handleDrawerClose}
             className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#151718] hover:bg-[#F1F3F5]"
           >
             <X className="h-6 w-6" />
@@ -98,34 +115,46 @@ const GroupCompanySitesDrawer = ({ open, row, onOpenChange, onSave }: Props) => 
 
         <div className="min-h-0 flex-1 overflow-y-auto px-6">
           <div className="space-y-5 pb-6">
-            {draftSites.map((site) => (
-              <div key={site.id} className="flex items-end gap-3">
-                <div className="flex-1">
-                  <div className="flex justify-between">
-                    <label className="mb-2 block text-[16px] font-[400] text-[#889096]">
-                      Site name
-                    </label>
+            {draftSites.map((site) => {
+              const isGeneral = isGeneralSite(site)
 
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteSite(site.id)}
-                      className="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#151718] hover:bg-[#F5F7FA]"
-                    >
-                      <Trash2 className="h-5 w-5" />
-                    </button>
-                  </div>
+              return (
+                <div key={site.id} className="flex items-end gap-3">
+                  <div className="flex-1">
+                    <div className="flex justify-between">
+                      <label className="mb-2 block text-[16px] font-[400] text-[#889096]">
+                        Site name
+                      </label>
 
-                  <div className="pr-8">
-                    <input
-                      value={site.name}
-                      onChange={(e) => handleChangeSite(site.id, e.target.value)}
-                      placeholder="Enter site name"
-                      className="placeholder:text-[#B0B7C3 h-12 w-full rounded-[18px] border border-[#DFE3E6] px-6 text-[16px] text-[#151718] outline-none"
-                    />
+                      {!isGeneral && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteSite(site.id)}
+                          className="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#151718] hover:bg-[#F5F7FA]"
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="pr-8">
+                      <input
+                        value={site.name}
+                        disabled={isGeneral}
+                        onChange={(e) => handleChangeSite(site.id, e.target.value)}
+                        placeholder="Enter site name"
+                        className={clsx(
+                          'h-12 w-full rounded-[18px] border px-6 text-[16px] outline-none',
+                          isGeneral
+                            ? 'cursor-not-allowed border-[#DFE3E6] bg-[#F5F7FA] text-[#98A2B3]'
+                            : 'border-[#DFE3E6] text-[#151718] placeholder:text-[#B0B7C3]',
+                        )}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
 
             <div className="border-t border-[#DFE3E6] pt-5">
               <button
@@ -140,24 +169,22 @@ const GroupCompanySitesDrawer = ({ open, row, onOpenChange, onSave }: Props) => 
           </div>
         </div>
 
-        <div className="border-t border-[#DFE3E6] px-6 py-5">
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              className="h-12 flex-1 rounded-full bg-[#E8EEFF] text-[16px] font-semibold text-[#151718]"
-            >
-              Cancel
-            </button>
+        <div className="flex items-center gap-3 px-6 py-5">
+          <button
+            type="button"
+            onClick={handleDrawerClose}
+            className="h-8 flex-1 rounded-[36px] bg-[linear-gradient(180deg,#EAEFFF_0%,#C7D6F9_100%)] text-[16px] font-semibold text-[#151718] shadow-[0_4px_8px_0_rgba(209,213,223,0.50)]"
+          >
+            Cancel
+          </button>
 
-            <button
-              type="button"
-              onClick={handleSave}
-              className="h-12 flex-1 rounded-full bg-gradient-to-r from-[#5B19FF] to-[#2D00F7] text-[16px] font-semibold text-white"
-            >
-              Save
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={handleSave}
+            className="h-8 flex-1 rounded-full bg-[linear-gradient(180deg,#5B23FF_0%,#3C00EB_100%)] text-[16px] font-semibold text-white shadow-[0_4px_8px_0_rgba(209,213,223,0.50)]"
+          >
+            Save
+          </button>
         </div>
       </div>
     </div>

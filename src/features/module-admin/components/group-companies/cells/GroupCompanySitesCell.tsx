@@ -1,5 +1,6 @@
 import { Maximize2 } from 'lucide-react'
 import type { GroupCompanyRow } from '../types'
+import clsx from 'clsx'
 
 type Props = {
   row: GroupCompanyRow
@@ -14,7 +15,11 @@ const GroupCompanySitesCell = ({ row, onOpenSitesDrawer }: Props) => {
           row.sites.map((site) => (
             <span
               key={site.id}
-              className="inline-flex h-7 items-center rounded-full border border-[#2F68D9] bg-[#DCE5F9] px-4 text-[14px] text-[#151718]"
+              className={clsx(
+                site.name === 'General'
+                  ? 'inline-flex h-7 items-center rounded-full border border-[#DFE3E6] bg-[#F1F3F5] px-4 text-[14px] text-[#151718]'
+                  : 'inline-flex h-7 items-center rounded-full border border-[#2F68D9] bg-[#DCE5F9] px-4 text-[14px] text-[#151718]',
+              )}
             >
               {site.name}
             </span>

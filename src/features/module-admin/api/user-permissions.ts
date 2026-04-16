@@ -10,7 +10,7 @@
  */
 
 import axios from 'axios'
-
+import { apiClient } from '@/shared/api'
 import type { DomainItem, GroupCompanyItem } from '../components/user-permissions/constants'
 import type {
   AccessConfig,
@@ -18,41 +18,6 @@ import type {
   UserDirectoryItem,
   UserPermissionRow,
 } from '../components/user-permissions/types'
-
-// ----------------------------------------------------------------------------
-// Axios instance
-// ----------------------------------------------------------------------------
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? '',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-})
-
-// Optional: attach token automatically if you store it locally
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-
-  return config
-})
-
-// Optional: handle unauthorized globally
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error?.response?.status === 401) {
-      localStorage.removeItem('token')
-      window.location.href = '/login'
-    }
-
-    return Promise.reject(error)
-  },
-)
 
 // ----------------------------------------------------------------------------
 // Shared API envelope
@@ -111,7 +76,7 @@ function getErrorMessage(error: unknown): string {
 
 export async function getUserPermissionRows(): Promise<UserPermissionRow[]> {
   try {
-    const response = await api.get<ApiResponse<UserPermissionRow[]>>('/api/user-permissions')
+    const response = await apiClient.get<ApiResponse<UserPermissionRow[]>>('/api/user-permissions')
     return response.data.data
   } catch (error) {
     throw new Error(getErrorMessage(error))
@@ -124,7 +89,7 @@ export async function getUserPermissionRows(): Promise<UserPermissionRow[]> {
 
 export async function getUserDirectory(): Promise<UserDirectoryItem[]> {
   try {
-    const response = await api.get<ApiResponse<UserDirectoryItem[]>>('/api/users/directory')
+    const response = await apiClient.get<ApiResponse<UserDirectoryItem[]>>('/api/users/directory')
     return response.data.data
   } catch (error) {
     throw new Error(getErrorMessage(error))
@@ -137,7 +102,7 @@ export async function getUserDirectory(): Promise<UserDirectoryItem[]> {
 
 export async function getUserPermissionRoles(): Promise<string[]> {
   try {
-    const response = await api.get<ApiResponse<string[]>>('/api/user-permissions/roles')
+    const response = await apiClient.get<ApiResponse<string[]>>('/api/user-permissions/roles')
     return response.data.data
   } catch (error) {
     throw new Error(getErrorMessage(error))
@@ -150,7 +115,7 @@ export async function getUserPermissionRoles(): Promise<string[]> {
 
 export async function getUserPermissionGroupCompanies(): Promise<GroupCompanyItem[]> {
   try {
-    const response = await api.get<ApiResponse<GroupCompanyItem[]>>(
+    const response = await apiClient.get<ApiResponse<GroupCompanyItem[]>>(
       '/api/user-permissions/group-companies',
     )
     return response.data.data
@@ -165,7 +130,7 @@ export async function getUserPermissionGroupCompanies(): Promise<GroupCompanyIte
 
 export async function getUserPermissionDomains(): Promise<DomainItem[]> {
   try {
-    const response = await api.get<ApiResponse<DomainItem[]>>('/api/user-permissions/domains')
+    const response = await apiClient.get<ApiResponse<DomainItem[]>>('/api/user-permissions/domains')
     return response.data.data
   } catch (error) {
     throw new Error(getErrorMessage(error))
@@ -180,7 +145,7 @@ export async function createUserPermission(
   payload: CreateUserPermissionRequest,
 ): Promise<UserPermissionRow> {
   try {
-    const response = await api.post<ApiResponse<UserPermissionRow>>(
+    const response = await apiClient.post<ApiResponse<UserPermissionRow>>(
       '/api/user-permissions',
       payload,
     )
@@ -199,7 +164,7 @@ export async function updateUserPermissionField(
   payload: UpdateUserPermissionFieldRequest,
 ): Promise<UserPermissionRow> {
   try {
-    const response = await api.patch<ApiResponse<UserPermissionRow>>(
+    const response = await apiClient.patch<ApiResponse<UserPermissionRow>>(
       `/api/user-permissions/${id}/field`,
       payload,
     )
@@ -218,7 +183,7 @@ export async function updateUserPermissionAccess(
   assignedAccess: AccessConfig,
 ): Promise<UserPermissionRow> {
   try {
-    const response = await api.put<ApiResponse<UserPermissionRow>>(
+    const response = await apiClient.put<ApiResponse<UserPermissionRow>>(
       `/api/user-permissions/${id}/access`,
       { assignedAccess },
     )
@@ -234,7 +199,7 @@ export async function updateUserPermissionAccess(
 
 export async function deactivateUserPermission(id: string): Promise<UserPermissionRow> {
   try {
-    const response = await api.post<ApiResponse<UserPermissionRow>>(
+    const response = await apiClient.post<ApiResponse<UserPermissionRow>>(
       `/api/user-permissions/${id}/deactivate`,
     )
     return response.data.data
@@ -249,7 +214,7 @@ export async function deactivateUserPermission(id: string): Promise<UserPermissi
 
 export async function activateUserPermission(id: string): Promise<UserPermissionRow> {
   try {
-    const response = await api.post<ApiResponse<UserPermissionRow>>(
+    const response = await apiClient.post<ApiResponse<UserPermissionRow>>(
       `/api/user-permissions/${id}/activate`,
     )
     return response.data.data

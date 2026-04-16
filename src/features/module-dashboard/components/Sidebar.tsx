@@ -7,6 +7,7 @@ import dashboardIcon from '@/assets/icons/dashboard.svg'
 import assessmentDataIcon from '@/assets/icons/assesment.svg'
 import automationTargetsIcon from '@/assets/icons/target.svg'
 import processCatalogIcon from '@/assets/icons/paper.svg'
+import { useUserStore } from '@/shared/auth/useUserStore'
 // import opportunitiesIcon from '@/assets/icons/bag.svg'
 
 const menuItems = [
@@ -18,12 +19,13 @@ const menuItems = [
 ]
 
 const bottomItems = [
-  { to: '/settings', label: 'Settings', icon: Settings },
+  { to: '/settings', label: 'Admin Settings', icon: Settings },
   { to: '/logout', label: 'Log out', icon: LogOut },
 ]
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const usr = useUserStore()
   const { pathname } = useLocation()
 
   const isActive = (to: string) => {
@@ -112,7 +114,7 @@ const Sidebar = () => {
             className="h-5 w-5 rounded-full object-cover"
           />
           {!isCollapsed && (
-            <span className="text-md/none text-foreground ml-3 self-center">Maryam Al Shamsi</span>
+            <span className="text-md/none text-foreground ml-3 self-center">{usr.user.name}</span>
           )}
         </div>
 

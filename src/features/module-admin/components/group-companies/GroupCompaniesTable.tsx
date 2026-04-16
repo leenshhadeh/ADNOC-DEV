@@ -6,6 +6,7 @@ import DataTable from '@/shared/components/data-table/DataTable'
 import GroupCompanyNameCell from './cells/GroupCompanyNameCell'
 import GroupCompanyCodeCell from './cells/GroupCompanyCodeCell'
 import GroupCompanySitesCell from './cells/GroupCompanySitesCell'
+import GroupCompanyStatusCell from './cells/GroupCompanyStatusCell'
 import type { EditableGroupCompanyField, GroupCompaniesTableProps, GroupCompanyRow } from './types'
 
 const GroupCompaniesTable = ({
@@ -13,6 +14,9 @@ const GroupCompaniesTable = ({
   searchValue,
   onRowChange,
   onOpenSitesDrawer,
+  onEditRow,
+  onArchiveRow,
+  isEditingRow = false,
 }: GroupCompaniesTableProps) => {
   const filteredData = useMemo(() => {
     const value = searchValue.trim().toLowerCase()
@@ -23,6 +27,7 @@ const GroupCompaniesTable = ({
       return (
         item.groupCompany.toLowerCase().includes(value) ||
         item.code.toLowerCase().includes(value) ||
+        item.status.toLowerCase().includes(value) ||
         item.sites.some((site) => site.name.toLowerCase().includes(value))
       )
     })
@@ -39,8 +44,15 @@ const GroupCompaniesTable = ({
             onChange={(rowId, field, value) =>
               onRowChange?.(rowId, field as EditableGroupCompanyField, value)
             }
+            onEdit={onEditRow}
+            onArchive={onArchiveRow}
           />
         ),
+      },
+      {
+        accessorKey: 'status',
+        header: 'STATUS',
+        cell: ({ row }) => <GroupCompanyStatusCell row={row.original} />,
       },
       {
         accessorKey: 'code',
@@ -51,6 +63,7 @@ const GroupCompaniesTable = ({
             onChange={(rowId, field, value) =>
               onRowChange?.(rowId, field as EditableGroupCompanyField, value)
             }
+            onEdit={onEditRow}
           />
         ),
       },
@@ -62,17 +75,18 @@ const GroupCompaniesTable = ({
         ),
       },
     ],
-    [onRowChange, onOpenSitesDrawer],
+    [onArchiveRow, onEditRow, onOpenSitesDrawer, onRowChange],
   )
 
   return (
     <DataTable<GroupCompanyRow>
       data={filteredData}
       columns={columns}
-      density="compact"
+      density="comfortable"
       enableColumnDnd={false}
-      enableSorting
+      enableSorting={!isEditingRow}
       getRowId={(row) => row.id}
+      tableMeta={{ rowDividers: true }}
     />
   )
 }

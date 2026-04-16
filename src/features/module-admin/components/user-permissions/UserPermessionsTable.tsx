@@ -20,6 +20,7 @@ const UserPermissionsTable = ({
   isBulkEditMode = false,
   selectedRowIds = [],
   onToggleRowSelection,
+  onRoleBlur,
 }: UserPermissionsTableProps) => {
   const filteredData = useMemo(() => {
     const value = searchValue.trim().toLowerCase()
@@ -61,7 +62,9 @@ const UserPermissionsTable = ({
       {
         accessorKey: 'assignedRole',
         header: 'ASSIGNED ROLE',
-        cell: ({ row }) => <AssignedRoleCell row={row.original} onRowChange={onRowChange} />,
+        cell: ({ row }) => (
+          <AssignedRoleCell row={row.original} onRowChange={onRowChange} onBlur={onRoleBlur} />
+        ),
       },
       {
         id: 'assignedAccess',
@@ -80,6 +83,7 @@ const UserPermissionsTable = ({
       onToggleRowSelection,
       onRowChange,
       onOpenDomainsDrawer,
+      onRoleBlur,
     ],
   )
 
@@ -87,10 +91,11 @@ const UserPermissionsTable = ({
     <DataTable<UserPermissionRow>
       data={filteredData}
       columns={columns}
-      density="compact"
+      density="comfortable"
       enableColumnDnd={false}
       enableSorting
       getRowId={(row) => row.id}
+      tableMeta={{ rowDividers: true }}
     />
   )
 }
