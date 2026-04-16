@@ -4,6 +4,7 @@ import AccessCard from './components/AccessCard'
 import ProcessesSummary from './components/ProcessesSummary'
 import MyTasks from './components/MyTasks'
 import HeaderActions from './components/HeaderActions'
+import { useUserStore } from '@/shared/auth/useUserStore'
 
 const accessCardItems = [
   {
@@ -27,12 +28,13 @@ const accessCardItems = [
 ]
 
 const DashboardModule = () => {
+  const usr = useUserStore()
   return (
     <div className="flex min-h-full flex-col px-3 pb-3">
       <div className="flex w-full justify-between">
         <div className="flex items-center gap-2 pb-5">
-          <h1 className="text-foreground text-2xl font-semibold">Hello Maryam Al Shamsi</h1>
-          <span className="text-foreground/60 text-sm">- Business Focal Point</span>
+          <h1 className="text-foreground text-2xl font-semibold">Hello {usr.user.name}</h1>
+          <span className="text-foreground/60 text-sm">- {usr.user.role}</span>
         </div>
 
         <HeaderActions />

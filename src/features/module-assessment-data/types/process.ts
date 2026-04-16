@@ -91,6 +91,10 @@ export type FlatAssessmentRow = {
   l2: string
   l3: string
   l4: string
+  displayDomain: string
+  displayL1: string
+  displayL2: string
+  displayL3: string
   l1Code?: string
   l2Code?: string
   l3Code?: string

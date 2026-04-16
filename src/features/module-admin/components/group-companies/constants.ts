@@ -5,8 +5,9 @@ export const initialGroupCompaniesData: GroupCompanyRow[] = [
     id: '1',
     groupCompany: 'ADNOC Al Dhafra and Al Yasat',
     code: 'ADY',
+    status: 'Active',
     sites: [
-      { id: 's1', name: 'General' },
+      { id: 's1', name: 'General', isDefault: true },
       { id: 's2', name: 'A' },
       { id: 's3', name: 'B' },
     ],
@@ -15,8 +16,10 @@ export const initialGroupCompaniesData: GroupCompanyRow[] = [
     id: '2',
     groupCompany: 'ADNOC Distribution',
     code: 'DIS',
+    status: 'Archived',
+
     sites: [
-      { id: 's4', name: 'General' },
+      { id: 's1', name: 'General', isDefault: true },
       { id: 's5', name: 'A' },
     ],
   },
@@ -24,20 +27,25 @@ export const initialGroupCompaniesData: GroupCompanyRow[] = [
     id: '3',
     groupCompany: 'ADNOC Drilling',
     code: 'DRI',
-    sites: [],
+    status: 'Archived',
+    sites: [{ id: 's1', name: 'General', isDefault: true }],
   },
   {
     id: '4',
     groupCompany: 'ADNOC Gas',
     code: 'GAS',
-    sites: [],
+    status: 'Active',
+
+    sites: [{ id: 's1', name: 'General', isDefault: true }],
   },
   {
     id: '5',
     groupCompany: 'ADNOC Global Trading',
     code: 'AGT',
+    status: 'Active',
+
     sites: [
-      { id: 's6', name: 'General' },
+      { id: 's1', name: 'General', isDefault: true },
       { id: 's7', name: 'A' },
       { id: 's8', name: 'B' },
     ],
@@ -46,20 +54,26 @@ export const initialGroupCompaniesData: GroupCompanyRow[] = [
     id: '6',
     groupCompany: 'ADNOC Group Company',
     code: 'TST',
-    sites: [{ id: 's9', name: 'General' }],
+    status: 'Active',
+
+    sites: [{ id: 's1', name: 'General', isDefault: true }],
   },
   {
     id: '7',
     groupCompany: 'ADNOC HQ',
     code: 'AHQ',
-    sites: [],
+    status: 'Active',
+
+    sites: [{ id: 's1', name: 'General', isDefault: true }],
   },
   {
     id: '8',
     groupCompany: 'ADNOC Logistics and Services',
     code: 'LNS',
+    status: 'Active',
+
     sites: [
-      { id: 's10', name: 'General' },
+      { id: 's1', name: 'General', isDefault: true },
       { id: 's11', name: 'A' },
       { id: 's12', name: 'B' },
     ],
@@ -68,12 +82,15 @@ export const initialGroupCompaniesData: GroupCompanyRow[] = [
     id: '9',
     groupCompany: 'ADNOC Offshore',
     code: 'OFF',
-    sites: [],
+    status: 'Active',
+
+    sites: [{ id: 's1', name: 'General', isDefault: true }],
   },
   {
     id: '10',
     groupCompany: 'ADNOC Refining',
     code: 'REF',
-    sites: [],
+    status: 'Archived',
+    sites: [{ id: 's1', name: 'General', isDefault: true }],
   },
 ]

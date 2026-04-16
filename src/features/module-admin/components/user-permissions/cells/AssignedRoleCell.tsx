@@ -11,9 +11,10 @@ type RoleOption = {
 type Props = {
   row: UserPermissionRow
   onRowChange?: (rowId: string, field: EditableField, value: string | string[]) => void
+  onBlur?: (rowId: string) => void
 }
 
-const AssignedRoleCell = ({ row, onRowChange }: Props) => {
+const AssignedRoleCell = ({ row, onRowChange, onBlur }: Props) => {
   const roleOptions = useMemo<RoleOption[]>(
     () =>
       availableRoles.map((role) => ({
@@ -33,7 +34,7 @@ const AssignedRoleCell = ({ row, onRowChange }: Props) => {
   )
 
   return (
-    <div className="w-full">
+    <div className="flex w-full overflow-x-auto">
       <TagsSelect
         tags={selectedRoles}
         allTags={roleOptions}
@@ -44,6 +45,11 @@ const AssignedRoleCell = ({ row, onRowChange }: Props) => {
             'assignedRole',
             selected.map((item) => item.name),
           )
+        }}
+        onOpenChange={(open) => {
+          if (!open) {
+            onBlur?.(row.id)
+          }
         }}
       />
     </div>

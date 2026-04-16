@@ -14,19 +14,8 @@
  */
 
 import axios from 'axios'
-
-export type GroupCompanySite = {
-  id: string
-  name: string
-}
-
-export type GroupCompanyRow = {
-  id: string
-  groupCompany: string
-  code: string
-  sites: GroupCompanySite[]
-  isEditing?: boolean
-}
+import { apiClient } from '@/shared/api'
+import type { GroupCompanyRow } from '../components/group-companies/types'
 
 export interface CreateGroupCompanyRequest {
   groupCompany: string
@@ -51,41 +40,6 @@ export interface ApiResponse<T> {
     total: number
   }
 }
-
-// ----------------------------------------------------------------------------
-// Axios instance
-// ----------------------------------------------------------------------------
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? '',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-})
-
-// Optional: attach token automatically
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-
-  return config
-})
-
-// Optional: handle unauthorized globally
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error?.response?.status === 401) {
-      localStorage.removeItem('token')
-      window.location.href = '/login'
-    }
-
-    return Promise.reject(error)
-  },
-)
 
 // ----------------------------------------------------------------------------
 // Error helper
@@ -114,7 +68,7 @@ function getErrorMessage(error: unknown): string {
 
 export async function getGroupCompanies(): Promise<GroupCompanyRow[]> {
   try {
-    const response = await api.get<ApiResponse<GroupCompanyRow[]>>('/api/group-companies')
+    const response = await apiClient.get<ApiResponse<GroupCompanyRow[]>>('/api/group-companies')
     return response.data.data
   } catch (error) {
     throw new Error(getErrorMessage(error))
@@ -127,7 +81,7 @@ export async function getGroupCompanies(): Promise<GroupCompanyRow[]> {
 
 export async function getGroupCompanyById(id: string): Promise<GroupCompanyRow> {
   try {
-    const response = await api.get<ApiResponse<GroupCompanyRow>>(`/api/group-companies/${id}`)
+    const response = await apiClient.get<ApiResponse<GroupCompanyRow>>(`/api/group-companies/${id}`)
     return response.data.data
   } catch (error) {
     throw new Error(getErrorMessage(error))
@@ -142,7 +96,10 @@ export async function createGroupCompany(
   payload: CreateGroupCompanyRequest,
 ): Promise<GroupCompanyRow> {
   try {
-    const response = await api.post<ApiResponse<GroupCompanyRow>>('/api/group-companies', payload)
+    const response = await apiClient.post<ApiResponse<GroupCompanyRow>>(
+      '/api/group-companies',
+      payload,
+    )
     return response.data.data
   } catch (error) {
     throw new Error(getErrorMessage(error))
@@ -158,7 +115,7 @@ export async function updateGroupCompany(
   payload: UpdateGroupCompanyRequest,
 ): Promise<GroupCompanyRow> {
   try {
-    const response = await api.put<ApiResponse<GroupCompanyRow>>(
+    const response = await apiClient.put<ApiResponse<GroupCompanyRow>>(
       `/api/group-companies/${id}`,
       payload,
     )

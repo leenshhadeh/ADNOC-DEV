@@ -1,10 +1,11 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Download, Layers, Plus, Save, X } from 'lucide-react'
 
 import AdminToolbar from '../components/AdminToolbar'
 import UserPermissionsTable from '../components/user-permissions/UserPermessionsTable'
 import UserDomainsDrawer from '../components/user-permissions/UserDomainsDrawer'
 import { domains, groupCompanies } from '../components/user-permissions/constants'
+import { SuccessToast } from '@/shared/components/SuccessToast'
 
 import type { ToolbarAction } from '@/shared/components/ModuleToolbar'
 import type {
@@ -192,8 +193,12 @@ const initialUserPermissionsData: UserPermissionRow[] = [
   }),
 ]
 
-const UserPermissionsPage = () => {
-  const [searchValue, setSearchValue] = useState('')
+type UserPermissionsPageProps = {
+  searchValue: string
+  setToolbarActions: React.Dispatch<React.SetStateAction<ToolbarAction[]>>
+}
+
+const UserPermissionsPage = ({ searchValue, setToolbarActions }: UserPermissionsPageProps) => {
   const [rows, setRows] = useState<UserPermissionRow[]>(initialUserPermissionsData)
 
   const [isDomainsDrawerOpen, setIsDomainsDrawerOpen] = useState(false)
@@ -207,6 +212,18 @@ const UserPermissionsPage = () => {
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
   const [isBulkEditModalOpen, setIsBulkEditModalOpen] = useState(false)
   const [isBulkAccessFlow, setIsBulkAccessFlow] = useState(false)
+
+  const [toastOpen, setToastOpen] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+
+  const showToast = useCallback((message: string) => {
+    setToastOpen(false)
+    setToastMessage(message)
+
+    requestAnimationFrame(() => {
+      setToastOpen(true)
+    })
+  }, [])
 
   const editingRow = useMemo(() => rows.find((row) => row.isEditing), [rows])
 
@@ -228,11 +245,14 @@ const UserPermissionsPage = () => {
       },
       ...prev,
     ])
-  }, [editingRow, isBulkEditMode])
+
+    showToast('New user row added')
+  }, [editingRow, isBulkEditMode, showToast])
 
   const handleCancelNew = useCallback(() => {
     setRows((prev) => prev.filter((row) => !row.isEditing))
-  }, [])
+    showToast('New user creation cancelled')
+  }, [showToast])
 
   const handleSaveNew = useCallback(() => {
     if (!editingRow) return
@@ -267,23 +287,75 @@ const UserPermissionsPage = () => {
           : row,
       ),
     )
-  }, [editingRow])
+
+    showToast('User permissions saved successfully')
+  }, [editingRow, showToast])
+
+  const handleSaveRolesOnBlur = useCallback(
+    (rowId: string) => {
+      const row = rows.find((item) => item.id === rowId)
+
+      if (!row) return
+      if (!row.isEditing) return
+
+      const counts = getAccessCounts(row.assignedAccess)
+
+      setRows((prev) =>
+        prev.map((item) =>
+          item.id === rowId
+            ? {
+                ...item,
+                accountStatus:
+                  item.userId && item.name.trim() && item.email.trim()
+                    ? 'Active'
+                    : item.accountStatus,
+                gcsAccess: counts.gcsAccess,
+                domainsAccess: counts.domainsAccess,
+                isEditing: false,
+              }
+            : item,
+        ),
+      )
+
+      showToast('Roles updated successfully')
+    },
+    [rows, showToast],
+  )
 
   const handleView = useCallback((user: UserPermissionRow) => {
     console.log('view', user)
   }, [])
 
-  const handleDeactivate = useCallback((user: UserPermissionRow) => {
-    setRows((prev) =>
-      prev.map((row) => (row.id === user.id ? { ...row, accountStatus: 'Deactivated' } : row)),
-    )
-  }, [])
+  const handleDeactivate = useCallback(
+    (user: UserPermissionRow) => {
+      setRows((prev) =>
+        prev.map((row) => (row.id === user.id ? { ...row, accountStatus: 'Deactivated' } : row)),
+      )
+      showToast('User deactivated successfully')
+    },
+    [showToast],
+  )
 
   const handleRowChange = useCallback(
     (rowId: string, field: EditableField, value: string | string[]) => {
-      setRows((prev) => prev.map((row) => (row.id === rowId ? { ...row, [field]: value } : row)))
+      setRows((prev) => {
+        const currentRow = prev.find((row) => row.id === rowId)
+
+        if (field === 'assignedRole' && currentRow) {
+          const previousRoles = currentRow.assignedRole ?? []
+          const nextRoles = Array.isArray(value) ? value : []
+
+          if (nextRoles.length > previousRoles.length) {
+            showToast('Role added successfully')
+          } else if (nextRoles.length < previousRoles.length) {
+            showToast('Role removed successfully')
+          }
+        }
+
+        return prev.map((row) => (row.id === rowId ? { ...row, [field]: value } : row))
+      })
     },
-    [],
+    [showToast],
   )
 
   const handleRowSelectUser = useCallback(
@@ -338,19 +410,22 @@ const UserPermissionsPage = () => {
     )
 
     handleCloseDomainsDrawer()
-  }, [draftAccessConfig, handleCloseDomainsDrawer, selectedUserForDomains])
+    showToast('User access updated successfully')
+  }, [draftAccessConfig, handleCloseDomainsDrawer, selectedUserForDomains, showToast])
 
   const handleStartBulkEdit = useCallback(() => {
     setIsBulkEditMode(true)
     setSelectedRowIds([])
-  }, [])
+    showToast('Bulk edit mode enabled')
+  }, [showToast])
 
   const handleCancelBulkEdit = useCallback(() => {
     setIsBulkEditMode(false)
     setSelectedRowIds([])
     setIsBulkEditModalOpen(false)
     setIsBulkAccessFlow(false)
-  }, [])
+    showToast('Bulk edit cancelled')
+  }, [showToast])
 
   const handleToggleRowSelection = useCallback((rowId: string, checked: boolean) => {
     setSelectedRowIds((prev) => {
@@ -382,8 +457,9 @@ const UserPermissionsPage = () => {
       setIsBulkEditModalOpen(false)
       setIsBulkEditMode(false)
       setSelectedRowIds([])
+      showToast('Roles applied to selected users')
     },
-    [selectedRowIds],
+    [selectedRowIds, showToast],
   )
 
   const handleNextBulkAccess = useCallback(() => {
@@ -416,7 +492,8 @@ const UserPermissionsPage = () => {
     setIsBulkAccessFlow(false)
     setIsBulkEditMode(false)
     setSelectedRowIds([])
-  }, [draftAccessConfig, selectedRowIds])
+    showToast('Access applied to selected users')
+  }, [draftAccessConfig, selectedRowIds, showToast])
 
   const actions = useMemo<ToolbarAction[]>(
     () =>
@@ -468,7 +545,10 @@ const UserPermissionsPage = () => {
                 id: 'export',
                 label: 'Export',
                 icon: Download,
-                onClick: () => console.log('Export'),
+                onClick: () => {
+                  console.log('Export')
+                  showToast('Export started successfully')
+                },
               },
             ],
     [
@@ -481,18 +561,17 @@ const UserPermissionsPage = () => {
       handleStartBulkEdit,
       isBulkEditMode,
       selectedRowIds.length,
+      showToast,
     ],
   )
 
+  useEffect(() => {
+    setToolbarActions(actions)
+  }, [actions, setToolbarActions])
+
   return (
     <div className="flex flex-col gap-3">
-      <AdminToolbar
-        title="Manage user roles and configure access rights per group company and its domains."
-        searchValue={searchValue}
-        onSearchChange={setSearchValue}
-        searchPlaceholder="Search"
-        actions={actions}
-      />
+      <AdminToolbar title="Manage user roles and configure access rights per group company and its domains." />
 
       <UserPermissionsTable
         data={rows}
@@ -505,6 +584,7 @@ const UserPermissionsPage = () => {
         isBulkEditMode={isBulkEditMode}
         selectedRowIds={selectedRowIds}
         onToggleRowSelection={handleToggleRowSelection}
+        onRoleBlur={handleSaveRolesOnBlur}
       />
 
       <UserPermissionsBulkEditModal
@@ -537,6 +617,13 @@ const UserPermissionsPage = () => {
         onSave={isBulkAccessFlow ? handleSaveBulkDomains : handleSaveDomains}
         isBulkMode={isBulkAccessFlow}
         selectedUsersCount={selectedRowIds.length}
+      />
+
+      <SuccessToast
+        open={toastOpen}
+        onClose={() => setToastOpen(false)}
+        message={toastMessage}
+        variant="success"
       />
     </div>
   )

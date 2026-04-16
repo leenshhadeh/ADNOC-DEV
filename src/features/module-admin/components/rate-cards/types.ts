@@ -60,6 +60,7 @@ export type FlattenedRateCardRow = {
   processLevel4?: string
   processLevel4Code?: string
   rateCardValue: number | string
+  isEditing?: boolean
 }
 
 export type RateCardsTableProps = {
@@ -68,4 +69,5 @@ export type RateCardsTableProps = {
   selectedRowIds?: string[]
   onToggleRowSelection?: (rowId: string, checked: boolean) => void
   onRateCardValueChange?: (rowId: string, value: string) => void
+  onEditRateCardRow?: (rowId: string) => void
 }

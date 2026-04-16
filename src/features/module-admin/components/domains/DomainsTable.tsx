@@ -6,9 +6,17 @@ import DataTable from '@/shared/components/data-table/DataTable'
 import BusinessDomainCell from './cells/BusinessDomainCell'
 import DomainCodeCell from './cells/DomainCodeCell'
 import SortingIndexCell from './cells/SortingIndexCell'
+import DomainStatusCell from './cells/DomainStatusCell'
 import type { DomainRow, DomainsTableProps, EditableDomainField } from './types'
 
-const DomainsTable = ({ data, searchValue, onRowChange }: DomainsTableProps) => {
+const DomainsTable = ({
+  data,
+  searchValue,
+  onRowChange,
+  onEditRow,
+  onArchiveRow,
+  isEditingRow = false,
+}: DomainsTableProps) => {
   const filteredData = useMemo(() => {
     const value = searchValue.trim().toLowerCase()
 
@@ -18,7 +26,8 @@ const DomainsTable = ({ data, searchValue, onRowChange }: DomainsTableProps) => 
       return (
         item.businessDomain.toLowerCase().includes(value) ||
         item.code.toLowerCase().includes(value) ||
-        String(item.sortingIndex).includes(value)
+        String(item.sortingIndex).includes(value) ||
+        item.status.toLowerCase().includes(value)
       )
     })
   }, [data, searchValue])
@@ -34,8 +43,15 @@ const DomainsTable = ({ data, searchValue, onRowChange }: DomainsTableProps) => 
             onChange={(rowId, field, value) =>
               onRowChange?.(rowId, field as EditableDomainField, value)
             }
+            onEdit={onEditRow}
+            onArchive={onArchiveRow}
           />
         ),
+      },
+      {
+        accessorKey: 'status',
+        header: 'STATUS',
+        cell: ({ row }) => <DomainStatusCell row={row.original} />,
       },
       {
         accessorKey: 'code',
@@ -46,6 +62,7 @@ const DomainsTable = ({ data, searchValue, onRowChange }: DomainsTableProps) => 
             onChange={(rowId, field, value) =>
               onRowChange?.(rowId, field as EditableDomainField, value)
             }
+            onEdit={onEditRow}
           />
         ),
       },
@@ -58,21 +75,23 @@ const DomainsTable = ({ data, searchValue, onRowChange }: DomainsTableProps) => 
             onChange={(rowId, field, value) =>
               onRowChange?.(rowId, field as EditableDomainField, value)
             }
+            onEdit={onEditRow}
           />
         ),
       },
     ],
-    [onRowChange],
+    [onArchiveRow, onEditRow, onRowChange],
   )
 
   return (
     <DataTable<DomainRow>
       data={filteredData}
       columns={columns}
-      density="compact"
+      density="comfortable"
       enableColumnDnd={false}
-      enableSorting
+      enableSorting={!isEditingRow}
       getRowId={(row) => row.id}
+      tableMeta={{ rowDividers: true }}
     />
   )
 }

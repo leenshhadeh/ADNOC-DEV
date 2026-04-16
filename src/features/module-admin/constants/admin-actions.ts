@@ -91,3 +91,10 @@ export const EMAIL_NOTIFICATION_ACTIONS: ToolbarAction[] = [
     onClick: () => console.log('Export'),
   },
 ]
+
+export const tabActions = {
+  'user-permissions': USER_PERMISSONS_ACTIONS,
+  'group-companies': GROUP_COMPANIES_ACTIONS,
+  domains: DOMAINS_ACTIONS,
+  'rate-cards': RATE_CARDS_ACTIONS,
+}
