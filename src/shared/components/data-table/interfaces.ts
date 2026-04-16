@@ -41,6 +41,8 @@ export interface DataTableRowProps<TData> {
   rowDividers?: boolean
   getRowActions?: (row: Row<TData>) => RowAction<TData>[]
   isHighlighted?: boolean
+  /** When provided, the row actions dropdown is only shown inside cells whose column id is in this list. */
+  actionColumnIds?: string[]
 }
 
 export interface DataTableProps<TData> {
@@ -68,4 +70,6 @@ export interface DataTableProps<TData> {
   ) => string /** Arbitrary metadata forwarded to table.options.meta (e.g. { isBulkMode }). */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tableMeta?: Record<string, any>
+  /** When provided, the row actions dropdown only appears in cells whose column id is in this list. */
+  actionColumnIds?: string[]
 }

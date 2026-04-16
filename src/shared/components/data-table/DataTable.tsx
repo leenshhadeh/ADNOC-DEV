@@ -62,6 +62,7 @@ const DataTable = <TData,>({
   onRowSelectionChange,
   getRowId,
   tableMeta,
+  actionColumnIds,
 }: DataTableProps<TData>) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -172,6 +173,7 @@ const DataTable = <TData,>({
                     rowDividers={!!tableMeta?.rowDividers}
                     getRowActions={getRowActions}
                     isHighlighted={row.id === (tableMeta?.highlightedRowId ?? null)}
+                    actionColumnIds={actionColumnIds}
                   />
                 ))
             ) : (

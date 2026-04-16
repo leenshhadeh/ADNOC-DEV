@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { Loader2 } from 'lucide-react'
 import RichTextEditor from '@/shared/components/ui/RichTextEditor'
+import { useSaveTargetRecommendations } from '../../../hooks/useSaveTargetRecommendations'
 import type { AutomationProcessDetail } from '../../../types'
 
 interface TargetRecommendationsTabProps {
@@ -72,6 +74,18 @@ const TargetRecommendationsTab = ({ process }: TargetRecommendationsTabProps) =>
   const [toBeAIPowered, setToBeAIPowered] = useState(process.toBeAIPowered)
   const [toBeAIPoweredComments, setToBeAIPoweredComments] = useState(process.toBeAIPoweredComments)
 
+  const { mutate, isPending } = useSaveTargetRecommendations()
+
+  const handleSave = () => {
+    mutate({
+      processId: process.id,
+      targetAutomationLevelPercent: targetLevel,
+      smeFeedback,
+      toBeAIPowered,
+      toBeAIPoweredComments,
+    })
+  }
+
   return (
     <div className="flex flex-col gap-6">
       {/* ── Row 1: "North Star" Target Automation + Target Automation Level ── */}
@@ -105,6 +119,19 @@ const TargetRecommendationsTab = ({ process }: TargetRecommendationsTabProps) =>
           value={toBeAIPoweredComments}
           onChange={setToBeAIPoweredComments}
         />
+      </div>
+
+      {/* ── Save button ───────────────────────────────────────────────────── */}
+      <div className="flex justify-end">
+        <button
+          type="button"
+          disabled={isPending}
+          onClick={handleSave}
+          className="flex items-center gap-2 rounded-2xl bg-[#0047BA] px-6 py-2.5 text-sm font-medium text-white hover:bg-[#003494] disabled:opacity-60"
+        >
+          {isPending && <Loader2 className="size-4 animate-spin" />}
+          Save
+        </button>
       </div>
     </div>
   )

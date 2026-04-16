@@ -22,6 +22,7 @@ const DataTableRow = <TData,>({
   rowDividers = false,
   getRowActions,
   isHighlighted = false,
+  actionColumnIds,
 }: DataTableRowProps<TData>) => {
   const [expanded, setExpanded] = useState(false)
 
@@ -51,7 +52,7 @@ const DataTableRow = <TData,>({
             isFirstCell={index === 0}
             density={density}
             rowDividers={rowDividers}
-            actions={actions}
+            actions={!actionColumnIds || actionColumnIds.includes(cell.column.id) ? actions : []}
             leading={
               index === 0 && hasSubRows ? (
                 <Button
@@ -83,6 +84,7 @@ const DataTableRow = <TData,>({
               density={density}
               rowDividers={false}
               getRowActions={getRowActions}
+              actionColumnIds={actionColumnIds}
             />
           ))
         : null}

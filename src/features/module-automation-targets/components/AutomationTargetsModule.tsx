@@ -19,6 +19,26 @@ import SMEFeedbackSheet from './sidePanels/SMEFeedbackSheet'
 import SubmitForApprovalModal from './modals/SubmitForApprovalModal'
 import type { AutomationTargetRow } from '../types'
 
+/** Inserts a synthetic L3-group header row before each new L3 group. */
+function generateDisplayRows(rows: AutomationTargetRow[]): AutomationTargetRow[] {
+  const result: AutomationTargetRow[] = []
+  let lastL3Code = ''
+  for (const row of rows) {
+    if (row.level3Code !== lastL3Code) {
+      result.push({
+        ...row,
+        id: `${row.id}-l3h`,
+        level4: '',
+        level4Code: '',
+        isL3GroupHeader: true,
+      })
+      lastL3Code = row.level3Code
+    }
+    result.push(row)
+  }
+  return result
+}
+
 const AutomationTargetsModule = () => {
   const [activeTab, setActiveTab] = useState('processes')
   const [search, setSearch] = useState('')
@@ -50,6 +70,8 @@ const AutomationTargetsModule = () => {
         row.groupCompany.toLowerCase().includes(q),
     )
   }, [targets, search])
+
+  const displayData = useMemo(() => generateDisplayRows(filteredData), [filteredData])
 
   const handleSmeFeedbackClick = (row: AutomationTargetRow) => {
     setSmeTarget(row)
@@ -119,7 +141,7 @@ const AutomationTargetsModule = () => {
             <Loader2 className="text-muted-foreground size-6 animate-spin" />
           </div>
         ) : activeTab === 'processes' ? (
-          <AutomationTargetsTable data={filteredData} onSmeFeedbackClick={handleSmeFeedbackClick} />
+          <AutomationTargetsTable data={displayData} onSmeFeedbackClick={handleSmeFeedbackClick} />
         ) : activeTab === 'myTasks' ? (
           <div className="flex h-40 items-center justify-center">
             <p className="text-muted-foreground text-sm">My Tasks — coming soon</p>

@@ -90,9 +90,11 @@ const AutomationProcessDetailsPage = () => {
               {activeTab === 'AutomationParameters' && <AutomationParametersTab process={data} />}
               {activeTab === 'ManualParameters' && <ManualParametersTab process={data} />}
               {activeTab === 'TargetRecommendations' && <TargetRecommendationsTab process={data} />}
-              {activeTab === 'Opportunities' && <OpportunitiesTab process={data} />}
-              {activeTab === 'RecordedChanges' && <RecordedChangesTab process={data} />}
-              {activeTab === 'Comments' && <CommentsTab comments={data.comments} />}
+              {activeTab === 'Opportunities' && <OpportunitiesTab processId={processId ?? ''} />}
+              {activeTab === 'RecordedChanges' && (
+                <RecordedChangesTab processId={processId ?? ''} />
+              )}
+              {activeTab === 'Comments' && <CommentsTab processId={processId ?? ''} />}
             </div>
           </div>
         </>

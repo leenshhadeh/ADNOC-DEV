@@ -1,25 +1,15 @@
 import { useState } from 'react'
-import { Badge } from '@/shared/components/ui/badge'
-import type { AutomationProcessDetail, OpportunityItem } from '../../../types'
+import { Lock, Loader2 } from 'lucide-react'
+import type { OpportunityItem } from '../../../types'
+import { useGetOpportunities } from '../../../hooks/useGetOpportunities'
 import OpportunityDetailsSheet from '../../sidePanels/OpportunityDetailsSheet'
 
 interface OpportunitiesTabProps {
-  process: AutomationProcessDetail
+  processId: string
 }
 
-const priorityStyles: Record<string, string> = {
-  High: 'bg-red-100 text-red-700',
-  Medium: 'bg-amber-100 text-amber-700',
-  Low: 'bg-green-100 text-green-700',
-}
-
-const statusStyles: Record<string, string> = {
-  'In Progress': 'bg-blue-100 text-blue-700',
-  Planned: 'bg-violet-100 text-violet-700',
-  Evaluation: 'bg-amber-100 text-amber-700',
-}
-
-const OpportunitiesTab = ({ process }: OpportunitiesTabProps) => {
+const OpportunitiesTab = ({ processId }: OpportunitiesTabProps) => {
+  const { data: opportunities = [], isLoading } = useGetOpportunities(processId)
   const [selectedOpp, setSelectedOpp] = useState<OpportunityItem | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
 
@@ -28,64 +18,67 @@ const OpportunitiesTab = ({ process }: OpportunitiesTabProps) => {
     setSheetOpen(true)
   }
 
-  return (
-    <div>
-      <h3 className="text-foreground mb-4 text-lg font-semibold">Opportunities</h3>
+  if (isLoading) {
+    return (
+      <div className="flex h-40 items-center justify-center">
+        <Loader2 className="text-muted-foreground size-6 animate-spin" />
+      </div>
+    )
+  }
 
-      {process.opportunities.length === 0 ? (
-        <p className="text-muted-foreground text-sm">No opportunities identified yet.</p>
+  return (
+    <div className="flex flex-col gap-4">
+      {opportunities.length === 0 ? (
+        <p className="text-sm text-[#889096]">No opportunities identified yet.</p>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-[#DFE3E6]">
+        <div className="overflow-hidden rounded-md border border-[#DFE3E6]">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#DFE3E6] bg-[#F1F3F5]">
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#687076] uppercase">
-                  Title
+              <tr className="border-b border-[#DFE3E6]">
+                <th className="min-w-[260px] border-r border-[#DFE3E6] px-4 py-2 text-left text-xs font-normal text-[#687076] uppercase">
+                  Opportunity
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#687076] uppercase">
-                  Type
+                <th className="border-r border-[#DFE3E6] px-4 py-2 text-left text-xs font-normal text-[#687076] uppercase">
+                  Description
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#687076] uppercase">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#687076] uppercase">
-                  Priority
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#687076] uppercase">
-                  Estimated Savings
+                <th className="min-w-[160px] px-4 py-2 text-left text-xs font-normal text-[#687076] uppercase">
+                  Domain
                 </th>
               </tr>
             </thead>
             <tbody>
-              {process.opportunities.map((opp) => (
+              {opportunities.map((opp) => (
                 <tr
                   key={opp.id}
                   className="cursor-pointer border-b border-[#DFE3E6] transition-colors last:border-b-0 hover:bg-[#F8F9FA]"
                   onClick={() => handleRowClick(opp)}
                 >
-                  <td className="text-foreground px-4 py-3 font-medium">{opp.title}</td>
-                  <td className="text-muted-foreground px-4 py-3">{opp.type}</td>
-                  <td className="px-4 py-3">
-                    <Badge
-                      className={`rounded-full border-transparent px-2.5 text-xs font-normal ${statusStyles[opp.status] ?? 'bg-gray-100 text-gray-700'}`}
-                    >
-                      {opp.status}
-                    </Badge>
+                  <td className="border-r border-[#DFE3E6] px-4 py-2 align-top">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-base font-medium text-[#151718]">{opp.title}</span>
+                      <span className="text-sm font-light text-[#687076]">{opp.code}</span>
+                    </div>
                   </td>
-                  <td className="px-4 py-3">
-                    <Badge
-                      className={`rounded-full border-transparent px-2.5 text-xs font-normal ${priorityStyles[opp.priority] ?? 'bg-gray-100 text-gray-700'}`}
-                    >
-                      {opp.priority}
-                    </Badge>
+                  <td className="border-r border-[#DFE3E6] px-4 py-2 align-top">
+                    <span className="text-sm font-normal text-[#687076]">{opp.description}</span>
                   </td>
-                  <td className="text-foreground px-4 py-3">{opp.estimatedSavings}</td>
+                  <td className="px-4 py-2 align-top">
+                    <span className="text-sm font-normal text-[#687076]">{opp.domain}</span>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
+
+      {/* ── Read-only badge ───────────────────────────────────────────── */}
+      <div className="flex justify-start">
+        <span className="inline-flex items-center gap-1 rounded-full bg-[#ECEDED] px-2 py-1.5 text-xs font-normal text-[#7B8899]">
+          <Lock className="size-3" />
+          Read-only
+        </span>
+      </div>
 
       {/* ── Opportunity detail side-panel ──────────────────────────────── */}
       <OpportunityDetailsSheet

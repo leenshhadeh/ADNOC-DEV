@@ -4,6 +4,8 @@ import type { CatalogStatus } from '@/shared/components/cells/StatusBadgeCell'
 
 export interface AutomationTargetRow {
   id: string
+  /** True for the synthetic L3 header row inserted between each L3 group. */
+  isL3GroupHeader?: boolean
   domain: string
   level1: string
   level1Code: string
@@ -16,6 +18,7 @@ export interface AutomationTargetRow {
   groupCompany: string
   site: string
   status: CatalogStatus
+  processDescription: string
   /** Rich-text HTML string captured via the SME Feedback sheet */
   smeFeedback: string
   // ── Automation parameters ────────────────────────────────────────────────
@@ -48,6 +51,10 @@ export interface AutomationTargetRow {
   toBeAIPoweredComments: string
   rateCardAED: string
   costOfManualEffortAED: string
+  // ── Submission / publish metadata ────────────────────────────────────────
+  publishedDate: string
+  submittedBy: string
+  submittedDate: string
 }
 
 // ── Process detail types (returned by getProcessDetails API) ──────────────────
@@ -128,12 +135,14 @@ export interface OrgDataMappingRow {
 
 export interface OpportunityItem {
   id: string
+  code: string
   title: string
+  description: string
+  domain: string
   type: string
   status: string
   priority: string
   estimatedSavings: string
-  description: string
 }
 
 // ── Recorded change ───────────────────────────────────────────────────────────
@@ -155,4 +164,6 @@ export interface CommentEntry {
   role: string
   text: string
   timestamp: string
+  statusLabel?: string
+  actionNote?: string
 }

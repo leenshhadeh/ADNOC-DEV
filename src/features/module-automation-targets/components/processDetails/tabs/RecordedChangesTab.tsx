@@ -1,16 +1,26 @@
-import { ArrowRight } from 'lucide-react'
-import type { AutomationProcessDetail } from '../../../types'
+import { ArrowRight, Loader2 } from 'lucide-react'
+import { useGetRecordedChanges } from '../../../hooks/useGetRecordedChanges'
 
 interface RecordedChangesTabProps {
-  process: AutomationProcessDetail
+  processId: string
 }
 
-const RecordedChangesTab = ({ process }: RecordedChangesTabProps) => {
+const RecordedChangesTab = ({ processId }: RecordedChangesTabProps) => {
+  const { data: recordedChanges = [], isLoading } = useGetRecordedChanges(processId)
+
+  if (isLoading) {
+    return (
+      <div className="flex h-40 items-center justify-center">
+        <Loader2 className="text-muted-foreground size-6 animate-spin" />
+      </div>
+    )
+  }
+
   return (
     <div>
       <h3 className="text-foreground mb-4 text-lg font-semibold">Recorded Changes</h3>
 
-      {process.recordedChanges.length === 0 ? (
+      {recordedChanges.length === 0 ? (
         <p className="text-muted-foreground text-sm">No recorded changes yet.</p>
       ) : (
         <div className="overflow-hidden rounded-xl border border-[#DFE3E6]">
@@ -36,7 +46,7 @@ const RecordedChangesTab = ({ process }: RecordedChangesTabProps) => {
               </tr>
             </thead>
             <tbody>
-              {process.recordedChanges.map((change) => (
+              {recordedChanges.map((change) => (
                 <tr key={change.id} className="border-b border-[#DFE3E6] last:border-b-0">
                   <td className="text-foreground px-4 py-3 font-medium">{change.fieldName}</td>
                   <td className="px-4 py-3 text-[#687076]">{change.oldValue}</td>
