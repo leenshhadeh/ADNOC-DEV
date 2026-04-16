@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Check,
   Download,
@@ -74,11 +74,20 @@ import {
   useBulkRequestEndorsement,
 } from '../hooks/useTaskActions'
 
+import {
+  useProcessFilters,
+  applyProcessFilters,
+} from '@features/module-assessment-data/hooks/useProcessFilters'
+import { useProcessFilterDefinitions } from '../hooks/useProcessFilterDefinitions'
+import ProcessFilterSheet from '@/features/module-process-catalog/components/ProcessFilterSheet'
+import { DOMAINS_DATA } from '@/features/module-process-catalog/constants/domains-data'
+
 type ActiveModal = 'edit' | 'comment' | 'copy' | 'review' | null
 type TaskModal = 'approve' | 'return' | 'reject' | 'request-endorsement' | null
 
 const AssessmentDataModule = () => {
   const [activeTab, setActiveTab] = useState('processes')
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [isBulkMode, setIsBulkMode] = useState(false)
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
@@ -119,6 +128,13 @@ const AssessmentDataModule = () => {
   const { isExporting: isExportingTasks, exportTasks } = useMyTasksExport()
 
   const tableData = useMemo(() => flattenAssessmentData(ASSESSMENT_DATA), [])
+  // Global filters:-------------------------
+  const globalFilterIds = ['domain','status']
+  const filterDefs = useProcessFilterDefinitions(DOMAINS_DATA, tableData)
+  const { pending, applied, activePerSection, toggle, apply, reset } =
+    useProcessFilters(globalFilterIds)
+  const filteredData = useMemo(() => applyProcessFilters(tableData, applied), [tableData, applied])
+  
 
   const handleExport = async () => {
     if (activeTab === 'my-tasks') {
@@ -302,7 +318,8 @@ const AssessmentDataModule = () => {
                     ? ASSESSMENT_BULK_ACTIONS
                     : defaultActions
             }
-            showFilter={false}
+            showFilter={true}
+            onFilterClick={() => setIsFilterOpen(true)}
           />
         </div>
 
@@ -360,9 +377,10 @@ const AssessmentDataModule = () => {
               <ProcessDataReport />
             ) : (
               <ProcessDataTable
+                data={filteredData}
                 isBulkMode={isBulkMode}
                 rowSelection={rowSelection}
-                onRowSelectionChange={(updater) =>
+                onRowSelectionChange={(updater: any) =>
                   setRowSelection((prev) =>
                     typeof updater === 'function' ? updater(prev) : updater,
                   )
@@ -636,6 +654,17 @@ const AssessmentDataModule = () => {
         open={showTaskActionToast}
         message={taskActionMessage}
         onClose={() => setShowTaskActionToast(false)}
+      />
+
+      <ProcessFilterSheet
+        open={isFilterOpen}
+        onOpenChange={setIsFilterOpen}
+        filters={filterDefs}
+        pending={pending}
+        activePerSection={activePerSection}
+        onToggle={toggle}
+        onApply={apply}
+        onReset={reset}
       />
     </div>
   )
