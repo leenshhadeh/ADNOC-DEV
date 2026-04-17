@@ -17,7 +17,12 @@ const RecordedChangesTab = ({ processId }: RecordedChangesTabProps) => {
   }
 
   return (
-    <div className="border-border bg-card relative rounded-3xl p-6 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]">
+    <div className="border-border bg-card relative rounded-3xl p-6">
+      {/* Read-only badge */}
+      <div className="bg-muted absolute -top-8 right-4 flex items-center gap-1.5 rounded-md px-2.5 py-1">
+        <Lock className="text-muted-foreground size-3" />
+        <span className="text-muted-foreground text-xs">Read-only</span>
+      </div>
       {recordedChanges.length === 0 ? (
         <p className="text-muted-foreground py-8 text-center text-sm">No recorded changes yet.</p>
       ) : (

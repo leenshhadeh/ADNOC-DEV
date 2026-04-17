@@ -1,4 +1,5 @@
 import type { AutomationProcessDetail } from '../../../types'
+import { Lock } from 'lucide-react'
 
 interface GeneralInfoTabProps {
   process: AutomationProcessDetail
@@ -101,6 +102,11 @@ const ToggleItem = ({
 const GeneralInfoTab = ({ process }: GeneralInfoTabProps) => {
   return (
     <div className="flex flex-col gap-6">
+      {/* Read-only badge */}
+      <div className="bg-muted absolute -top-2 right-4 flex items-center gap-1.5 rounded-md px-2.5 py-1">
+        <Lock className="text-muted-foreground size-3" />
+        <span className="text-muted-foreground text-xs">Read-only</span>
+      </div>
       {/* ── Row 1: Process levels + toggles (horizontal definition list) ── */}
       <div className="flex flex-wrap items-center gap-x-12 gap-y-4">
         <DefinitionItem label="Process Level 1" showSeparator={false}>

@@ -109,6 +109,11 @@ const ToggleWithField = ({
 const AutomationParametersTab = ({ process }: AutomationParametersTabProps) => {
   return (
     <div className="flex flex-col gap-6">
+      {/* Read-only badge */}
+      <div className="bg-muted absolute -top-2 right-4 flex items-center gap-1.5 rounded-md px-2.5 py-1">
+        <Lock className="text-muted-foreground size-3" />
+        <span className="text-muted-foreground text-xs">Read-only</span>
+      </div>
       {/* ── Row 1: Process Criticality, Number of People, Scale ───────── */}
       <div className="flex flex-wrap gap-4">
         <DropdownField label="Process Criticality" value={process.processCriticality} />
@@ -157,14 +162,6 @@ const AutomationParametersTab = ({ process }: AutomationParametersTabProps) => {
           childLabel="Autonomous Use-case Description"
           childValue={process.autonomousUseCaseDescription}
         />
-      </div>
-
-      {/* ── Read-only badge ───────────────────────────────────────────── */}
-      <div className="flex justify-start">
-        <span className="inline-flex items-center gap-1 rounded-full bg-[#ECEDED] px-2 py-1.5 text-xs font-normal text-[#7B8899]">
-          <Lock className="size-3" />
-          Read-only
-        </span>
       </div>
     </div>
   )
