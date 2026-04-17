@@ -166,6 +166,41 @@ export const getRecordedChanges = async (processId: string): Promise<RecordedCha
   return MOCK_RECORDED_CHANGES
 }
 
+// ── Validate process ──────────────────────────────────────────────────────────
+
+export const validateProcess = async (
+  processId: string,
+): Promise<{ valid: boolean; errors: string[] }> => {
+  await delay(SIMULATED_LATENCY_MS)
+  void processId
+  return { valid: true, errors: [] }
+}
+
+// ── Submit process ────────────────────────────────────────────────────────────
+
+export const submitProcess = async (processId: string): Promise<{ success: boolean }> => {
+  await delay(SIMULATED_LATENCY_MS)
+  void processId
+  return { success: true }
+}
+
+// ── Discard draft ─────────────────────────────────────────────────────────────
+
+export const discardDraft = async (processId: string): Promise<{ success: boolean }> => {
+  await delay(SIMULATED_LATENCY_MS)
+  const row = AUTOMATION_TARGETS_DATA.find((r) => r.id === processId)
+  if (row) row.status = 'Draft'
+  return { success: true }
+}
+
+// ── Return for revision (DFP only) ────────────────────────────────────────────
+
+export const returnForRevision = async (processId: string): Promise<{ success: boolean }> => {
+  await delay(SIMULATED_LATENCY_MS)
+  void processId
+  return { success: true }
+}
+
 // ── Target recommendations ────────────────────────────────────────────────────
 
 export const saveTargetRecommendations = async (

@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import RichTextEditor from '@/shared/components/ui/RichTextEditor'
 import { useSaveTargetRecommendations } from '../../../hooks/useSaveTargetRecommendations'
+import { useProcessDetailActions } from '../../../context/ProcessDetailActionsContext'
+import { targetRecommendationsSchema } from '../../../schemas/targetRecommendationsSchema'
 import type { AutomationProcessDetail } from '../../../types'
 
 interface TargetRecommendationsTabProps {
@@ -73,10 +75,23 @@ const TargetRecommendationsTab = ({ process }: TargetRecommendationsTabProps) =>
   const [smeFeedback, setSmeFeedback] = useState(process.smeFeedback)
   const [toBeAIPowered, setToBeAIPowered] = useState(process.toBeAIPowered)
   const [toBeAIPoweredComments, setToBeAIPoweredComments] = useState(process.toBeAIPoweredComments)
+  const [validationErrors, setValidationErrors] = useState<string[]>([])
 
   const { mutate, isPending } = useSaveTargetRecommendations()
+  const { registerSaveHandler } = useProcessDetailActions()
 
   const handleSave = () => {
+    setValidationErrors([])
+    const result = targetRecommendationsSchema.safeParse({
+      targetAutomationLevelPercent: targetLevel,
+      toBeAIPowered,
+      toBeAIPoweredComments,
+      smeFeedback,
+    })
+    if (!result.success) {
+      setValidationErrors(result.error.errors.map((e) => e.message))
+      return
+    }
     mutate({
       processId: process.id,
       targetAutomationLevelPercent: targetLevel,
@@ -86,8 +101,25 @@ const TargetRecommendationsTab = ({ process }: TargetRecommendationsTabProps) =>
     })
   }
 
+  useEffect(() => {
+    registerSaveHandler(handleSave)
+    return () => registerSaveHandler(null)
+  }, [targetLevel, smeFeedback, toBeAIPowered, toBeAIPoweredComments, registerSaveHandler])
+
   return (
     <div className="flex flex-col gap-6">
+      {validationErrors.length > 0 && (
+        <div className="border-destructive/30 bg-destructive/10 rounded-xl border px-4 py-3">
+          <ul className="list-disc pl-4">
+            {validationErrors.map((err) => (
+              <li key={err} className="text-destructive text-sm">
+                {err}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* ── Row 1: "North Star" Target Automation + Target Automation Level ── */}
       <div className="flex flex-wrap gap-4">
         <ReadOnlyDropdown
@@ -121,18 +153,12 @@ const TargetRecommendationsTab = ({ process }: TargetRecommendationsTabProps) =>
         />
       </div>
 
-      {/* ── Save button ───────────────────────────────────────────────────── */}
-      <div className="flex justify-end">
-        <button
-          type="button"
-          disabled={isPending}
-          onClick={handleSave}
-          className="flex items-center gap-2 rounded-2xl bg-[#0047BA] px-6 py-2.5 text-sm font-medium text-white hover:bg-[#003494] disabled:opacity-60"
-        >
-          {isPending && <Loader2 className="size-4 animate-spin" />}
-          Save
-        </button>
-      </div>
+      {isPending && (
+        <div className="flex items-center gap-2 text-sm text-[#687076]">
+          <Loader2 className="size-4 animate-spin" />
+          Saving...
+        </div>
+      )}
     </div>
   )
 }

@@ -86,7 +86,8 @@ export const automationTargetColumns = [
     header: 'Level 3',
     size: 240,
     cell: ({ row }) => {
-      if (!row.original.isL3GroupHeader) return null
+      // Show for synthetic L3 group headers AND for leaf L3 rows (no level4Code)
+      if (!row.original.isL3GroupHeader && !!row.original.level4Code) return null
       return (
         <div>
           <p className="text-foreground text-sm font-medium">{row.original.level3}</p>
@@ -100,7 +101,8 @@ export const automationTargetColumns = [
     header: 'Level 4',
     size: 240,
     cell: ({ row }) => {
-      if (row.original.isL3GroupHeader) return null
+      // Hide for both isL3GroupHeader rows and leaf L3 rows (no level4Code)
+      if (row.original.isL3GroupHeader || !row.original.level4Code) return null
       return (
         <div>
           <p className="text-foreground text-sm font-medium">{row.original.level4}</p>
@@ -114,7 +116,9 @@ export const automationTargetColumns = [
     header: 'Group Company',
     size: 160,
     cell: ({ row }) => {
-      if (row.original.isL3GroupHeader) return null
+      // L4 row: keep GC empty (site is shown instead)
+      if (!!row.original.level4Code) return null
+      // L3 group header (has L4 children) and leaf L3: show GC
       return <span className="text-sm">{row.original.groupCompany}</span>
     },
   }),
@@ -123,7 +127,8 @@ export const automationTargetColumns = [
     header: 'Site',
     size: 140,
     cell: ({ row }) => {
-      if (row.original.isL3GroupHeader) return null
+      // L3 group header or leaf L3: no site; L4: show site
+      if (row.original.isL3GroupHeader || !row.original.level4Code) return null
       return <span className="text-sm">{row.original.site}</span>
     },
   }),
@@ -153,6 +158,15 @@ export const automationTargetColumns = [
     cell: ({ row }) => {
       if (row.original.isL3GroupHeader) return null
       return <span className="text-sm">{row.original.automationMaturityLevel}</span>
+    },
+  }),
+  col.accessor('automationLevel', {
+    id: 'automationLevel',
+    header: 'Automation Level (%)',
+    size: 180,
+    cell: ({ row }) => {
+      if (row.original.isL3GroupHeader) return null
+      return <span className="text-sm">{row.original.automationLevel || '—'}</span>
     },
   }),
   col.display({
