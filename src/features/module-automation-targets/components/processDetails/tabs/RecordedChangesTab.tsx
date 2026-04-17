@@ -1,4 +1,4 @@
-import { ArrowRight, Loader2 } from 'lucide-react'
+import { ArrowDown, Lock, Loader2 } from 'lucide-react'
 import { useGetRecordedChanges } from '../../../hooks/useGetRecordedChanges'
 
 interface RecordedChangesTabProps {
@@ -17,45 +17,55 @@ const RecordedChangesTab = ({ processId }: RecordedChangesTabProps) => {
   }
 
   return (
-    <div>
-      <h3 className="text-foreground mb-4 text-lg font-semibold">Recorded Changes</h3>
-
+    <div className="border-border bg-card relative rounded-3xl p-6 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]">
       {recordedChanges.length === 0 ? (
-        <p className="text-muted-foreground text-sm">No recorded changes yet.</p>
+        <p className="text-muted-foreground py-8 text-center text-sm">No recorded changes yet.</p>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-[#DFE3E6]">
-          <table className="w-full text-sm">
+        <div className="overflow-auto">
+          <table className="w-full">
+            {/* Header */}
             <thead>
-              <tr className="border-b border-[#DFE3E6] bg-[#F1F3F5]">
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#687076] uppercase">
-                  Field
+              <tr className="border-border border-b">
+                <th className="text-muted-foreground px-4 py-4 text-left text-xs font-normal tracking-wider uppercase">
+                  Field name
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#687076] uppercase">
+                <th className="text-muted-foreground px-4 py-4 text-left text-xs font-normal tracking-wider uppercase">
+                  Change Type
+                </th>
+                <th className="text-muted-foreground px-4 py-4 text-left text-xs font-normal tracking-wider uppercase">
                   Old Value
                 </th>
-                <th className="w-8 px-2 py-3" />
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#687076] uppercase">
+                <th className="text-muted-foreground px-4 py-4 text-left text-xs font-normal tracking-wider uppercase">
                   New Value
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#687076] uppercase">
-                  Changed By
+                <th className="text-muted-foreground px-4 py-4 text-left text-xs font-normal tracking-wider uppercase">
+                  Modified by
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#687076] uppercase">
-                  Changed On
+                <th className="text-muted-foreground px-4 py-4 text-left text-xs font-normal tracking-wider uppercase">
+                  <span className="inline-flex items-center gap-1">
+                    Modified on
+                    <ArrowDown className="size-3.5" />
+                  </span>
                 </th>
               </tr>
             </thead>
+
+            {/* Body */}
             <tbody>
               {recordedChanges.map((change) => (
-                <tr key={change.id} className="border-b border-[#DFE3E6] last:border-b-0">
-                  <td className="text-foreground px-4 py-3 font-medium">{change.fieldName}</td>
-                  <td className="px-4 py-3 text-[#687076]">{change.oldValue}</td>
-                  <td className="px-2 py-3">
-                    <ArrowRight className="size-3.5 text-[#687076]" />
+                <tr key={change.id} className="border-border border-b last:border-b-0">
+                  <td className="text-foreground px-4 py-4 text-base font-medium">
+                    {change.fieldName}
                   </td>
-                  <td className="text-foreground px-4 py-3">{change.newValue}</td>
-                  <td className="text-muted-foreground px-4 py-3">{change.changedBy}</td>
-                  <td className="text-muted-foreground px-4 py-3">{change.changedOn}</td>
+                  <td className="text-muted-foreground px-4 py-4 text-sm">{change.changeType}</td>
+                  <td className="text-muted-foreground px-4 py-4 text-sm">{change.oldValue}</td>
+                  <td className="text-muted-foreground px-4 py-4 text-sm">{change.newValue}</td>
+                  <td className="px-4 py-4">
+                    <span className="border-border bg-accent text-muted-foreground inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium">
+                      {change.changedBy}
+                    </span>
+                  </td>
+                  <td className="text-muted-foreground px-4 py-4 text-sm">{change.changedOn}</td>
                 </tr>
               ))}
             </tbody>

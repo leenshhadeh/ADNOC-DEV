@@ -133,6 +133,13 @@ export interface OrgDataMappingRow {
 
 // ── Opportunity ───────────────────────────────────────────────────────────────
 
+export interface WorkflowStep {
+  id: string
+  title: string
+  status: string
+  progress?: string
+}
+
 export interface OpportunityItem {
   id: string
   code: string
@@ -143,6 +150,10 @@ export interface OpportunityItem {
   status: string
   priority: string
   estimatedSavings: string
+  stageCurrent: number
+  stageTotal: number
+  stageStatus: string
+  workflowSteps: WorkflowStep[]
 }
 
 // ── Recorded change ───────────────────────────────────────────────────────────
@@ -150,6 +161,7 @@ export interface OpportunityItem {
 export interface RecordedChange {
   id: string
   fieldName: string
+  changeType: string
   oldValue: string
   newValue: string
   changedBy: string

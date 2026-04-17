@@ -13,11 +13,11 @@ const CopyText = ({ text }: { text: string }) => {
   }
 
   return (
-    <div className="text-primary flex items-center gap-1">
+    <div className="text-sidebar-primary flex items-center gap-1">
       <span>{text}</span>
 
       <button onClick={handleCopy} className="rounded p-1 transition hover:bg-gray-100">
-        {copied ? <Check className="text-primary h-4 w-4" /> : <img src={copyIcon} />}
+        {copied ? <Check className="text-sidebar-primary h-4 w-4" /> : <img src={copyIcon} />}
       </button>
     </div>
   )

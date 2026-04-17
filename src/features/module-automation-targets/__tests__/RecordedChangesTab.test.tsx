@@ -9,18 +9,20 @@ vi.mock('../hooks/useGetRecordedChanges', () => ({
       {
         id: 'rc-001',
         fieldName: 'Automation Level (%)',
-        oldValue: '25%',
-        newValue: '35%',
-        changedBy: 'Ahmed Al Mazrouei',
-        changedOn: '12 Apr 2026',
+        changeType: 'Update',
+        oldValue: '50%',
+        newValue: '85%',
+        changedBy: 'Mohammed Al Hajeri',
+        changedOn: '05 Apr 2024',
       },
       {
         id: 'rc-002',
-        fieldName: 'North Star Target',
-        oldValue: 'Partially Automated',
-        newValue: 'Fully Automated',
-        changedBy: 'Sara Al Hammadi',
-        changedOn: '10 Apr 2026',
+        fieldName: 'Manual Tasks (%)',
+        changeType: 'Update',
+        oldValue: '70%',
+        newValue: '50%',
+        changedBy: 'Dania Al Farsi',
+        changedOn: '04 Apr 2024',
       },
     ],
     isLoading: false,
@@ -34,51 +36,50 @@ import RecordedChangesTab from '../components/processDetails/tabs/RecordedChange
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe('RecordedChangesTab', () => {
-  it('renders the section heading', () => {
+  it('renders the read-only badge', () => {
     render(<RecordedChangesTab processId="at-001" />)
 
-    expect(screen.getByText('Recorded Changes')).toBeInTheDocument()
+    expect(screen.getByText('Read-only')).toBeInTheDocument()
   })
 
   it('renders the table column headers', () => {
     render(<RecordedChangesTab processId="at-001" />)
 
-    expect(screen.getByText('Field')).toBeInTheDocument()
+    expect(screen.getByText('Field name')).toBeInTheDocument()
+    expect(screen.getByText('Change Type')).toBeInTheDocument()
     expect(screen.getByText('Old Value')).toBeInTheDocument()
     expect(screen.getByText('New Value')).toBeInTheDocument()
-    expect(screen.getByText('Changed By')).toBeInTheDocument()
-    expect(screen.getByText('Changed On')).toBeInTheDocument()
+    expect(screen.getByText('Modified by')).toBeInTheDocument()
+    expect(screen.getByText('Modified on')).toBeInTheDocument()
   })
 
   it('renders all change rows', () => {
     render(<RecordedChangesTab processId="at-001" />)
 
     expect(screen.getByText('Automation Level (%)')).toBeInTheDocument()
-    expect(screen.getByText('North Star Target')).toBeInTheDocument()
+    expect(screen.getByText('Manual Tasks (%)')).toBeInTheDocument()
   })
 
-  it('renders old value → new value for each change', () => {
+  it('renders old value and new value for each change', () => {
     render(<RecordedChangesTab processId="at-001" />)
 
-    expect(screen.getByText('25%')).toBeInTheDocument()
-    expect(screen.getByText('35%')).toBeInTheDocument()
-    expect(screen.getByText('Partially Automated')).toBeInTheDocument()
-    expect(screen.getByText('Fully Automated')).toBeInTheDocument()
+    expect(screen.getAllByText('50%')).toHaveLength(2)
+    expect(screen.getByText('85%')).toBeInTheDocument()
+    expect(screen.getByText('70%')).toBeInTheDocument()
   })
 
-  it('renders changedBy and changedOn for each row', () => {
+  it('renders changedBy as a pill badge and changedOn for each row', () => {
     render(<RecordedChangesTab processId="at-001" />)
 
-    expect(screen.getByText('Ahmed Al Mazrouei')).toBeInTheDocument()
-    expect(screen.getByText('12 Apr 2026')).toBeInTheDocument()
-    expect(screen.getByText('Sara Al Hammadi')).toBeInTheDocument()
-    expect(screen.getByText('10 Apr 2026')).toBeInTheDocument()
+    expect(screen.getByText('Mohammed Al Hajeri')).toBeInTheDocument()
+    expect(screen.getByText('05 Apr 2024')).toBeInTheDocument()
+    expect(screen.getByText('Dania Al Farsi')).toBeInTheDocument()
+    expect(screen.getByText('04 Apr 2024')).toBeInTheDocument()
   })
 
-  it('renders arrow icon cells between old and new values', () => {
+  it('renders correct number of table rows', () => {
     render(<RecordedChangesTab processId="at-001" />)
 
-    // ArrowRight icons are rendered as SVGs — confirm the table has cells for them
     const rows = screen.getAllByRole('row')
     // 1 header row + 2 data rows
     expect(rows).toHaveLength(3)

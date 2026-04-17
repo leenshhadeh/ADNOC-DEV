@@ -28,17 +28,22 @@ const OpportunitiesTab = ({ processId }: OpportunitiesTabProps) => {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Read-only badge */}
+      <div className="bg-muted absolute -top-2 right-4 flex items-center gap-1.5 rounded-md px-2.5 py-1">
+        <Lock className="text-muted-foreground size-3" />
+        <span className="text-muted-foreground text-xs">Read-only</span>
+      </div>
       {opportunities.length === 0 ? (
         <p className="text-sm text-[#889096]">No opportunities identified yet.</p>
       ) : (
-        <div className="overflow-hidden rounded-md border border-[#DFE3E6]">
+        <div className="overflow-hidden rounded-md">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[#DFE3E6]">
-                <th className="min-w-[260px] border-r border-[#DFE3E6] px-4 py-2 text-left text-xs font-normal text-[#687076] uppercase">
+                <th className="min-w-[260px] px-4 py-2 text-left text-xs font-normal text-[#687076] uppercase">
                   Opportunity
                 </th>
-                <th className="border-r border-[#DFE3E6] px-4 py-2 text-left text-xs font-normal text-[#687076] uppercase">
+                <th className="px-4 py-2 text-left text-xs font-normal text-[#687076] uppercase">
                   Description
                 </th>
                 <th className="min-w-[160px] px-4 py-2 text-left text-xs font-normal text-[#687076] uppercase">
@@ -53,13 +58,13 @@ const OpportunitiesTab = ({ processId }: OpportunitiesTabProps) => {
                   className="cursor-pointer border-b border-[#DFE3E6] transition-colors last:border-b-0 hover:bg-[#F8F9FA]"
                   onClick={() => handleRowClick(opp)}
                 >
-                  <td className="border-r border-[#DFE3E6] px-4 py-2 align-top">
+                  <td className="px-4 py-2 align-top">
                     <div className="flex flex-col gap-1">
                       <span className="text-base font-medium text-[#151718]">{opp.title}</span>
                       <span className="text-sm font-light text-[#687076]">{opp.code}</span>
                     </div>
                   </td>
-                  <td className="border-r border-[#DFE3E6] px-4 py-2 align-top">
+                  <td className="px-4 py-2 align-top">
                     <span className="text-sm font-normal text-[#687076]">{opp.description}</span>
                   </td>
                   <td className="px-4 py-2 align-top">
@@ -71,14 +76,6 @@ const OpportunitiesTab = ({ processId }: OpportunitiesTabProps) => {
           </table>
         </div>
       )}
-
-      {/* ── Read-only badge ───────────────────────────────────────────── */}
-      <div className="flex justify-start">
-        <span className="inline-flex items-center gap-1 rounded-full bg-[#ECEDED] px-2 py-1.5 text-xs font-normal text-[#7B8899]">
-          <Lock className="size-3" />
-          Read-only
-        </span>
-      </div>
 
       {/* ── Opportunity detail side-panel ──────────────────────────────── */}
       <OpportunityDetailsSheet
