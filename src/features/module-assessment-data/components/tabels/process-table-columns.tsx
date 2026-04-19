@@ -10,35 +10,8 @@ import MarkedAsReviewCell from '../cells/MarkedAsReviewCell'
 import TagsSelectCell from '../cells/TagsSelectCell'
 import { DOMAINS_DATA } from '@/features/module-process-catalog/constants/domains-data'
 import SharedServices from '../cells/SharedServices'
+import { AUTOMATION_LEVEL, AUTOMATION_MATURITY_LEVEL, BUSINESS_RECOMMENDATION_FOR_AUTOMATION, NORTH_STAR_TARGET_AUTOMATION, NUMBER_OF_PEOPLE_IMPACTED, PROCESS_CRITICALITY, PROCESS_CYCLE, SCALE_OF_PROCESS } from '@/constants/dropdownOptions'
 
-
-/**
- * BU
-const optionsMap: any = {
-      AutomationLevel: ['0%', '10%', '20%', '25%', '50%', '80%', '90%', '100%'],
-    
-      ScaleOfProcess: [
-        'Small (1-5)',
-        'Medium: (bigger team within one department)',
-        'Large (500+)',
-      ],
-     
-      processCriticality: ['Low', 'Standard', 'Critical'],
-     
-      UsersImpacted: ['Small (1-50)', 'Medium (50-500)', 'High (500-1000)'],
-     
-      automationMaturityLevel: ['Low', 'Medium', 'Fully Automated'],
-     
-      BusinessRecommendationForAutomation: [
-        'Should be automated',
-        'Should be kept as is',
-        'Should not be automated',
-      ],
-      
-      NorthStarTargetAutomation: ['Keep as is', 'To be fully automated', 'To be intelligent'],
-    }
-
- */
 export const getProcessTableColumns = ({
     onDescChanged,
     onCentrallyGovernedProcessChanged,
@@ -257,7 +230,7 @@ export const getProcessTableColumns = ({
 return(
         <SelectCell
           defaultValue={info.getValue<string>()}
-          options={['Low', 'Standard', 'Critical']}
+          options={PROCESS_CRITICALITY}
           onValueChange={(newValue: string) => {
             if (onUpdate) {
                 onUpdate(info.row.original.id, 'processCriticality', newValue)
@@ -275,7 +248,7 @@ return(
       cell: (info) => (
         <SelectCell
           defaultValue={info.getValue<string>()}
-          options={['High (500-1000)', 'Medium (50-500)', 'Small (1-50)']}
+          options={NUMBER_OF_PEOPLE_IMPACTED}
           onValueChange={(newValue: string) => {
             console.log('New users impacted:', newValue)
           }}
@@ -291,11 +264,7 @@ return(
       cell: (info) => (
         <SelectCell
           defaultValue={info.getValue<string>()}
-          options={[
-            'Medium: (bigger team within one department)',
-            'Small: (100 - 200)',
-            'Site-specific',
-          ]}
+          options={SCALE_OF_PROCESS}
           onValueChange={(newValue: string) => {
             console.log('New scale of process:', newValue)
           }}
@@ -311,7 +280,7 @@ return(
       cell: (info) => (
         <SelectCell
           defaultValue={info.getValue<string>()}
-          options={['Fully Automated', 'Opportunistic', 'Systematic', 'Managed', 'Optimized']}
+          options={AUTOMATION_MATURITY_LEVEL}
           onValueChange={(newValue: string) => {
             console.log('New automation maturity level:', newValue)
           }}
@@ -327,7 +296,7 @@ return(
       cell: (info) => (
         <SelectCell
           defaultValue={info.getValue<string>()}
-          options={['25%', '50%', '75%', '99%', '100%']}
+          options={AUTOMATION_LEVEL}
           onValueChange={(newValue: string) => {
             console.log('New automation level:', newValue)
           }}
@@ -378,7 +347,7 @@ return(
       cell: (info) => (
         <SelectCell
           defaultValue={info.getValue<string>()}
-          options={['Should be kept as is', 'should be automated', 'No Automation']}
+          options={BUSINESS_RECOMMENDATION_FOR_AUTOMATION}
           onValueChange={(newValue: string) => {
             console.log('New business recommendation for automation:', newValue)
           }}
@@ -462,7 +431,7 @@ return(
       cell: (info) => (
         <SelectCell
           defaultValue={info.getValue<string>()}
-          options={['Daily', 'Weekly', 'Monthly', 'Quarterly', 'Annually', 'Ad-hoc']}
+          options={PROCESS_CYCLE}
           onValueChange={(newValue: string) => {
             console.log('New process cycle:', newValue)
           }}
@@ -560,7 +529,7 @@ return(
       cell: (info) => (
         <SelectCell
           defaultValue={info.getValue<string>()}
-          options={['Keep as is', 'To be fully automated', 'To be intelligent']}
+          options={NORTH_STAR_TARGET_AUTOMATION}
           onValueChange={(newValue: string) => {
             console.log('New total personnel executing (FTE):', newValue)
           }}
