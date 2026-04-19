@@ -15,14 +15,6 @@ import {
 } from 'lucide-react'
 import ViewToggle from '@/shared/components/ViewToggle'
 import type { RowSelectionState } from '@tanstack/react-table'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/shared/components/ui/breadcrumb'
 import ModuleToolbar from '@/shared/components/ModuleToolbar'
 import type { ToolbarAction } from '@/shared/components/ModuleToolbar'
 import { SuccessToast } from '@/shared/components/SuccessToast'
@@ -81,6 +73,7 @@ import {
 import { useProcessFilterDefinitions } from '../hooks/useProcessFilterDefinitions'
 import ProcessFilterSheet from '@/features/module-process-catalog/components/ProcessFilterSheet'
 import { DOMAINS_DATA } from '@/features/module-process-catalog/constants/domains-data'
+import Breadcrumb from '@/shared/components/Breadcrumb'
 
 type ActiveModal = 'edit' | 'comment' | 'copy' | 'review' | null
 type TaskModal = 'approve' | 'return' | 'reject' | 'request-endorsement' | null
@@ -243,31 +236,20 @@ const AssessmentDataModule = () => {
   }
 
   return (
-    <div className="flex h-full flex-col gap-0 overflow-hidden">
-      {/* ── Breadcrumb ─────────────────────────────────────────────────── */}
-      <div className="px-6 pt-5 pb-1">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Assessment Data Processes</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
+    <div className="flex h-full flex-col gap-0 overflow-hidden px-6">
+    <Breadcrumb 
+    links={[{title:'Assessment Data Processes'}]}
+    />
 
       {/* ── Title bar ──────────────────────────────────────────────────── */}
-      <div className="flex items-center px-6 py-3">
+      <div className="flex items-center  py-3">
         <h1 className="text-foreground text-2xl font-bold">Assessment Data Processes</h1>
 
         <ProcessesMenu />
       </div>
 
       {/* ── Tabs + search + filter + toolbar ──────────────────────────── */}
-      <div className="flex items-center gap-2 px-6 py-3">
+      <div className="flex items-center gap-2 py-3">
         <div className="flex-1">
           <ModuleToolbar
             tabs={ASSESSMENT_TABS}
@@ -336,7 +318,7 @@ const AssessmentDataModule = () => {
         )}
       </div>
       {/* ── Info bar ───────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-2 px-6 py-2 text-sm">
+      <div className="flex items-center gap-2  py-2 text-sm">
         <Info className="size-4 shrink-0" />
         <span>
           You can edit values inline at the lowest level (L3 or L4) only. Editable cells are
@@ -345,7 +327,7 @@ const AssessmentDataModule = () => {
       </div>
 
       {/* ── Table + Comment panel ─────────────────────────────────────── */}
-      <div className="flex min-h-0 flex-1 gap-4 px-6 py-1">
+      <div className="flex min-h-0 flex-1 gap-4 py-1">
         {/* ── Main table area ──────────────────────────────────────────── */}
         <div className="min-w-0 flex-1 overflow-auto">
           {isBulkMode && activeTab === 'processes' && (

@@ -14,7 +14,7 @@ interface orgRows {
   team?: string[]
 }
 const GeneralInfoTab = (props: any) => {
-  const { processGeneralInfo ,process , onFormSubmit} = props
+  const { processGeneralInfo ,process , onFormSubmit , onFormChanged} = props
   const [openBUSheet, setOpenBUSheet] = useState(false)
   const [orgData, setOrgData] = useState<any>(null)
 
@@ -102,7 +102,9 @@ const GeneralInfoTab = (props: any) => {
       <GeneralInfoForm 
       initialData={process}
       onFormSubmit={onFormSubmit}
+      onFormChanged={onFormChanged}
       />
+      
       <div className="mt-9 flex items-center gap-3">
         <p className="text-foreground text-md shrink-0 font-normal">Organization data mapping</p>
         <Separator className="flex-1" />

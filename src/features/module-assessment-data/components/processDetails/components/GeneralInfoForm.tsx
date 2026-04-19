@@ -4,7 +4,7 @@ import { Input } from '@/shared/components/ui/input'
 import { DIGITAL_FP_USERS } from '../../../constants/CurrentApplication'
 
 const GeneralInfoForm = (props:any) => {
-  const {onFormSubmit , initialData} = props
+  const {onFormSubmit , onFormChanged, initialData} = props
 
   const [formData, setFormData] = useState({
     customName: initialData.customName || '',
@@ -17,19 +17,16 @@ const GeneralInfoForm = (props:any) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+    const newChanges={ ...formData, [name]: value }
+    onFormChanged(newChanges)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('Form submitted:', formData)
-    onFormSubmit()
-  }
 
   return (
     <div className="mt-[24px]">
       <form
         className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
-        onSubmit={handleSubmit}
+        onSubmit={onFormSubmit}
       >
         <div className="flex w-full flex-col">
           <label className="text-muted-foreground text-sm">Custom Name</label>

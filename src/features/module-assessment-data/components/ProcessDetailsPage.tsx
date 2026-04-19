@@ -1,15 +1,8 @@
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/shared/components/ui/breadcrumb'
+
 import ProcessDetails from './processDetails/components/ProcessDetails'
 import ModuleToolbar from '@/shared/components/ModuleToolbar'
 import { useParams } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import GeneralInfoTab from './processDetails/tabs/GeneralInfoTab'
 import AutomationParameterTab from './processDetails/tabs/AutomationParameterTab'
 import ManualParametersTab from './processDetails/tabs/ManualParametersTab'
@@ -19,6 +12,8 @@ import OpprtunitiesTab from './processDetails/tabs/OpprtunitiesTab'
 import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 import RecordedChangesTab from './processDetails/tabs/RecordedChangesTab'
 import CommentsTab from './processDetails/tabs/CommentsTab'
+import { Settings2, Upload } from 'lucide-react'
+import Breadcrumb from '@/shared/components/Breadcrumb'
 
 
 const ProcessDetailsPage = () => {
@@ -27,6 +22,8 @@ const ProcessDetailsPage = () => {
   const { data, isLoading, isError } = useGetProcessDetails(processId || '')
   const [processData, setProcessData] = useState([{}])
   const [processGeneralInfo, setProcessGeneralInfo] = useState([{}])
+  const [disableSubmit , setDisableSubmit]=useState(true)
+  const [updatedData,setUpdatedData] = useState([{}])
 
   useEffect(() => {
     //TODO: call getProcessDetails(processId) API
@@ -72,27 +69,37 @@ const ProcessDetailsPage = () => {
     }
   }, [data])
 
+  const handelOnSubmit=()=>{
+    // call API to submit the new changes 
+    console.log('[submit] payload:',updatedData)
+  }
+
+  const handelDataChanged=(updatedData:any)=>{
+    setDisableSubmit(false);
+    console.log('onFormChanged:',updatedData)
+    setUpdatedData(updatedData)
+  }
+  
+
+  const mainActions = useMemo<any[]>(
+    () => [
+      { id: 'submit', label: 'submit', icon: Settings2 ,disabled:disableSubmit, onClick:handelOnSubmit},
+      { id: 'save', label: 'save', icon: Upload ,disabled:disableSubmit},
+      { id: 'validate', label: 'validate', icon: Upload },
+      {id:'Markasreviewed' , label:'Mark as reviewed', icon: Upload }
+    ],
+    [disableSubmit],
+  )
+
+
   return (
     <>
       <div className="flex flex-col gap-0 overflow-hidden px-6">
-        {/* ── Breadcrumb ─────────────────────────────────────────────────── */}
-        <div className="pt-5 pb-1">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">Home</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/assessment-data">Assessment Data Processes</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Process Details</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
+          <Breadcrumb
+          links={[
+            {title:'Assessment Data Processes',url:'/assessment-data'},
+            {title:'Process Details', isCurrentPage:true}
+            ]} />
 
         <div className="mb-[24px] flex items-center py-3">
           {!isLoading && data && (
@@ -127,10 +134,12 @@ const ProcessDetailsPage = () => {
                   ]}
                   activeTab={activeTab}
                   onTabChange={(newActiveTab) => {
-                    setActiveTab(newActiveTab)
+                    setActiveTab(newActiveTab);
+                    setDisableSubmit(true)
                   }}
                   showFilter={false}
                   showSearch={false}
+                  actions={mainActions}
                 />
 
                 <div className="flex flex-col gap-0 overflow-hidden">
@@ -140,7 +149,8 @@ const ProcessDetailsPage = () => {
                         <GeneralInfoTab
                           processGeneralInfo={processGeneralInfo}
                           process={data[0]}
-                          onFormSubmit={() => {}}
+                          onFormSubmit={(payload:any) => handelOnSubmit()}
+                          onFormChanged={(data:any)=>{handelDataChanged(data)}}
                         />
                       )}
                       {activeTab == 'AutomationParameters' && (
