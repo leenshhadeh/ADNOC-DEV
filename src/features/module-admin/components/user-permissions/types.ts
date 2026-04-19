@@ -15,7 +15,6 @@ export type AccessConfigItem = {
 }
 
 export type AccessConfig = AccessConfigItem[]
-
 export type UserPermissionRow = {
   id: string
   userId: string
@@ -23,13 +22,14 @@ export type UserPermissionRow = {
   email: string
   accountStatus: 'Active' | 'Deactivated'
   assignedRole: string[]
+  columnAccess: string[]
   assignedAccess: AccessConfig
   gcsAccess: number
   domainsAccess: number
   isEditing?: boolean
 }
 
-export type EditableField = 'userId' | 'assignedRole'
+export type EditableField = 'userId' | 'assignedRole' | 'columnAccess'
 
 export type UserDirectoryItem = {
   id: string

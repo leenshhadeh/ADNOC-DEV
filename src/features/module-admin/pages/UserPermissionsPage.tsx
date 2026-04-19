@@ -70,6 +70,7 @@ const createMockRow = (
     email: row.email,
     accountStatus: row.accountStatus,
     assignedRole: row.assignedRole,
+    columnAccess: row.columnAccess ?? [],
     isEditing: row.isEditing,
     assignedAccess,
     gcsAccess: counts.gcsAccess,
@@ -85,6 +86,7 @@ const initialUserPermissionsData: UserPermissionRow[] = [
     email: 'knuaimi@adnoc.com',
     accountStatus: 'Active',
     assignedRole: ['Digital Focal Point', 'Digital Admin'],
+    columnAccess: ['North Star'],
     assignedAccess: createMockAccess(
       createMockAccessItem('ADNOC HQ', ['EXP', 'CAP', 'ENG', 'FIN']),
       createMockAccessItem('ADNOC Onshore', ['PRD', 'HR', 'AUD', 'BUS', 'IT']),
@@ -97,6 +99,7 @@ const initialUserPermissionsData: UserPermissionRow[] = [
     email: 'smansoori@adnoc.com',
     accountStatus: 'Active',
     assignedRole: ['Super Admin'],
+    columnAccess: ['FTE'],
     assignedAccess: createFullAccessConfig(),
   }),
   createMockRow({
@@ -105,6 +108,8 @@ const initialUserPermissionsData: UserPermissionRow[] = [
     name: 'Layla Al-Balushi',
     email: 'lbalushi@adnoc.com',
     accountStatus: 'Active',
+    columnAccess: ['FTE'],
+
     assignedRole: ['Opportunity Evaluator', 'Super Admin'],
     assignedAccess: createMockAccess(createMockAccessItem('ADNOC Onshore', ['FIN', 'GAS'])),
   }),
@@ -115,6 +120,8 @@ const initialUserPermissionsData: UserPermissionRow[] = [
     email: 'asuwaidi@adnoc.com',
     accountStatus: 'Active',
     assignedRole: ['Opportunity Manager'],
+    columnAccess: ['FTE', 'North Star'],
+
     assignedAccess: createMockAccess(
       createMockAccessItem('ADNOC HQ', ['EXP', 'FIN']),
       createMockAccessItem('ADNOC Onshore', ['PRD', 'RET']),
@@ -127,6 +134,7 @@ const initialUserPermissionsData: UserPermissionRow[] = [
     name: 'Fatima Al-Mazrouei',
     email: 'fmazrouei@adnoc.com',
     accountStatus: 'Active',
+    columnAccess: ['FTE', 'North Star'],
     assignedRole: ['Opportunity Evaluator'],
     assignedAccess: createMockAccess(
       createMockAccessItem('ADNOC Gas', ['FIN']),
@@ -140,6 +148,7 @@ const initialUserPermissionsData: UserPermissionRow[] = [
     userId: 'u-6',
     name: 'Khalid Al-Suwaidi',
     email: 'ksuwaidi@adnoc.com',
+    columnAccess: ['North Star'],
     accountStatus: 'Active',
     assignedRole: ['BPA Program Manager', 'Super Admin'],
     assignedAccess: createFullAccessConfig(),
@@ -150,7 +159,9 @@ const initialUserPermissionsData: UserPermissionRow[] = [
     name: 'Mariam Al-Hashemi',
     email: 'mhashemi@adnoc.com',
     accountStatus: 'Active',
+
     assignedRole: ['Digital VP', 'Digital Admin'],
+    columnAccess: ['FTE'],
     assignedAccess: createMockAccess(
       createMockAccessItem('ADNOC HQ', ['IT', 'SCP']),
       createMockAccessItem('ADNOC Distribution', ['BUS', 'COM']),
@@ -163,6 +174,7 @@ const initialUserPermissionsData: UserPermissionRow[] = [
     name: 'Omar Al-Mansoori',
     email: 'omansoori@adnoc.com',
     accountStatus: 'Active',
+    columnAccess: ['North Star'],
     assignedRole: ['Digital Admin', 'Super Admin'],
     assignedAccess: createFullAccessConfig(),
   }),
@@ -173,6 +185,7 @@ const initialUserPermissionsData: UserPermissionRow[] = [
     email: 'fhamadi@adnoc.com',
     accountStatus: 'Deactivated',
     assignedRole: ['Opportunity Evaluator', 'Digital Admin'],
+    columnAccess: ['FTE', 'North Star'],
     assignedAccess: createMockAccess(
       createMockAccessItem('ADNOC HQ', ['RET', 'FIN']),
       createMockAccessItem('ADNOC Offshore', ['PRD']),
@@ -185,6 +198,7 @@ const initialUserPermissionsData: UserPermissionRow[] = [
     email: 'saljaberi@adnoc.com',
     accountStatus: 'Deactivated',
     assignedRole: ['Business Focal Point'],
+    columnAccess: ['FTE', 'North Star'],
     assignedAccess: createMockAccess(
       createMockAccessItem('ADNOC Onshore', ['GAS', 'REF']),
       createMockAccessItem('ADNOC Drilling', ['TRD', 'LOG']),
@@ -238,6 +252,7 @@ const UserPermissionsPage = ({ searchValue, setToolbarActions }: UserPermissions
         email: '',
         accountStatus: 'Deactivated',
         assignedRole: [],
+        columnAccess: [],
         assignedAccess: createEmptyAccessConfig(),
         gcsAccess: 0,
         domainsAccess: 0,
@@ -341,14 +356,26 @@ const UserPermissionsPage = ({ searchValue, setToolbarActions }: UserPermissions
       setRows((prev) => {
         const currentRow = prev.find((row) => row.id === rowId)
 
-        if (field === 'assignedRole' && currentRow) {
-          const previousRoles = currentRow.assignedRole ?? []
-          const nextRoles = Array.isArray(value) ? value : []
+        if ((field === 'assignedRole' || field === 'columnAccess') && currentRow) {
+          const previousItems =
+            field === 'assignedRole'
+              ? (currentRow.assignedRole ?? [])
+              : (currentRow.columnAccess ?? [])
 
-          if (nextRoles.length > previousRoles.length) {
-            showToast('Role added successfully')
-          } else if (nextRoles.length < previousRoles.length) {
-            showToast('Role removed successfully')
+          const nextItems = Array.isArray(value) ? value : []
+
+          if (nextItems.length > previousItems.length) {
+            showToast(
+              field === 'assignedRole'
+                ? 'Role added successfully'
+                : 'Column access added successfully',
+            )
+          } else if (nextItems.length < previousItems.length) {
+            showToast(
+              field === 'assignedRole'
+                ? 'Role removed successfully'
+                : 'Column access removed successfully',
+            )
           }
         }
 
@@ -357,7 +384,6 @@ const UserPermissionsPage = ({ searchValue, setToolbarActions }: UserPermissions
     },
     [showToast],
   )
-
   const handleRowSelectUser = useCallback(
     (rowId: string, user: { id?: string; name: string; email: string }) => {
       setRows((prev) =>

@@ -8,7 +8,7 @@ import AccountStatusCell from './cells/AccountStatusCell'
 import AssignedRoleCell from './cells/AssignedRoleCell'
 import AssignedAccessCell from './cells/AssignedAccessCell'
 import type { UserPermissionRow, UserPermissionsTableProps } from './types'
-
+import AssignedColumnAccessCell from './cells/AssignedCoumnAccessCell'
 const UserPermissionsTable = ({
   data,
   searchValue,
@@ -64,6 +64,13 @@ const UserPermissionsTable = ({
         header: 'ASSIGNED ROLE',
         cell: ({ row }) => (
           <AssignedRoleCell row={row.original} onRowChange={onRowChange} onBlur={onRoleBlur} />
+        ),
+      },
+      {
+        accessorKey: 'columnAccess',
+        header: 'COLUMN ACCESS',
+        cell: ({ row }) => (
+          <AssignedColumnAccessCell row={row.original} onRowChange={onRowChange} />
         ),
       },
       {

@@ -79,3 +79,5 @@ export const availableRoles = [
   'Digital VP',
   'Business Focal Point',
 ] as const
+
+export const availableColumnAccess = ['North Star', 'FTE'] as const
