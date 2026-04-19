@@ -16,8 +16,9 @@ interface orgRows {
 const GeneralInfoTab = (props: any) => {
   const { processGeneralInfo ,process , onFormSubmit , onFormChanged} = props
   const [openBUSheet, setOpenBUSheet] = useState(false)
-  const [orgData, setOrgData] = useState<any>(null)
-
+  const [orgData, setOrgData] = useState<any>(process.orgMapping)
+  const [dataToSubmit, setDataToSubmit] = useState<any>([])
+  
 
 
   const columnsBU = useMemo<ColumnDef<orgRows>[]>(() => [
@@ -82,6 +83,13 @@ const GeneralInfoTab = (props: any) => {
   ], [])
 
 
+  const formChangeHandler=(data:any, hasOrgData?:boolean)=>{
+
+    const formData=hasOrgData?data:{...data, dataorgMapping:orgData}
+    setDataToSubmit(formData)
+    onFormChanged(formData)
+  }
+
   return (
     <>
       <ProcessDetails data={processGeneralInfo} />
@@ -90,7 +98,7 @@ const GeneralInfoTab = (props: any) => {
       <GeneralInfoForm 
       initialData={process}
       onFormSubmit={onFormSubmit}
-      onFormChanged={onFormChanged}
+      onFormChanged={formChangeHandler}
       />
       
       <div className="mt-9 flex items-center gap-3">
@@ -133,10 +141,11 @@ const GeneralInfoTab = (props: any) => {
         handleOpenChange={() => setOpenBUSheet(false)}
         handleOnSubmitData={(valuse: any) => {
           setOpenBUSheet(false)
-          // TODO: call API to update org mappaing based on selected valuse
-          console.log('updated Organization mapping data=', valuse)
           setOrgData(valuse)
+          const newChanges={ ...dataToSubmit, orgMapping: valuse }
+          formChangeHandler(newChanges , true)
         }}
+        currentOrgData={process.orgMapping || []}
       />
     </>
   )

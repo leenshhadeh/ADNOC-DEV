@@ -120,8 +120,8 @@ export const PROESS_DETAILS = [
     ],
 
     orgMapping:{
-      BU:[{unit:'Shared Service',subUnits:['Procurement','Strategic Sourcing']}],
-      DT:[{unit:'Business Support',subUnits:['Digital Operations']}],
+      BU:[{unit:'Shared service',subUnits:['supplier evaluation']}],
+      DT:[{unit:'Business Support',subUnits:['Data Analytics']}],
     }
   },
 ]

@@ -16,10 +16,10 @@ type ApiPayload = {
 }
 
 const OrgMappingSheet = (props: any) => {
-  const { open = true, handleOnSubmitData, title, handleOpenChange } = props
+  const { open = true, handleOnSubmitData, title, handleOpenChange ,currentOrgData} = props
 
-  const [selectedBU, setSelectedBU] = useState<string[]>([])
-  const [selectedDT, setSelectedDT] = useState<string[]>([])
+  const [selectedBU, setSelectedBU] = useState<any[]>(currentOrgData.BU[0]?.subUnits)
+  const [selectedDT, setSelectedDT] = useState<any[]>(currentOrgData.DT[0]?.subUnits)
   const [activeStep, setActiveStep] = useState<'unit' | 'team'>('unit')
   const [orgBUData, setOrgBUData] = useState<any[]>([])
   const [orgDTData, setOrgDTData] = useState<any[]>([])
@@ -153,7 +153,11 @@ const OrgMappingSheet = (props: any) => {
         {/* Main scrollable body */}
         <div className="m-4 h-full overflow-y-scroll rounded-md border p-3">
           {activeStep === 'unit' && (
-            <TreeSelect data={filteredBUData} selected={selectedBU} onChange={setSelectedBU} />
+            <TreeSelect 
+            data={filteredBUData} 
+            selected={selectedBU} 
+            onChange={setSelectedBU} 
+            />
           )}
 
           {activeStep === 'team' && (

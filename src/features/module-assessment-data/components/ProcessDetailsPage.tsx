@@ -88,7 +88,7 @@ const ProcessDetailsPage = () => {
       { id: 'validate', label: 'validate', icon: Upload },
       {id:'Markasreviewed' , label:'Mark as reviewed', icon: Upload }
     ],
-    [disableSubmit],
+    [updatedData],
   )
 
 

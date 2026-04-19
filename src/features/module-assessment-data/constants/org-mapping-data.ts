@@ -13,7 +13,7 @@ export const BUData = [
             children: [
               {
                 label: 'Supplier Evaluation',
-                value: 'supplier-evaluation',
+                value: 'supplier evaluation',
               },
               {
                 label: 'Inventory Control',
