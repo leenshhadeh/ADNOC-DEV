@@ -7,6 +7,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuCheckboxItem,
 } from '@/shared/components/ui/dropdown-menu'
+import { cn } from '@/shared/lib/utils'
 
 interface TagItem {
   id: string
@@ -120,7 +121,7 @@ const TagsSelect: React.FC<TagsListProps> = ({
         {selectedTags.map((tag) => (
           <div
             key={tag.id}
-            className="flex items-center space-x-2 rounded-full border border-[0.5px] border-[#2F68D9] bg-[#DCE5F9] px-3 py-1 text-gray-800"
+            className={cn(disabled?"bg-sidebar-accent border":"bg-[#DCE5F9] border-[#2F68D9]",  "flex items-center space-x-2 rounded-full border border-[0.5px]  px-3 py-1 text-gray-800")}
           >
             <span className="text-nowrap">{tag.name}</span>
 
