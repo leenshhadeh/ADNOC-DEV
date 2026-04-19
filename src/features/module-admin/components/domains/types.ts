@@ -17,7 +17,9 @@ export type DomainsTableProps = {
   data: DomainRow[]
   searchValue: string
   onRowChange?: (rowId: string, field: EditableDomainField, value: string) => void
+  onEditingFieldChange?: (rowId: string, field: EditableDomainField) => void
   onEditRow?: (row: DomainRow, field: 'businessDomain' | 'code' | 'sortingIndex') => void
   onArchiveRow?: (row: DomainRow) => void
+  onActivateRow?: (row: DomainRow) => void
   isEditingRow?: boolean
 }

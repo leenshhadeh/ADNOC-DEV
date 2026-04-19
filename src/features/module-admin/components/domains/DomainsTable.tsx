@@ -13,8 +13,10 @@ const DomainsTable = ({
   data,
   searchValue,
   onRowChange,
+  onEditingFieldChange,
   onEditRow,
   onArchiveRow,
+  onActivateRow,
   isEditingRow = false,
 }: DomainsTableProps) => {
   const filteredData = useMemo(() => {
@@ -43,8 +45,12 @@ const DomainsTable = ({
             onChange={(rowId, field, value) =>
               onRowChange?.(rowId, field as EditableDomainField, value)
             }
+            onFocusField={(rowId, field) =>
+              onEditingFieldChange?.(rowId, field as EditableDomainField)
+            }
             onEdit={onEditRow}
             onArchive={onArchiveRow}
+            onActivate={onActivateRow}
           />
         ),
       },
@@ -62,6 +68,9 @@ const DomainsTable = ({
             onChange={(rowId, field, value) =>
               onRowChange?.(rowId, field as EditableDomainField, value)
             }
+            onFocusField={(rowId, field) =>
+              onEditingFieldChange?.(rowId, field as EditableDomainField)
+            }
             onEdit={onEditRow}
           />
         ),
@@ -75,12 +84,15 @@ const DomainsTable = ({
             onChange={(rowId, field, value) =>
               onRowChange?.(rowId, field as EditableDomainField, value)
             }
+            onFocusField={(rowId, field) =>
+              onEditingFieldChange?.(rowId, field as EditableDomainField)
+            }
             onEdit={onEditRow}
           />
         ),
       },
     ],
-    [onArchiveRow, onEditRow, onRowChange],
+    [onActivateRow, onArchiveRow, onEditRow, onRowChange, onEditingFieldChange],
   )
 
   return (

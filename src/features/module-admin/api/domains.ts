@@ -8,6 +8,7 @@
  * - GET rows
  * - POST row
  * - PUT row
+ * - PATCH status
  *
  * Notes:
  * - GET rows should return data sorted by sortingIndex ascending.
@@ -16,18 +17,24 @@
 
 import axios from 'axios'
 import { apiClient } from '@/shared/api'
-import type { DomainRow } from '../components/domains/types'
+import type { DomainRow, DomainStatus } from '../components/domains/types'
 
 export interface CreateDomainRequest {
   businessDomain: string
   code: string
   sortingIndex: number
+  status?: DomainStatus
 }
 
 export interface UpdateDomainRequest {
   businessDomain?: string
   code?: string
   sortingIndex?: number
+  status?: DomainStatus
+}
+
+export interface UpdateDomainStatusRequest {
+  status: DomainStatus
 }
 
 export interface ApiResponse<T> {
@@ -79,6 +86,21 @@ export async function createDomain(payload: CreateDomainRequest): Promise<Domain
 export async function updateDomain(id: string, payload: UpdateDomainRequest): Promise<DomainRow> {
   try {
     const response = await apiClient.put<ApiResponse<DomainRow>>(`/api/domains/${id}`, payload)
+    return response.data.data
+  } catch (error) {
+    throw new Error(getErrorMessage(error))
+  }
+}
+
+export async function updateDomainStatus(
+  id: string,
+  payload: UpdateDomainStatusRequest,
+): Promise<DomainRow> {
+  try {
+    const response = await apiClient.patch<ApiResponse<DomainRow>>(
+      `/api/domains/${id}/status`,
+      payload,
+    )
     return response.data.data
   } catch (error) {
     throw new Error(getErrorMessage(error))

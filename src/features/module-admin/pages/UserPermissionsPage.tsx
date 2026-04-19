@@ -6,6 +6,7 @@ import UserPermissionsTable from '../components/user-permissions/UserPermessions
 import UserDomainsDrawer from '../components/user-permissions/UserDomainsDrawer'
 import { domains, groupCompanies } from '../components/user-permissions/constants'
 import { SuccessToast } from '@/shared/components/SuccessToast'
+import UserStatusConfirmModal from '../components/user-permissions/UserStatusConfirmModal'
 
 import type { ToolbarAction } from '@/shared/components/ModuleToolbar'
 import type {
@@ -216,6 +217,12 @@ const UserPermissionsPage = ({ searchValue, setToolbarActions }: UserPermissions
   const [toastOpen, setToastOpen] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
 
+  const [statusModalOpen, setStatusModalOpen] = useState(false)
+  const [pendingStatusUser, setPendingStatusUser] = useState<UserPermissionRow | null>(null)
+  const [pendingStatusAction, setPendingStatusAction] = useState<'activate' | 'deactivate' | null>(
+    null,
+  )
+
   const showToast = useCallback((message: string) => {
     setToastOpen(false)
     setToastMessage(message)
@@ -326,15 +333,43 @@ const UserPermissionsPage = ({ searchValue, setToolbarActions }: UserPermissions
     console.log('view', user)
   }, [])
 
-  const handleDeactivate = useCallback(
-    (user: UserPermissionRow) => {
-      setRows((prev) =>
-        prev.map((row) => (row.id === user.id ? { ...row, accountStatus: 'Deactivated' } : row)),
-      )
-      showToast('User deactivated successfully')
-    },
-    [showToast],
-  )
+  const handleDeactivate = useCallback((user: UserPermissionRow) => {
+    const nextAction = user.accountStatus === 'Active' ? 'deactivate' : 'activate'
+
+    setPendingStatusUser(user)
+    setPendingStatusAction(nextAction)
+    setStatusModalOpen(true)
+  }, [])
+  const handleConfirmStatusChange = useCallback(() => {
+    if (!pendingStatusUser || !pendingStatusAction) return
+
+    setRows((prev) =>
+      prev.map((row) =>
+        row.id === pendingStatusUser.id
+          ? {
+              ...row,
+              accountStatus: pendingStatusAction === 'activate' ? 'Active' : 'Deactivated',
+            }
+          : row,
+      ),
+    )
+
+    showToast(
+      pendingStatusAction === 'activate'
+        ? 'User activated successfully'
+        : 'User deactivated successfully',
+    )
+
+    setStatusModalOpen(false)
+    setPendingStatusUser(null)
+    setPendingStatusAction(null)
+  }, [pendingStatusAction, pendingStatusUser, showToast])
+
+  const handleCloseStatusModal = useCallback(() => {
+    setStatusModalOpen(false)
+    setPendingStatusUser(null)
+    setPendingStatusAction(null)
+  }, [])
 
   const handleRowChange = useCallback(
     (rowId: string, field: EditableField, value: string | string[]) => {
@@ -617,6 +652,13 @@ const UserPermissionsPage = ({ searchValue, setToolbarActions }: UserPermissions
         onSave={isBulkAccessFlow ? handleSaveBulkDomains : handleSaveDomains}
         isBulkMode={isBulkAccessFlow}
         selectedUsersCount={selectedRowIds.length}
+      />
+      <UserStatusConfirmModal
+        open={statusModalOpen}
+        userName={pendingStatusUser?.name}
+        actionType={pendingStatusAction}
+        onClose={handleCloseStatusModal}
+        onConfirm={handleConfirmStatusChange}
       />
 
       <SuccessToast

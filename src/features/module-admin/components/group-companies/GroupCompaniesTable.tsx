@@ -12,11 +12,12 @@ import type { EditableGroupCompanyField, GroupCompaniesTableProps, GroupCompanyR
 const GroupCompaniesTable = ({
   data,
   searchValue,
-  onRowChange,
   onOpenSitesDrawer,
   onEditRow,
   onArchiveRow,
-  isEditingRow = false,
+  onActivateRow,
+  onRowChange,
+  onEditingFieldChange,
 }: GroupCompaniesTableProps) => {
   const filteredData = useMemo(() => {
     const value = searchValue.trim().toLowerCase()
@@ -32,7 +33,7 @@ const GroupCompaniesTable = ({
       )
     })
   }, [data, searchValue])
-
+  const tableMeta = useMemo(() => ({ rowDividers: true }), [])
   const columns = useMemo<ColumnDef<GroupCompanyRow>[]>(
     () => [
       {
@@ -44,8 +45,12 @@ const GroupCompaniesTable = ({
             onChange={(rowId, field, value) =>
               onRowChange?.(rowId, field as EditableGroupCompanyField, value)
             }
+            onFocusField={(rowId, field) =>
+              onEditingFieldChange?.(rowId, field as EditableGroupCompanyField)
+            }
             onEdit={onEditRow}
             onArchive={onArchiveRow}
+            onActivate={onActivateRow}
           />
         ),
       },
@@ -63,6 +68,9 @@ const GroupCompaniesTable = ({
             onChange={(rowId, field, value) =>
               onRowChange?.(rowId, field as EditableGroupCompanyField, value)
             }
+            onFocusField={(rowId, field) =>
+              onEditingFieldChange?.(rowId, field as EditableGroupCompanyField)
+            }
             onEdit={onEditRow}
           />
         ),
@@ -75,7 +83,14 @@ const GroupCompaniesTable = ({
         ),
       },
     ],
-    [onArchiveRow, onEditRow, onOpenSitesDrawer, onRowChange],
+    [
+      onActivateRow,
+      onArchiveRow,
+      onEditRow,
+      onOpenSitesDrawer,
+      onRowChange,
+      onEditingFieldChange,
+    ],
   )
 
   return (
@@ -84,9 +99,9 @@ const GroupCompaniesTable = ({
       columns={columns}
       density="comfortable"
       enableColumnDnd={false}
-      enableSorting={!isEditingRow}
+      enableSorting
       getRowId={(row) => row.id}
-      tableMeta={{ rowDividers: true }}
+      tableMeta={tableMeta}
     />
   )
 }

@@ -9,17 +9,17 @@
  * - GET by id
  * - POST new
  * - PUT update row
- *
- * Replace endpoint paths only if the backend uses different routes.
+ * - PATCH/PUT status
  */
 
 import axios from 'axios'
 import { apiClient } from '@/shared/api'
-import type { GroupCompanyRow } from '../components/group-companies/types'
+import type { GroupCompanyRow, GroupCompanyStatus } from '../components/group-companies/types'
 
 export interface CreateGroupCompanyRequest {
   groupCompany: string
   code: string
+  status?: GroupCompanyStatus
   sites?: Array<{
     name: string
   }>
@@ -28,6 +28,11 @@ export interface CreateGroupCompanyRequest {
 export interface UpdateGroupCompanyRequest {
   groupCompany?: string
   code?: string
+  status?: GroupCompanyStatus
+}
+
+export interface UpdateGroupCompanyStatusRequest {
+  status: GroupCompanyStatus
 }
 
 export interface ApiResponse<T> {
@@ -64,6 +69,7 @@ function getErrorMessage(error: unknown): string {
 
 // ----------------------------------------------------------------------------
 // GET all group companies
+// Includes status in response via GroupCompanyRow
 // ----------------------------------------------------------------------------
 
 export async function getGroupCompanies(): Promise<GroupCompanyRow[]> {
@@ -77,6 +83,7 @@ export async function getGroupCompanies(): Promise<GroupCompanyRow[]> {
 
 // ----------------------------------------------------------------------------
 // GET group company by id
+// Includes status in response via GroupCompanyRow
 // ----------------------------------------------------------------------------
 
 export async function getGroupCompanyById(id: string): Promise<GroupCompanyRow> {
@@ -117,6 +124,25 @@ export async function updateGroupCompany(
   try {
     const response = await apiClient.put<ApiResponse<GroupCompanyRow>>(
       `/api/group-companies/${id}`,
+      payload,
+    )
+    return response.data.data
+  } catch (error) {
+    throw new Error(getErrorMessage(error))
+  }
+}
+
+// ----------------------------------------------------------------------------
+// PATCH status only
+// ----------------------------------------------------------------------------
+
+export async function updateGroupCompanyStatus(
+  id: string,
+  payload: UpdateGroupCompanyStatusRequest,
+): Promise<GroupCompanyRow> {
+  try {
+    const response = await apiClient.patch<ApiResponse<GroupCompanyRow>>(
+      `/api/group-companies/${id}/status`,
       payload,
     )
     return response.data.data
