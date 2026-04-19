@@ -1,4 +1,3 @@
-
 import ProcessDetails from './processDetails/components/ProcessDetails'
 import ModuleToolbar from '@/shared/components/ModuleToolbar'
 import { useParams } from 'react-router-dom'
@@ -12,9 +11,10 @@ import OpprtunitiesTab from './processDetails/tabs/OpprtunitiesTab'
 import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 import RecordedChangesTab from './processDetails/tabs/RecordedChangesTab'
 import CommentsTab from './processDetails/tabs/CommentsTab'
-import { Settings2, Upload } from 'lucide-react'
+import { Settings2, Upload} from 'lucide-react'
 import Breadcrumb from '@/shared/components/Breadcrumb'
-
+import { cn } from '@/shared/lib/utils'
+import CommentsSection from './processDetails/CommentsSection'
 
 const ProcessDetailsPage = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -22,8 +22,12 @@ const ProcessDetailsPage = () => {
   const { data, isLoading, isError } = useGetProcessDetails(processId || '')
   const [processData, setProcessData] = useState([{}])
   const [processGeneralInfo, setProcessGeneralInfo] = useState([{}])
-  const [disableSubmit , setDisableSubmit]=useState(true)
-  const [updatedData,setUpdatedData] = useState([{}])
+  const [disableSubmit, setDisableSubmit] = useState(true)
+  const [updatedData, setUpdatedData] = useState([{}])
+  const [showComment, setShowComment] = useState(false)
+  const userRole: string = 'Business focal point'
+  const userAuthToEdit = userRole == 'Business focal point' || userRole == ' Digital focal point'
+  const userAuthToComment = userRole == 'Quality manager' || userRole == 'BPA program manager'
 
   useEffect(() => {
     //TODO: call getProcessDetails(processId) API
@@ -69,37 +73,55 @@ const ProcessDetailsPage = () => {
     }
   }, [data])
 
-  const handelOnSubmit=()=>{
-    // call API to submit the new changes 
-    console.log('[submit] payload:',updatedData)
+  const handelOnSubmit = () => {
+    // call API to submit the new changes
+    console.log('[submit] payload:', updatedData)
   }
 
-  const handelDataChanged=(updatedData:any)=>{
-    setDisableSubmit(false);
-    console.log('onFormChanged:',updatedData)
+  const handelDataChanged = (updatedData: any) => {
+    setDisableSubmit(false)
+    console.log('onFormChanged:', updatedData)
     setUpdatedData(updatedData)
   }
-  
 
   const mainActions = useMemo<any[]>(
     () => [
-      { id: 'submit', label: 'submit', icon: Settings2 ,disabled:disableSubmit, onClick:handelOnSubmit},
-      { id: 'save', label: 'save', icon: Upload ,disabled:disableSubmit},
+      {
+        id: 'submit',
+        label: 'submit',
+        icon: Settings2,
+        disabled: disableSubmit,
+        onClick: handelOnSubmit,
+      },
+      { id: 'save', label: 'save', icon: Upload, disabled: disableSubmit },
       { id: 'validate', label: 'validate', icon: Upload },
-      {id:'Markasreviewed' , label:'Mark as reviewed', icon: Upload }
+      { id: 'Markasreviewed', label: 'Mark as reviewed', icon: Upload },
     ],
     [updatedData],
   )
+  const ApproveRejectActions = useMemo<any[]>(
+    () => [
+      { id: 'Approve', label: 'Approve', icon: Settings2 },
+      { id: 'Return', label: 'Return', icon: Upload },
+      { id: 'Reject', label: 'Reject', icon: Upload },
+      { id: 'Comment on field', label: 'Comment on field', icon: Upload },
+    ],
+    [],
+  )
 
+  const onShowComment = () => {
+    setShowComment(true)
+  }
 
   return (
     <>
       <div className="flex flex-col gap-0 overflow-hidden px-6">
-          <Breadcrumb
+        <Breadcrumb
           links={[
-            {title:'Assessment Data Processes',url:'/assessment-data'},
-            {title:'Process Details', isCurrentPage:true}
-            ]} />
+            { title: 'Assessment Data Processes', url: '/assessment-data' },
+            { title: 'Process Details', isCurrentPage: true },
+          ]}
+        />
 
         <div className="mb-[24px] flex items-center py-3">
           {!isLoading && data && (
@@ -123,45 +145,65 @@ const ProcessDetailsPage = () => {
                       label: 'Manual operations volume parameters',
                       value: 'ManualParameters',
                     },
-                   
-                    
                   ]}
                   moreOptions={[
-                    { label: 'Target Recommendations​', value: 'TargetRecommendations​​'},
+                    { label: 'Target Recommendations​', value: 'TargetRecommendations​​' },
                     { label: 'Opportunities', value: 'Opportunities' },
                     { label: 'Recorded changes', value: 'RecordedChanges' },
-                    { label: 'Comments', value: 'Comments' }
+                    { label: 'Comments', value: 'Comments' },
                   ]}
                   activeTab={activeTab}
                   onTabChange={(newActiveTab) => {
-                    setActiveTab(newActiveTab);
+                    setActiveTab(newActiveTab)
                     setDisableSubmit(true)
                   }}
                   showFilter={false}
                   showSearch={false}
-                  actions={mainActions}
+                  actions={userAuthToEdit ? mainActions : ApproveRejectActions}
                 />
 
                 <div className="flex flex-col gap-0 overflow-hidden">
-                  <div className="mt-[24px] rounded-2xl bg-[linear-gradient(90.49deg,rgba(78,241,228,0.1)_0.03%,rgba(17,24,39,0.1)_99.89%)] p-[1px]">
-                    <div className="rounded-2xl bg-white p-[24px] relative">
-                      {activeTab == 'GeneralInfo' && (
-                        <GeneralInfoTab
-                          processGeneralInfo={processGeneralInfo}
-                          process={data[0]}
-                          onFormSubmit={(payload:any) => handelOnSubmit()}
-                          onFormChanged={(data:any)=>{handelDataChanged(data)}}
-                        />
+                  <div className="grid grid-cols-12 gap-4">
+                    {/* forms and data */}
+                    <div
+                      className={cn(
+                        showComment ? 'col-span-9' : 'col-span-12',
+                        'mt-[24px] rounded-2xl bg-[linear-gradient(90.49deg,rgba(78,241,228,0.1)_0.03%,rgba(17,24,39,0.1)_99.89%)] p-[1px]',
                       )}
-                      {activeTab == 'AutomationParameters' && (
-                        <AutomationParameterTab process={data[0]} />
-                      )}
-                      {activeTab == 'ManualParameters' && <ManualParametersTab process={data[0]} />}
-                      {activeTab == 'TargetRecommendations​​' && <TargerRecommendationsTab process={data[0]} />}
-                      {activeTab == 'Opportunities' && <OpprtunitiesTab process={data[0]} />}
-                      {activeTab == 'RecordedChanges' && <RecordedChangesTab process={data[0]} />}
-                      {activeTab == 'Comments' && <CommentsTab comments={data[0].comments}/>}
+                    >
+                      <div className="relative rounded-2xl bg-white p-[24px]">
+                        {activeTab == 'GeneralInfo' && (
+                          <GeneralInfoTab
+                            processGeneralInfo={processGeneralInfo}
+                            process={data[0]}
+                            onFormSubmit={handelOnSubmit}
+                            onFormChanged={(data: any) => {
+                              handelDataChanged(data)
+                            }}
+                            isEditable={userAuthToEdit}
+                            isUserAuthToComment={userAuthToComment}
+                            onShowComment={onShowComment}
+                          />
+                        )}
+                        {activeTab == 'AutomationParameters' && (
+                          <AutomationParameterTab process={data[0]} isEditable={userAuthToEdit} />
+                        )}
+                        {activeTab == 'ManualParameters' && (
+                          <ManualParametersTab process={data[0]} isEditable={userAuthToEdit} />
+                        )}
+                        {activeTab == 'TargetRecommendations​​' && (
+                          <TargerRecommendationsTab process={data[0]} />
+                        )}
+                        {activeTab == 'Opportunities' && <OpprtunitiesTab process={data[0]} />}
+                        {activeTab == 'RecordedChanges' && <RecordedChangesTab process={data[0]} />}
+                        {activeTab == 'Comments' && <CommentsTab comments={data[0].comments} />}
+                      </div>
                     </div>
+
+                    {/* Comments */}
+                    {showComment && (
+                      <CommentsSection onCloseComments={() => setShowComment(false)} />
+                    )}
                   </div>
                 </div>
               </>

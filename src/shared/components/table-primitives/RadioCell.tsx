@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { cn } from '@/shared/lib/utils'
 
 const RadioCell = (props: any) => {
-  const { value, onValChange } = props
+  const { value, onValChange , disabled=false } = props
 
   const [enabled, setEnabled] = useState(value)
 
   const onChange = () => {
+    if(disabled) return;
     setEnabled((v: any) => !v)
     onValChange && onValChange(enabled ? 'no' : 'yes')
   }

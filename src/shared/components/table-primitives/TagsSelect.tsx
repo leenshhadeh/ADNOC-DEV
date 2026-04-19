@@ -24,6 +24,7 @@ interface TagsListProps {
   variant?: 'tags' | 'user'
   onChange?: (selected: TagItem[]) => void
   onOpenChange?: (open: boolean) => void
+  disabled?:boolean
 }
 
 const TagsSelect: React.FC<TagsListProps> = ({
@@ -35,6 +36,7 @@ const TagsSelect: React.FC<TagsListProps> = ({
   variant = 'tags',
   onChange,
   onOpenChange,
+  disabled=false
 }) => {
   const [open, setOpen] = useState(false)
   const [tagSearch, setTagSearch] = useState('')
@@ -43,13 +45,14 @@ const TagsSelect: React.FC<TagsListProps> = ({
   const selectedIds = useMemo(() => tags.map((tag) => tag.id), [tags])
 
   const handleDropdownOpenChange = (nextOpen: boolean) => {
+    if(disabled) return
     setOpen(nextOpen)
     onOpenChange?.(nextOpen)
   }
 
   const handleToggleTag = (id: string, checked: boolean) => {
     const selectedTag = allTags.find((tag) => tag.id === id)
-    if (!selectedTag) return
+    if (!selectedTag || disabled) return
 
     if (singleSelect) {
       const nextTags = checked ? [selectedTag] : []
@@ -139,7 +142,7 @@ const TagsSelect: React.FC<TagsListProps> = ({
                 className="text-gray-500 hover:text-gray-800"
                 aria-label={`Remove ${tag.name}`}
               >
-                <X size={16} />
+                {!disabled && <X size={16} />}
               </span>
             )}
           </div>
