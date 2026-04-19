@@ -50,6 +50,7 @@ const AutomationParameterForm = (props:any) => {
             onChange={(value) =>
               setFormData((prev) => ({ ...prev, numberOfPeopleInvolved: value }))
             }
+            border
           />
         </div>
 
@@ -64,6 +65,7 @@ const AutomationParameterForm = (props:any) => {
               label: option,
               value: option,
             }))}
+            border
             value={formData.scaleOfProcess}
             onChange={(value) => setFormData((prev) => ({ ...prev, scaleOfProcess: value }))}
           />
@@ -79,6 +81,7 @@ const AutomationParameterForm = (props:any) => {
               label: option,
               value: option,
             }))}
+            border
             value={formData.automationMaturityLevel}
             onChange={(value) =>
               setFormData((prev) => ({ ...prev, automationMaturityLevel: value }))
@@ -121,6 +124,7 @@ const AutomationParameterForm = (props:any) => {
               label: option,
               value: option,
             }))}
+            border
             value={formData.businessRecommendationForAutomation}
             onChange={(value) =>
               setFormData((prev) => ({ ...prev, automationMaturityLevel: value }))

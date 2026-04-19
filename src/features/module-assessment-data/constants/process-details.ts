@@ -46,7 +46,7 @@ export const PROESS_DETAILS = [
     autonomousUseCaseEnabled: 'No',
     AutonomousUseCaseDescriptionComment: 'N/A',
     processCriticality: 'Standard',
-    keyManualSteps: '1.Data collection, model setup, result interpretation',
+    keyManualSteps: '<p>1.Data collection</p>',
     northStarTargetAutomation: 'To be intelligent',
     targetAutomationLevelPercent: '60%',
     SMEFeedback:
@@ -117,6 +117,11 @@ export const PROESS_DETAILS = [
         status:'Published',
         markedAsReviewed:true
       }
-    ]
+    ],
+
+    orgMapping:{
+      BU:[{unit:'Shared service',subUnits:['supplier evaluation']}],
+      DT:[{unit:'Business Support',subUnits:['Data Analytics']}],
+    }
   },
 ]
