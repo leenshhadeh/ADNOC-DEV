@@ -117,6 +117,11 @@ export const PROESS_DETAILS = [
         status:'Published',
         markedAsReviewed:true
       }
-    ]
+    ],
+
+    orgMapping:{
+      BU:[{unit:'Shared Service',subUnits:['Procurement','Strategic Sourcing']}],
+      DT:[{unit:'Business Support',subUnits:['Digital Operations']}],
+    }
   },
 ]

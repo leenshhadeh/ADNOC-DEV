@@ -1,7 +1,7 @@
 export const BUData = [
   {
-    label: 'Shared Service',
-    value: 'shared-service',
+    label: 'Shared service',
+    value: 'shared service',
     children: [
       {
         label: 'Procurement',
@@ -9,7 +9,7 @@ export const BUData = [
         children: [
           {
             label: 'Strategic Sourcing',
-            value: 'strategic-sourcing',
+            value: 'strategic sourcing',
             children: [
               {
                 label: 'Supplier Evaluation',
@@ -29,17 +29,17 @@ export const BUData = [
         children: [
           {
             label: 'Vendor Reconciliation',
-            value: 'Invoice Processing',
+            value: 'Vendor Reconciliation',
             children: [
-              { label: 'onlne Invoice', value: 'v1' },
-              { label: 'offline Invoice', value: 'v2' },
+              { label: 'onlne Invoice', value: 'onlne Invoice' },
+              { label: 'offline Invoice', value: 'offline Invoice' },
             ],
           },
         ],
       },
     ],
   },
-  { label: 'Finance & Accounting', value: 'shared-service', children: [] },
+  { label: 'Finance & Accounting', value: 'Finance & Accounting', children: [ { label: 'Tax', value: 'Tax' },] },
 ]
 
 export const DigitalTeam = [

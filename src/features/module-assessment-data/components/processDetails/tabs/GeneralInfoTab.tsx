@@ -10,7 +10,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 
 interface orgRows {
   unit: string
-  subUnit?: string[]
+  subUnits?: string[]
   team?: string[]
 }
 const GeneralInfoTab = (props: any) => {
@@ -18,20 +18,7 @@ const GeneralInfoTab = (props: any) => {
   const [openBUSheet, setOpenBUSheet] = useState(false)
   const [orgData, setOrgData] = useState<any>(null)
 
-  
-  useEffect(() => {
-    // TODO Call API to return Process org
-    setOrgData({
-      orgUnit: [
-        {
-          unit: 'Finance & Accounting - Payment Processing',
-          subUnit: ['Invoice Processing', 'Vendor Reconciliation'],
-        },
-        { unit: 'Finance & Accounting', subUnit: ['Contract Negotiation'] },
-      ],
-      digitalDept: [{ unit: 'dept1', team: ['team1', 'team2'] }],
-    })
-  }, [openBUSheet])
+
 
   const columnsBU = useMemo<ColumnDef<orgRows>[]>(() => [
     {
@@ -44,8 +31,8 @@ const GeneralInfoTab = (props: any) => {
       cell: (info) => <p>{info.row.original.unit}</p>,
     },
     {
-      id: 'subUnit',
-      accessorKey: 'subUnit',
+      id: 'subUnits',
+      accessorKey: 'subUnits',
       header: 'SUB UNIT',
       size: 250,
       enableSorting: false,
@@ -53,7 +40,7 @@ const GeneralInfoTab = (props: any) => {
       cell: (info) => (
         <TagsList
           tags={
-            info.row.original?.subUnit?.map((unit: string, teamIndex: number) => ({
+            info.row.original?.subUnits?.map((unit: string, teamIndex: number) => ({
               id: `${unit}-${teamIndex}`,
               text: unit,
             })) || []
@@ -75,15 +62,15 @@ const GeneralInfoTab = (props: any) => {
       cell: (info) => <p>{info.row.original.unit}</p>,
     },
     {
-      id: 'team',
-      accessorKey: 'team',
+      id: 'subUnits',
+      accessorKey: 'subUnits',
       header: 'Team',
       size: 250,
       enableSorting: false,
       cell: (info) => (
         <TagsList
           tags={
-            info.row.original?.team?.map((unit: string, teamIndex: number) => ({
+            info.row.original?.subUnits?.map((unit: string, teamIndex: number) => ({
               id: `${unit}-${teamIndex}`,
               text: unit,
             })) || []
@@ -93,6 +80,7 @@ const GeneralInfoTab = (props: any) => {
       ),
     },
   ], [])
+
 
   return (
     <>
@@ -110,19 +98,19 @@ const GeneralInfoTab = (props: any) => {
         <Separator className="flex-1" />
       </div>
 
-      {/* tabels for BU and TEam  */}
+      {/* tabels for BU and TEam ----------------------------------------------------- */}
       {orgData && (
         <div className="table-light my-9">
-          {orgData && orgData.orgUnit && (
+          {orgData && orgData.BU && (
             <div className="my-4">
-              <DataTable columns={columnsBU} data={orgData.orgUnit} />
+              <DataTable columns={columnsBU} data={orgData.BU} />
             </div>
           )}
 
           {/* digital dept */}
-          {orgData && orgData.digitalDept && (
+          {orgData && orgData.DT && (
             <div className="table-light my-9">
-              <DataTable columns={columnsTeam} data={orgData.digitalDept} />
+              <DataTable columns={columnsTeam} data={orgData.DT} />
             </div>
           )}
         </div>
@@ -147,6 +135,7 @@ const GeneralInfoTab = (props: any) => {
           setOpenBUSheet(false)
           // TODO: call API to update org mappaing based on selected valuse
           console.log('updated Organization mapping data=', valuse)
+          setOrgData(valuse)
         }}
       />
     </>
