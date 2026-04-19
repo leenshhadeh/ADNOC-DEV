@@ -125,7 +125,7 @@ export const getProcessTableColumns = ({
       header: 'Status',
       size: 180,
       enableSorting: false,
-      cell: (info) => <StatusBadgeCell status={info.row.original.status || '-'} />,
+      cell: (info) => <StatusBadgeCell status={info.getValue<any>()} />,
     },
     {
       id: 'description',
@@ -245,15 +245,21 @@ return(
       header: 'Number of People/Users Impacted',
       size: 250,
       enableSorting: false,
-      cell: (info) => (
-        <SelectCell
+      cell: (info) => 
+      { 
+        const onUpdate = info.table.options.meta?.onUpdateDraftRow
+        return  <SelectCell
           defaultValue={info.getValue<string>()}
           options={NUMBER_OF_PEOPLE_IMPACTED}
           onValueChange={(newValue: string) => {
             console.log('New users impacted:', newValue)
+            if(onUpdate)
+            onUpdate(info.row.original.id, 'usersImpacted', newValue)
+
           }}
         />
-      ),
+      }
+       
     },
     {
       id: 'scaleOfProcess',
@@ -313,17 +319,13 @@ return(
         const onUpdate = info.table.options.meta?.onUpdateDraftRow
         return (
           <TagsSelectCell
-            list={info.row.original.currentApplicationsSystems.map((app: string) => ({
-              id: `${app.trim()}`,
-              name: app.trim(),
-            }))}
+            list={info.row.original.currentApplicationsSystems}
             allTags={ASSESSMENT_APPLICATIONS}
             isUsers={false}
             onUpdate={(newTags: any) => {
               const newValue = newTags.map((tag: any) => tag.name)
               if (onUpdate) {
                 onUpdate(info.row.original.id, 'currentApplicationsSystems', newValue ||[])
-                console.log('Updated row with id:', info.row.original.id, 'New value:', newValue)
               }
             }}
           />
@@ -656,7 +658,6 @@ return(
               console.log('New current applications/systems:', newValue)
               if (onUpdate) {
                 onUpdate(info.row.original.id, 'businessFocalPoint', newValue)
-                console.log('Updated row with id:', info.row.original.id, 'New value:', newValue || [])
               }
             }}
           />
@@ -684,7 +685,6 @@ return(
               console.log('New digitalFocalPoint:', newValue)
               if (onUpdate) {
                 onUpdate(info.row.original.id, 'digitalFocalPoint', newValue || [])
-                console.log('Updated row with id:', info.row.original.id, 'New value:', newValue)
               }
             }}
           />

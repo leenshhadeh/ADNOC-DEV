@@ -31,7 +31,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 scaleOfProcess:'Medium: (bigger team within one department)',
                 automationMaturityLevel:'Fully Automated',
                 automationLevel:'10%',
-                currentApplicationsSystems:['Microsot Excel','Petrel'],
+                currentApplicationsSystems:[{id:'excel' , name:'Microsoft 365 - Excel'}],
                 OngoingAutomationDigitalInitiatives:'N/A',
                 businessRecommendationForAutomation:'Should be kept as is',
                 keyChallengesAutomationNeeds:'none',
@@ -99,8 +99,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                     markedAsReviewed:'true',
                     reviewedOn:'2024-02-01',
                     processCriticality: 'High',
-                    currentApplicationsSystems:['Audit Management System (RSA Archer)','Audit Management'],
-
+                    currentApplicationsSystems:[{id:'excel' , name:'Microsoft 365 - Excel'}]
                    
                   },
                 ],
@@ -145,7 +144,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 scaleOfProcess:'Medium: (bigger team within one department)',
                 automationMaturityLevel:'Fully Automated',
                 automationLevel:'50%',
-                currentApplicationsSystems:['Audit Management System (RSA Archer)','Audit Management'],
+                currentApplicationsSystems:[{id:'excel' , name:'Microsoft 365 - Excel'}],
                 OngoingAutomationDigitalInitiatives:'N/A',
                 businessRecommendationForAutomation:'Should be kept as is',
                 keyChallengesAutomationNeeds:'none',
@@ -188,7 +187,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 businessUnit: ['Exploration'],
                 ResponsibleDigitalTeam : ['Subsurface Digitalization'],
                 processCriticality: 'High',
-                currentApplicationsSystems:['Audit Management System (RSA Archer)','Audit Management'],
+                currentApplicationsSystems:[{id:'excel' , name:'Microsoft 365 - Excel'}],
                 markedAsReviewed:'false',
                 reviewedOn:'',
                 level4Items: [
@@ -212,7 +211,7 @@ export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data
                 businessUnit: ['Exploration'],
                 ResponsibleDigitalTeam : ['Subsurface Digitalization'],
                 processCriticality: 'High',
-                currentApplicationsSystems:['Audit Management System (RSA Archer)','Audit Management'],
+                currentApplicationsSystems:[{id:'excel' , name:'Microsoft 365 - Excel'}],
 
                 level4Items: [
                   {

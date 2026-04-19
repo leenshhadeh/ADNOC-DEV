@@ -1,14 +1,15 @@
 import TagsSelect from '@/shared/components/table-primitives/TagsSelect'
 import { Input } from '@/shared/components/ui/input'
-import { DIGITAL_FP_USERS } from '../../../constants/CurrentApplication'
+import { ASSESSMENT_APPLICATIONS } from '../../../constants/CurrentApplication'
 import { Select } from '@/shared/components/ui/select'
 import React, { useState } from 'react'
 import { RadioCell } from '@/shared/components/table-primitives'
+import { AUTOMATION_MATURITY_LEVEL, BUSINESS_RECOMMENDATION_FOR_AUTOMATION, NUMBER_OF_PEOPLE_IMPACTED, PROCESS_CRITICALITY, SCALE_OF_PROCESS } from '@/constants/dropdownOptions'
 
 const AutomationParameterForm = (props:any) => {
   const {process} = props
   const [formData, setFormData] = useState({
-    peopleInvoled: '',
+    peopleInvoled: process.numberOfPeopleInvolved || '',
     numberOfPeopleInvolved: process.numberOfPeopleInvolved || '',
     scaleOfProcess: process.scaleOfProcess||'',
     currentApplicationsSystems: process.currentApplicationsSystems || [],
@@ -16,14 +17,20 @@ const AutomationParameterForm = (props:any) => {
     OngoingAutomationDigitalInitiatives: process.OngoingAutomationDigitalInitiatives || '',
     automationLevel: process.automationLevel ||  '',
     processCriticality:process.processCriticality|| '',
-    challengesAndNeeds: '',
-    AIPowered:'',
-    businessRecommendationForAutomation:'should kept as it is'
+    challengesAndNeeds:process.keyChallengesAutomationNeeds || '',
+    AIPowered:process.AIPowered || '',
+    AIPoweredUseCase:process.AIPoweredUseCase || '',
+    businessRecommendationForAutomation:process.businessRecommendationForAutomation || '',
+    autonomousUseCaseEnabled:process.autonomousUseCaseEnabled
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+  const handleRadioChange = (filed:string, value:string) => {
+    setFormData((prev) => ({ ...prev, [filed]: value }))
+    console.log(filed, value )
   }
 
   return (
@@ -32,17 +39,23 @@ const AutomationParameterForm = (props:any) => {
        {/* row 1 */}
         <div className="flex w-full flex-col">
           <label className="text-muted-foreground text-sm">Process Criticality​</label>
-          <Input
-            className="rounded-md border p-2"
-            onChange={handleChange}
+           <Select
+            options={PROCESS_CRITICALITY.map((option) => ({
+              label: option,
+              value: option,
+            }))}
             value={formData.processCriticality}
+            onChange={(value) =>
+              setFormData((prev) => ({ ...prev, processCriticality: value }))
+            }
+            border
           />
         </div>
 
         <div className="flex w-full flex-col">
           <label className="text-muted-foreground text-sm">Number of People Involved</label>
           <Select
-            options={['High (500-1000)', 'Medium (50-500)', 'Small (1-50)'].map((option) => ({
+            options={NUMBER_OF_PEOPLE_IMPACTED.map((option) => ({
               label: option,
               value: option,
             }))}
@@ -57,11 +70,7 @@ const AutomationParameterForm = (props:any) => {
         <div className="flex w-full flex-col">
           <label className="text-muted-foreground text-sm">Scale of Process</label>
           <Select
-            options={[
-              'Medium: (bigger team within one department)',
-              'Small: (100 - 200)',
-              'Site-specific',
-            ].map((option) => ({
+            options={SCALE_OF_PROCESS.map((option) => ({
               label: option,
               value: option,
             }))}
@@ -77,7 +86,7 @@ const AutomationParameterForm = (props:any) => {
             Process Automation Maturity Level ​
           </label>
           <Select
-            options={['Should be kept as is', 'Should be Automated'].map((option) => ({
+            options={AUTOMATION_MATURITY_LEVEL.map((option) => ({
               label: option,
               value: option,
             }))}
@@ -100,15 +109,15 @@ const AutomationParameterForm = (props:any) => {
         <div className="flex w-full flex-col">
           <label className="text-muted-foreground text-sm">Current Applications / Systems</label>
           <div className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring/40 flex h-10 w-full min-w-0 rounded-md border p-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-3 disabled:cursor-not-allowed disabled:opacity-50">
-            <TagsSelect
-              tags={[
-                {
-                  id: 'user1',
-                  name: 'Audit Management System (RSA Archer)',
-                  img: 'https://t4.ftcdn.net/jpg/06/45/77/79/360_F_645777959_fNnaNoeVO4qxCNPW9MWr3gQlPFSGA9yL.jpg',
-                },
-              ]}
-              allTags={DIGITAL_FP_USERS}
+     <TagsSelect
+              tags={formData.currentApplicationsSystems}
+              allTags={ASSESSMENT_APPLICATIONS}
+              onChange={(tags:any[]) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  currentApplicationsSystems: tags || [],
+                }))
+              }
             />
           </div>
         </div>
@@ -120,14 +129,14 @@ const AutomationParameterForm = (props:any) => {
           Business Recommendation for Automation​
           </label>
           <Select
-            options={['Should be kept as is', 'Should be Automated'].map((option) => ({
+            options={BUSINESS_RECOMMENDATION_FOR_AUTOMATION.map((option) => ({
               label: option,
               value: option,
             }))}
             border
             value={formData.businessRecommendationForAutomation}
             onChange={(value) =>
-              setFormData((prev) => ({ ...prev, automationMaturityLevel: value }))
+              setFormData((prev) => ({ ...prev, businessRecommendationForAutomation: value }))
             }
           />
         </div>
@@ -158,13 +167,15 @@ const AutomationParameterForm = (props:any) => {
                   <label className="text-muted-foreground text-sm">AI-Powered​</label>
                   <RadioCell
                     value={formData.AIPowered}
+                    onValChange={(val:string)=>handleRadioChange('AIPowered',val)}
                   />
                
                </div>
                <div className="flex w-full flex-col">
-                  <label className="text-muted-foreground text-sm">AI-Powered​</label>
+                  <label className="text-muted-foreground text-sm">Autonomous Use-case Enabled​</label>
                   <RadioCell
-                    value={formData.AIPowered}
+                    value={formData.autonomousUseCaseEnabled}
+                    onValChange={(val:string)=>handleRadioChange('autonomousUseCaseEnabled',val)}
                   />
                
                </div>
@@ -173,10 +184,10 @@ const AutomationParameterForm = (props:any) => {
 
            {/* row 5 textrea */}
            <div className="flex w-full flex-col">
-          <label className="text-muted-foreground text-sm">Ongoing Digital Initiatives</label>
+          <label className="text-muted-foreground text-sm">AI-Powered Use-case</label>
           <textarea
             name="processDescription"
-            value={formData.OngoingAutomationDigitalInitiatives}
+            value={formData.AIPoweredUseCase}
             onChange={handleChange}
             className="rounded-md border p-2 text-sm"
           />

@@ -37,7 +37,12 @@ export const PROESS_DETAILS = [
     scaleOfProcess: 'Medium: (bigger team within one department)',
     automationMaturityLevel: 'Fully Automated',
     automationLevel: '10%',
-    currentApplicationsSystems: ['Microsot Excel', 'Petrel'],
+    currentApplicationsSystems: [
+      {
+        id: 'excel',
+        name: 'Microsoft 365 - Excel',
+      },
+    ],
     OngoingAutomationDigitalInitiatives: 'N/A',
     businessRecommendationForAutomation: 'Should be kept as is',
     keyChallengesAutomationNeeds: 'none',
