@@ -33,7 +33,9 @@ const Breadcrumb = (props: BreadcrumbLinks) => {
                 {link.isCurrentPage || !link.url ? (
                   <BreadcrumbPage>{link.title}</BreadcrumbPage>
                 ) : (
-                  <BreadcrumbLink href={link.url}>{link.title}</BreadcrumbLink>
+                  <BreadcrumbLink href={link.url}>
+                    {link.title}
+                    </BreadcrumbLink>
                 )}
               </BreadcrumbItem>
               {index < allLinks.length - 1 && <BreadcrumbSeparator />}

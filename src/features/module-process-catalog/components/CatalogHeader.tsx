@@ -1,11 +1,4 @@
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/shared/components/ui/breadcrumb'
+
 import ModuleToolbar, {
   type BulkModeState,
   type ToolbarAction,
@@ -21,6 +14,7 @@ import { useCurrentUser } from '@/shared/auth/useUserStore'
 import ViewToggle from '@/shared/components/ViewToggle'
 import { hasPermission } from '@/shared/lib/permissions'
 import ProcessesMenu, { type ProcessViewOption } from '@/shared/components/ProcessesMenu'
+import Breadcrumb from '@/shared/components/Breadcrumb'
 
 export type CatalogTabValue = 'processes' | 'myTasks' | 'submittedRequests'
 export type CatalogView = 'default' | 'full-report'
@@ -113,21 +107,10 @@ const CatalogHeader = ({
 
   return (
     <header className="space-y-3">
-      <Breadcrumb>
-        <BreadcrumbList className="text-xs">
-          <BreadcrumbItem>
-            <BreadcrumbLink href="#" className="font-medium">
-              Home
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage className="text-muted-foreground">
-              Process Catalog Management
-            </BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <Breadcrumb
+          links={[
+            {title:' Process Catalog Management'}
+            ]} />
 
       <div className="flex flex-wrap items-center gap-2">
         <h1 className="text-foreground text-start text-2xl font-semibold">
