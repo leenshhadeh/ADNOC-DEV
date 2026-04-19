@@ -52,6 +52,10 @@ export const PROESS_DETAILS = [
     AutonomousUseCaseDescriptionComment: 'N/A',
     processCriticality: 'Standard',
     keyManualSteps: '<p>1.Data collection</p>',
+    processRepetitionWithinCycle:1,
+    totalPersonnelExecutingFTE:3,
+    totalProcessDurationDays:'30',
+    timeSpentOnManualTasksPercent:'80%',
     northStarTargetAutomation: 'To be intelligent',
     targetAutomationLevelPercent: '60%',
     SMEFeedback:
