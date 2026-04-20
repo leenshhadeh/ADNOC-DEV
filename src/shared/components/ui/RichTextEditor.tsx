@@ -7,12 +7,14 @@ type RichTextEditorProps = {
   placeholder?: string
   minHeight?: number
   onChange?: (value: string) => void
+  disabled?:boolean
 }
 
 export default function RichTextEditor({
   value = '',
   placeholder = 'Write here...',
   onChange,
+  disabled=false
 }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement | null>(null)
   const quillRef = useRef<Quill | null>(null)

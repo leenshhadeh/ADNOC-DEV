@@ -179,6 +179,7 @@ const ProcessDetailsPage = () => {
                   {/* forms and data */}
                   <div
                     className={cn(
+                      activeTab == 'RecordedChanges'?'overflow-x-auto':'',
                       'mt-[24px] flex-1 rounded-2xl bg-[linear-gradient(90.49deg,rgba(78,241,228,0.1)_0.03%,rgba(17,24,39,0.1)_99.89%)] p-[1px]',
                     )}
                   >
@@ -213,10 +214,16 @@ const ProcessDetailsPage = () => {
                         />
                       )}
                       {activeTab == 'TargetRecommendations​​' && (
-                        <TargerRecommendationsTab process={data[0]} />
+                        <TargerRecommendationsTab process={data[0]} 
+                        canComment={canComment}
+                        onShowComment={onShowComment}/>
                       )}
-                      {activeTab == 'Opportunities' && <OpprtunitiesTab process={data[0]} />}
-                      {activeTab == 'RecordedChanges' && <RecordedChangesTab process={data[0]} />}
+                      {activeTab == 'Opportunities' && <OpprtunitiesTab process={data[0]} 
+                       canComment={canComment}
+                       onShowComment={onShowComment}/>}
+                      {activeTab == 'RecordedChanges' && <RecordedChangesTab process={data[0]}
+                       canComment={canComment}
+                       onShowComment={onShowComment} />}
                       {activeTab == 'Comments' && <CommentsTab comments={data[0].comments} />}
                     </div>
                   </div>

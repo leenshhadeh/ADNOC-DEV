@@ -21,7 +21,7 @@ const RecordedChangesTab = (props: any) => {
         id: 'name',
         accessorKey: 'name',
         header: 'Field name',
-        size: 250,
+ 
         enableSorting: false,
         cell: (info) => (
           <div>
@@ -33,8 +33,8 @@ const RecordedChangesTab = (props: any) => {
         id: 'changeType',
         accessorKey: 'changeType',
         header: 'Change Type',
-        size: 200,
         enableSorting: false,
+        size:200,
         cell: (info) => (
           <p className="text-muted-foreground text-wrap">{info.row.original.changeType}</p>
         ),
@@ -43,7 +43,7 @@ const RecordedChangesTab = (props: any) => {
         id: 'oldValue',
         accessorKey: 'oldValue',
         header: 'Old Value',
-        size: 200,
+        size:150,
         enableSorting: false,
         cell: (info) => <p className="text-muted-foreground">{info.row.original.oldValue}</p>,
       },
@@ -51,7 +51,7 @@ const RecordedChangesTab = (props: any) => {
         id: 'newValue',
         accessorKey: 'newValue',
         header: 'New Value',
-        size: 200,
+        size:150,
         enableSorting: false,
         cell: (info) => <p className="text-muted-foreground">{info.row.original.newValue}</p>,
       },
@@ -67,7 +67,6 @@ const RecordedChangesTab = (props: any) => {
         id: 'modifiedBy',
         accessorKey: 'modifiedBy',
         header: 'Modified By',
-        size: 150,
         enableSorting: false,
         cell: (info) =>  <div className="text-muted-foreground rounded-[99px] bg-[#F1F3F5] p-1 text-center"><p className="text-muted-foreground">{info.row.original.modifiedBy}</p></div>
       },
@@ -75,7 +74,6 @@ const RecordedChangesTab = (props: any) => {
         id: 'modifiedOn',
         accessorKey: 'modifiedOn',
         header: 'Modified On',
-        size: 150,
         enableSorting: false,
         cell: (info) => <p className="text-muted-foreground">{info.row.original.modifiedOn}</p>,
       },
@@ -87,7 +85,7 @@ const RecordedChangesTab = (props: any) => {
     <>
       {/* table: */}
       {process.changes && process.changes.length > 0 ? (
-        <div className="table-light">
+        <div className="table-light overflow-auto">
           <DataTable columns={columns} data={process.changes || []} />
         </div>
       ) : (
