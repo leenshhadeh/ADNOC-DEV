@@ -2,29 +2,26 @@ import { Input } from '@/shared/components/ui/input'
 import { Select } from '@/shared/components/ui/select'
 import React, { useState } from 'react'
 import RichTextEditor from '@/shared/components/ui/RichTextEditor'
+import { PROCESS_CYCLE } from '@/constants/dropdownOptions'
 
 const ManualParametersForm = (props: any) => {
   const { process } = props
   const [formData, setFormData] = useState({
-    peopleInvoled: '',
     numberOfPeopleInvolved: process.numberOfPeopleInvolved || '',
-    scaleOfProcess: process.scaleOfProcess || '',
-    currentApplicationsSystems: process.currentApplicationsSystems || [],
-    automationMaturityLevel: process.automationMaturityLevel || '',
-    OngoingAutomationDigitalInitiatives: process.OngoingAutomationDigitalInitiatives || '',
     automationLevel: process.automationLevel || '',
-    processCriticality: process.processCriticality || '',
-    challengesAndNeeds: '',
-    AIPowered: '',
-    businessRecommendationForAutomation: 'should kept as it is',
     keyManualSteps: process.keyManualSteps || '',
+    processRepetitionWithinCycle: process.processRepetitionWithinCycle || 0 ,
+    totalPersonnelExecutingFTE: process.totalPersonnelExecutingFTE,
+    totalProcessDurationDays: process.totalProcessDurationDays,
+    timeSpentOnManualTasksPercent: process.timeSpentOnManualTasksPercent,
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
+    debugger
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
-  const handleKeyStepsChange = (val:String) => {
+  const handleKeyStepsChange = (val: String) => {
     setFormData((prev) => ({ ...prev, keyManualSteps: val }))
   }
 
@@ -36,22 +33,12 @@ const ManualParametersForm = (props: any) => {
           <label className="text-muted-foreground text-sm">
             {'How Often the Process Happens (Cycle)'}​
           </label>
-          <Input
-            className="rounded-md border p-2"
-            onChange={handleChange}
-            value={formData.processCriticality}
-          />
-        </div>
-
-        <div className="flex w-full flex-col">
-          <label className="text-muted-foreground text-sm">
-            Number of Times the Process is Repeated within Selected Cycle
-          </label>
           <Select
-            options={['High (500-1000)', 'Medium (50-500)', 'Small (1-50)'].map((option) => ({
+            options={PROCESS_CYCLE.map((option) => ({
               label: option,
               value: option,
             }))}
+            border
             value={formData.numberOfPeopleInvolved}
             onChange={(value) =>
               setFormData((prev) => ({ ...prev, numberOfPeopleInvolved: value }))
@@ -60,18 +47,26 @@ const ManualParametersForm = (props: any) => {
         </div>
 
         <div className="flex w-full flex-col">
+          <label className="text-muted-foreground text-sm">
+            Number of Times the Process is Repeated within Selected Cycle
+          </label>
+          <Input
+            value={formData.processRepetitionWithinCycle}
+            onChange={handleChange}
+            type="number"
+            name='processRepetitionWithinCycle'
+            min={0}
+          />
+        </div>
+
+        <div className="flex w-full flex-col">
           <label className="text-muted-foreground text-sm">Total Process Duration (Days)</label>
-          <Select
-            options={[
-              'Medium: (bigger team within one department)',
-              'Small: (100 - 200)',
-              'Site-specific',
-            ].map((option) => ({
-              label: option,
-              value: option,
-            }))}
-            value={formData.scaleOfProcess}
-            onChange={(value) => setFormData((prev) => ({ ...prev, scaleOfProcess: value }))}
+          <Input
+            value={formData.totalProcessDurationDays}
+            onChange={handleChange}
+            type="number"
+            name='totalProcessDurationDays'
+            min={0}
           />
         </div>
 
@@ -80,15 +75,12 @@ const ManualParametersForm = (props: any) => {
           <label className="text-muted-foreground text-sm">
             {' Total Personnel Executing the Process (FTE)'}
           </label>
-          <Select
-            options={['Should be kept as is', 'Should be Automated'].map((option) => ({
-              label: option,
-              value: option,
-            }))}
-            value={formData.automationMaturityLevel}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, automationMaturityLevel: value }))
-            }
+          <Input
+            value={formData.totalPersonnelExecutingFTE}
+            onChange={handleChange}
+            type="number"
+            name='totalPersonnelExecutingFTE'
+            min={0}
           />
         </div>
         <div className="flex w-full flex-col">
@@ -96,6 +88,7 @@ const ManualParametersForm = (props: any) => {
             {'Time Spent on Manual Tasks (%)'}​
           </label>
           <Input
+          name='automationLevel'
             className="rounded-md border p-2"
             value={formData.automationLevel}
             onChange={handleChange}
@@ -108,6 +101,8 @@ const ManualParametersForm = (props: any) => {
             className="rounded-md border p-2"
             value={formData.automationLevel}
             onChange={handleChange}
+            disabled
+            name='automationLevel'
           />
         </div>
 

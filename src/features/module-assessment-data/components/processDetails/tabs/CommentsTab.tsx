@@ -1,4 +1,5 @@
 import { StatusBadgeCell, type CatalogStatus } from '@/shared/components/cells'
+import Avatar from '@/shared/components/ui/Avatar'
 import { Input } from '@/shared/components/ui/input'
 import { SendHorizontal } from 'lucide-react'
 
@@ -21,22 +22,22 @@ const CommentsTab = (props: any) => {
         comments.map((comment: CommentType) => (
           <>
             <div key={comment.date} className="w-full border-b py-3 last:border-0">
-              <div className="mb-5 inline-flex items-center gap-2">
-                <img
-                  src={
-                    comment.userPrfileImg ||
-                    'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
-                  }
-                  alt="Profile"
-                  className="h-9 w-9 rounded-full object-cover"
-                />
+              <div className="mb-5 inline-flex items-start gap-4">
+                {comment.userPrfileImg ? (
+                  <img
+                    src={comment.userPrfileImg}
+                    alt={comment.username}
+                    className="h-9 w-9 rounded-full object-cover"
+                  />
+                ) : <Avatar name={comment.username} />
+                }
                 <div>
-                  <p className="text-muted-foreground text-sm font-medium">{comment.username}</p>
-                  <p className="text-sm text-[#687076]">{comment.comment || ''}</p>
+                  <p className="text-muted-foreground text-md font-medium">{comment.username}</p>
+                  <p className="text-md my-1 text-[#151718]">{comment.comment || ''}</p>
                   <div className="inline-flex items-center gap-2">
                     <p className="text-sm text-[#687076]">{comment.date || ''}</p>
                     <p className="text-sm text-[#687076]">
-                      {comment.markedAsReviewed ? 'Marked as reviewed' : ''}
+                      {comment.markedAsReviewed ? '- Marked as reviewed' : ''}
                     </p>
                     <StatusBadgeCell status={comment.status as CatalogStatus} isSmall />
                   </div>

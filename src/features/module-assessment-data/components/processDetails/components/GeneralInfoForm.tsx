@@ -2,25 +2,26 @@ import { useState } from 'react'
 import TagsSelect from '@/shared/components/table-primitives/TagsSelect'
 import { Input } from '@/shared/components/ui/input'
 import { DIGITAL_FP_USERS } from '../../../constants/CurrentApplication'
+import { cn } from '@/shared/lib/utils'
+import commentIcon from '@/assets/icons/Comment-circle.svg'
 
-const GeneralInfoForm = (props:any) => {
-  const {onFormSubmit , onFormChanged, initialData} = props
+const GeneralInfoForm = (props: any) => {
+  const { onFormSubmit, onFormChanged, initialData, isEditable, isUserAuthToComment ,showComments} = props
 
   const [formData, setFormData] = useState({
     customName: initialData.customName || '',
     customDescription: initialData.customDescription || '',
-    processDescription: initialData.processDescription ||'',
-    responsibleBusinessFocalPoint:initialData.responsibleBusinessFocalPoint || [],
+    processDescription: initialData.processDescription || '',
+    responsibleBusinessFocalPoint: initialData.responsibleBusinessFocalPoint || [],
     responsibleDigitalFocalPoint: initialData.responsibleDigitalFocalPoint || [],
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
-    const newChanges={ ...formData, [name]: value }
+    const newChanges = { ...formData, [name]: value }
     onFormChanged(newChanges)
   }
-
 
   return (
     <div className="mt-[24px]">
@@ -29,12 +30,16 @@ const GeneralInfoForm = (props:any) => {
         onSubmit={onFormSubmit}
       >
         <div className="flex w-full flex-col">
-          <label className="text-muted-foreground text-sm">Custom Name</label>
+          <div className="flex items-center justify-between">
+            <label className="text-muted-foreground text-sm">Custom Name</label>
+            {isUserAuthToComment && <img src={commentIcon} width={'23px'} className="mb-1" onClick={showComments}/>}
+          </div>
           <Input
             name="customName"
             value={formData.customName}
             onChange={handleChange}
             className="rounded-md border p-2"
+            disabled={!isEditable}
           />
         </div>
 
@@ -45,6 +50,7 @@ const GeneralInfoForm = (props:any) => {
             value={formData.customDescription}
             onChange={handleChange}
             className="rounded-md border p-2 text-sm"
+            disabled={!isEditable}
           />
         </div>
 
@@ -55,47 +61,54 @@ const GeneralInfoForm = (props:any) => {
             value={formData.processDescription}
             onChange={handleChange}
             className="rounded-md border p-2 text-sm"
+            disabled={!isEditable}
           />
         </div>
 
         <div className="flex w-full flex-col">
           <label className="text-muted-foreground text-sm">Responsible Business Focal Point</label>
-          <div className="flex h-auto w-full min-w-0 border-border bg-background text-sm text-foreground shadow-xs outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50 rounded-md border p-2">
+          <div
+            className={cn(
+              'border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring/40 flex h-auto w-full min-w-0 rounded-md border p-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-3',
+              !isEditable && 'bg-[#f1f3f5]',
+            )}
+          >
             <TagsSelect
               tags={formData.responsibleBusinessFocalPoint}
               allTags={DIGITAL_FP_USERS}
-              onChange={(tags:any) =>
+              onChange={(tags: any) =>
                 setFormData((prev) => ({
                   ...prev,
                   responsibleBusinessFocalPoint: tags,
                 }))
               }
+              disabled={!isEditable}
             />
           </div>
         </div>
 
         <div className="flex w-full flex-col">
           <label className="text-muted-foreground text-sm">Responsible Digital Focal Point</label>
-          <div className="flex h-auto w-full min-w-0 border-border bg-background text-sm text-foreground shadow-xs outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50 rounded-md border p-2">
+          <div
+            className={cn(
+              'border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring/40 flex h-auto w-full min-w-0 rounded-md border p-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-3',
+              !isEditable && 'bg-[#f1f3f5]',
+            )}
+          >
+            {' '}
             <TagsSelect
               tags={formData.responsibleDigitalFocalPoint}
               allTags={DIGITAL_FP_USERS}
-              onChange={(tags:any) =>
+              onChange={(tags: any) =>
                 setFormData((prev) => ({
                   ...prev,
                   responsibleDigitalFocalPoint: tags,
                 }))
               }
+              disabled={!isEditable}
             />
           </div>
         </div>
-
-        {/* <button
-          type="submit"
-          className="col-span-full mt-4 rounded-md bg-blue-500 p-2 text-white"
-        >
-          Submit
-        </button> */}
       </form>
     </div>
   )

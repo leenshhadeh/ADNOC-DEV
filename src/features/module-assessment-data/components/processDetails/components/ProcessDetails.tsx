@@ -5,7 +5,7 @@ import {
 import CopyText from '@/shared/components/CopyText'
 import { RadioCell } from '@/shared/components/table-primitives'
 const ProcessDetails = (props: any) => {
-  const { data } = props
+  const { data , isEditable=true } = props
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       {data?.map((item: any) => (
@@ -19,7 +19,7 @@ const ProcessDetails = (props: any) => {
               <StatusBadgeCell status={item.value} />
             ) : item.isEditable ? (
               <>
-                <RadioCell value={item.value} />
+                <RadioCell value={item.value} disabled={!isEditable} />
               </>
             ) : item.label == 'Process stage' ? (
               <StageProgressCell

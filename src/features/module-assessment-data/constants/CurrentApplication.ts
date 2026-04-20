@@ -1,18 +1,8 @@
 export const ASSESSMENT_APPLICATIONS = [
-{id: 'Audit Management System (RSA Archer)', name: 'Audit Management System (RSA Archer)'},
-{id: 'Audit Management', name: 'Audit Management'},
-{id: 'Petrel', name: 'Petrel'},
-{id: 'app4', name: 'Application 4'},
-{id: 'app5', name: 'Application 5'},
-{id: 'app6', name: 'Application 6'},
-{id: 'app7', name: 'Application 7'},
-{id: 'app8', name: 'Application 8'},
-{id: 'app9', name: 'Application 9'},
-{id: 'app10', name: 'Application 10'},
-
-
-
-  ]
+{id: 'AuditManagementSystemRSA', name: 'Audit Management System (RSA Archer)'},
+{id: 'AuditManagement', name: 'Audit Management'},
+{id:'excel' , name:'Microsoft 365 - Excel'}
+]
 
   export const DIGITAL_FP_USERS= [
     {id: 'user1', name: 'John Doe', img: 'https://t4.ftcdn.net/jpg/06/45/77/79/360_F_645777959_fNnaNoeVO4qxCNPW9MWr3gQlPFSGA9yL.jpg'},

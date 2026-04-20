@@ -37,7 +37,12 @@ export const PROESS_DETAILS = [
     scaleOfProcess: 'Medium: (bigger team within one department)',
     automationMaturityLevel: 'Fully Automated',
     automationLevel: '10%',
-    currentApplicationsSystems: ['Microsot Excel', 'Petrel'],
+    currentApplicationsSystems: [
+      {
+        id: 'excel',
+        name: 'Microsoft 365 - Excel',
+      },
+    ],
     OngoingAutomationDigitalInitiatives: 'N/A',
     businessRecommendationForAutomation: 'Should be kept as is',
     keyChallengesAutomationNeeds: 'none',
@@ -47,6 +52,10 @@ export const PROESS_DETAILS = [
     AutonomousUseCaseDescriptionComment: 'N/A',
     processCriticality: 'Standard',
     keyManualSteps: '<p>1.Data collection</p>',
+    processRepetitionWithinCycle:1,
+    totalPersonnelExecutingFTE:3,
+    totalProcessDurationDays:'30',
+    timeSpentOnManualTasksPercent:'80%',
     northStarTargetAutomation: 'To be intelligent',
     targetAutomationLevelPercent: '60%',
     SMEFeedback:

@@ -2,7 +2,7 @@ import ProcessDetails from '../components/ProcessDetails'
 import GeneralInfoForm from '../components/GeneralInfoForm'
 import { Separator } from '@/shared/components/ui/separator'
 import TreeIcon from '@/assets/icons/treeIcon.svg'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import OrgMappingSheet from '../../sidePanels/OrgMappingSheet'
 import TagsList from '@/shared/components/table-primitives/TagsList'
 import DataTable from '@/shared/components/data-table/DataTable'
@@ -14,7 +14,7 @@ interface orgRows {
   team?: string[]
 }
 const GeneralInfoTab = (props: any) => {
-  const { processGeneralInfo ,process , onFormSubmit , onFormChanged} = props
+  const { processGeneralInfo ,process , onFormSubmit , onFormChanged ,isEditable ,isUserAuthToComment , onShowComment } = props
   const [openBUSheet, setOpenBUSheet] = useState(false)
   const [orgData, setOrgData] = useState<any>(process.orgMapping)
   const [dataToSubmit, setDataToSubmit] = useState<any>([])
@@ -92,13 +92,16 @@ const GeneralInfoTab = (props: any) => {
 
   return (
     <>
-      <ProcessDetails data={processGeneralInfo} />
+      <ProcessDetails data={processGeneralInfo} isEditable={isEditable} />
 
       {/* Form: */}
       <GeneralInfoForm 
       initialData={process}
       onFormSubmit={onFormSubmit}
       onFormChanged={formChangeHandler}
+      isEditable={isEditable}
+      isUserAuthToComment={isUserAuthToComment}
+      showComments={onShowComment}
       />
       
       <div className="mt-9 flex items-center gap-3">
@@ -125,7 +128,7 @@ const GeneralInfoTab = (props: any) => {
       )}
 
       {/* link with icon */}
-      <div
+      {isEditable && <div
         className="my-4 flex items-center gap-2"
         onClick={() => {
           setOpenBUSheet(true)
@@ -133,7 +136,7 @@ const GeneralInfoTab = (props: any) => {
       >
         <img src={TreeIcon} alt="link icon" className="h-4 w-4" />
         <p className="font-[14px] text-blue-600">{orgData ? 'Edit Mapping' : 'Start mapping'}</p>
-      </div>
+      </div>}
 
       <OrgMappingSheet
         title="Organization mapping"
