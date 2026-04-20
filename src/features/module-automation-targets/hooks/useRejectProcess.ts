@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { returnForRevision } from '../api/automationTargetsService'
+import { rejectProcess } from '../api/automationTargetsService'
 
-export const useReturnProcess = () => {
+export const useRejectProcess = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({ processId, reason }: { processId: string; reason?: string }) =>
-      returnForRevision(processId, reason),
+      rejectProcess(processId, reason),
     onSuccess: (_data, { processId }) => {
       void queryClient.invalidateQueries({ queryKey: ['automation-process-detail', processId] })
     },
