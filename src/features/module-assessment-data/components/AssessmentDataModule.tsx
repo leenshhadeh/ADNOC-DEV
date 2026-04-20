@@ -74,12 +74,14 @@ import { useProcessFilterDefinitions } from '../hooks/useProcessFilterDefinition
 import ProcessFilterSheet from '@/features/module-process-catalog/components/ProcessFilterSheet'
 import { DOMAINS_DATA } from '@/features/module-process-catalog/constants/domains-data'
 import Breadcrumb from '@/shared/components/Breadcrumb'
+import { useAssessmentNavStore } from '../store/useAssessmentNavStore'
+
 
 type ActiveModal = 'edit' | 'comment' | 'copy' | 'review' | null
 type TaskModal = 'approve' | 'return' | 'reject' | 'request-endorsement' | null
 
 const AssessmentDataModule = () => {
-  const [activeTab, setActiveTab] = useState('processes')
+  const { activeTab, setActiveTab } = useAssessmentNavStore()
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [isBulkMode, setIsBulkMode] = useState(false)

@@ -1,5 +1,4 @@
 import { X } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 import clsx from 'clsx'
 import NoTasks from './NoTasks'
 
@@ -21,11 +20,10 @@ interface ViewAllProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   taskGroups: TaskGroup[]
+  onViewAll: (moduleTitle: string, moduleUrl: string) => void
 }
 
-const ViewAll = ({ open, onOpenChange, taskGroups }: ViewAllProps) => {
-  const navigate = useNavigate()
-
+const ViewAll = ({ open, onOpenChange, taskGroups, onViewAll }: ViewAllProps) => {
   const totalCount = taskGroups.reduce((sum, group) => sum + group.items.length, 0)
 
   return (
@@ -84,8 +82,8 @@ const ViewAll = ({ open, onOpenChange, taskGroups }: ViewAllProps) => {
                       type="button"
                       className="cursor-pointer text-[14px] font-semibold text-[#0047BA] transition hover:opacity-70"
                       onClick={() => {
-                        navigate(group.module.url)
-                        if (open) return null
+                        onViewAll(group.module.title, group.module.url)
+                        onOpenChange(false)
                       }}
                     >
                       View all

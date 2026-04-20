@@ -2,6 +2,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   Pie,
   PieChart,
   ResponsiveContainer,
@@ -23,7 +24,6 @@ type StatusItem = {
   key: string
   label: string
   value: number
-  color: string
 }
 
 type PendingAction = {
@@ -44,6 +44,15 @@ export type ProcessesSummaryData = {
   pendingAction: PendingAction
 }
 
+const STATUS_COLORS: Record<string, string> = {
+  drafts: '#687076',
+  qualityReview: '#5878E8',
+  digitalVpReview: '#6D57CA',
+  published: '#4EF1E4',
+}
+
+const getStatusColor = (key: string) => STATUS_COLORS[key] ?? '#CBD5E1'
+
 const mockData: ProcessesSummaryData = {
   totalDomainsAssigned: 4,
   totalProcesses: 24,
@@ -52,33 +61,54 @@ const mockData: ProcessesSummaryData = {
     l4: 89,
   },
   domainProcesses: [
-    { id: 'domain-1', domainKey: 'ITM', domainLabel: 'ITM', l3: 36, l4: 58 },
-    { id: 'domain-2', domainKey: 'OPS', domainLabel: 'OPS', l3: 28, l4: 42 },
-    { id: 'domain-3', domainKey: 'FINH', domainLabel: 'FINH', l3: 44, l4: 65 },
-    { id: 'domain-4', domainKey: 'UPE', domainLabel: 'UPE', l3: 20, l4: 73 },
+    {
+      id: 'domain-1',
+      domainKey: 'ITM',
+      domainLabel: 'IT Management',
+      l3: 36,
+      l4: 58,
+    },
+    {
+      id: 'domain-2',
+      domainKey: 'OPS',
+      domainLabel: 'Operations',
+      l3: 28,
+      l4: 42,
+    },
+    {
+      id: 'domain-3',
+      domainKey: 'FINH',
+      domainLabel: 'Finance',
+      l3: 44,
+      l4: 65,
+    },
+    {
+      id: 'domain-4',
+      domainKey: 'UPE',
+      domainLabel: 'User Product Experience',
+      l3: 20,
+      l4: 73,
+    },
   ],
   statusSummary: [
-    { id: 'status-1', key: 'drafts', label: 'Drafts', value: 3, color: '#687076' },
+    { id: 'status-1', key: 'drafts', label: 'Drafts', value: 3 },
     {
       id: 'status-2',
       key: 'qualityReview',
       label: 'Under Quality review',
       value: 10,
-      color: '#5878E8',
     },
     {
       id: 'status-3',
       key: 'digitalVpReview',
       label: 'Under Digital VP review',
       value: 7,
-      color: '#6D57CA',
     },
     {
       id: 'status-4',
       key: 'published',
       label: 'Published',
       value: 4,
-      color: '#4EF1E4',
     },
   ],
   pendingAction: {
@@ -93,12 +123,15 @@ type ProcessesSummaryProps = {
   loading?: boolean
 }
 
-const CustomBarTooltip = ({ active, payload, label }: any) => {
+const CustomBarTooltip = ({ active, payload }: any) => {
   if (!active || !payload?.length) return null
+
+  const domain = payload[0]?.payload as DomainProcessItem | undefined
 
   return (
     <div className="rounded-[12px] border border-[#E5E7EB] bg-white px-3 py-2 shadow-md">
-      <p className="mb-1 text-[13px] font-[600] text-[#151718]">{label}</p>
+      <p className="mb-1 text-[13px] font-[600] text-[#151718]">{domain?.domainLabel}</p>
+
       {payload.map((entry: any) => (
         <div key={entry.dataKey} className="text-[12px] text-[#6B7280]">
           {entry.name}: <span className="font-[600] text-[#151718]">{entry.value}</span>
@@ -110,9 +143,10 @@ const CustomBarTooltip = ({ active, payload, label }: any) => {
 
 const ProcessesSummary = ({ data = mockData, loading = false }: ProcessesSummaryProps) => {
   const pendingMax = Math.max(data.pendingAction.l3, data.pendingAction.l4, 1)
+
   const pieChartData = data.statusSummary.map((item) => ({
     ...item,
-    fill: item.color,
+    fill: getStatusColor(item.key),
   }))
 
   if (loading) {
@@ -140,7 +174,7 @@ const ProcessesSummary = ({ data = mockData, loading = false }: ProcessesSummary
               {data.totalDomainsAssigned}
             </div>
 
-            <div className="mb- mt-2 flex flex-col items-end gap-3">
+            <div className="mt-2 flex flex-col items-end gap-3">
               <div className="flex items-center gap-3">
                 <span className="h-[10px] w-[10px] rounded-full bg-[#336CC8]" />
                 <span className="text-[14px] text-[#6B7280]">L3 processes</span>
@@ -168,7 +202,7 @@ const ProcessesSummary = ({ data = mockData, loading = false }: ProcessesSummary
                   >
                     <CartesianGrid stroke="#E5E7EB" vertical={false} />
                     <XAxis
-                      dataKey="domainLabel"
+                      dataKey="domainKey"
                       axisLine={false}
                       tickLine={false}
                       tick={{ fill: '#6B7280', fontSize: 14 }}
@@ -218,7 +252,11 @@ const ProcessesSummary = ({ data = mockData, loading = false }: ProcessesSummary
                       outerRadius={70}
                       paddingAngle={6}
                       cornerRadius={18}
-                    />
+                    >
+                      {pieChartData.map((entry) => (
+                        <Cell key={entry.id} fill={entry.fill} />
+                      ))}
+                    </Pie>
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -229,7 +267,7 @@ const ProcessesSummary = ({ data = mockData, loading = false }: ProcessesSummary
                 <div key={item.id} className="flex items-center gap-4">
                   <span
                     className="h-[10px] w-[10px] rounded-full"
-                    style={{ backgroundColor: item.color }}
+                    style={{ backgroundColor: getStatusColor(item.key) }}
                   />
                   <span className="min-w-[44px] text-[14px] font-[600] text-[#4B5563]">
                     {String(item.value).padStart(2, '0')}
@@ -248,7 +286,7 @@ const ProcessesSummary = ({ data = mockData, loading = false }: ProcessesSummary
                 {data.pendingAction.total}
               </div>
 
-              <div className="w-full-[100%] max-w-full space-y-3">
+              <div className="max-w-full space-y-3">
                 <div>
                   <div className="mb-3 text-[14px] text-[#6B7280]">L3 processes</div>
                   <div className="flex items-center gap-4">
