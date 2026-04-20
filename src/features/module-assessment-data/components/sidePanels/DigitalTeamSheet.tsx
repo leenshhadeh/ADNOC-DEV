@@ -2,33 +2,39 @@ import ActionSheet from '@/shared/components/ActionSheet'
 import { TreeSelect } from '@/shared/components/TreeSelect'
 import { Button } from '@/shared/components/ui/button'
 import { useState } from 'react'
+import { Search } from 'lucide-react'
 import { DigitalTeam } from '../../constants/org-mapping-data'
 
 const DigitalTeamSheet = (props: any) => {
   const { open = true, handleOpenChange } = props
   const [selected, setSelected] = useState<string[]>([])
+  const [search, setSearch] = useState('')
 
   return (
-    <ActionSheet title={'Responsible Digital Team'} open={open} onOpenChange={handleOpenChange}>
-      <div className="relative flex-1 overflow-hidden">
-      <div className="m-4">
-      <input
-        type="text"
-        placeholder={`Search...`}
-        className="flex h-8 w-full min-w-0 border-border bg-background text-sm text-foreground shadow-xs outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/40 rounded-md border px-2"
-      />
-      </div>
-        {/* ── Main scrollable body ──────────────────────────────────────── */}
-        <div className=" overflow-y-auto m-4 p-3 rounded-md border">
-          {/* tree select: Shared servise:{Procurement, Vendor Relations:{v1, v2}} */}
-          <TreeSelect
-            data={DigitalTeam}
-            selected={selected}
-            onChange={setSelected}
+    <ActionSheet title="Responsible Digital Team" open={open} onOpenChange={handleOpenChange}>
+      {/* Search */}
+      <div className="shrink-0 px-6 pt-4 pb-2">
+        <div className="relative">
+          <Search className="text-muted-foreground pointer-events-none absolute start-4 top-1/2 size-4 -translate-y-1/2" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search..."
+            className="border-input bg-background text-foreground placeholder:text-muted-foreground w-full rounded-xl border py-2.5 ps-11 pe-4 text-sm outline-none"
           />
         </div>
       </div>
-       <div className="border-border shrink-0 px-6 py-4">
+
+      {/* Tree */}
+      <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-2">
+        <div className="rounded-xl border p-4">
+          <TreeSelect data={DigitalTeam} selected={selected} onChange={setSelected} />
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="border-border shrink-0 px-6 py-4">
         <div className="flex gap-3">
           <Button
             type="button"
@@ -38,7 +44,11 @@ const DigitalTeamSheet = (props: any) => {
           >
             Cancel
           </Button>
-          <Button type="button" className="flex-1 rounded-full" onClick={()=>handleOpenChange(selected)}>
+          <Button
+            type="button"
+            className="flex-1 rounded-full"
+            onClick={() => handleOpenChange(selected)}
+          >
             Save
           </Button>
         </div>

@@ -16,6 +16,9 @@ import { SuccessToast } from '@/shared/components/SuccessToast'
 import { Button } from '@/shared/components/ui/button'
 import { Select } from '@/shared/components/ui/select'
 import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
+import BUSheet from './sidePanels/BUSheet'
+import SharedServicesSheet from './sidePanels/SharedServicesSheet'
+import DigitalTeamSheet from './sidePanels/DigitalTeamSheet'
 
 // ── Field type definitions ────────────────────────────────────────────────────
 
@@ -90,27 +93,8 @@ const BULK_EDITABLE_FIELDS: BulkEditFieldConfig[] = [
   },
   { label: 'SME Feedback', value: 'smeFeedback', type: 'textarea' },
   { label: 'Business Unit', value: 'businessUnit', type: 'drawer' },
-]
-
-// ── Business unit options (drawer picker) ─────────────────────────────────────
-
-const BUSINESS_UNIT_OPTIONS = [
-  'Shared Services',
-  'Procurement',
-  'Supply Chain Management',
-  'Vendor Relations',
-  'Inventory Control',
-  'Finance & Accounting',
-  'Accounts Payable',
-  'Invoice Processing',
-  'Payment Processing',
-  'Vendor Reconciliation',
-  'Operations',
-  'Production',
-  'Logistics',
-  'Maintenance',
-  'Manufacturing',
-  'Financial Reporting',
+  { label: 'Shared Services', value: 'sharedServices', type: 'drawer' },
+  { label: 'Responsible Digital Team', value: 'responsibleDigitalTeam', type: 'drawer' },
 ]
 
 // ── Shared field styles ───────────────────────────────────────────────────────
@@ -136,21 +120,17 @@ export function BulkEditModal({
 }: BulkEditModalProps) {
   const [fieldValue, setFieldValue] = useState('')
   const [value, setValue] = useState('')
-  const [drawerOpen, setDrawerOpen] = useState(false)
-  const [drawerSearch, setDrawerSearch] = useState('')
-  const [drawerSelected, setDrawerSelected] = useState('')
+  const [sheetOpen, setSheetOpen] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
 
   const selectedField = BULK_EDITABLE_FIELDS.find((f) => f.value === fieldValue) ?? null
   const isDrawer = selectedField?.type === 'drawer'
-  const isValueValid = isDrawer ? !!drawerSelected : !!value.trim()
+  const isValueValid = isDrawer ? false : !!value.trim()
 
   const reset = () => {
     setFieldValue('')
     setValue('')
-    setDrawerOpen(false)
-    setDrawerSearch('')
-    setDrawerSelected('')
+    setSheetOpen(false)
   }
 
   const close = () => {
@@ -161,7 +141,6 @@ export function BulkEditModal({
   const handleFieldChange = (next: string) => {
     setFieldValue(next)
     setValue('')
-    setDrawerSelected('')
   }
 
   const handleApply = (finalValue: string) => {
@@ -170,9 +149,14 @@ export function BulkEditModal({
     setShowSuccess(true)
   }
 
-  const filteredUnits = BUSINESS_UNIT_OPTIONS.filter((u) =>
-    u.toLowerCase().includes(drawerSearch.toLowerCase()),
-  )
+  /** Called by BUSheet / DigitalTeamSheet Save button (passes selected string[]) or Cancel (passes undefined) */
+  const handleSheetSave = (val?: string | string[]) => {
+    setSheetOpen(false)
+    if (val !== undefined && val !== null) {
+      const label = Array.isArray(val) ? val.join(', ') : String(val)
+      if (label) handleApply(label)
+    }
+  }
 
   const gradCancel =
     'rounded-[36px] bg-gradient-to-r from-[#EAEFFF] to-[#C7D6F9] px-6 py-3 text-[14px] font-[500] text-[#151718] shadow transition-opacity hover:opacity-80 disabled:opacity-40'
@@ -196,7 +180,7 @@ export function BulkEditModal({
                 type="button"
                 className={gradApply}
                 disabled={!fieldValue}
-                onClick={() => setDrawerOpen(true)}
+                onClick={() => setSheetOpen(true)}
               >
                 Next
               </button>
@@ -266,107 +250,15 @@ export function BulkEditModal({
         )}
       </BaseModal>
 
-      {/* ── Drawer for drawer-based fields ───────────────────────────────── */}
-      {createPortal(
-        <>
-          {drawerOpen && (
-            <div
-              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px]"
-              onClick={() => setDrawerOpen(false)}
-            />
-          )}
-          <aside
-            className={`fixed inset-y-0 end-0 z-50 flex w-[480px] flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
-              drawerOpen ? 'translate-x-0' : 'translate-x-full'
-            }`}
-          >
-            {/* Header */}
-            <div className="px-6 pt-10 pb-0">
-              <h2 className="text-[24px] leading-snug font-[500] text-[#111827]">
-                {selectedField?.label ?? 'Select value'}
-              </h2>
-              <p className="mt-3 text-[16px] leading-normal font-[400] text-[#687076]">
-                This change will be applied to {selectedCount} selected process
-                {selectedCount !== 1 ? 'es' : ''}.
-              </p>
-            </div>
-
-            {/* Search */}
-            <div className="px-6 pt-6 pb-4">
-              <div className="relative">
-                <Search className="pointer-events-none absolute start-4 top-1/2 size-4 -translate-y-1/2 text-[#889096]" />
-                <input
-                  type="text"
-                  value={drawerSearch}
-                  onChange={(e) => setDrawerSearch(e.target.value)}
-                  placeholder="Search..."
-                  className="w-full rounded-2xl border border-[#DFE3E6] bg-white py-3 ps-11 pe-4 text-base text-[#151718] outline-none placeholder:text-[#889096]"
-                />
-              </div>
-            </div>
-
-            {/* Options list */}
-            <div className="flex-1 overflow-y-auto px-6 pb-4">
-              <div className="flex flex-col rounded-3xl bg-white shadow">
-                {filteredUnits.length === 0 ? (
-                  <p className="py-8 text-center text-sm text-[#889096]">No options found.</p>
-                ) : (
-                  filteredUnits.map((unit, idx) => (
-                    <button
-                      key={unit}
-                      type="button"
-                      onClick={() => setDrawerSelected(unit)}
-                      className={`flex items-center gap-3 px-6 py-4 text-left transition-colors hover:bg-[#F8F9FA] ${
-                        idx !== 0 ? 'border-t border-[#F1F3F5]' : ''
-                      } ${drawerSelected === unit ? 'bg-[#EEF2FF]' : ''}`}
-                    >
-                      {/* Checkbox indicator */}
-                      <span
-                        className={`flex size-4 shrink-0 items-center justify-center rounded border ${
-                          drawerSelected === unit
-                            ? 'border-[#5B23FF] bg-[#5B23FF]'
-                            : 'border-[#DFE3E6]'
-                        }`}
-                      >
-                        {drawerSelected === unit && (
-                          <svg viewBox="0 0 10 8" fill="none" className="size-2.5">
-                            <path
-                              d="M1 4l3 3 5-6"
-                              stroke="white"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        )}
-                      </span>
-                      <span className="text-[16px] font-[400] text-[#151718]">{unit}</span>
-                    </button>
-                  ))
-                )}
-              </div>
-            </div>
-
-            {/* Footer buttons */}
-            <div className="flex items-center justify-end gap-2 border-t border-[#F1F3F5] px-6 py-4">
-              <button type="button" className={gradCancel} onClick={() => setDrawerOpen(false)}>
-                Cancel
-              </button>
-              <button
-                type="button"
-                className={gradApply}
-                disabled={!drawerSelected}
-                onClick={() => {
-                  setDrawerOpen(false)
-                  handleApply(drawerSelected)
-                }}
-              >
-                Apply changes
-              </button>
-            </div>
-          </aside>
-        </>,
-        document.body,
+      {/* ── Dedicated sheets for drawer-type fields ───────────────────── */}
+      {fieldValue === 'businessUnit' && (
+        <BUSheet open={sheetOpen} handleOpenChange={handleSheetSave} />
+      )}
+      {fieldValue === 'sharedServices' && (
+        <SharedServicesSheet open={sheetOpen} handleOpenChange={handleSheetSave} />
+      )}
+      {fieldValue === 'responsibleDigitalTeam' && (
+        <DigitalTeamSheet open={sheetOpen} handleOpenChange={handleSheetSave} />
       )}
 
       {/* Success toast */}
