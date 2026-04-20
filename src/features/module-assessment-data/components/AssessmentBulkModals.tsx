@@ -9,11 +9,13 @@
  */
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
-import { ChevronDown, Search } from 'lucide-react'
+import { ChevronDown, Search, X } from 'lucide-react'
 
 import BaseModal from '@/shared/components/BaseModal'
 import { SuccessToast } from '@/shared/components/SuccessToast'
 import { Button } from '@/shared/components/ui/button'
+import { Select } from '@/shared/components/ui/select'
+import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 
 // ── Field type definitions ────────────────────────────────────────────────────
 
@@ -215,20 +217,13 @@ export function BulkEditModal({
         <div>
           <label className={fieldLabel}>Field / Column name</label>
           <div className="relative">
-            <select
+            <Select
+              options={BULK_EDITABLE_FIELDS.map((f) => ({ label: f.label, value: f.value }))}
               value={fieldValue}
-              onChange={(e) => handleFieldChange(e.target.value)}
-              className={`${fieldInput} appearance-none pe-10`}
-            >
-              <option value="" disabled>
-                Select a field…
-              </option>
-              {BULK_EDITABLE_FIELDS.map((f) => (
-                <option key={f.value} value={f.value}>
-                  {f.label}
-                </option>
-              ))}
-            </select>
+              placeholder="Select a field…"
+              onChange={handleFieldChange}
+              className={`${fieldInput} h-auto appearance-none pe-10`}
+            />
             <ChevronDown className="pointer-events-none absolute end-3 top-1/2 size-4 -translate-y-1/2 text-[#687076]" />
           </div>
         </div>
@@ -239,20 +234,13 @@ export function BulkEditModal({
             <label className={fieldLabel}>Value</label>
             {selectedField?.type === 'dropdown' && (
               <div className="relative">
-                <select
+                <Select
+                  options={selectedField.options ?? []}
                   value={value}
-                  onChange={(e) => setValue(e.target.value)}
-                  className={`${fieldInput} appearance-none pe-10`}
-                >
-                  <option value="" disabled>
-                    Select a value…
-                  </option>
-                  {selectedField.options?.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
+                  placeholder="Select a value…"
+                  onChange={setValue}
+                  className={`${fieldInput} h-auto appearance-none pe-10`}
+                />
                 <ChevronDown className="pointer-events-none absolute end-3 top-1/2 size-4 -translate-y-1/2 text-[#687076]" />
               </div>
             )}
@@ -407,6 +395,7 @@ export function BulkCommentModal({
   onConfirm,
 }: BulkCommentModalProps) {
   const [comment, setComment] = useState('')
+  const [showSuccess, setShowSuccess] = useState(false)
 
   const close = () => {
     setComment('')
@@ -414,41 +403,50 @@ export function BulkCommentModal({
   }
 
   return (
-    <BaseModal
-      open={open}
-      onClose={close}
-      title={`Add comment — ${selectedCount} process${selectedCount !== 1 ? 'es' : ''}`}
-      subtitle="The comment will appear in the Comments tab for each selected process."
-      footer={
-        <>
-          <Button type="button" variant="secondary" className="h-12 rounded-full" onClick={close}>
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            className="h-12 rounded-full"
-            disabled={!comment.trim()}
-            onClick={() => {
-              onConfirm(comment.trim())
-              close()
-            }}
-          >
-            Add comment
-          </Button>
-        </>
-      }
-    >
-      <div>
-        <label className={fieldLabel}>Comment</label>
-        <textarea
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          rows={4}
-          placeholder="Enter comment…"
-          className={`${fieldInput} resize-none`}
-        />
-      </div>
-    </BaseModal>
+    <>
+      <BaseModal
+        open={open}
+        onClose={close}
+        title={`Bulk comment to ${selectedCount} selected processes`}
+        subtitle="The comment will appear in the Comments tab for each selected process."
+        footer={
+          <>
+            <Button type="button" variant="secondary" className="h-12 rounded-full" onClick={close}>
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              className="h-12 rounded-full"
+              disabled={!comment.trim()}
+              onClick={() => {
+                onConfirm(comment.trim())
+                close()
+                setShowSuccess(true)
+              }}
+            >
+              Save
+            </Button>
+          </>
+        }
+      >
+        <div>
+          <label className={fieldLabel}>Comment</label>
+          <textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            rows={4}
+            placeholder="Enter comment…"
+            className={`${fieldInput} resize-none`}
+          />
+        </div>
+      </BaseModal>
+
+      <SuccessToast
+        open={showSuccess}
+        message="Bulk comment added successfully."
+        onClose={() => setShowSuccess(false)}
+      />
+    </>
   )
 }
 
@@ -466,6 +464,7 @@ interface SourceProcess {
   name: string
   code: string
   level: number
+  domain: string
   status: 'Published' | 'Draft' | 'In Review'
 }
 
@@ -475,6 +474,7 @@ const MOCK_SOURCE_PROCESSES: SourceProcess[] = [
     name: 'Accounts Payable Invoice Processing',
     code: 'ANN.1.1.3',
     level: 3,
+    domain: 'dom-006',
     status: 'Published',
   },
   {
@@ -482,14 +482,23 @@ const MOCK_SOURCE_PROCESSES: SourceProcess[] = [
     name: 'Procurement Purchase Order Management',
     code: 'SCM.2.3.1',
     level: 3,
+    domain: 'dom-009',
     status: 'Published',
   },
-  { id: 'src-3', name: 'HR Onboarding Process', code: 'HR.1.2.4', level: 4, status: 'Draft' },
+  {
+    id: 'src-3',
+    name: 'HR Onboarding Process',
+    code: 'HR.1.2.4',
+    level: 4,
+    domain: 'dom-003',
+    status: 'Draft',
+  },
   {
     id: 'src-4',
     name: 'Asset Maintenance Scheduling',
     code: 'OPS.3.1.2',
     level: 3,
+    domain: 'dom-001',
     status: 'In Review',
   },
   {
@@ -497,6 +506,7 @@ const MOCK_SOURCE_PROCESSES: SourceProcess[] = [
     name: 'Budget Planning & Forecasting',
     code: 'FIN.4.2.1',
     level: 4,
+    domain: 'dom-006',
     status: 'Published',
   },
   {
@@ -504,6 +514,7 @@ const MOCK_SOURCE_PROCESSES: SourceProcess[] = [
     name: 'Supplier Evaluation & Selection',
     code: 'SCM.1.4.3',
     level: 3,
+    domain: 'dom-009',
     status: 'Draft',
   },
   {
@@ -511,11 +522,21 @@ const MOCK_SOURCE_PROCESSES: SourceProcess[] = [
     name: 'Capital Expenditure Approval',
     code: 'FIN.2.1.5',
     level: 4,
+    domain: 'dom-003',
     status: 'Published',
   },
 ]
 
-const LEVEL_OPTIONS = ['All levels', 'Level 3', 'Level 4']
+const DOMAIN_OPTIONS = [
+  { label: 'Domain', value: 'all' },
+  ...DOMAINS_DATA.map((d) => ({ label: d.name, value: d.id })),
+]
+
+const LEVEL_OPTIONS = [
+  { label: 'Level', value: 'Level' },
+  { label: 'Level 3', value: 'Level 3' },
+  { label: 'Level 4', value: 'Level 4' },
+]
 
 const STATUS_BADGE_STYLES: Record<SourceProcess['status'], string> = {
   Published: 'bg-[#DFEBFF] text-[#151718]',
@@ -530,14 +551,16 @@ export function CopyAssessmentDataModal({
   onConfirm,
 }: CopyAssessmentDataModalProps) {
   const [search, setSearch] = useState('')
-  const [selectedLevel, setSelectedLevel] = useState('All levels')
+  const [selectedLevel, setSelectedLevel] = useState('Level')
+  const [selectedDomain, setSelectedDomain] = useState('all')
   const [pendingSource, setPendingSource] = useState<SourceProcess | null>(null)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
 
   const closeDrawer = () => {
     setSearch('')
-    setSelectedLevel('All levels')
+    setSelectedLevel('Level')
+    setSelectedDomain('all')
     setPendingSource(null)
     setConfirmOpen(false)
     onOpenChange(false)
@@ -560,8 +583,9 @@ export function CopyAssessmentDataModal({
     const matchesSearch =
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       p.code.toLowerCase().includes(search.toLowerCase())
-    const matchesLevel = selectedLevel === 'All levels' || `Level ${p.level}` === selectedLevel
-    return matchesSearch && matchesLevel
+    const matchesLevel = selectedLevel === 'Level' || `Level ${p.level}` === selectedLevel
+    const matchesDomain = selectedDomain === 'all' || p.domain === selectedDomain
+    return matchesSearch && matchesLevel && matchesDomain
   })
 
   return createPortal(
@@ -573,25 +597,35 @@ export function CopyAssessmentDataModal({
 
       {/* ── Side Drawer ── */}
       <aside
-        className={`fixed inset-y-0 end-0 z-50 flex w-[480px] flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
+        className={`fixed inset-y-0 end-0 z-50 flex w-[480px] flex-col bg-[#FDFDFD] shadow-2xl transition-transform duration-300 ease-in-out ${
           open ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         {/* Header */}
-        <div className="px-6 pt-10 pb-0">
-          <h2 className="text-[24px] leading-snug font-[500] text-[#111827]">
-            Copy Assessment Data
-          </h2>
-          <p className="mt-3 text-[16px] leading-normal font-[400] text-[#687076]">
-            All copied fields will replace the current values in this draft.
-          </p>
+        <div className="flex items-start justify-between px-6 pt-10 pb-0">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-[24px] leading-8 font-[500] text-[#111827]">
+              Copy Assessment Data
+            </h2>
+            <p className="mt-3 text-[16px] leading-normal font-[400] text-[#687076]">
+              All copied fields will replace the current values in this draft.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={closeDrawer}
+            className="mt-1 rounded-full p-1.5 text-[#687076] transition-colors hover:bg-[#F1F3F5]"
+            aria-label="Close"
+          >
+            <X className="size-5" />
+          </button>
         </div>
 
         {/* Search + Filters */}
         <div className="px-6 pt-6 pb-8">
-          <div className="flex items-center gap-3">
-            {/* Search input */}
-            <div className="relative flex-1">
+          <div className="flex items-center">
+            {/* Search input - Using flex-[2] to take double the space of others */}
+            <div className="relative flex-[2]">
               <Search className="pointer-events-none absolute start-4 top-1/2 size-4 -translate-y-1/2 text-[#889096]" />
               <input
                 type="text"
@@ -604,52 +638,61 @@ export function CopyAssessmentDataModal({
               />
             </div>
 
-            {/* Level filter */}
-            <div className="relative">
-              <select
+            {/* Domain filter - Using flex-1 */}
+            <div className="relative flex-1">
+              <Select
+                options={DOMAIN_OPTIONS}
+                value={selectedDomain}
+                onChange={setSelectedDomain}
+                // Changed max-w-[150px] to w-full so it fills its 1/3 share
+                className="h-auto w-full appearance-none rounded-2xl py-3 ps-4 pe-9 text-base font-medium text-[#151718]"
+              />
+              <ChevronDown className="pointer-events-none absolute end-3 top-1/2 size-4 -translate-y-1/2 text-[#687076]" />
+            </div>
+
+            {/* Level filter - Using flex-1 */}
+            <div className="relative flex-1">
+              <Select
+                options={LEVEL_OPTIONS}
                 value={selectedLevel}
-                onChange={(e) => setSelectedLevel(e.target.value)}
-                className="appearance-none rounded-2xl border border-[#DFE3E6] bg-white py-3 ps-4 pe-9 text-[18px] font-[500] text-[#151718] outline-none"
-              >
-                {LEVEL_OPTIONS.map((l) => (
-                  <option key={l} value={l}>
-                    {l}
-                  </option>
-                ))}
-              </select>
+                onChange={setSelectedLevel}
+                className="h-auto w-full appearance-none rounded-2xl py-3 ps-4 pe-9 text-base font-medium text-[#151718]"
+              />
               <ChevronDown className="pointer-events-none absolute end-3 top-1/2 size-4 -translate-y-1/2 text-[#687076]" />
             </div>
           </div>
         </div>
-
-        {/* Results */}
+        {/* Results — each process as its own card */}
         <div className="flex-1 overflow-y-auto px-6 pb-6">
           {filtered.length === 0 ? (
             <p className="py-8 text-center text-sm text-[#889096]">No processes found.</p>
           ) : (
-            <div className="flex flex-col gap-8 rounded-3xl bg-white p-6 shadow">
-              {filtered.map((process, idx) => (
+            <div className="flex flex-col gap-3">
+              {filtered.map((process) => (
                 <button
                   key={process.id}
                   type="button"
                   onClick={() => handleRowClick(process)}
-                  className={`flex w-full items-center justify-between text-left transition-opacity hover:opacity-80 ${
-                    idx !== 0 ? 'border-t border-[#F1F3F5] pt-8' : ''
-                  }`}
+                  className="flex w-full items-center justify-between rounded-3xl bg-white px-6 py-5 text-left shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-shadow hover:shadow-md"
                 >
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[16px] font-[500] text-[#151718]">{process.name}</span>
-                    <div className="flex items-center gap-3">
-                      <span className="text-[14px] font-[400] text-[#889096]">
+                  <div className="flex min-w-0 flex-col gap-1">
+                    <span className="text-[16px] leading-5 font-[500] text-[#151718]">
+                      {process.name}
+                    </span>
+                    <div className="flex items-center gap-3 pt-1">
+                      <span className="text-[14px] leading-[14px] font-[400] text-[#889096]">
                         Code: {process.code}
                       </span>
-                      <span className="text-[14px] font-[400] text-[#889096]">
+                      <span className="text-[14px] leading-[14px] font-[500] text-[#889096]">
+                        ·
+                      </span>
+                      <span className="text-[14px] leading-[14px] font-[400] text-[#889096]">
                         Level: {process.level}
                       </span>
                     </div>
                   </div>
                   <span
-                    className={`shrink-0 rounded-full px-3 py-1 text-[12px] font-[500] ${STATUS_BADGE_STYLES[process.status]}`}
+                    className={`ml-4 shrink-0 rounded-full px-3 py-1 text-[12px] leading-[14.4px] font-[400] ${STATUS_BADGE_STYLES[process.status]}`}
                   >
                     {process.status}
                   </span>
@@ -666,25 +709,37 @@ export function CopyAssessmentDataModal({
           <div className="fixed inset-0 z-[60] bg-black/50" onClick={() => setConfirmOpen(false)} />
           <div className="fixed inset-0 z-[61] flex items-center justify-center p-4">
             <div className="w-full max-w-[540px] rounded-2xl bg-[#F1F3F5] p-8 shadow-2xl">
-              <h3 className="text-[24px] leading-snug font-[500] text-[#111827]">
-                Confirm copy from &ldquo;{pendingSource.name}&rdquo;
-              </h3>
-              <p className="mt-4 text-[16px] leading-normal font-[400] text-[#687076]">
-                Copying will overwrite your existing draft values. You can still edit the copied
-                data before submitting for review.
-              </p>
+              <div className="flex items-start gap-2">
+                <div className="flex flex-1 flex-col gap-2">
+                  <h3 className="text-[24px] leading-8 font-[500] text-[#151718]">
+                    Confirm copy from &ldquo;{pendingSource.name}&rdquo;
+                  </h3>
+                  <p className="text-[16px] leading-6 font-[400] text-[#687076]">
+                    Copying will overwrite your existing draft values. You can still edit the copied
+                    data before submitting for review.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setConfirmOpen(false)}
+                  className="mt-1 rounded-full p-1.5 text-[#687076] transition-colors hover:bg-[#E4E7EA]"
+                  aria-label="Close"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
               <div className="mt-8 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setConfirmOpen(false)}
-                  className="rounded-[36px] bg-gradient-to-r from-[#EAEFFF] to-[#C7D6F9] px-6 py-3 text-[14px] font-[500] text-[#151718] shadow transition-opacity hover:opacity-80"
+                  className="flex-1 rounded-[36px] bg-gradient-to-r from-[#EAEFFF] to-[#C7D6F9] px-6 py-3 text-[14px] font-[500] text-[#151718] shadow transition-opacity hover:opacity-80"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleConfirmCopy}
-                  className="rounded-full bg-gradient-to-r from-[#5B23FF] to-[#3C00EB] px-6 py-3 text-[14px] font-[500] text-white shadow transition-opacity hover:opacity-80"
+                  className="flex-1 rounded-full bg-gradient-to-r from-[#5B23FF] to-[#3C00EB] px-6 py-3 text-[14px] font-[500] text-white shadow transition-opacity hover:opacity-80"
                 >
                   Copy
                 </button>

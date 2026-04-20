@@ -1,5 +1,6 @@
-import { ChevronDown, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { Button } from '@/shared/components/ui/button'
+import { Select } from '@/shared/components/ui/select'
 
 export interface AddProcessesModalProps {
   open: boolean
@@ -46,19 +47,21 @@ const AddProcessesModal = ({
             How many processes you want to add?
           </label>
           <div className="relative">
-            <select
-              id="process-count"
+            <Select
+              options={[1, 2, 3, 4, 5].map((v) => ({ label: String(v), value: String(v) }))}
               value={numberOfProcesses}
-              onChange={(e) => onNumberOfProcessesChange(e.target.value)}
-              className="border-border bg-background text-foreground focus-visible:ring-ring h-12 w-full appearance-none rounded-xl border ps-4 pe-12 text-base outline-none focus-visible:ring-2"
-            >
-              {[1, 2, 3, 4, 5].map((value) => (
-                <option key={value} value={String(value)}>
-                  {value}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="text-muted-foreground pointer-events-none absolute top-1/2 right-4 size-5 -translate-y-1/2" />
+              onChange={onNumberOfProcessesChange}
+              className="border-border bg-background text-foreground focus-visible:ring-ring h-12 w-full appearance-none rounded-xl border ps-4 pe-12 text-base focus-visible:ring-2"
+            />
+            <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
+              <svg className="text-muted-foreground size-5" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fillRule="evenodd"
+                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
           </div>
         </div>
 

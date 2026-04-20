@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import RichTextEditor from '@/shared/components/ui/RichTextEditor'
+import { Select } from '@/shared/components/ui/select'
 import { useSaveTargetRecommendations } from '../../../hooks/useSaveTargetRecommendations'
 import { useProcessDetailActionsStore } from '../../../store/processDetailActionsStore'
 import { targetRecommendationsSchema } from '../../../schemas/targetRecommendationsSchema'
@@ -34,14 +35,14 @@ const EditableDropdown = ({
 }) => (
   <div className="flex min-w-[280px] flex-1 flex-col gap-2">
     <span className="text-base font-normal text-[#687076]">{label}</span>
-    <div className="flex items-center rounded-2xl border border-[#DFE3E6] bg-white px-4 py-3">
-      <select
-        className="flex-1 bg-transparent text-base font-medium text-[#687076] outline-none"
+    <div className="flex items-center rounded-2xl border border-[#DFE3E6] bg-white">
+      <Select
+        options={value ? [{ label: value, value }] : []}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
-      >
-        <option value="">{value || '—'}</option>
-      </select>
+        placeholder={value || '—'}
+        onChange={onChange}
+        className="h-auto w-auto flex-1 rounded-2xl border-0 bg-transparent px-4 py-3 text-base font-medium text-[#687076] shadow-none"
+      />
     </div>
   </div>
 )

@@ -33,36 +33,26 @@ export const flattenAssessmentData = (data: DomainItem[]): FlatAssessmentRow[] =
               rowId:
                 l4Item?.id ?? `${domainItem.id}-${l1Item.id}-${l2Item.id}-${l3Item.id}-${l4Index}`,
               id: `${domainItem.id}-${l1Item.id}-${l2Item.id}-${l3Item.id}-${l4Item?.id ?? '0'}`,
-              
 
-                  // ✅ REAL values (always filled)
-            domain: domainItem.domain ?? '',
-            l1: l1Item.level1Name ?? '',
-            l2: l2Item.level2Name ?? '',
-            l3: l3Item.level3Name ?? '',
-            l4: l4Item?.level4Name ?? '',
+              // ✅ REAL values (always filled)
+              domain: domainItem.domain ?? '',
+              l1: l1Item.level1Name ?? '',
+              l2: l2Item.level2Name ?? '',
+              l3: l3Item.level3Name ?? '',
+              l4: l4Item?.level4Name ?? '',
 
-            // ✅ DISPLAY values (only first occurrence)
-            displayDomain:
-              l1Index === 0 && l2Index === 0 && l3Index === 0 && l4Index === 0
-                ? domainItem.domain ?? ''
-                : '',
+              // ✅ DISPLAY values (only first occurrence)
+              displayDomain:
+                l1Index === 0 && l2Index === 0 && l3Index === 0 && l4Index === 0
+                  ? (domainItem.domain ?? '')
+                  : '',
 
-            displayL1:
-              l2Index === 0 && l3Index === 0 && l4Index === 0
-                ? l1Item.level1Name ?? ''
-                : '',
+              displayL1:
+                l2Index === 0 && l3Index === 0 && l4Index === 0 ? (l1Item.level1Name ?? '') : '',
 
-            displayL2:
-              l3Index === 0 && l4Index === 0
-                ? l2Item.level2Name ?? ''
-                : '',
+              displayL2: l3Index === 0 && l4Index === 0 ? (l2Item.level2Name ?? '') : '',
 
-            displayL3:
-              l4Index === 0
-                ? l3Item.level3Name ?? ''
-                : '',
-
+              displayL3: l4Index === 0 ? (l3Item.level3Name ?? '') : '',
 
               l4Code: l4Item?.level4Code,
               groupCompany: toText(pickValue(l4Item?.groupCompany, l3Item.groupCompany)),
@@ -173,16 +163,15 @@ export const flattenAssessmentData = (data: DomainItem[]): FlatAssessmentRow[] =
     ),
   )
 
-  export type DisplayAssessmentRow = FlatAssessmentRow & {
-    displayDomain: string
-    displayL1: string
-    displayL2: string
-    displayL3: string
-  }
-  
+export type DisplayAssessmentRow = FlatAssessmentRow & {
+  displayDomain: string
+  displayL1: string
+  displayL2: string
+  displayL3: string
+}
 
-const ProcessDataTable = (props:any) => {
-  const {data} = props
+const ProcessDataTable = (props: any) => {
+  const { data, isBulkMode = false, rowSelection, onRowSelectionChange } = props
   const [isSharedServiceOpen, setIsSharedServiceOpen] = useState(false)
   const [isBUOpen, setIsBUOpen] = useState(false)
   const [isDigitalTeamOpen, setIsDigitalTeamOpen] = useState(false)
@@ -205,27 +194,21 @@ const ProcessDataTable = (props:any) => {
           setSelectedRowId(rowId)
           setIsSharedServiceOpen(true)
         },
+        isBulkMode,
       }),
-    [],
+    [isBulkMode],
   )
   const [updatedDataTable, setUpdatedDataTable] = useState(data) // changed every time user edit table values
-useEffect(()=>{
-  setUpdatedDataTable(data)
-},[data])
+  useEffect(() => {
+    setUpdatedDataTable(data)
+  }, [data])
 
   /** Updates a draft row field as the user types */
-  const handleUpdateDraftRow = useCallback(
-    (
-      id: string,
-      field:string,
-      value: string,
-    ) => {
-      setUpdatedDataTable((prev:any) =>
-        prev.map((row:any) => (row.id === id ? { ...row, [field]: value } : row)),
-      )
-    },
-    [],
-  )
+  const handleUpdateDraftRow = useCallback((id: string, field: string, value: string) => {
+    setUpdatedDataTable((prev: any) =>
+      prev.map((row: any) => (row.id === id ? { ...row, [field]: value } : row)),
+    )
+  }, [])
 
   return (
     <div className="table-hierarchy">
@@ -233,6 +216,9 @@ useEffect(()=>{
         columns={columns}
         data={updatedDataTable}
         density="compact"
+        rowSelection={isBulkMode ? rowSelection : undefined}
+        onRowSelectionChange={isBulkMode ? onRowSelectionChange : undefined}
+        getRowId={(row: any) => row.id}
         tableMeta={{
           onUpdateDraftRow: handleUpdateDraftRow,
         }}
@@ -256,7 +242,7 @@ useEffect(()=>{
         open={isDigitalTeamOpen}
         handleOpenChange={(newVal: any) => {
           setIsDigitalTeamOpen(false)
-          handleUpdateDraftRow(selectedRowId, 'responsibleDigitalTeam', newVal ||[])
+          handleUpdateDraftRow(selectedRowId, 'responsibleDigitalTeam', newVal || [])
         }}
       />
     </div>
