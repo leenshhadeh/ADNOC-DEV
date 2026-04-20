@@ -11,18 +11,18 @@
 // Super Admin                      — Full access across all modules. Can apply
 //                                    direct changes without approval, manage user
 //                                    permissions, and configure group companies & sites.
+export const ROLES = {
+  QualityManager : 'Quality Manager',
+  BusinessFocalPoint : 'Business Focal Point',
+  DigitalFocalPoint : 'Digital Focal Point',
+  BPA_ProgramManager : 'BPA Program Manager',
+  BPA_ProcessCatalogCustodian : 'BPA Process Catalog Custodian',
+  SuperAdmin:'Super Admin',
+} as const
 
-export const ROLES = [
-  'BPA Program Manager',
-  'BPA Process Catalog Custodian',
-  'Business Focal Point',
-  'Digital Focal Point',
-  'Quality Manager',
-  'SME Expert',
-  'Super Admin',
-] as const
+export type Role = (typeof ROLES)[keyof typeof ROLES]
 
-export type Role = (typeof ROLES)[number]
+
 
 // ─── Actions ─────────────────────────────────────────────────────────────────
 
@@ -65,22 +65,22 @@ export type Action = (typeof ACTIONS)[number]
 
 export const PERMISSIONS: Record<Action, Role[]> = {
   // ── Catalog mutations ───────────────────────────────────────────────────────
-  ADD_LEVEL_4: ['BPA Process Catalog Custodian'],
-  EDIT_ROW: ['BPA Process Catalog Custodian'],
-  DELETE_PROCESS: ['BPA Process Catalog Custodian'],
-  RENAME_PROCESS: ['BPA Process Catalog Custodian'],
+  ADD_LEVEL_4: [ROLES.BPA_ProcessCatalogCustodian],
+  EDIT_ROW: [ROLES.BPA_ProcessCatalogCustodian],
+  DELETE_PROCESS: [ROLES.BPA_ProcessCatalogCustodian],
+  RENAME_PROCESS: [ROLES.BPA_ProcessCatalogCustodian],
   // ── Workflow ────────────────────────────────────────────────────────────────
-  VIEW_CHANGES: ['BPA Program Manager', 'BPA Process Catalog Custodian'],
+  VIEW_CHANGES: [ROLES.BPA_ProgramManager, ROLES.BPA_ProcessCatalogCustodian],
   VIEW_SUBMITTED_REQUESTS: [
-    'BPA Process Catalog Custodian',
-    'Business Focal Point',
-    'Digital Focal Point',
+    ROLES.BPA_ProcessCatalogCustodian,
+    ROLES.BusinessFocalPoint,
+    ROLES.DigitalFocalPoint,
   ],
-  REQUEST_PROCESS_CHANGE: ['Business Focal Point', 'Digital Focal Point'],
-  SUBMIT_REQUEST: ['Business Focal Point', 'Digital Focal Point', 'BPA Process Catalog Custodian'],
-  APPROVE_REQUEST: ['BPA Program Manager', 'BPA Process Catalog Custodian', 'Quality Manager'],
-  REJECT_REQUEST: ['BPA Program Manager', 'BPA Process Catalog Custodian', 'Quality Manager'],
-  RETURN_REQUEST: ['BPA Program Manager', 'BPA Process Catalog Custodian', 'Quality Manager'],
+  REQUEST_PROCESS_CHANGE: [ROLES.BusinessFocalPoint, ROLES.DigitalFocalPoint],
+  SUBMIT_REQUEST: [ROLES.BusinessFocalPoint, ROLES.DigitalFocalPoint, ROLES.BPA_ProcessCatalogCustodian],
+  APPROVE_REQUEST: [ROLES.BPA_ProgramManager, ROLES.BPA_ProcessCatalogCustodian, ROLES.QualityManager],
+  REJECT_REQUEST: [ROLES.BPA_ProgramManager, ROLES.BPA_ProcessCatalogCustodian, ROLES.QualityManager],
+  RETURN_REQUEST: [ROLES.BPA_ProgramManager, ROLES.BPA_ProcessCatalogCustodian, ROLES.QualityManager],
   // ── Automation Targets — process detail actions ─────────────────────────────
   AT_SAVE: ['SME Expert'],
   AT_VALIDATE: ['SME Expert'],
@@ -94,7 +94,7 @@ export const PERMISSIONS: Record<Action, Role[]> = {
   MANAGE_USER_PERMISSIONS: [],
   MANAGE_GROUP_COMPANIES: [],
   APPLY_DIRECT_CHANGES: [],
-  COMMENT_ON_FIELD: ['Quality Manager'],
+  COMMENT_ON_FIELD: [ROLES.QualityManager],
 }
 
 // ─── Permission check ─────────────────────────────────────────────────────────
@@ -104,6 +104,6 @@ export const PERMISSIONS: Record<Action, Role[]> = {
  * Super Admin always returns true regardless of the PERMISSIONS map.
  */
 export function hasPermission(role: Role, action: Action): boolean {
-  if (role === 'Super Admin') return true
+  if (role === ROLES.SuperAdmin) return true
   return PERMISSIONS[action].includes(role)
 }

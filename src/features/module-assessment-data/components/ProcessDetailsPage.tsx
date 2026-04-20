@@ -15,6 +15,8 @@ import { Settings2, Upload} from 'lucide-react'
 import Breadcrumb from '@/shared/components/Breadcrumb'
 import { cn } from '@/shared/lib/utils'
 import CommentsSection from './processDetails/CommentsSection'
+import { useCurrentUser } from '@/shared/auth/useUserStore'
+import { ROLES } from '@/shared/lib/permissions'
 
 const ProcessDetailsPage = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -25,9 +27,9 @@ const ProcessDetailsPage = () => {
   const [disableSubmit, setDisableSubmit] = useState(true)
   const [updatedData, setUpdatedData] = useState([{}])
   const [showComment, setShowComment] = useState(false)
-  const userRole: string = 'Business focal point'
-  const userAuthToEdit = userRole == 'Business focal point' || userRole == ' Digital focal point'
-  const userAuthToComment = userRole == 'Quality manager' || userRole == 'BPA program manager'
+  const { role } = useCurrentUser()
+  const canEdit = role== ROLES.BusinessFocalPoint || role == ROLES.DigitalFocalPoint
+  const canComment = role== ROLES.QualityManager || role == ROLES.BPA_ProgramManager
 
   useEffect(() => {
     //TODO: call getProcessDetails(processId) API
@@ -159,7 +161,7 @@ const ProcessDetailsPage = () => {
                   }}
                   showFilter={false}
                   showSearch={false}
-                  actions={userAuthToEdit ? mainActions : ApproveRejectActions}
+                  actions={canEdit ? mainActions : ApproveRejectActions}
                 />
 
                 <div className="flex flex-col gap-0 overflow-hidden">
@@ -180,16 +182,16 @@ const ProcessDetailsPage = () => {
                             onFormChanged={(data: any) => {
                               handelDataChanged(data)
                             }}
-                            isEditable={userAuthToEdit}
-                            isUserAuthToComment={userAuthToComment}
+                            isEditable={canEdit}
+                            isUserAuthToComment={canComment}
                             onShowComment={onShowComment}
                           />
                         )}
                         {activeTab == 'AutomationParameters' && (
-                          <AutomationParameterTab process={data[0]} isEditable={userAuthToEdit} />
+                          <AutomationParameterTab process={data[0]} isEditable={canEdit} />
                         )}
                         {activeTab == 'ManualParameters' && (
-                          <ManualParametersTab process={data[0]} isEditable={userAuthToEdit} />
+                          <ManualParametersTab process={data[0]} isEditable={canEdit} />
                         )}
                         {activeTab == 'TargetRecommendations​​' && (
                           <TargerRecommendationsTab process={data[0]} />
