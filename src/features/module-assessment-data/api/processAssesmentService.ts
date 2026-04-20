@@ -242,3 +242,12 @@ export function addFieldComment({
   MOCK_COMMENTS[key].push(entry)
   return new Promise((resolve) => setTimeout(() => resolve(entry), 300))
 }
+
+// proces details - commets section
+export function getProcessCommentsByFiled(fieldId: string): Promise<any[]> {
+  void fieldId
+  return new Promise((resolve) => setTimeout(() => resolve([]), 500))
+}
+export function getProcessComments(): Promise<any> {
+  return new Promise((resolve) => setTimeout(() => resolve([]), 500))
+}
