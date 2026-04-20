@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import AdminToolbar from '../components/AdminToolbar'
 import RateCardsTable from '../components/rate-cards/RateCardsTable'
 import BulkEditRateCardModal from '../components/rate-cards/BulkEditRateCardModal'
+import EditRateCardValueModal from '../components/rate-cards/EditRateCardValueModal'
 import { initialRateCardsData } from '../components/rate-cards/constants'
 import { flattenRateCards } from '../components/rate-cards/utils'
-import { Pencil, Save, X, Download } from 'lucide-react'
+import { Pencil, X, Download, Save } from 'lucide-react'
 import { SuccessToast } from '@/shared/components/SuccessToast'
 import type { ToolbarAction } from '@/shared/components/ModuleToolbar'
 import type { FlattenedRateCardRow } from '../components/rate-cards/types'
@@ -22,11 +23,11 @@ const RateCardsPage = ({ searchValue, setToolbarActions }: RateCardsPageProps) =
   const [isBulkEditMode, setIsBulkEditMode] = useState(false)
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([])
   const [isBulkEditModalOpen, setIsBulkEditModalOpen] = useState(false)
+  const [isSingleEditModalOpen, setIsSingleEditModalOpen] = useState(false)
+  const [selectedEditRow, setSelectedEditRow] = useState<FlattenedRateCardRow | null>(null)
 
   const [toastOpen, setToastOpen] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
-
-  const originalRowRef = useRef<FlattenedRateCardRow | null>(null)
 
   const showToast = useCallback((message: string) => {
     setToastOpen(false)
@@ -37,96 +38,57 @@ const RateCardsPage = ({ searchValue, setToolbarActions }: RateCardsPageProps) =
     })
   }, [])
 
-  const editingRow = useMemo(() => rows.find((row) => row.isEditing), [rows])
-
   const handleEditRateCardRow = useCallback(
     (rowId: string) => {
-      if (isBulkEditMode || editingRow) return
+      if (isBulkEditMode || isSingleEditModalOpen) return
 
       const targetRow = rows.find((row) => row.id === rowId)
       if (!targetRow) return
 
-      originalRowRef.current = { ...targetRow }
+      setSelectedEditRow(targetRow)
+      setIsSingleEditModalOpen(true)
+    },
+    [isBulkEditMode, isSingleEditModalOpen, rows],
+  )
+
+  const handleSaveSingleEdit = useCallback(
+    (rowId: string, value: string) => {
+      const numericValue = Number(value)
+
+      if (value === '' || Number.isNaN(numericValue) || numericValue < 0) {
+        return
+      }
 
       setRows((prev) =>
         prev.map((row) =>
           row.id === rowId
             ? {
                 ...row,
-                isEditing: true,
+                rateCardValue: numericValue,
               }
             : row,
         ),
       )
+
+      setIsSingleEditModalOpen(false)
+      setSelectedEditRow(null)
+      showToast('Rate card value updated successfully')
     },
-    [editingRow, isBulkEditMode, rows],
+    [showToast],
   )
 
-  const handleRateCardValueChange = useCallback((rowId: string, value: string) => {
-    setRows((prev) =>
-      prev.map((row) =>
-        row.id === rowId
-          ? {
-              ...row,
-              rateCardValue: value === '' ? '' : Number(value),
-            }
-          : row,
-      ),
-    )
+  const handleCloseSingleEditModal = useCallback(() => {
+    setIsSingleEditModalOpen(false)
+    setSelectedEditRow(null)
   }, [])
 
-  const handleSaveSingleEdit = useCallback(() => {
-    if (!editingRow) return
-
-    const numericValue = Number(editingRow.rateCardValue)
-
-    if (editingRow.rateCardValue === '' || Number.isNaN(numericValue) || numericValue < 0) {
-      return
-    }
-
-    setRows((prev) =>
-      prev.map((row) =>
-        row.id === editingRow.id
-          ? {
-              ...row,
-              rateCardValue: numericValue,
-              isEditing: false,
-            }
-          : row,
-      ),
-    )
-
-    originalRowRef.current = null
-    showToast('Rate card value updated successfully')
-  }, [editingRow, showToast])
-
-  const handleCancelSingleEdit = useCallback(() => {
-    if (!editingRow || !originalRowRef.current) return
-
-    const original = originalRowRef.current
-
-    setRows((prev) =>
-      prev.map((row) =>
-        row.id === original.id
-          ? {
-              ...original,
-              isEditing: false,
-            }
-          : row,
-      ),
-    )
-
-    originalRowRef.current = null
-    showToast('Rate card edit cancelled')
-  }, [editingRow, showToast])
-
   const handleToggleBulkEditMode = useCallback(() => {
-    if (editingRow) return
+    if (isSingleEditModalOpen) return
 
     setIsBulkEditMode(true)
     setSelectedRowIds([])
     showToast('Bulk edit mode enabled')
-  }, [editingRow, showToast])
+  }, [isSingleEditModalOpen, showToast])
 
   const handleCancelBulkEdit = useCallback(() => {
     setIsBulkEditMode(false)
@@ -186,23 +148,6 @@ const RateCardsPage = ({ searchValue, setToolbarActions }: RateCardsPageProps) =
   }, [rows, searchValue])
 
   const actions = useMemo<ToolbarAction[]>(() => {
-    if (editingRow) {
-      return [
-        {
-          id: 'save',
-          label: 'Save',
-          onClick: handleSaveSingleEdit,
-          icon: Save,
-        },
-        {
-          id: 'cancel',
-          label: 'Cancel',
-          onClick: handleCancelSingleEdit,
-          icon: X,
-        },
-      ]
-    }
-
     if (isBulkEditMode) {
       return [
         {
@@ -238,10 +183,7 @@ const RateCardsPage = ({ searchValue, setToolbarActions }: RateCardsPageProps) =
       },
     ]
   }, [
-    editingRow,
     handleCancelBulkEdit,
-    handleCancelSingleEdit,
-    handleSaveSingleEdit,
     handleToggleBulkEditMode,
     selectedRowIds.length,
     isBulkEditMode,
@@ -261,8 +203,16 @@ const RateCardsPage = ({ searchValue, setToolbarActions }: RateCardsPageProps) =
         isBulkEditMode={isBulkEditMode}
         selectedRowIds={selectedRowIds}
         onToggleRowSelection={handleToggleRowSelection}
-        onRateCardValueChange={handleRateCardValueChange}
         onEditRateCardRow={handleEditRateCardRow}
+      />
+
+      <EditRateCardValueModal
+        key={`${selectedEditRow?.id ?? 'empty'}-${isSingleEditModalOpen ? 'open' : 'closed'}`}
+        open={isSingleEditModalOpen}
+        rowId={selectedEditRow?.id ?? null}
+        initialValue={selectedEditRow?.rateCardValue ?? ''}
+        onClose={handleCloseSingleEditModal}
+        onSave={handleSaveSingleEdit}
       />
 
       <BulkEditRateCardModal

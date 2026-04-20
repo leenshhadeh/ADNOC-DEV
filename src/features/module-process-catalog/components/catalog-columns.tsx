@@ -33,7 +33,7 @@ declare module '@tanstack/react-table' {
     isFullReport?: boolean
     onUpdateDraftRow?: (
       id: string,
-      field: 'level1Name' | 'level2Name' | 'level3Name' | 'description',
+      field: string,
       value: string,
     ) => void
     draftRowIds?: Set<string>

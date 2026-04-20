@@ -1,14 +1,7 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import {useParams } from 'react-router-dom'
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/shared/components/ui/breadcrumb'
 import { CATALOG_DATA } from '@features/module-process-catalog/constants/catalog-data'
+import Breadcrumb from '@/shared/components/Breadcrumb'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -203,7 +196,6 @@ const COLUMNS: Array<{ id: string; label: string; minWidth: number }> = [
 
 const RecordedChangesPage = () => {
   const { processId } = useParams<{ processId: string }>()
-  const navigate = useNavigate()
 
   const process = CATALOG_DATA.find((r) => r.id === processId)
   const entries = buildMockEntries(processId ?? '')
@@ -215,28 +207,11 @@ const RecordedChangesPage = () => {
   return (
     <section className="space-y-5 pb-10">
       {/* ── Breadcrumb ── */}
-      <Breadcrumb>
-        <BreadcrumbList className="text-xs">
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/" className="text-primary hover:text-primary/80 font-medium">
-              Home
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink
-              onClick={() => navigate('/process-catalog')}
-              className="text-primary hover:text-primary/80 cursor-pointer font-medium"
-            >
-              Process Catalog Ma...
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage className="text-muted-foreground">Recorded changes</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <Breadcrumb 
+       links={[
+        {title:'Process Catalog  Management',url:'/process-catalog'},
+        {title:'Recorded changes', isCurrentPage:true}
+        ]} />
 
       {/* ── Title ── */}
       <div>

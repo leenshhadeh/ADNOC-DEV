@@ -1,14 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Download, Loader2, Save } from 'lucide-react'
 import type { RowSelectionState } from '@tanstack/react-table'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/shared/components/ui/breadcrumb'
 import ModuleToolbar from '@/shared/components/ModuleToolbar'
 import { SuccessToast } from '@/shared/components/SuccessToast'
 import { useGetAutomationTargets } from '../hooks/useGetAutomationTargets'
@@ -18,6 +10,7 @@ import AutomationTargetsTable from './tables/AutomationTargetsTable'
 import SMEFeedbackSheet from './sidePanels/SMEFeedbackSheet'
 import SubmitForApprovalModal from './modals/SubmitForApprovalModal'
 import type { AutomationTargetRow } from '../types'
+import Breadcrumb from '@/shared/components/Breadcrumb'
 
 /** Inserts a synthetic L3-group header row before each new L3 group.
  * Leaf L3 rows (level4Code === '') are shown as-is — no synthetic header. */
@@ -105,19 +98,7 @@ const AutomationTargetsModule = () => {
   return (
     <div className="flex flex-col gap-0 overflow-hidden px-6">
       {/* ── Breadcrumb ───────────────────────────────────────────────────── */}
-      <div className="pt-5 pb-1">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Automation Targets</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
+     <Breadcrumb links={[{title:'Automation Targets'} ]} />
 
       {/* ── Title ────────────────────────────────────────────────────────── */}
       <div className="mb-4 flex items-center py-3">

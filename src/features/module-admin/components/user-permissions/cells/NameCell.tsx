@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Eye, MoreHorizontal, Trash2 } from 'lucide-react'
+import { MoreHorizontal, Trash2, UserRoundCheck } from 'lucide-react'
 
 import {
   DropdownMenu,
@@ -22,7 +22,6 @@ type SelectUserOption = {
 type Props = {
   row: UserPermissionRow
   onRowSelectUser?: (rowId: string, user: { id?: string; name: string; email: string }) => void
-  onView?: (row: UserPermissionRow) => void
   onDeactivate?: (row: UserPermissionRow) => void
   isBulkEditMode?: boolean
   isSelected?: boolean
@@ -32,7 +31,6 @@ type Props = {
 const NameCell = ({
   row,
   onRowSelectUser,
-  onView,
   onDeactivate,
   isBulkEditMode = false,
   isSelected = false,
@@ -146,19 +144,20 @@ const NameCell = ({
 
             <DropdownMenuContent align="end" className="w-44 rounded-xl p-1">
               <DropdownMenuItem
-                onClick={() => onView?.(row)}
-                className="flex cursor-pointer items-center gap-2 rounded-lg data-[highlighted]:bg-[#DCE5F9]"
-              >
-                <Eye className="h-4 w-4" />
-                <span>View</span>
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
                 onClick={() => onDeactivate?.(row)}
-                className="flex cursor-pointer items-center gap-2 rounded-lg text-red-600 data-[highlighted]:bg-[#DCE5F9] data-[highlighted]:text-red-600"
+                className={`flex cursor-pointer items-center gap-2 rounded-lg data-[highlighted]:bg-[#DCE5F9] ${
+                  row.accountStatus === 'Active'
+                    ? 'text-red-600 data-[highlighted]:text-red-600'
+                    : 'text-green-600 data-[highlighted]:text-green-600'
+                }`}
               >
-                <Trash2 className="h-4 w-4" />
-                <span>Deactivate</span>
+                {row.accountStatus === 'Active' ? (
+                  <Trash2 className="h-4 w-4" />
+                ) : (
+                  <UserRoundCheck className="h-4 w-4" />
+                )}
+
+                <span>{row.accountStatus === 'Active' ? 'Deactivate' : 'Activate'}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

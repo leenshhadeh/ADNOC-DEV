@@ -5,6 +5,8 @@ import AdminToolbar from '../components/AdminToolbar'
 import DomainsTable from '../components/domains/DomainsTable'
 import { initialDomainsData } from '../components/domains/constants'
 import { SuccessToast } from '@/shared/components'
+import DomainEditModal from '../components/domains/DomainEditModal'
+import DomainStatusConfirmModal from '../components/domains/DomainStatusConfirmModal'
 
 import type { ToolbarAction } from '@/shared/components/ModuleToolbar'
 import type { DomainRow, EditableDomainField } from '../components/domains/types'
@@ -20,6 +22,16 @@ const DomainsPage = ({ searchValue, setToolbarActions }: DomainsPageProps) => {
   const [toastMessage, setToastMessage] = useState('')
 
   const originalRowRef = useRef<DomainRow | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [selectedEditRow, setSelectedEditRow] = useState<DomainRow | null>(null)
+  const [selectedEditField, setSelectedEditField] = useState<
+    'businessDomain' | 'code' | 'sortingIndex' | null
+  >(null)
+  const [statusModalOpen, setStatusModalOpen] = useState(false)
+  const [pendingStatusRow, setPendingStatusRow] = useState<DomainRow | null>(null)
+  const [pendingStatusAction, setPendingStatusAction] = useState<'activate' | 'archive' | null>(
+    null,
+  )
 
   const showToast = useCallback((message: string) => {
     setToastOpen(false)
@@ -46,7 +58,7 @@ const DomainsPage = ({ searchValue, setToolbarActions }: DomainsPageProps) => {
         status: 'Activated',
         isEditing: true,
         isNew: true,
-        editingField: null,
+        editingField: 'businessDomain',
       },
       ...prev,
     ])
@@ -55,24 +67,53 @@ const DomainsPage = ({ searchValue, setToolbarActions }: DomainsPageProps) => {
   const handleEditRow = useCallback(
     (row: DomainRow, field: 'businessDomain' | 'code' | 'sortingIndex') => {
       if (editingRow) return
+      if (row.isNew) return
 
-      originalRowRef.current = { ...row }
-
-      setRows((prev) =>
-        prev.map((item) =>
-          item.id === row.id
-            ? {
-                ...item,
-                isEditing: true,
-                isNew: false,
-                editingField: field,
-              }
-            : item,
-        ),
-      )
+      setSelectedEditRow(row)
+      setSelectedEditField(field)
+      setIsEditModalOpen(true)
     },
     [editingRow],
   )
+
+  const handleSaveFieldEdit = useCallback(
+    (rowId: string, field: 'businessDomain' | 'code' | 'sortingIndex', value: string) => {
+      setRows((prev) =>
+        prev.map((row) =>
+          row.id === rowId
+            ? {
+                ...row,
+                [field]:
+                  field === 'sortingIndex'
+                    ? Number(value)
+                    : field === 'code'
+                      ? value.toUpperCase()
+                      : value,
+              }
+            : row,
+        ),
+      )
+
+      setIsEditModalOpen(false)
+      setSelectedEditRow(null)
+      setSelectedEditField(null)
+
+      showToast(
+        field === 'businessDomain'
+          ? 'Business domain updated successfully'
+          : field === 'code'
+            ? 'Code updated successfully'
+            : 'Sorting index updated successfully',
+      )
+    },
+    [showToast],
+  )
+
+  const handleCloseEditModal = useCallback(() => {
+    setIsEditModalOpen(false)
+    setSelectedEditRow(null)
+    setSelectedEditField(null)
+  }, [])
 
   const handleCancelEdit = useCallback(() => {
     if (!editingRow) return
@@ -121,6 +162,7 @@ const DomainsPage = ({ searchValue, setToolbarActions }: DomainsPageProps) => {
               sortingIndex: Number(editingRow.sortingIndex),
               isEditing: false,
               editingField: null,
+              isNew: false,
             }
           : row,
       ),
@@ -133,21 +175,21 @@ const DomainsPage = ({ searchValue, setToolbarActions }: DomainsPageProps) => {
   const handleArchiveRow = useCallback(
     (row: DomainRow) => {
       if (editingRow) return
-
-      setRows((prev) =>
-        prev.map((item) =>
-          item.id === row.id
-            ? {
-                ...item,
-                status: 'Archived',
-              }
-            : item,
-        ),
-      )
-
-      showToast('Domain archived successfully')
+      setPendingStatusRow(row)
+      setPendingStatusAction('archive')
+      setStatusModalOpen(true)
     },
-    [editingRow, showToast],
+    [editingRow],
+  )
+
+  const handleActivateRow = useCallback(
+    (row: DomainRow) => {
+      if (editingRow) return
+      setPendingStatusRow(row)
+      setPendingStatusAction('activate')
+      setStatusModalOpen(true)
+    },
+    [editingRow],
   )
 
   const handleRowChange = useCallback(
@@ -165,6 +207,57 @@ const DomainsPage = ({ searchValue, setToolbarActions }: DomainsPageProps) => {
     },
     [],
   )
+
+  const handleEditingFieldChange = useCallback(
+    (rowId: string, field: EditableDomainField) => {
+      setRows((prev) => {
+        const nextRows = prev.map((row) => {
+          if (row.id !== rowId || row.editingField === field) {
+            return row
+          }
+
+          return {
+            ...row,
+            editingField: field,
+          }
+        })
+
+        const hasChanged = nextRows.some((row, index) => row !== prev[index])
+
+        return hasChanged ? nextRows : prev
+      })
+    },
+    [],
+  )
+
+  const handleCloseStatusModal = useCallback(() => {
+    setStatusModalOpen(false)
+    setPendingStatusRow(null)
+    setPendingStatusAction(null)
+  }, [])
+
+  const handleConfirmStatusChange = useCallback(() => {
+    if (!pendingStatusRow || !pendingStatusAction) return
+
+    setRows((prev) =>
+      prev.map((item) =>
+        item.id === pendingStatusRow.id
+          ? {
+              ...item,
+              status: pendingStatusAction === 'activate' ? 'Activated' : 'Archived',
+            }
+          : item,
+      ),
+    )
+
+    showToast(
+      pendingStatusAction === 'activate'
+        ? 'Domain activated successfully'
+        : 'Domain archived successfully',
+    )
+
+    handleCloseStatusModal()
+  }, [handleCloseStatusModal, pendingStatusAction, pendingStatusRow, showToast])
 
   const actions = useMemo<ToolbarAction[]>(
     () =>
@@ -212,9 +305,30 @@ const DomainsPage = ({ searchValue, setToolbarActions }: DomainsPageProps) => {
         data={rows}
         searchValue={searchValue}
         onRowChange={handleRowChange}
+        onEditingFieldChange={handleEditingFieldChange}
         onEditRow={handleEditRow}
         onArchiveRow={handleArchiveRow}
+        onActivateRow={handleActivateRow}
         isEditingRow={!!editingRow}
+      />
+
+      <DomainEditModal
+        key={`${selectedEditRow?.id ?? 'empty'}-${selectedEditField ?? 'none'}-${
+          isEditModalOpen ? 'open' : 'closed'
+        }`}
+        open={isEditModalOpen}
+        row={selectedEditRow}
+        field={selectedEditField}
+        onClose={handleCloseEditModal}
+        onSave={handleSaveFieldEdit}
+      />
+
+      <DomainStatusConfirmModal
+        open={statusModalOpen}
+        domainName={pendingStatusRow?.businessDomain}
+        actionType={pendingStatusAction}
+        onClose={handleCloseStatusModal}
+        onConfirm={handleConfirmStatusChange}
       />
 
       <SuccessToast

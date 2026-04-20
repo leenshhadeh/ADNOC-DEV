@@ -3,6 +3,7 @@ import { SendHorizontal, Loader2 } from 'lucide-react'
 import { useGetComments } from '../../../hooks/useGetComments'
 import { usePostComment } from '../../../hooks/usePostComment'
 import type { CommentEntry } from '../../../types'
+import Avatar from '@/shared/components/ui/Avatar'
 
 interface CommentsTabProps {
   processId: string
@@ -15,26 +16,6 @@ const STATUS_STYLES: Record<string, string> = {
   Published: 'bg-[#DFEBFF] text-[#151718]',
   'In Progress': 'bg-[#FFF3CD] text-[#151718]',
   Reviewed: 'bg-[#D4EDDA] text-[#151718]',
-}
-
-/* ── Avatar with gradient + initials ────────────────────────────────────────── */
-
-const Avatar = ({ name }: { name: string }) => {
-  const initials = name
-    .split(' ')
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase()
-
-  return (
-    <div
-      className="flex size-10 flex-shrink-0 items-center justify-center rounded-full"
-      style={{ background: 'linear-gradient(180deg, #785FDC 0%, #30284D 100%)' }}
-    >
-      <span className="text-xs font-medium text-white">{initials}</span>
-    </div>
-  )
 }
 
 /* ── Single comment card ─────────────────────────────────────────────────────── */

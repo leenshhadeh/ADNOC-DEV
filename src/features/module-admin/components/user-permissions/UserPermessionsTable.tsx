@@ -12,7 +12,6 @@ import type { UserPermissionRow, UserPermissionsTableProps } from './types'
 const UserPermissionsTable = ({
   data,
   searchValue,
-  onView,
   onDeactivate,
   onRowChange,
   onRowSelectUser,
@@ -46,7 +45,6 @@ const UserPermissionsTable = ({
           <NameCell
             row={row.original}
             onRowSelectUser={onRowSelectUser}
-            onView={onView}
             onDeactivate={onDeactivate}
             isBulkEditMode={isBulkEditMode}
             isSelected={selectedRowIds.includes(row.original.id)}
@@ -76,7 +74,6 @@ const UserPermissionsTable = ({
     ],
     [
       onRowSelectUser,
-      onView,
       onDeactivate,
       isBulkEditMode,
       selectedRowIds,

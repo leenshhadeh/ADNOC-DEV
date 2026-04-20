@@ -6,7 +6,8 @@ import GroupCompaniesTable from '../components/group-companies/GroupCompaniesTab
 import GroupCompanySitesDrawer from '../components/group-companies/GroupCompanySitesDrawer'
 import { initialGroupCompaniesData } from '../components/group-companies/constants'
 import { SuccessToast } from '@/shared/components/SuccessToast'
-
+import GroupCompanyStatusConfirmModal from '../components/group-companies/GroupCompanyStatusConfirmModal'
+import GroupCompanyEditModal from '../components/group-companies/GroupCompanyEditModal'
 import type { ToolbarAction } from '@/shared/components/ModuleToolbar'
 import type {
   EditableGroupCompanyField,
@@ -26,8 +27,16 @@ const GroupCompaniesPage = ({ searchValue, setToolbarActions }: GroupCompaniesPa
   const [toastOpen, setToastOpen] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
 
-  const originalRowRef = useRef<GroupCompanyRow | null>(null)
+  const [statusModalOpen, setStatusModalOpen] = useState(false)
+  const [pendingStatusRow, setPendingStatusRow] = useState<GroupCompanyRow | null>(null)
+  const [pendingStatusAction, setPendingStatusAction] = useState<'activate' | 'archive' | null>(
+    null,
+  )
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [selectedEditRow, setSelectedEditRow] = useState<GroupCompanyRow | null>(null)
+  const [selectedEditField, setSelectedEditField] = useState<'groupCompany' | 'code' | null>(null)
+  const originalRowRef = useRef<GroupCompanyRow | null>(null)
   const showToast = useCallback((message: string) => {
     setToastOpen(false)
     setToastMessage(message)
@@ -41,9 +50,6 @@ const GroupCompaniesPage = ({ searchValue, setToolbarActions }: GroupCompaniesPa
 
   const handleAddNew = useCallback(() => {
     if (editingRow) return
-
-    originalRowRef.current = null
-
     setRows((prev) => [
       {
         id: String(Date.now()),
@@ -52,32 +58,79 @@ const GroupCompaniesPage = ({ searchValue, setToolbarActions }: GroupCompaniesPa
         sites: [],
         status: 'Active',
         isEditing: true,
-        editingField: null,
+        isNew: true,
+        editingField: 'groupCompany',
       },
       ...prev,
     ])
   }, [editingRow])
 
-  const handleEditRow = useCallback(
-    (row: GroupCompanyRow, field: 'groupCompany' | 'code') => {
-      if (editingRow) return
+  const handleRowChange = useCallback(
+    (rowId: string, field: EditableGroupCompanyField, value: string) => {
+      setRows((prev) => prev.map((row) => (row.id === rowId ? { ...row, [field]: value } : row)))
+    },
+    [],
+  )
 
-      originalRowRef.current = { ...row }
+  const handleEditingFieldChange = useCallback(
+    (rowId: string, field: EditableGroupCompanyField) => {
+      setRows((prev) => {
+        const nextRows = prev.map((row) => {
+          if (row.id !== rowId || row.editingField === field) {
+            return row
+          }
 
+          return {
+            ...row,
+            editingField: field,
+          }
+        })
+
+        const hasChanged = nextRows.some((row, index) => row !== prev[index])
+
+        return hasChanged ? nextRows : prev
+      })
+    },
+    [],
+  )
+
+  const handleEditRow = useCallback((row: GroupCompanyRow, field: 'groupCompany' | 'code') => {
+    if (row.isNew) return
+
+    setSelectedEditRow(row)
+    setSelectedEditField(field)
+    setIsEditModalOpen(true)
+  }, [])
+
+  const handleSaveFieldEdit = useCallback(
+    (rowId: string, field: 'groupCompany' | 'code', value: string) => {
       setRows((prev) =>
-        prev.map((item) =>
-          item.id === row.id
+        prev.map((row) =>
+          row.id === rowId
             ? {
-                ...item,
-                isEditing: true,
-                editingField: field,
+                ...row,
+                [field]: field === 'code' ? value.toUpperCase() : value,
               }
-            : item,
+            : row,
         ),
       )
+
+      setIsEditModalOpen(false)
+      setSelectedEditRow(null)
+      setSelectedEditField(null)
+
+      showToast(
+        field === 'code' ? 'Code updated successfully' : 'Group company updated successfully',
+      )
     },
-    [editingRow],
+    [showToast],
   )
+
+  const handleCloseEditModal = useCallback(() => {
+    setIsEditModalOpen(false)
+    setSelectedEditRow(null)
+    setSelectedEditField(null)
+  }, [])
 
   const handleCancelEdit = useCallback(() => {
     if (!editingRow) return
@@ -125,6 +178,7 @@ const GroupCompaniesPage = ({ searchValue, setToolbarActions }: GroupCompaniesPa
               code: trimmedCode,
               isEditing: false,
               editingField: null,
+              isNew: false,
             }
           : row,
       ),
@@ -138,21 +192,52 @@ const GroupCompaniesPage = ({ searchValue, setToolbarActions }: GroupCompaniesPa
     (row: GroupCompanyRow) => {
       if (editingRow) return
 
-      setRows((prev) =>
-        prev.map((item) =>
-          item.id === row.id
-            ? {
-                ...item,
-                status: 'Archived',
-              }
-            : item,
-        ),
-      )
-
-      showToast('Group company archived successfully')
+      setPendingStatusRow(row)
+      setPendingStatusAction('archive')
+      setStatusModalOpen(true)
     },
-    [editingRow, showToast],
+    [editingRow],
   )
+
+  const handleActivateRow = useCallback(
+    (row: GroupCompanyRow) => {
+      if (editingRow) return
+
+      setPendingStatusRow(row)
+      setPendingStatusAction('activate')
+      setStatusModalOpen(true)
+    },
+    [editingRow],
+  )
+
+  const handleCloseStatusModal = useCallback(() => {
+    setStatusModalOpen(false)
+    setPendingStatusRow(null)
+    setPendingStatusAction(null)
+  }, [])
+
+  const handleConfirmStatusChange = useCallback(() => {
+    if (!pendingStatusRow || !pendingStatusAction) return
+
+    setRows((prev) =>
+      prev.map((item) =>
+        item.id === pendingStatusRow.id
+          ? {
+              ...item,
+              status: pendingStatusAction === 'activate' ? 'Active' : 'Archived',
+            }
+          : item,
+      ),
+    )
+
+    showToast(
+      pendingStatusAction === 'activate'
+        ? 'Group company activated successfully'
+        : 'Group company archived successfully',
+    )
+
+    handleCloseStatusModal()
+  }, [pendingStatusAction, pendingStatusRow, showToast, handleCloseStatusModal])
 
   const handleSaveSites = useCallback(
     (rowId: string, sites: GroupCompanyRow['sites']) => {
@@ -172,12 +257,6 @@ const GroupCompaniesPage = ({ searchValue, setToolbarActions }: GroupCompaniesPa
       showToast('Sites updated successfully')
     },
     [showToast],
-  )
-  const handleRowChange = useCallback(
-    (rowId: string, field: EditableGroupCompanyField, value: string) => {
-      setRows((prev) => prev.map((row) => (row.id === rowId ? { ...row, [field]: value } : row)))
-    },
-    [],
   )
 
   const handleOpenSitesDrawer = useCallback((row: GroupCompanyRow) => {
@@ -231,11 +310,13 @@ const GroupCompaniesPage = ({ searchValue, setToolbarActions }: GroupCompaniesPa
         data={rows}
         searchValue={searchValue}
         onRowChange={handleRowChange}
+        onEditingFieldChange={handleEditingFieldChange}
         onOpenSitesDrawer={handleOpenSitesDrawer}
         onEditRow={handleEditRow}
         onArchiveRow={handleArchiveRow}
-        isEditingRow={!!editingRow}
+        onActivateRow={handleActivateRow}
       />
+
       <GroupCompanySitesDrawer
         key={selectedRowForSites?.id ?? 'sites-drawer'}
         open={isSitesDrawerOpen}
@@ -247,6 +328,25 @@ const GroupCompaniesPage = ({ searchValue, setToolbarActions }: GroupCompaniesPa
           }
         }}
         onSave={handleSaveSites}
+      />
+
+      <GroupCompanyEditModal
+        key={`${selectedEditRow?.id ?? 'empty'}-${selectedEditField ?? 'none'}-${
+          isEditModalOpen ? 'open' : 'closed'
+        }`}
+        open={isEditModalOpen}
+        row={selectedEditRow}
+        field={selectedEditField}
+        onClose={handleCloseEditModal}
+        onSave={handleSaveFieldEdit}
+      />
+
+      <GroupCompanyStatusConfirmModal
+        open={statusModalOpen}
+        groupCompanyName={pendingStatusRow?.groupCompany}
+        actionType={pendingStatusAction}
+        onClose={handleCloseStatusModal}
+        onConfirm={handleConfirmStatusChange}
       />
 
       <SuccessToast

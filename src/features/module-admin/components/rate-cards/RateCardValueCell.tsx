@@ -1,4 +1,4 @@
-import { MoreHorizontal } from 'lucide-react'
+import { MoreHorizontal, Pencil } from 'lucide-react'
 import { Button } from '@/shared/components/ui/button'
 import {
   DropdownMenu,
@@ -62,8 +62,14 @@ const RateCardValueCell = ({
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => onEdit?.(rowId)}>Edit</DropdownMenuItem>
+          <DropdownMenuContent align="end" className="w-44 rounded-xl p-1">
+            <DropdownMenuItem
+              onClick={() => onEdit?.(rowId)}
+              className="flex cursor-pointer items-center gap-2 rounded-lg text-[#151718] data-[highlighted]:bg-[#DCE5F9] data-[highlighted]:text-[#151718]"
+            >
+              <Pencil className="h-4 w-4 text-[#151718]" />
+              <span>Rename</span>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )}
