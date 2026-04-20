@@ -85,6 +85,11 @@ const ProcessDetailsPage = () => {
     console.log('onFormChanged:', updatedData)
     setUpdatedData(updatedData)
   }
+  const onShowComment = (colName?:string) => {
+    console.log('colName:',colName)
+    setShowComment(true)
+    // get Comments(colName) OR Comments(All)
+  }
 
   const mainActions = useMemo<any[]>(
     () => [
@@ -106,14 +111,12 @@ const ProcessDetailsPage = () => {
       { id: 'Approve', label: 'Approve', icon: Settings2 },
       { id: 'Return', label: 'Return', icon: Upload },
       { id: 'Reject', label: 'Reject', icon: Upload },
-      { id: 'Comment on field', label: 'Comment on field', icon: Upload },
+      { id: 'Comment on field', label: 'Comment on field', icon: Upload , onClick:onShowComment },
     ],
     [],
   )
 
-  const onShowComment = () => {
-    setShowComment(true)
-  }
+
 
   return (
     <>
@@ -183,15 +186,15 @@ const ProcessDetailsPage = () => {
                               handelDataChanged(data)
                             }}
                             isEditable={canEdit}
-                            isUserAuthToComment={canComment}
+                            canComment={canComment}
                             onShowComment={onShowComment}
                           />
                         )}
                         {activeTab == 'AutomationParameters' && (
-                          <AutomationParameterTab process={data[0]} isEditable={canEdit} />
+                          <AutomationParameterTab process={data[0]} isEditable={canEdit} canComment={canComment} onShowComment={onShowComment}/>
                         )}
                         {activeTab == 'ManualParameters' && (
-                          <ManualParametersTab process={data[0]} isEditable={canEdit} />
+                          <ManualParametersTab process={data[0]} isEditable={canEdit} canComment={canComment} onShowComment={onShowComment}/>
                         )}
                         {activeTab == 'TargetRecommendations​​' && (
                           <TargerRecommendationsTab process={data[0]} />
@@ -199,6 +202,7 @@ const ProcessDetailsPage = () => {
                         {activeTab == 'Opportunities' && <OpprtunitiesTab process={data[0]} />}
                         {activeTab == 'RecordedChanges' && <RecordedChangesTab process={data[0]} />}
                         {activeTab == 'Comments' && <CommentsTab comments={data[0].comments} />}
+                        
                       </div>
                     </div>
 

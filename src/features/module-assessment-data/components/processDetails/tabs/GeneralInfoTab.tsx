@@ -14,7 +14,7 @@ interface orgRows {
   team?: string[]
 }
 const GeneralInfoTab = (props: any) => {
-  const { processGeneralInfo ,process , onFormSubmit , onFormChanged ,isEditable ,isUserAuthToComment , onShowComment } = props
+  const { processGeneralInfo ,process , onFormSubmit , onFormChanged ,isEditable ,canComment , onShowComment } = props
   const [openBUSheet, setOpenBUSheet] = useState(false)
   const [orgData, setOrgData] = useState<any>(process.orgMapping)
   const [dataToSubmit, setDataToSubmit] = useState<any>([])
@@ -100,7 +100,7 @@ const GeneralInfoTab = (props: any) => {
       onFormSubmit={onFormSubmit}
       onFormChanged={formChangeHandler}
       isEditable={isEditable}
-      isUserAuthToComment={isUserAuthToComment}
+      canComment={canComment}
       showComments={onShowComment}
       />
       

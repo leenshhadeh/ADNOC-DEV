@@ -1,13 +1,14 @@
 import { useMemo, useState } from 'react'
 import { Maximize2, ListFilter } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 import ProcessFilterSheet from '../../module-process-catalog/components/ProcessFilterSheet'
+import { useAssessmentNavStore } from '../../module-assessment-data/store/useAssessmentNavStore'
+import { useCatalogNavStore } from '../../module-process-catalog/store/useCatalogNavStore'
 import { useProcessFilters } from '@features/module-process-catalog/hooks/useProcessFilters'
 import type { FilterDefinition } from '@/shared/types/filters'
 import NoTasks from './NoTasks'
-import { useNavigate } from 'react-router-dom'
 import ViewAll from './ViewAll'
-
 const Modules = {
   AssessmentData: { title: 'Assessment Data', url: '/assessment-data' },
   AutomationTargets: { title: 'Automation Targets', url: '/automation-targets' },
@@ -39,7 +40,7 @@ const taskGroups = [
     ],
   },
   {
-    module: Modules.AutomationTargets,
+    module: Modules.ProcessCatalog,
     items: [
       {
         title: 'Request returned: Financial Reporting and Co...',
@@ -71,6 +72,16 @@ const MyTasks = () => {
   }, [applied])
 
   const totalCount = filteredTaskGroups.reduce((sum, group) => sum + group.items.length, 0)
+
+  const handleViewAll = (moduleTitle: string, moduleUrl: string) => {
+    if (moduleTitle === Modules.ProcessCatalog.title) {
+      useCatalogNavStore.getState().setActiveTab('myTasks')
+    } else if (moduleTitle === Modules.AssessmentData.title) {
+      useAssessmentNavStore.getState().setActiveTab('my-tasks')
+    }
+
+    navigate(moduleUrl)
+  }
 
   return (
     <>
@@ -123,7 +134,7 @@ const MyTasks = () => {
                     <button
                       type="button"
                       className="cursor-pointer text-[14px] font-semibold text-[#0047BA] transition hover:opacity-70"
-                      onClick={() => navigate(group.module.url)}
+                      onClick={() => handleViewAll(group.module.title, group.module.url)}
                     >
                       View all
                     </button>
@@ -181,6 +192,7 @@ const MyTasks = () => {
         open={isViewAllOpen}
         onOpenChange={setIsViewAllOpen}
         taskGroups={filteredTaskGroups}
+        onViewAll={handleViewAll}
       />
     </>
   )

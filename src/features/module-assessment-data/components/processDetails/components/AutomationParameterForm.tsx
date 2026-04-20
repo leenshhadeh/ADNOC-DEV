@@ -7,7 +7,7 @@ import { RadioCell } from '@/shared/components/table-primitives'
 import { AUTOMATION_MATURITY_LEVEL, BUSINESS_RECOMMENDATION_FOR_AUTOMATION, NUMBER_OF_PEOPLE_IMPACTED, PROCESS_CRITICALITY, SCALE_OF_PROCESS } from '@/constants/dropdownOptions'
 
 const AutomationParameterForm = (props:any) => {
-  const {process} = props
+  const {process, isEditable} = props
   const [formData, setFormData] = useState({
     peopleInvoled: process.numberOfPeopleInvolved || '',
     numberOfPeopleInvolved: process.numberOfPeopleInvolved || '',
@@ -49,6 +49,7 @@ const AutomationParameterForm = (props:any) => {
               setFormData((prev) => ({ ...prev, processCriticality: value }))
             }
             border
+            disabled={!isEditable}
           />
         </div>
 
@@ -64,6 +65,7 @@ const AutomationParameterForm = (props:any) => {
               setFormData((prev) => ({ ...prev, numberOfPeopleInvolved: value }))
             }
             border
+            disabled={!isEditable}
           />
         </div>
 
@@ -77,6 +79,7 @@ const AutomationParameterForm = (props:any) => {
             border
             value={formData.scaleOfProcess}
             onChange={(value) => setFormData((prev) => ({ ...prev, scaleOfProcess: value }))}
+            disabled={!isEditable}
           />
         </div>
 
@@ -95,6 +98,7 @@ const AutomationParameterForm = (props:any) => {
             onChange={(value) =>
               setFormData((prev) => ({ ...prev, automationMaturityLevel: value }))
             }
+            disabled={!isEditable}
           />
         </div>
         <div className="flex w-full flex-col">
@@ -103,6 +107,7 @@ const AutomationParameterForm = (props:any) => {
             className="rounded-md border p-2"
             value={formData.automationLevel}
             onChange={handleChange}
+            disabled={!isEditable}
           />
         </div>
 
@@ -118,6 +123,7 @@ const AutomationParameterForm = (props:any) => {
                   currentApplicationsSystems: tags || [],
                 }))
               }
+              disabled={!isEditable}
             />
           </div>
         </div>
@@ -138,6 +144,7 @@ const AutomationParameterForm = (props:any) => {
             onChange={(value) =>
               setFormData((prev) => ({ ...prev, businessRecommendationForAutomation: value }))
             }
+            disabled={!isEditable}
           />
         </div>
         <div className="flex w-full flex-col">
@@ -148,6 +155,7 @@ const AutomationParameterForm = (props:any) => {
             className="rounded-md border p-2"
             onChange={handleChange}
             value={formData.challengesAndNeeds}
+            disabled={!isEditable}
           />
         </div>
 
@@ -158,6 +166,7 @@ const AutomationParameterForm = (props:any) => {
             value={formData.OngoingAutomationDigitalInitiatives}
             onChange={handleChange}
             className="rounded-md border p-2 text-sm"
+            disabled={!isEditable}
           />
         </div>
 
@@ -168,6 +177,7 @@ const AutomationParameterForm = (props:any) => {
                   <RadioCell
                     value={formData.AIPowered}
                     onValChange={(val:string)=>handleRadioChange('AIPowered',val)}
+                    disabled={!isEditable}
                   />
                
                </div>
@@ -176,6 +186,7 @@ const AutomationParameterForm = (props:any) => {
                   <RadioCell
                     value={formData.autonomousUseCaseEnabled}
                     onValChange={(val:string)=>handleRadioChange('autonomousUseCaseEnabled',val)}
+                    disabled={!isEditable}
                   />
                
                </div>
@@ -190,6 +201,7 @@ const AutomationParameterForm = (props:any) => {
             value={formData.AIPoweredUseCase}
             onChange={handleChange}
             className="rounded-md border p-2 text-sm"
+            disabled={!isEditable}
           />
         </div>
 

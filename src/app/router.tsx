@@ -82,6 +82,13 @@ export const router = createBrowserRouter([
         element: <PlaceholderPage title="Opportunities" />,
       },
       {
+        path: 'reports-and-extracts',
+        lazy: () =>
+          import('@features/module-reports-extracts').then((m) => ({
+            Component: m.ReportsAndExtracts,
+          })),
+      },
+      {
         path: 'settings',
         lazy: () =>
           import('@features/module-admin').then((m) => ({

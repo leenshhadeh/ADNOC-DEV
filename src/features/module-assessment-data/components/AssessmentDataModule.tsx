@@ -75,12 +75,13 @@ import ProcessFilterSheet from '@/features/module-process-catalog/components/Pro
 import { DOMAINS_DATA } from '@/features/module-process-catalog/constants/domains-data'
 import Breadcrumb from '@/shared/components/Breadcrumb'
 import ManageColumnsSheet from './ManageColumnsSheet'
+import { useAssessmentNavStore, type AssessmentTabValue } from '../store/useAssessmentNavStore'
 
 type ActiveModal = 'edit' | 'comment' | 'copy' | 'review' | null
 type TaskModal = 'approve' | 'return' | 'reject' | 'request-endorsement' | null
 
 const AssessmentDataModule = () => {
-  const [activeTab, setActiveTab] = useState('processes')
+  const { activeTab, setActiveTab } = useAssessmentNavStore()
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [isManageColumnsOpen, setIsManageColumnsOpen] = useState(false)
   const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({})
@@ -261,7 +262,7 @@ const AssessmentDataModule = () => {
             tabs={ASSESSMENT_TABS}
             activeTab={activeTab}
             onTabChange={(tab) => {
-              setActiveTab(tab)
+              setActiveTab(tab as AssessmentTabValue)
               exitBulkMode()
             }}
             searchValue={search}

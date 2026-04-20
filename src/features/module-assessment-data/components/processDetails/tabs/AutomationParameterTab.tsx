@@ -2,11 +2,11 @@
 import AutomationParameterForm from '../components/AutomationParameterForm'
 
 const AutomationParameterTab = (props:any) => {
-const {process}=props
+const {process , isEditable}=props
   return (
     <>
       {/* Form: */}
-      <AutomationParameterForm process={process}/>
+      <AutomationParameterForm process={process} isEditable={isEditable}/>
     </>
   )
 }

@@ -17,7 +17,7 @@ const accessCardItems = [
     title: 'Reports & Extracts',
     description: 'Download reports and data extracts from the system',
     icon: cards,
-    to: '/process-catalog',
+    to: '/reports-and-extracts',
   },
   {
     title: 'Service Now Support ',
