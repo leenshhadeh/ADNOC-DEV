@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Check,
   Download,
@@ -74,6 +74,7 @@ import { useProcessFilterDefinitions } from '../hooks/useProcessFilterDefinition
 import ProcessFilterSheet from '@/features/module-process-catalog/components/ProcessFilterSheet'
 import { DOMAINS_DATA } from '@/features/module-process-catalog/constants/domains-data'
 import Breadcrumb from '@/shared/components/Breadcrumb'
+import ManageColumnsSheet from './ManageColumnsSheet'
 
 type ActiveModal = 'edit' | 'comment' | 'copy' | 'review' | null
 type TaskModal = 'approve' | 'return' | 'reject' | 'request-endorsement' | null
@@ -81,6 +82,9 @@ type TaskModal = 'approve' | 'return' | 'reject' | 'request-endorsement' | null
 const AssessmentDataModule = () => {
   const [activeTab, setActiveTab] = useState('processes')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [isManageColumnsOpen, setIsManageColumnsOpen] = useState(false)
+  const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({})
+  const [managedColumnOrder, setManagedColumnOrder] = useState<string[]>([])
   const [search, setSearch] = useState('')
   const [isBulkMode, setIsBulkMode] = useState(false)
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
@@ -122,12 +126,11 @@ const AssessmentDataModule = () => {
 
   const tableData = useMemo(() => flattenAssessmentData(ASSESSMENT_DATA), [])
   // Global filters:-------------------------
-  const globalFilterIds = ['domain','status']
+  const globalFilterIds = ['domain', 'status']
   const filterDefs = useProcessFilterDefinitions(DOMAINS_DATA, tableData)
   const { pending, applied, activePerSection, toggle, apply, reset } =
     useProcessFilters(globalFilterIds)
   const filteredData = useMemo(() => applyProcessFilters(tableData, applied), [tableData, applied])
-  
 
   const handleExport = async () => {
     if (activeTab === 'my-tasks') {
@@ -142,7 +145,12 @@ const AssessmentDataModule = () => {
 
   const defaultActions = useMemo<ToolbarAction[]>(
     () => [
-      { id: 'manage-columns', label: 'Manage columns', icon: Settings2 },
+      {
+        id: 'manage-columns',
+        label: 'Manage columns',
+        icon: Settings2,
+        onClick: () => setIsManageColumnsOpen(true),
+      },
       { id: 'import', label: 'Import', icon: Upload },
       {
         id: 'export',
@@ -237,12 +245,10 @@ const AssessmentDataModule = () => {
 
   return (
     <div className="flex h-full flex-col gap-0 overflow-hidden px-6">
-    <Breadcrumb 
-    links={[{title:'Assessment Data Processes'}]}
-    />
+      <Breadcrumb links={[{ title: 'Assessment Data Processes' }]} />
 
       {/* ── Title bar ──────────────────────────────────────────────────── */}
-      <div className="flex items-center  py-3">
+      <div className="flex items-center py-3">
         <h1 className="text-foreground text-2xl font-bold">Assessment Data Processes</h1>
 
         <ProcessesMenu />
@@ -318,7 +324,7 @@ const AssessmentDataModule = () => {
         )}
       </div>
       {/* ── Info bar ───────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-2  py-2 text-sm">
+      <div className="flex items-center gap-2 py-2 text-sm">
         <Info className="size-4 shrink-0" />
         <span>
           You can edit values inline at the lowest level (L3 or L4) only. Editable cells are
@@ -367,6 +373,10 @@ const AssessmentDataModule = () => {
                     typeof updater === 'function' ? updater(prev) : updater,
                   )
                 }
+                columnVisibility={columnVisibility}
+                onColumnVisibilityChange={setColumnVisibility}
+                columnOrder={managedColumnOrder}
+                onColumnOrderChange={setManagedColumnOrder}
               />
             )
           ) : activeTab == 'my-tasks' ? (
@@ -647,6 +657,14 @@ const AssessmentDataModule = () => {
         onToggle={toggle}
         onApply={apply}
         onReset={reset}
+      />
+      <ManageColumnsSheet
+        open={isManageColumnsOpen}
+        onClose={() => setIsManageColumnsOpen(false)}
+        columnOrder={managedColumnOrder}
+        columnVisibility={columnVisibility}
+        onColumnOrderChange={setManagedColumnOrder}
+        onColumnVisibilityChange={setColumnVisibility}
       />
     </div>
   )

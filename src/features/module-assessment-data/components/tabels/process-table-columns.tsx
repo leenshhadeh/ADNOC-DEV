@@ -86,26 +86,23 @@ export const getProcessTableColumns = ({
           info.row.original.displayL3 ? 'flex items-center justify-between gap-2' : 'rowspan'
         }
       >
-        <div className="flex min-w-0 items-center gap-2">
-          {isBulkMode && !info.row.original.l4Code && (
-            <Checkbox
-              className="shrink-0"
-              checked={info.row.getIsSelected()}
-              onCheckedChange={info.row.getToggleSelectedHandler()}
-              aria-label={`Select ${info.row.original.l3}`}
-            />
-          )}
-          <div className="flex min-w-0 flex-col gap-0.5">
-            <span className="text-foreground text-sm font-medium">
-              {info.row.original.displayL3}
-            </span>
-            <span className="text-muted-foreground text-xs">
-              {info.getValue<string>() ? info.row.original.l3Code : ''}
-            </span>
-          </div>
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <span className="text-foreground text-sm font-medium">{info.row.original.displayL3}</span>
+          <span className="text-muted-foreground text-xs">
+            {info.getValue<string>() ? info.row.original.l3Code : ''}
+          </span>
         </div>
-        {/* if there is l4, remove the menu actions */}
-        {!info.row.original.l4Code && !isBulkMode && <CellMenuOptions item={info.row.original} />}
+        {isBulkMode && info.row.original.displayL3 ? (
+          <Checkbox
+            className="shrink-0"
+            checked={info.row.getIsSelected()}
+            onCheckedChange={info.row.getToggleSelectedHandler()}
+            aria-label={`Select ${info.row.original.l3}`}
+          />
+        ) : (
+          /* if there is l4, remove the menu actions */
+          !info.row.original.l4Code && !isBulkMode && <CellMenuOptions item={info.row.original} />
+        )}
       </div>
     ),
   },
@@ -118,25 +115,24 @@ export const getProcessTableColumns = ({
     meta: { pinnedCol: true, offset: 300 },
     cell: (info) => (
       <div className="flex items-center justify-between gap-2">
-        <div className="flex min-w-0 items-center gap-2">
-          {isBulkMode && !!info.row.original.l4Code && (
-            <Checkbox
-              className="shrink-0"
-              checked={info.row.getIsSelected()}
-              onCheckedChange={info.row.getToggleSelectedHandler()}
-              aria-label={`Select ${info.row.original.l4}`}
-            />
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <span className="text-foreground text-sm font-medium">{info.getValue<string>()}</span>
+          {info.getValue<string>() ? (
+            <span className="text-muted-foreground text-xs">{info.row.original.l4Code}</span>
+          ) : (
+            <span className="text-muted-foreground text-sm italic">No Level 4 processes</span>
           )}
-          <div className="flex min-w-0 flex-col gap-0.5">
-            <span className="text-foreground text-sm font-medium">{info.getValue<string>()}</span>
-            {info.getValue<string>() ? (
-              <span className="text-muted-foreground text-xs">{info.row.original.l4Code} </span>
-            ) : (
-              <span className="text-muted-foreground text-sm italic">No Level 4 processes</span>
-            )}
-          </div>
         </div>
-        {info.getValue<string>() && !isBulkMode && <CellMenuOptions item={info.row.original} />}
+        {isBulkMode && !!info.row.original.l4Code ? (
+          <Checkbox
+            className="shrink-0"
+            checked={info.row.getIsSelected()}
+            onCheckedChange={info.row.getToggleSelectedHandler()}
+            aria-label={`Select ${info.row.original.l4}`}
+          />
+        ) : (
+          info.getValue<string>() && !isBulkMode && <CellMenuOptions item={info.row.original} />
+        )}
       </div>
     ),
   },

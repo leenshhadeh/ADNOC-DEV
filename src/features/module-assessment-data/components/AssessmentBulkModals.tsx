@@ -778,6 +778,7 @@ export function MarkAsReviewedModal({
   onConfirm,
 }: MarkAsReviewedModalProps) {
   const [comment, setComment] = useState('')
+  const [showSuccess, setShowSuccess] = useState(false)
 
   const close = () => {
     setComment('')
@@ -785,45 +786,54 @@ export function MarkAsReviewedModal({
   }
 
   return (
-    <BaseModal
-      open={open}
-      onClose={close}
-      title="Mark as reviewed"
-      subtitle={`The comment will appear in the Comments tab for each of the ${selectedCount} selected process${selectedCount !== 1 ? 'es' : ''}.`}
-      footer={
-        <>
-          <Button type="button" variant="secondary" className="h-12 rounded-full" onClick={close}>
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            className="h-12 rounded-full"
-            disabled={!comment.trim()}
-            onClick={() => {
-              onConfirm(comment.trim())
-              close()
-            }}
-          >
-            Mark as reviewed
-          </Button>
-        </>
-      }
-    >
-      <div>
-        <label className={fieldLabel}>
-          Comment <span className="text-destructive">*</span>
-        </label>
-        <textarea
-          value={comment}
-          onChange={(e) => setComment(e.target.value.slice(0, MAX_REVIEW_CHARS))}
-          rows={4}
-          placeholder="Enter review comment…"
-          className={`${fieldInput} resize-none`}
-        />
-        <p className="text-muted-foreground mt-1 text-right text-xs">
-          {comment.length} / {MAX_REVIEW_CHARS}
-        </p>
-      </div>
-    </BaseModal>
+    <>
+      <BaseModal
+        open={open}
+        onClose={close}
+        title="Mark as reviewed"
+        subtitle={`The comment will appear in the Comments tab for each of the ${selectedCount} selected process${selectedCount !== 1 ? 'es' : ''}.`}
+        footer={
+          <>
+            <Button type="button" variant="secondary" className="h-12 rounded-full" onClick={close}>
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              className="h-12 rounded-full"
+              disabled={!comment.trim()}
+              onClick={() => {
+                onConfirm(comment.trim())
+                close()
+                setShowSuccess(true)
+              }}
+            >
+              Mark as reviewed
+            </Button>
+          </>
+        }
+      >
+        <div>
+          <label className={fieldLabel}>
+            Comment <span className="text-destructive">*</span>
+          </label>
+          <textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value.slice(0, MAX_REVIEW_CHARS))}
+            rows={4}
+            placeholder="Enter review comment…"
+            className={`${fieldInput} resize-none`}
+          />
+          <p className="text-muted-foreground mt-1 text-right text-xs">
+            {comment.length} / {MAX_REVIEW_CHARS}
+          </p>
+        </div>
+      </BaseModal>
+
+      <SuccessToast
+        open={showSuccess}
+        message="Processes marked as reviewed successfully."
+        onClose={() => setShowSuccess(false)}
+      />
+    </>
   )
 }

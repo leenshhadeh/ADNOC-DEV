@@ -72,4 +72,12 @@ export interface DataTableProps<TData> {
   tableMeta?: Record<string, any>
   /** When provided, the row actions dropdown only appears in cells whose column id is in this list. */
   actionColumnIds?: string[]
+  /** Controlled column visibility state. */
+  columnVisibility?: Record<string, boolean>
+  /** Called when visibility changes via the table internals. */
+  onColumnVisibilityChange?: (visibility: Record<string, boolean>) => void
+  /** Controlled column order. When provided, syncs the internal order state. */
+  columnOrder?: string[]
+  /** Called when the user reorders columns via drag-and-drop in the header. */
+  onColumnOrderChange?: (newOrder: string[]) => void
 }

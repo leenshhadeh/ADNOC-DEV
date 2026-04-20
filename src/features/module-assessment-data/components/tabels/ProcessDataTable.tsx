@@ -5,6 +5,7 @@ import SharedServicesSheet from '../sidePanels/SharedServicesSheet'
 import BUSheet from '../sidePanels/BUSheet'
 import DigitalTeamSheet from '../sidePanels/DigitalTeamSheet'
 import { getProcessTableColumns } from './process-table-columns'
+import type { RowSelectionState } from '@tanstack/react-table'
 
 const toText = (value: unknown): string => {
   if (value == null) return ''
@@ -170,8 +171,29 @@ export type DisplayAssessmentRow = FlatAssessmentRow & {
   displayL3: string
 }
 
-const ProcessDataTable = (props: any) => {
-  const { data, isBulkMode = false, rowSelection, onRowSelectionChange } = props
+interface ProcessDataTableProps {
+  data: FlatAssessmentRow[]
+  isBulkMode?: boolean
+  rowSelection?: RowSelectionState
+  onRowSelectionChange?: (
+    updater: RowSelectionState | ((prev: RowSelectionState) => RowSelectionState),
+  ) => void
+  columnVisibility?: Record<string, boolean>
+  onColumnVisibilityChange?: (visibility: Record<string, boolean>) => void
+  columnOrder?: string[]
+  onColumnOrderChange?: (newOrder: string[]) => void
+}
+
+const ProcessDataTable = ({
+  data,
+  isBulkMode = false,
+  rowSelection,
+  onRowSelectionChange,
+  columnVisibility,
+  onColumnVisibilityChange,
+  columnOrder,
+  onColumnOrderChange,
+}: ProcessDataTableProps) => {
   const [isSharedServiceOpen, setIsSharedServiceOpen] = useState(false)
   const [isBUOpen, setIsBUOpen] = useState(false)
   const [isDigitalTeamOpen, setIsDigitalTeamOpen] = useState(false)
@@ -222,6 +244,10 @@ const ProcessDataTable = (props: any) => {
         tableMeta={{
           onUpdateDraftRow: handleUpdateDraftRow,
         }}
+        columnVisibility={columnVisibility}
+        onColumnVisibilityChange={onColumnVisibilityChange}
+        columnOrder={columnOrder}
+        onColumnOrderChange={onColumnOrderChange}
       />
 
       {/* side panels */}

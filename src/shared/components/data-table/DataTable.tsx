@@ -27,6 +27,8 @@ import {
   type ColumnPinningState,
   type Row,
   type SortingState,
+  type Updater,
+  type VisibilityState,
 } from '@tanstack/react-table'
 
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/shared/components/ui/table'
@@ -63,6 +65,10 @@ const DataTable = <TData,>({
   getRowId,
   tableMeta,
   actionColumnIds,
+  columnVisibility,
+  onColumnVisibilityChange,
+  columnOrder: columnOrderProp,
+  onColumnOrderChange,
 }: DataTableProps<TData>) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -74,6 +80,13 @@ const DataTable = <TData,>({
   useEffect(() => {
     setColumnOrder(initialColumnOrder)
   }, [initialColumnOrder])
+
+  // Sync externally controlled column order into internal state
+  useEffect(() => {
+    if (columnOrderProp && columnOrderProp.length > 0) {
+      setColumnOrder(columnOrderProp)
+    }
+  }, [columnOrderProp])
 
   const sensors = useSensors(
     useSensor(MouseSensor),
@@ -94,6 +107,7 @@ const DataTable = <TData,>({
       columnOrder,
       columnPinning,
       ...(rowSelection !== undefined ? { rowSelection } : {}),
+      ...(columnVisibility !== undefined ? { columnVisibility } : {}),
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -105,6 +119,14 @@ const DataTable = <TData,>({
             onRowSelectionChange(
               typeof updater === 'function' ? updater(rowSelection ?? {}) : updater,
             )
+          },
+        }
+      : {}),
+    ...(onColumnVisibilityChange
+      ? {
+          onColumnVisibilityChange: (updater: Updater<VisibilityState>) => {
+            const next = typeof updater === 'function' ? updater(columnVisibility ?? {}) : updater
+            onColumnVisibilityChange(next)
           },
         }
       : {}),
@@ -128,7 +150,9 @@ const DataTable = <TData,>({
       const oldIndex = currentOrder.indexOf(String(active.id))
       const newIndex = currentOrder.indexOf(String(over.id))
       if (oldIndex < 0 || newIndex < 0) return currentOrder
-      return arrayMove(currentOrder, oldIndex, newIndex)
+      const newOrder = arrayMove(currentOrder, oldIndex, newIndex)
+      onColumnOrderChange?.(newOrder)
+      return newOrder
     })
   }
 
