@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import RichTextEditor from '@/shared/components/ui/RichTextEditor'
 import { useSaveTargetRecommendations } from '../../../hooks/useSaveTargetRecommendations'
-import { useProcessDetailActions } from '../../../context/ProcessDetailActionsContext'
+import { useProcessDetailActionsStore } from '../../../store/processDetailActionsStore'
 import { targetRecommendationsSchema } from '../../../schemas/targetRecommendationsSchema'
 import type { AutomationProcessDetail } from '../../../types'
 
@@ -78,7 +78,7 @@ const TargetRecommendationsTab = ({ process }: TargetRecommendationsTabProps) =>
   const [validationErrors, setValidationErrors] = useState<string[]>([])
 
   const { mutate, isPending } = useSaveTargetRecommendations()
-  const { registerSaveHandler } = useProcessDetailActions()
+  const { registerSaveHandler } = useProcessDetailActionsStore()
 
   const handleSave = () => {
     setValidationErrors([])

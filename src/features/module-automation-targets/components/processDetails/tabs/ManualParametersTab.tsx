@@ -1,5 +1,6 @@
 import { Lock } from 'lucide-react'
 import type { AutomationProcessDetail } from '../../../types'
+import CommentableField from '../CommentableField'
 
 interface ManualParametersTabProps {
   process: AutomationProcessDetail
@@ -50,33 +51,62 @@ const ManualParametersTab = ({ process }: ManualParametersTabProps) => {
       </div>
       {/* ── Row 1: Cycle, Repetition, Duration ───────────────────────── */}
       <div className="flex flex-wrap gap-4">
-        <DropdownField label="How Often the Process Happens (Cycle)" value={process.processCycle} />
-        <DropdownField
-          label="Number of Times the Process is Repeated within Selected Cycle"
-          value={process.processRepetitionWithinCycle}
-        />
-        <InputField
-          label="Total Process Duration (Days)"
-          value={process.totalProcessDurationDays}
-        />
+        <CommentableField fieldId="processCycle" fieldName="How Often the Process Happens (Cycle)">
+          <DropdownField
+            label="How Often the Process Happens (Cycle)"
+            value={process.processCycle}
+          />
+        </CommentableField>
+        <CommentableField
+          fieldId="processRepetitionWithinCycle"
+          fieldName="Number of Times the Process is Repeated within Selected Cycle"
+        >
+          <DropdownField
+            label="Number of Times the Process is Repeated within Selected Cycle"
+            value={process.processRepetitionWithinCycle}
+          />
+        </CommentableField>
+        <CommentableField
+          fieldId="totalProcessDurationDays"
+          fieldName="Total Process Duration (Days)"
+        >
+          <InputField
+            label="Total Process Duration (Days)"
+            value={process.totalProcessDurationDays}
+          />
+        </CommentableField>
       </div>
 
       {/* ── Row 2: Personnel FTE, Manual %, Daily Rate Card ──────────── */}
       <div className="flex flex-wrap gap-4">
-        <DropdownField
-          label="Total Personnel Executing the Process (FTE)"
-          value={process.totalPersonnelFTE}
-        />
-        <DropdownField
-          label="Time Spent on Manual Tasks (%)"
-          value={process.timeSpentManualPercent}
-        />
-        <InputField label="Daily Rate Card (AED)" value={process.dailyRateCardAED} />
+        <CommentableField
+          fieldId="totalPersonnelFTE"
+          fieldName="Total Personnel Executing the Process (FTE)"
+        >
+          <DropdownField
+            label="Total Personnel Executing the Process (FTE)"
+            value={process.totalPersonnelFTE}
+          />
+        </CommentableField>
+        <CommentableField
+          fieldId="timeSpentManualPercent"
+          fieldName="Time Spent on Manual Tasks (%)"
+        >
+          <DropdownField
+            label="Time Spent on Manual Tasks (%)"
+            value={process.timeSpentManualPercent}
+          />
+        </CommentableField>
+        <CommentableField fieldId="dailyRateCardAED" fieldName="Daily Rate Card (AED)">
+          <InputField label="Daily Rate Card (AED)" value={process.dailyRateCardAED} />
+        </CommentableField>
       </div>
 
       {/* ── Row 3: Key Manual Steps (full-width textarea) ────────────── */}
       <div className="flex flex-wrap gap-4">
-        <TextareaField label="Key Manual Steps" value={process.keyManualSteps} />
+        <CommentableField fieldId="keyManualSteps" fieldName="Key Manual Steps">
+          <TextareaField label="Key Manual Steps" value={process.keyManualSteps} />
+        </CommentableField>
       </div>
 
       {/* ── Summary: Annual Cost of Manual Effort ─────────────────────── */}

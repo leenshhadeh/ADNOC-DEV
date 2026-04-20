@@ -1,5 +1,6 @@
 import type { AutomationProcessDetail } from '../../../types'
 import { Lock } from 'lucide-react'
+import CommentableField from '../CommentableField'
 
 interface GeneralInfoTabProps {
   process: AutomationProcessDetail
@@ -121,21 +122,37 @@ const GeneralInfoTab = ({ process }: GeneralInfoTabProps) => {
 
       {/* ── Row 2: Form fields ───────────────────────────────────────────── */}
       <div className="flex flex-wrap gap-4">
-        <ReadOnlyField label="Custom Name" value={process.customName} />
-        <ReadOnlyTextarea label="Custom Description" value={process.customDescription} />
-        <ReadOnlyTextarea label="Process Description" value={process.processDescription} />
+        <CommentableField fieldId="customName" fieldName="Custom Name">
+          <ReadOnlyField label="Custom Name" value={process.customName} />
+        </CommentableField>
+        <CommentableField fieldId="customDescription" fieldName="Custom Description">
+          <ReadOnlyTextarea label="Custom Description" value={process.customDescription} />
+        </CommentableField>
+        <CommentableField fieldId="processDescription" fieldName="Process Description">
+          <ReadOnlyTextarea label="Process Description" value={process.processDescription} />
+        </CommentableField>
       </div>
 
       {/* ── Row 3: Focal points ──────────────────────────────────────────── */}
       <div className="flex flex-wrap gap-4">
-        <TagDropdownField
-          label="Responsible Business Focal Point"
-          values={process.responsibleBusinessFocalPoints}
-        />
-        <TagDropdownField
-          label="Responsible Digital Focal Point"
-          values={process.responsibleDigitalFocalPoints}
-        />
+        <CommentableField
+          fieldId="responsibleBusinessFocalPoints"
+          fieldName="Responsible Business Focal Point"
+        >
+          <TagDropdownField
+            label="Responsible Business Focal Point"
+            values={process.responsibleBusinessFocalPoints}
+          />
+        </CommentableField>
+        <CommentableField
+          fieldId="responsibleDigitalFocalPoints"
+          fieldName="Responsible Digital Focal Point"
+        >
+          <TagDropdownField
+            label="Responsible Digital Focal Point"
+            values={process.responsibleDigitalFocalPoints}
+          />
+        </CommentableField>
       </div>
 
       {/* ── Row 4: Organisation data mapping ─────────────────────────────── */}

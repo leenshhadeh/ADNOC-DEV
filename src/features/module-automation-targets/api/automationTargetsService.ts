@@ -195,9 +195,33 @@ export const discardDraft = async (processId: string): Promise<{ success: boolea
 
 // ── Return for revision (DFP only) ────────────────────────────────────────────
 
-export const returnForRevision = async (processId: string): Promise<{ success: boolean }> => {
+export const returnForRevision = async (
+  processId: string,
+  reason?: string,
+): Promise<{ success: boolean }> => {
   await delay(SIMULATED_LATENCY_MS)
   void processId
+  void reason
+  return { success: true }
+}
+
+// ── Approve process (QM / BPA Program Manager) ───────────────────────────────
+
+export const approveProcess = async (processId: string): Promise<{ success: boolean }> => {
+  await delay(SIMULATED_LATENCY_MS)
+  void processId
+  return { success: true }
+}
+
+// ── Reject process (QM / BPA Program Manager) ────────────────────────────────
+
+export const rejectProcess = async (
+  processId: string,
+  reason?: string,
+): Promise<{ success: boolean }> => {
+  await delay(SIMULATED_LATENCY_MS)
+  void processId
+  void reason
   return { success: true }
 }
 
@@ -418,3 +442,73 @@ const MOCK_COMMENTS: CommentEntry[] = [
     statusLabel: 'Published',
   },
 ]
+
+// ── Field comments (mock) ─────────────────────────────────────────────────────
+
+const MOCK_FIELD_COMMENTS: Record<string, CommentEntry[]> = {
+  customName: [
+    {
+      id: 'fc-1',
+      author: 'Maryam Al Shamsi',
+      role: 'Quality Manager',
+      text: 'Please review the automation level — the old value seems incorrect.',
+      timestamp: '01 Mar 2024 at 12:30',
+    },
+    {
+      id: 'fc-2',
+      author: 'Ali Abdullah',
+      role: 'Digital Focal Point',
+      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing zlit, sed do eiusmod tempor.',
+      timestamp: '01 Mar 2024 at 12:30',
+    },
+  ],
+}
+
+export interface GetFieldCommentsParams {
+  processId: string
+  fieldId: string
+}
+
+export interface AddFieldCommentParams {
+  processId: string
+  fieldId: string
+  text: string
+}
+
+export const getFieldComments = async ({
+  processId,
+  fieldId,
+}: GetFieldCommentsParams): Promise<CommentEntry[]> => {
+  await delay(400)
+  void processId
+  return MOCK_FIELD_COMMENTS[fieldId] ?? []
+}
+
+export const addFieldComment = async ({
+  processId,
+  fieldId,
+  text,
+}: AddFieldCommentParams): Promise<CommentEntry> => {
+  await delay(300)
+  void processId
+  const entry: CommentEntry = {
+    id: `fc-${Date.now()}`,
+    author: 'Jane Doe',
+    role: 'Quality Manager',
+    text,
+    timestamp:
+      new Date().toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      }) +
+      ' at ' +
+      new Date().toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+  }
+  if (!MOCK_FIELD_COMMENTS[fieldId]) MOCK_FIELD_COMMENTS[fieldId] = []
+  MOCK_FIELD_COMMENTS[fieldId].push(entry)
+  return entry
+}

@@ -1,5 +1,6 @@
 import { Lock } from 'lucide-react'
 import type { AutomationProcessDetail } from '../../../types'
+import CommentableField from '../CommentableField'
 
 interface AutomationParametersTabProps {
   process: AutomationProcessDetail
@@ -116,52 +117,86 @@ const AutomationParametersTab = ({ process }: AutomationParametersTabProps) => {
       </div>
       {/* ── Row 1: Process Criticality, Number of People, Scale ───────── */}
       <div className="flex flex-wrap gap-4">
-        <DropdownField label="Process Criticality" value={process.processCriticality} />
-        <DropdownField label="Number of People Involved" value={process.numberOfPeopleInvolved} />
-        <DropdownField label="Scale of Process" value={process.scaleOfProcess} />
+        <CommentableField fieldId="processCriticality" fieldName="Process Criticality">
+          <DropdownField label="Process Criticality" value={process.processCriticality} />
+        </CommentableField>
+        <CommentableField fieldId="numberOfPeopleInvolved" fieldName="Number of People Involved">
+          <DropdownField label="Number of People Involved" value={process.numberOfPeopleInvolved} />
+        </CommentableField>
+        <CommentableField fieldId="scaleOfProcess" fieldName="Scale of Process">
+          <DropdownField label="Scale of Process" value={process.scaleOfProcess} />
+        </CommentableField>
       </div>
 
       {/* ── Row 2: Maturity Level, Automation %, Applications ─────────── */}
       <div className="flex flex-wrap gap-4">
-        <DropdownField
-          label="Process Automation Maturity Level"
-          value={process.automationMaturityLevel}
-        />
-        <InputField label="Automation Level (%)" value={process.automationLevel} />
-        <TagDropdownField
-          label="Current Applications / Systems"
-          values={process.currentApplicationsSystems}
-        />
+        <CommentableField
+          fieldId="automationMaturityLevel"
+          fieldName="Process Automation Maturity Level"
+        >
+          <DropdownField
+            label="Process Automation Maturity Level"
+            value={process.automationMaturityLevel}
+          />
+        </CommentableField>
+        <CommentableField fieldId="automationLevel" fieldName="Automation Level (%)">
+          <InputField label="Automation Level (%)" value={process.automationLevel} />
+        </CommentableField>
+        <CommentableField
+          fieldId="currentApplicationsSystems"
+          fieldName="Current Applications / Systems"
+        >
+          <TagDropdownField
+            label="Current Applications / Systems"
+            values={process.currentApplicationsSystems}
+          />
+        </CommentableField>
       </div>
 
       {/* ── Row 3: Recommendation, Challenges, Ongoing Initiatives ────── */}
       <div className="flex flex-wrap gap-4">
-        <DropdownField
-          label="Business Recommendation for Automation"
-          value={process.businessRecommendation}
-        />
-        <InputField label="Key Challenges & Automation Needs" value={process.keyChallenges} />
-        <TextareaField
-          label="Ongoing Digital Initiatives"
-          value={process.ongoingAutomation}
-          charCount="200 / 500"
-        />
+        <CommentableField
+          fieldId="businessRecommendation"
+          fieldName="Business Recommendation for Automation"
+        >
+          <DropdownField
+            label="Business Recommendation for Automation"
+            value={process.businessRecommendation}
+          />
+        </CommentableField>
+        <CommentableField fieldId="keyChallenges" fieldName="Key Challenges & Automation Needs">
+          <InputField label="Key Challenges & Automation Needs" value={process.keyChallenges} />
+        </CommentableField>
+        <CommentableField fieldId="ongoingAutomation" fieldName="Ongoing Digital Initiatives">
+          <TextareaField
+            label="Ongoing Digital Initiatives"
+            value={process.ongoingAutomation}
+            charCount="200 / 500"
+          />
+        </CommentableField>
       </div>
 
       {/* ── Row 4: AI-Powered toggle + Autonomous toggle ─────────────── */}
       <div className="flex flex-wrap gap-4">
-        <ToggleWithField
-          label="AI-Powered"
-          value={process.aiPowered === 'Yes'}
-          childLabel="AI-Powered Use-case"
-          childValue={process.aiPoweredUseCase}
-        />
-        <ToggleWithField
-          label="Autonomous Use-case Enabled"
-          value={process.autonomousUseCaseEnabled === 'Yes'}
-          childLabel="Autonomous Use-case Description"
-          childValue={process.autonomousUseCaseDescription}
-        />
+        <CommentableField fieldId="aiPowered" fieldName="AI-Powered">
+          <ToggleWithField
+            label="AI-Powered"
+            value={process.aiPowered === 'Yes'}
+            childLabel="AI-Powered Use-case"
+            childValue={process.aiPoweredUseCase}
+          />
+        </CommentableField>
+        <CommentableField
+          fieldId="autonomousUseCaseEnabled"
+          fieldName="Autonomous Use-case Enabled"
+        >
+          <ToggleWithField
+            label="Autonomous Use-case Enabled"
+            value={process.autonomousUseCaseEnabled === 'Yes'}
+            childLabel="Autonomous Use-case Description"
+            childValue={process.autonomousUseCaseDescription}
+          />
+        </CommentableField>
       </div>
     </div>
   )

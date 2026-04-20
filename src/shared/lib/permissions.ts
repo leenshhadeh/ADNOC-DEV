@@ -6,6 +6,8 @@
 //                                    from Business & Digital Focal Points.
 // Business Focal Point (BFP)       — Can request adding/updating processes and submit.
 // Digital Focal Point (DFP)        — Can request adding/updating processes and submit.
+// SME Expert                       — Subject-matter expert. Can save, validate,
+//                                    and submit automation target data.
 // Super Admin                      — Full access across all modules. Can apply
 //                                    direct changes without approval, manage user
 //                                    permissions, and configure group companies & sites.
@@ -20,16 +22,7 @@ export const ROLES = {
 
 export type Role = (typeof ROLES)[keyof typeof ROLES]
 
-// export const ROLES = [
-//   'BPA Program Manager',
-//   'BPA Process Catalog Custodian',
-//   'Business Focal Point',
-//   'Digital Focal Point',
-//   'Quality Manager',
-//   'Super Admin',
-// ] as const
 
-// export type Role = (typeof ROLES)[number]
 
 // ─── Actions ─────────────────────────────────────────────────────────────────
 
@@ -47,6 +40,15 @@ export const ACTIONS = [
   'APPROVE_REQUEST',
   'REJECT_REQUEST',
   'RETURN_REQUEST',
+  // Automation Targets — process detail actions
+  'AT_SAVE',
+  'AT_VALIDATE',
+  'AT_SUBMIT',
+  'AT_APPROVE',
+  'AT_REJECT',
+  'AT_RETURN',
+  'AT_DISCARD_DRAFT',
+  'AT_COMMENT_ON_FIELD',
   // Administration (Super Admin only)
   'MANAGE_USER_PERMISSIONS',
   'MANAGE_GROUP_COMPANIES',
@@ -79,6 +81,15 @@ export const PERMISSIONS: Record<Action, Role[]> = {
   APPROVE_REQUEST: [ROLES.BPA_ProgramManager, ROLES.BPA_ProcessCatalogCustodian, ROLES.QualityManager],
   REJECT_REQUEST: [ROLES.BPA_ProgramManager, ROLES.BPA_ProcessCatalogCustodian, ROLES.QualityManager],
   RETURN_REQUEST: [ROLES.BPA_ProgramManager, ROLES.BPA_ProcessCatalogCustodian, ROLES.QualityManager],
+  // ── Automation Targets — process detail actions ─────────────────────────────
+  AT_SAVE: ['SME Expert'],
+  AT_VALIDATE: ['SME Expert'],
+  AT_SUBMIT: ['SME Expert'],
+  AT_APPROVE: ['BPA Program Manager', 'Quality Manager'],
+  AT_REJECT: ['BPA Program Manager', 'Quality Manager'],
+  AT_RETURN: ['BPA Program Manager', 'Quality Manager'],
+  AT_DISCARD_DRAFT: ['SME Expert'],
+  AT_COMMENT_ON_FIELD: ['BPA Program Manager', 'Quality Manager'],
   // ── Administration (Super Admin wildcard covers these) ──────────────────────
   MANAGE_USER_PERMISSIONS: [],
   MANAGE_GROUP_COMPANIES: [],
