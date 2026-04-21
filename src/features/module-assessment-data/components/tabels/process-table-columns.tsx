@@ -92,7 +92,7 @@ export const getProcessTableColumns = ({
             {info.getValue<string>() ? info.row.original.l3Code : ''}
           </span>
         </div>
-        {isBulkMode && info.row.original.displayL3 ? (
+        {isBulkMode && info.row.original.displayL3 && !info.row.original.l4Code ? (
           <Checkbox
             className="shrink-0"
             checked={info.row.getIsSelected()}

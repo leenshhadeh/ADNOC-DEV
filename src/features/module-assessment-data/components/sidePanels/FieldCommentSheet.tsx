@@ -14,14 +14,11 @@ import {
   useAddFieldComment,
 } from '@features/module-assessment-data/hooks/useFieldComments'
 
-import type { ChangeRecord } from '@features/module-assessment-data/types/my-tasks'
-
 interface FieldCommentSheetProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   fieldName: string
   taskId: string | undefined
-  change: ChangeRecord | null
 }
 
 const getInitials = (name: string) =>
@@ -32,12 +29,11 @@ const getInitials = (name: string) =>
     .slice(0, 2)
     .toUpperCase()
 
-const FieldCommentSheet = ({ open, onOpenChange, taskId, change }: FieldCommentSheetProps) => {
+const FieldCommentSheet = ({ open, onOpenChange, taskId, fieldName }: FieldCommentSheetProps) => {
   const [newComment, setNewComment] = useState('')
   const userName = useUserStore((s) => s.user.name)
 
-  const changeId = change?.id
-  const { data: comments = [], isLoading } = useFieldComments(taskId, changeId)
+  const { data: comments = [], isLoading } = useFieldComments(taskId, fieldName)
   const { mutate: addComment, isPending: isAdding } = useAddFieldComment()
 
   if (!open) return null
@@ -49,8 +45,8 @@ const FieldCommentSheet = ({ open, onOpenChange, taskId, change }: FieldCommentS
 
   const handleSubmit = () => {
     const trimmed = newComment.trim()
-    if (!trimmed || !taskId || !changeId) return
-    addComment({ taskId, changeId, text: trimmed })
+    if (!trimmed || !taskId || !fieldName) return
+    addComment({ taskId, fieldName, text: trimmed })
     setNewComment('')
   }
 
@@ -70,6 +66,7 @@ const FieldCommentSheet = ({ open, onOpenChange, taskId, change }: FieldCommentS
           <h2 className="text-[18px] leading-[18px] font-medium tracking-[-0.45px] text-[#151718]">
             Comments
           </h2>
+          <p className="text-sm text-[#687076]">{fieldName}</p>
           <button
             type="button"
             onClick={close}

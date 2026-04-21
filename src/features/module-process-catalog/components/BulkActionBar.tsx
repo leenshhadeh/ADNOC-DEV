@@ -4,12 +4,12 @@
  * Matches Figma node 6349-325913: grey (#ECEDED) background, rounded top corners,
  * counter + Approve | Return | Reject | Go to affected record | Cancel actions.
  */
-import { Check, Eye, RotateCcw, X } from 'lucide-react'
+import { Check, HandHelping, RotateCcw, X } from 'lucide-react'
 
 import { Button } from '@/shared/components/ui/button'
 import { Separator } from '@/shared/components/ui/separator'
 
-export type BulkAction = 'approve' | 'return' | 'reject' | 'goToAffectedRecord'
+export type BulkAction = 'approve' | 'return' | 'reject' | 'request-endorsement'
 
 interface BulkActionBarProps {
   selectedCount: number
@@ -71,10 +71,10 @@ const BulkActionBar = ({ selectedCount, onAction, onCancel }: BulkActionBarProps
         variant="ghost"
         className="gap-1 text-sm font-medium text-[#0047BA] hover:bg-transparent hover:text-[#0047BA]/80"
         disabled={selectedCount === 0}
-        onClick={() => onAction('goToAffectedRecord')}
+        onClick={() => onAction('request-endorsement')}
       >
-        <Eye className="size-4" />
-        Go to affected record
+        <HandHelping className="size-4" />
+        Request endorsement
       </Button>
 
       <Separator orientation="vertical" className="h-5 bg-[#DFE3E6]" />

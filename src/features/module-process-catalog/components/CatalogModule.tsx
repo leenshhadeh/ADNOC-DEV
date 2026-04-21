@@ -16,6 +16,7 @@ import RenameModal from './RenameModal'
 import BulkActionBar, { type BulkAction } from './BulkActionBar'
 import ProcessBulkActionBar, { type ProcessBulkAction } from './ProcessBulkActionBar'
 import { ApproveModal, BulkEditModal, RejectModal, ReturnModal } from './modals'
+import { RequestEndorsementModal } from '@features/module-assessment-data/components/TaskBulkModals'
 import { SuccessToast } from '@/shared/components/SuccessToast'
 import {
   bulkApproveTasks,
@@ -111,6 +112,7 @@ const CatalogModule = () => {
   const [bulkApproveOpen, setBulkApproveOpen] = useState(false)
   const [bulkReturnOpen, setBulkReturnOpen] = useState(false)
   const [bulkRejectOpen, setBulkRejectOpen] = useState(false)
+  const [bulkEndorsementOpen, setBulkEndorsementOpen] = useState(false)
 
   const taskSelectedCount = Object.values(taskRowSelection).filter(Boolean).length
 
@@ -125,15 +127,7 @@ const CatalogModule = () => {
     if (action === 'approve') setBulkApproveOpen(true)
     else if (action === 'return') setBulkReturnOpen(true)
     else if (action === 'reject') setBulkRejectOpen(true)
-    else if (action === 'goToAffectedRecord') {
-      // Navigate to the first selected task's process
-      const selectedIds = Object.keys(taskRowSelection).filter((k) => taskRowSelection[k])
-      if (selectedIds.length > 0) {
-        // For now, navigate to processes tab to see affected records
-        setActiveTab('processes')
-        handleToggleTaskBulkMode()
-      }
-    }
+    else if (action === 'request-endorsement') setBulkEndorsementOpen(true)
   }
 
   const handleBulkApprove = async () => {
@@ -755,6 +749,17 @@ const CatalogModule = () => {
         onOpenChange={setBulkReturnOpen}
         selectedCount={taskSelectedCount}
         onConfirm={handleBulkReturn}
+      />
+      <RequestEndorsementModal
+        open={bulkEndorsementOpen}
+        onOpenChange={setBulkEndorsementOpen}
+        selectedCount={taskSelectedCount}
+        onConfirm={(_names, _reason) => {
+          setBulkEndorsementOpen(false)
+          setSuccessToast(`Endorsement requested for ${taskSelectedCount} request(s).`)
+          setTaskRowSelection({})
+          setIsTaskBulkMode(false)
+        }}
       />
 
       {/* ── Success toast ── */}

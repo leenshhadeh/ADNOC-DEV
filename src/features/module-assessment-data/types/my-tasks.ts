@@ -1,5 +1,3 @@
-import type { CatalogStatus } from '@/shared/components/cells/StatusBadgeCell'
-
 export interface CommentEntry {
   id: string
   author: string

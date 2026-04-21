@@ -8,15 +8,15 @@ import {
 
 export const fieldCommentsKeys = {
   all: () => ['fieldComments'] as const,
-  byChange: (taskId: string, changeId: string) => ['fieldComments', taskId, changeId] as const,
+  byField: (taskId: string, fieldName: string) => ['fieldComments', taskId, fieldName] as const,
 }
 
-export function useFieldComments(taskId: string | undefined, changeId: string | undefined) {
+export function useFieldComments(taskId: string | undefined, fieldName: string | undefined) {
   return useQuery<CommentEntry[], Error>({
-    queryKey: fieldCommentsKeys.byChange(taskId ?? '', changeId ?? ''),
+    queryKey: fieldCommentsKeys.byField(taskId ?? '', fieldName ?? ''),
     queryFn: () =>
-      getFieldComments({ taskId: taskId!, changeId: changeId! } satisfies GetFieldCommentsParams),
-    enabled: !!taskId && !!changeId,
+      getFieldComments({ taskId: taskId!, fieldName: fieldName! } satisfies GetFieldCommentsParams),
+    enabled: !!taskId && !!fieldName,
     staleTime: 30_000,
   })
 }
@@ -28,7 +28,7 @@ export function useAddFieldComment() {
     mutationFn: addFieldComment,
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: fieldCommentsKeys.byChange(variables.taskId, variables.changeId),
+        queryKey: fieldCommentsKeys.byField(variables.taskId, variables.fieldName),
       })
     },
   })

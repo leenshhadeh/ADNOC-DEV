@@ -1,4 +1,3 @@
-
 export type SharedService =
   | {
       services?: number
@@ -8,7 +7,7 @@ export type SharedService =
   | null
   | undefined
 
-  export type Level4Item = {
+export type Level4Item = {
   id?: string
   level4Name?: string
   level4Code?: string
@@ -141,4 +140,19 @@ export type FlatAssessmentRow = {
   publishedDate: string
   submittedBy: string
   submittedOn: string
+}
+
+// ── Bulk Cell Operations ──────────────────────────────────────────────────────
+
+export type BulkCellAction = 'edit' | 'comment' | 'submit' | 'mark-as-reviewed'
+
+export interface BulkCellOperation {
+  rowId: string
+  columnKey?: string
+  action: BulkCellAction
+  payload?: string
+}
+
+export interface BulkCellActionResult {
+  processedIds: string[]
 }

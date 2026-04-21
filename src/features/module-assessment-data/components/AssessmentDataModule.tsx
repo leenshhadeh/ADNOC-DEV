@@ -28,7 +28,7 @@ import { useMyTasksExport } from '../hooks/useMyTasksExport'
 import ProcessesMenu from '../../../shared/components/ProcessesMenu'
 import MyTasksTable from './tabels/MyTasksTable'
 import type { TaskRowAction } from './tabels/MyTasksTable'
-import type { ChangeRecord, TaskItem } from '../types/my-tasks'
+import type { TaskItem } from '../types/my-tasks'
 import SubmittedRequestsTable from './tabels/SubmittedRequestsTable'
 import ProcessDataTable from './tabels/ProcessDataTable'
 import ProcessDataReport from './tabels/ProcessDataReport'
@@ -47,13 +47,7 @@ import {
 } from '@/shared/components/modals'
 import { RequestEndorsementModal } from './TaskBulkModals'
 import FieldCommentSheet from './sidePanels/FieldCommentSheet'
-import {
-  bulkEditProcesses,
-  bulkCommentProcesses,
-  copyAssessmentData,
-  bulkSubmitProcesses,
-  bulkMarkAsReviewed,
-} from '../api/processAssesmentService'
+import { bulkCellAction, copyAssessmentData } from '../api/processAssesmentService'
 import {
   useApproveTask,
   useReturnTask,
@@ -108,7 +102,6 @@ const AssessmentDataModule = () => {
 
   const [isCommentMode, setIsCommentMode] = useState(false)
   const [commentSheetOpen, setCommentSheetOpen] = useState(false)
-  const [commentSheetChange, setCommentSheetChange] = useState<ChangeRecord | null>(null)
   const [commentSheetFieldName, setCommentSheetFieldName] = useState('')
 
   // ── Task action mutations ──────────────────────────────────────────────────
@@ -239,7 +232,6 @@ const AssessmentDataModule = () => {
     setTaskRowSelection({})
     setIsCommentMode(false)
     setCommentSheetOpen(false)
-    setCommentSheetChange(null)
     setCommentSheetFieldName('')
     setSingleActionTask(null)
   }
@@ -342,7 +334,9 @@ const AssessmentDataModule = () => {
               selectedCount={selectedIds.length}
               onAction={(action) => {
                 if (action === 'submit') {
-                  bulkSubmitProcesses(selectedIds).then(() => setRowSelection({}))
+                  bulkCellAction(
+                    selectedIds.map((rowId) => ({ rowId, action: 'submit' as const })),
+                  ).then(() => setRowSelection({}))
                 } else if (action === 'copy-assessment-data') {
                   setActiveModal('copy')
                 } else if (action === 'mark-as-reviewed') {
@@ -394,8 +388,7 @@ const AssessmentDataModule = () => {
                 setSingleActionTask(task)
                 setTaskModal(action)
               }}
-              onFieldClick={(change, fieldName, parentTask) => {
-                setCommentSheetChange(change)
+              onFieldClick={(_change, fieldName, parentTask) => {
                 setCommentSheetFieldName(fieldName)
                 setCommentSheetOpen(true)
                 if (parentTask) {
@@ -422,7 +415,6 @@ const AssessmentDataModule = () => {
           }}
           fieldName={commentSheetFieldName}
           taskId={singleActionTask?.id}
-          change={commentSheetChange}
         />
       </div>
 
@@ -430,7 +422,14 @@ const AssessmentDataModule = () => {
         open={activeModal === 'edit'}
         selectedCount={selectedIds.length}
         onConfirm={(field, value) => {
-          bulkEditProcesses(selectedIds, field, value).then(() => setRowSelection({}))
+          bulkCellAction(
+            selectedIds.map((rowId) => ({
+              rowId,
+              columnKey: field,
+              action: 'edit' as const,
+              payload: value,
+            })),
+          ).then(() => setRowSelection({}))
           setActiveModal(null)
         }}
         onOpenChange={(open) => {
@@ -441,7 +440,9 @@ const AssessmentDataModule = () => {
         open={activeModal === 'comment'}
         selectedCount={selectedIds.length}
         onConfirm={(comment) => {
-          bulkCommentProcesses(selectedIds, comment).then(() => setRowSelection({}))
+          bulkCellAction(
+            selectedIds.map((rowId) => ({ rowId, action: 'comment' as const, payload: comment })),
+          ).then(() => setRowSelection({}))
           setActiveModal(null)
         }}
         onOpenChange={(open) => {
@@ -463,7 +464,13 @@ const AssessmentDataModule = () => {
         open={activeModal === 'review'}
         selectedCount={selectedIds.length}
         onConfirm={(comment) => {
-          bulkMarkAsReviewed(selectedIds, comment).then(() => setRowSelection({}))
+          bulkCellAction(
+            selectedIds.map((rowId) => ({
+              rowId,
+              action: 'mark-as-reviewed' as const,
+              payload: comment,
+            })),
+          ).then(() => setRowSelection({}))
           setActiveModal(null)
         }}
         onOpenChange={(open) => {

@@ -1,4 +1,5 @@
 import type { CommentEntry, TaskItem } from '../types/my-tasks'
+import type { BulkCellOperation, BulkCellActionResult } from '../types/process'
 import type { RequestItem, WorkflowHistoryItem } from '../types/submitted-requests'
 import { MY_TASKS } from '../constants/my-tasks'
 import { SUBMITTED_REQUESTS } from '../constants/submitted-requests'
@@ -15,22 +16,9 @@ export function getSubmittedRequests(): Promise<RequestItem[]> {
 
 // ── Bulk Actions (mock) ───────────────────────────────────────────────────────
 
-export function bulkEditProcesses(
-  ids: string[],
-  field: string,
-  value: string,
-): Promise<{ updatedIds: string[] }> {
-  void field
-  void value
-  return new Promise((resolve) => setTimeout(() => resolve({ updatedIds: ids }), 600))
-}
-
-export function bulkCommentProcesses(
-  ids: string[],
-  comment: string,
-): Promise<{ updatedIds: string[] }> {
-  void comment
-  return new Promise((resolve) => setTimeout(() => resolve({ updatedIds: ids }), 600))
+export function bulkCellAction(operations: BulkCellOperation[]): Promise<BulkCellActionResult> {
+  const processedIds = [...new Set(operations.map((op) => op.rowId))]
+  return new Promise((resolve) => setTimeout(() => resolve({ processedIds }), 600))
 }
 
 export function copyAssessmentData(
@@ -39,18 +27,6 @@ export function copyAssessmentData(
 ): Promise<{ updatedIds: string[] }> {
   void sourceId
   return new Promise((resolve) => setTimeout(() => resolve({ updatedIds: targetIds }), 800))
-}
-
-export function bulkSubmitProcesses(ids: string[]): Promise<{ submittedIds: string[] }> {
-  return new Promise((resolve) => setTimeout(() => resolve({ submittedIds: ids }), 600))
-}
-
-export function bulkMarkAsReviewed(
-  ids: string[],
-  comment: string,
-): Promise<{ reviewedIds: string[] }> {
-  void comment
-  return new Promise((resolve) => setTimeout(() => resolve({ reviewedIds: ids }), 600))
 }
 
 // ── Task Action APIs (mock) ───────────────────────────────────────────────────
@@ -176,7 +152,7 @@ export function getProcess(processId: string): Promise<any[]> {
 // ── Field Comments (mock) ─────────────────────────────────────────────────────
 
 const MOCK_COMMENTS: Record<string, CommentEntry[]> = {
-  'c1-0': [
+  'task-1::Automation level': [
     {
       id: 'cmt-1',
       author: 'Maryam Al Shamsi',
@@ -196,30 +172,28 @@ const MOCK_COMMENTS: Record<string, CommentEntry[]> = {
 
 export interface GetFieldCommentsParams {
   taskId: string
-  changeId: string
+  fieldName: string
 }
 
 export interface AddFieldCommentParams {
   taskId: string
-  changeId: string
+  fieldName: string
   text: string
 }
 
 export function getFieldComments({
   taskId,
-  changeId,
+  fieldName,
 }: GetFieldCommentsParams): Promise<CommentEntry[]> {
-  void taskId
-  const key = changeId
+  const key = `${taskId}::${fieldName}`
   return new Promise((resolve) => setTimeout(() => resolve(MOCK_COMMENTS[key] ?? []), 400))
 }
 
 export function addFieldComment({
   taskId,
-  changeId,
+  fieldName,
   text,
 }: AddFieldCommentParams): Promise<CommentEntry> {
-  void taskId
   const entry: CommentEntry = {
     id: `cmt-${Date.now()}`,
     author: 'Jane Doe',
@@ -237,7 +211,7 @@ export function addFieldComment({
         minute: '2-digit',
       }),
   }
-  const key = changeId
+  const key = `${taskId}::${fieldName}`
   if (!MOCK_COMMENTS[key]) MOCK_COMMENTS[key] = []
   MOCK_COMMENTS[key].push(entry)
   return new Promise((resolve) => setTimeout(() => resolve(entry), 300))
