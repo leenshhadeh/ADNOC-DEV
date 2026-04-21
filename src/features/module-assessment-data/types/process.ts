@@ -8,6 +8,11 @@ export type SharedService =
   | null
   | undefined
 
+export type currentApplicationsSystems={
+  id:string
+  name:string
+}
+
   export type Level4Item = {
   id?: string
   level4Name?: string
@@ -25,7 +30,7 @@ export type SharedService =
   scaleOfProcess?: string
   automationMaturityLevel?: string
   automationLevel?: string
-  currentApplicationsSystems?: string[]
+  currentApplicationsSystems?: currentApplicationsSystems[]
   OngoingAutomationDigitalInitiatives?: string
   businessRecommendationForAutomation?: string
   keyChallengesAutomationNeeds?: string

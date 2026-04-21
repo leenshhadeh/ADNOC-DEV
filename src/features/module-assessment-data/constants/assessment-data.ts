@@ -281,7 +281,7 @@ export const ASSESSMENT_DATA:DomainItem[] = [ // keep type any until we finalize
                 sharedService: {services:12,shared:3},
                 businessUnit: ['Exploration'],
                 ResponsibleDigitalTeam : ['Subsurface Digitalization'],
-                OngoingAutomation:'N/A',
+                OngoingAutomationDigitalInitiatives:'N/A',
                 processCriticality: 'High',
                 level4Items: [
                   {

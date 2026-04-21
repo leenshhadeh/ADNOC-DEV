@@ -21,7 +21,6 @@ import { SuccessToast } from '@/shared/components/SuccessToast'
 import { hasPermission } from '@/shared/lib/permissions'
 import { useUserStore } from '@/shared/auth/useUserStore'
 import { ASSESSMENT_BULK_ACTIONS, ASSESSMENT_TABS } from '../constants/assessment-toolbar'
-import { ASSESSMENT_DATA } from '../constants/assessment-data'
 import { flattenAssessmentData } from './tabels/ProcessDataTable'
 import { useAssessmentExport } from '../hooks/useAssessmentExport'
 import { useMyTasksExport } from '../hooks/useMyTasksExport'
@@ -136,7 +135,7 @@ const AssessmentDataModule = () => {
       setDataSet(data)
     }
     if(isError){
-      console.log('isError fetching Assessment data:',error)
+      console.log('Error fetching Assessment data:',error)
     }
   }, [data])
 

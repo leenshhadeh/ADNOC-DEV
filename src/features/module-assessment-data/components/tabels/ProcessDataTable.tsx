@@ -260,6 +260,8 @@ const ProcessDataTable = ({
         handleOpenChange={(newVal: any) => {
           setIsBUOpen(false)
           console.log('BU sheet open state changed:', newVal)
+          handleUpdateDraftRow(selectedRowId, 'businessUnit', newVal || [])
+
         }}
       />
 
