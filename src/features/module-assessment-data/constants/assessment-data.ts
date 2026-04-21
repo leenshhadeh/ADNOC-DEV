@@ -1,5 +1,6 @@
+import type { DomainItem } from '../types/process'
 
-export const ASSESSMENT_DATA:any = [ // keep type any until we finalize the data structure
+export const ASSESSMENT_DATA:DomainItem[] = [ // keep type any until we finalize the data structure
   {
     id: 'd1',
     domain: 'dom-005',

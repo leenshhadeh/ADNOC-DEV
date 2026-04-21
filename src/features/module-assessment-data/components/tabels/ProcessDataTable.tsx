@@ -34,15 +34,11 @@ export const flattenAssessmentData = (data: DomainItem[]): FlatAssessmentRow[] =
               rowId:
                 l4Item?.id ?? `${domainItem.id}-${l1Item.id}-${l2Item.id}-${l3Item.id}-${l4Index}`,
               id: `${domainItem.id}-${l1Item.id}-${l2Item.id}-${l3Item.id}-${l4Item?.id ?? '0'}`,
-
-              // ✅ REAL values (always filled)
               domain: domainItem.domain ?? '',
               l1: l1Item.level1Name ?? '',
               l2: l2Item.level2Name ?? '',
               l3: l3Item.level3Name ?? '',
               l4: l4Item?.level4Name ?? '',
-
-              // ✅ DISPLAY values (only first occurrence)
               displayDomain:
                 l1Index === 0 && l2Index === 0 && l3Index === 0 && l4Index === 0
                   ? (domainItem.domain ?? '')
@@ -182,6 +178,7 @@ interface ProcessDataTableProps {
   onColumnVisibilityChange?: (visibility: Record<string, boolean>) => void
   columnOrder?: string[]
   onColumnOrderChange?: (newOrder: string[]) => void
+  isLoading?: boolean
 }
 
 const ProcessDataTable = ({
@@ -193,6 +190,7 @@ const ProcessDataTable = ({
   onColumnVisibilityChange,
   columnOrder,
   onColumnOrderChange,
+  isLoading
 }: ProcessDataTableProps) => {
   const [isSharedServiceOpen, setIsSharedServiceOpen] = useState(false)
   const [isBUOpen, setIsBUOpen] = useState(false)
@@ -248,6 +246,7 @@ const ProcessDataTable = ({
         onColumnVisibilityChange={onColumnVisibilityChange}
         columnOrder={columnOrder}
         onColumnOrderChange={onColumnOrderChange}
+        isLoading={isLoading}
       />
 
       {/* side panels */}

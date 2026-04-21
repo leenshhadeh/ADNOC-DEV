@@ -18,6 +18,8 @@ export const ROLES = {
   BPA_ProgramManager : 'BPA Program Manager',
   BPA_ProcessCatalogCustodian : 'BPA Process Catalog Custodian',
   SuperAdmin:'Super Admin',
+  SMEExpert:'SME Expert'
+
 } as const
 
 export type Role = (typeof ROLES)[keyof typeof ROLES]

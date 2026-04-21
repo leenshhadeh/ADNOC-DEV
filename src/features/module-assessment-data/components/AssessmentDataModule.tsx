@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Check,
   Download,
@@ -76,6 +76,8 @@ import { DOMAINS_DATA } from '@/features/module-process-catalog/constants/domain
 import Breadcrumb from '@/shared/components/Breadcrumb'
 import ManageColumnsSheet from './ManageColumnsSheet'
 import { useAssessmentNavStore, type AssessmentTabValue } from '../store/useAssessmentNavStore'
+import { useGetAssessmentProcess } from '@features/module-assessment-data/hooks/useGetAssessmentProcess'
+import type { DomainItem } from '../types/process'
 
 type ActiveModal = 'edit' | 'comment' | 'copy' | 'review' | null
 type TaskModal = 'approve' | 'return' | 'reject' | 'request-endorsement' | null
@@ -98,6 +100,9 @@ const AssessmentDataModule = () => {
   const [showTaskActionToast, setShowTaskActionToast] = useState(false)
   const [taskActionMessage, setTaskActionMessage] = useState('')
   const [singleActionTask, setSingleActionTask] = useState<TaskItem | null>(null)
+
+  // API:
+  const { data, isLoading, isError , error } = useGetAssessmentProcess()
 
   const userRole = useUserStore((s) => s.user.role)
   const canCommentOnField = hasPermission(userRole, 'COMMENT_ON_FIELD')
@@ -124,8 +129,19 @@ const AssessmentDataModule = () => {
 
   const { isExporting, exportRows } = useAssessmentExport()
   const { isExporting: isExportingTasks, exportTasks } = useMyTasksExport()
+  const [dataSet, setDataSet] = useState<DomainItem[]>([])
 
-  const tableData = useMemo(() => flattenAssessmentData(ASSESSMENT_DATA), [])
+  useEffect(() => {
+    if (data) {
+      setDataSet(data)
+    }
+    if(isError){
+      console.log('isError fetching Assessment data:',error)
+    }
+  }, [data])
+
+  const tableData: any = useMemo(() => flattenAssessmentData(dataSet), [dataSet])
+
   // Global filters:-------------------------
   const globalFilterIds = ['domain', 'status']
   const filterDefs = useProcessFilterDefinitions(DOMAINS_DATA, tableData)
@@ -378,6 +394,7 @@ const AssessmentDataModule = () => {
                 onColumnVisibilityChange={setColumnVisibility}
                 columnOrder={managedColumnOrder}
                 onColumnOrderChange={setManagedColumnOrder}
+                isLoading={isLoading}
               />
             )
           ) : activeTab == 'my-tasks' ? (

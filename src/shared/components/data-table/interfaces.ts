@@ -80,4 +80,5 @@ export interface DataTableProps<TData> {
   columnOrder?: string[]
   /** Called when the user reorders columns via drag-and-drop in the header. */
   onColumnOrderChange?: (newOrder: string[]) => void
+  isLoading?: boolean
 }
