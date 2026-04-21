@@ -3,12 +3,12 @@ import { getProcessComments , getProcessCommentsByFiled} from '../api/processAss
 
 export const processComments = {
   all: () => ['processComments'] as const,
-  byCol:(fieldId:string)=>['processCommentsByField',fieldId] as const,
+  byCol:(fieldId:string,processId:string)=>['processCommentsByField',fieldId,processId] as const,
 }
 
 export function useGetProcessCommentsByField(processId:string,fieldId: string) {
   return useQuery<any[], Error>({
-    queryKey: processComments.byCol(fieldId),
+    queryKey: processComments.byCol(fieldId,processId),
     queryFn: () => getProcessCommentsByFiled(fieldId),
     enabled: !!fieldId,
     staleTime: 2 * 60 * 1_000,
