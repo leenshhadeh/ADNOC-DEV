@@ -80,9 +80,23 @@ import ManageColumnsSheet from './ManageColumnsSheet'
 import { useAssessmentNavStore, type AssessmentTabValue } from '../store/useAssessmentNavStore'
 import { useGetAssessmentProcess } from '@features/module-assessment-data/hooks/useGetAssessmentProcess'
 import type { DomainItem } from '../types/process'
+import type { FlatAssessmentRow } from '../types/process'
 
 type ActiveModal = 'edit' | 'comment' | 'copy' | 'review' | null
 type TaskModal = 'approve' | 'return' | 'reject' | 'request-endorsement' | null
+
+const toSearchableText = (value: unknown): string => {
+  if (value == null) return ''
+  return String(value)
+}
+
+const filterAssessmentRowsBySearch = (rows: FlatAssessmentRow[], searchValue: string) => {
+  const query = searchValue.trim().toLowerCase()
+  if (!query) return rows
+  return rows.filter((row) =>
+    Object.values(row).some((value) => toSearchableText(value).toLowerCase().includes(query)),
+  )
+}
 
 const AssessmentDataModule = () => {
   const { activeTab, setActiveTab } = useAssessmentNavStore()
@@ -143,20 +157,27 @@ const AssessmentDataModule = () => {
     }
   }, [data])
 
-  const tableData: any = useMemo(() => flattenAssessmentData(dataSet), [dataSet])
+  const tableData = useMemo(() => flattenAssessmentData(dataSet), [dataSet])
+  const searchedData = useMemo(
+    () => filterAssessmentRowsBySearch(tableData, search),
+    [tableData, search],
+  )
 
   // Global filters:-------------------------
   const globalFilterIds = ['domain', 'status']
-  const filterDefs = useProcessFilterDefinitions(DOMAINS_DATA, tableData)
+  const filterDefs = useProcessFilterDefinitions(DOMAINS_DATA, searchedData)
   const { pending, applied, activePerSection, toggle, apply, reset } =
     useProcessFilters(globalFilterIds)
-  const filteredData = useMemo(() => applyProcessFilters(tableData, applied), [tableData, applied])
+  const filteredData = useMemo(
+    () => applyProcessFilters(searchedData, applied),
+    [searchedData, applied],
+  )
 
   const handleExport = async () => {
     if (activeTab === 'my-tasks') {
       await exportTasks()
     } else {
-      await exportRows(tableData)
+      await exportRows(filteredData)
     }
     setShowExportToast(true)
   }
