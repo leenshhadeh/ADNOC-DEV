@@ -1,7 +1,7 @@
 import AutomationParameterForm from '../components/AutomationParameterForm'
 
 const AutomationParameterTab = (props: any) => {
-  const { process, isEditable, canComment, onShowComment } = props
+  const { process, isEditable, canComment, onShowComment, validateTrigger } = props
   return (
     <>
       {/* Form: */}
@@ -10,6 +10,7 @@ const AutomationParameterTab = (props: any) => {
         isEditable={isEditable}
         canComment={canComment}
         showComments={onShowComment}
+        validateTrigger={validateTrigger}
       />
     </>
   )

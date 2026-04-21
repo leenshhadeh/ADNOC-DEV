@@ -2,7 +2,7 @@ import TagsSelect from '@/shared/components/table-primitives/TagsSelect'
 import { Input } from '@/shared/components/ui/input'
 import { ASSESSMENT_APPLICATIONS } from '../../../constants/CurrentApplication'
 import { Select } from '@/shared/components/ui/select'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { RadioCell } from '@/shared/components/table-primitives'
 import {
   AUTOMATION_MATURITY_LEVEL,
@@ -14,7 +14,7 @@ import {
 import commentIcon from '@/assets/icons/Comment-circle.svg'
 
 const AutomationParameterForm = (props: any) => {
-  const { process, isEditable, canComment, showComments } = props
+  const { process, isEditable, canComment, showComments, validateTrigger } = props
   const [formData, setFormData] = useState({
     peopleInvoled: process.numberOfPeopleInvolved || '',
     numberOfPeopleInvolved: process.numberOfPeopleInvolved || '',
@@ -30,15 +30,55 @@ const AutomationParameterForm = (props: any) => {
     businessRecommendationForAutomation: process.businessRecommendationForAutomation || '',
     autonomousUseCaseEnabled: process.autonomousUseCaseEnabled,
   })
+  const [automationLevelError, setAutomationLevelError] = useState('')
+
+  const validateAutomationLevel = (value: string, maturityLevel: string) => {
+    const numericValue = Number.parseFloat(String(value).replace('%', '').trim())
+
+    if (Number.isNaN(numericValue) || !maturityLevel) {
+      setAutomationLevelError('')
+      return
+    }
+
+    if (maturityLevel === 'Fully Automated' && numericValue !== 100) {
+      setAutomationLevelError('Automation level must be exactly 100% when maturity level is Fully Automated.')
+      return
+    }
+
+    if (maturityLevel === 'Medium' && numericValue <= 40) {
+      setAutomationLevelError('Automation level must be more than 40% when maturity level is Medium.')
+      return
+    }
+
+    if (maturityLevel === 'Low' && numericValue >= 40) {
+      setAutomationLevelError('Automation level must be less than 40% when maturity level is Low.')
+      return
+    }
+
+    setAutomationLevelError('')
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+
+    if (name === 'automationLevel' && automationLevelError) {
+      validateAutomationLevel(value, String(formData.automationMaturityLevel ?? ''))
+    }
   }
   const handleRadioChange = (filed: string, value: string) => {
     setFormData((prev) => ({ ...prev, [filed]: value }))
     console.log(filed, value)
   }
+
+  useEffect(() => {
+    if (validateTrigger > 0) {
+      validateAutomationLevel(
+        String(formData.automationLevel ?? ''),
+        String(formData.automationMaturityLevel ?? ''),
+      )
+    }
+  }, [validateTrigger, formData.automationLevel, formData.automationMaturityLevel])
 
   return (
     <div>
@@ -142,15 +182,20 @@ const AutomationParameterForm = (props: any) => {
             )}
           </div>
           <Select
+          name={'ProcessAutomationMaturityLevel'}
             options={AUTOMATION_MATURITY_LEVEL.map((option) => ({
               label: option,
               value: option,
             }))}
             border
             value={formData.automationMaturityLevel}
-            onChange={(value) =>
+            onChange={(value) => {
               setFormData((prev) => ({ ...prev, automationMaturityLevel: value }))
-            }
+
+              if (automationLevelError) {
+                validateAutomationLevel(String(formData.automationLevel ?? ''), value)
+              }
+            }}
             disabled={!isEditable}
           />
         </div>
@@ -169,11 +214,15 @@ const AutomationParameterForm = (props: any) => {
             )}
           </div>
           <Input
+            name="automationLevel"
             className="rounded-md border p-2"
             value={formData.automationLevel}
             onChange={handleChange}
             disabled={!isEditable}
           />
+          {automationLevelError && (
+            <p className="mt-1 text-sm text-red-600">{automationLevelError}</p>
+          )}
         </div>
 
         <div className="flex w-full flex-col group">

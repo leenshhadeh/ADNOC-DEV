@@ -17,7 +17,6 @@ import { cn } from '@/shared/lib/utils'
 import CommentsSection from './processDetails/CommentsSection'
 import { useCurrentUser } from '@/shared/auth/useUserStore'
 import { ROLES } from '@/shared/lib/permissions'
-import FieldCommentSheet from './sidePanels/FieldCommentSheet'
 import type { ChangeRecord } from '../types/my-tasks'
 
 const ProcessDetailsPage = () => {
@@ -30,13 +29,12 @@ const ProcessDetailsPage = () => {
   const [updatedData, setUpdatedData] = useState([{}])
   const [showComment, setShowComment] = useState(false)
   const [commentField, setCommentField] = useState('')
+  const [automationValidationTrigger, setAutomationValidationTrigger] = useState(0)
   const { role } = useCurrentUser()
   const canEdit = role == ROLES.BusinessFocalPoint || role == ROLES.DigitalFocalPoint
   const canComment = role == ROLES.QualityManager || role == ROLES.BPA_ProgramManager
-  const [commentSheetChange, setCommentSheetChange] = useState<ChangeRecord | null>(null)
 
   useEffect(() => {
-    //TODO: call getProcessDetails(processId) API
     if (data) {
       const domainName = DOMAINS_DATA.find((d) => d.id === data[0]?.domain)?.name ?? data[0]?.domain
       setProcessData([
@@ -96,6 +94,12 @@ const ProcessDetailsPage = () => {
     // get Comments(colName) OR Comments(All)
   }
 
+  const handleValidate = () => {
+    if (activeTab === 'AutomationParameters') {
+      setAutomationValidationTrigger((prev) => prev + 1) // to trigger a change
+    }
+  }
+
   const mainActions = useMemo<any[]>(
     () => [
       {
@@ -105,11 +109,11 @@ const ProcessDetailsPage = () => {
         disabled: disableSubmit,
         onClick: handelOnSubmit,
       },
-      { id: 'save', label: 'save', icon: Upload, disabled: disableSubmit },
-      { id: 'validate', label: 'validate', icon: Upload },
+      { id: 'save', label: 'save', icon: Upload, disabled: disableSubmit, onClick: handelOnSubmit },
+      { id: 'validate', label: 'validate', icon: Upload, onClick: handleValidate },
       { id: 'Markasreviewed', label: 'Mark as reviewed', icon: Upload },
     ],
-    [updatedData],
+    [disableSubmit, handleValidate, handelOnSubmit],
   )
   const ApproveRejectActions = useMemo<any[]>(
     () => [
@@ -179,7 +183,7 @@ const ProcessDetailsPage = () => {
                   {/* forms and data */}
                   <div
                     className={cn(
-                      activeTab == 'RecordedChanges'?'overflow-x-auto':'',
+                      activeTab == 'RecordedChanges' ? 'overflow-x-auto' : '',
                       'mt-[24px] flex-1 rounded-2xl bg-[linear-gradient(90.49deg,rgba(78,241,228,0.1)_0.03%,rgba(17,24,39,0.1)_99.89%)] p-[1px]',
                     )}
                   >
@@ -203,6 +207,7 @@ const ProcessDetailsPage = () => {
                           isEditable={canEdit}
                           canComment={canComment}
                           onShowComment={onShowComment}
+                          validateTrigger={automationValidationTrigger}
                         />
                       )}
                       {activeTab == 'ManualParameters' && (
@@ -214,16 +219,26 @@ const ProcessDetailsPage = () => {
                         />
                       )}
                       {activeTab == 'TargetRecommendations​​' && (
-                        <TargerRecommendationsTab process={data[0]} 
-                        canComment={canComment}
-                        onShowComment={onShowComment}/>
+                        <TargerRecommendationsTab
+                          process={data[0]}
+                          canComment={canComment}
+                          onShowComment={onShowComment}
+                        />
                       )}
-                      {activeTab == 'Opportunities' && <OpprtunitiesTab process={data[0]} 
-                       canComment={canComment}
-                       onShowComment={onShowComment}/>}
-                      {activeTab == 'RecordedChanges' && <RecordedChangesTab process={data[0]}
-                       canComment={canComment}
-                       onShowComment={onShowComment} />}
+                      {activeTab == 'Opportunities' && (
+                        <OpprtunitiesTab
+                          process={data[0]}
+                          canComment={canComment}
+                          onShowComment={onShowComment}
+                        />
+                      )}
+                      {activeTab == 'RecordedChanges' && (
+                        <RecordedChangesTab
+                          process={data[0]}
+                          canComment={canComment}
+                          onShowComment={onShowComment}
+                        />
+                      )}
                       {activeTab == 'Comments' && <CommentsTab comments={data[0].comments} />}
                     </div>
                   </div>
@@ -235,7 +250,6 @@ const ProcessDetailsPage = () => {
                       commentField={commentField}
                       processId={processId}
                     />
-                   
                   )}
                 </div>
               </>
