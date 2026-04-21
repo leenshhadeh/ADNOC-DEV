@@ -9,12 +9,17 @@ import {
 } from '@/shared/components/ui/dropdown-menu'
 import { cn } from '@/shared/lib/utils'
 
-export type ProcessViewOption = 'Published processes' | 'Latest processes' | 'Archived processes'
+export type ProcessViewOptionId = 'published' | 'latest' | 'archived'
+
+export interface ProcessViewOption {
+  id: ProcessViewOptionId
+  name: string
+}
 
 export const PROCESS_VIEW_OPTIONS: ProcessViewOption[] = [
-  'Published processes',
-  'Latest processes',
-  'Archived processes',
+  { id: 'published', name: 'Published processes' },
+  { id: 'latest', name: 'Latest processes' },
+  { id: 'archived', name: 'Archived processes' },
 ]
 
 interface ProcessesMenuProps {
@@ -25,7 +30,7 @@ interface ProcessesMenuProps {
 }
 
 const ProcessesMenu = ({ options = PROCESS_VIEW_OPTIONS, value, onChange }: ProcessesMenuProps) => {
-  const [internal, setInternal] = useState<ProcessViewOption>('Published processes')
+  const [internal, setInternal] = useState<ProcessViewOption>(PROCESS_VIEW_OPTIONS[0])
 
   const selected = value ?? internal
   const handleSelect = (opt: ProcessViewOption) => {
@@ -43,7 +48,7 @@ const ProcessesMenu = ({ options = PROCESS_VIEW_OPTIONS, value, onChange }: Proc
             'shadow-none outline-none',
           )}
         >
-          {selected}
+          {selected.name}
           <ChevronDown className="size-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -56,10 +61,10 @@ const ProcessesMenu = ({ options = PROCESS_VIEW_OPTIONS, value, onChange }: Proc
           Switch view to
         </div>
         {options.map((option, index) => {
-          const isSelected = selected === option
+          const isSelected = selected.id === option.id
           return (
             <DropdownMenuItem
-              key={option}
+              key={option.id}
               onClick={() => handleSelect(option)}
               className={cn(
                 'flex justify-between rounded-none px-4 text-[15px] text-[#1F2430]',
@@ -68,7 +73,7 @@ const ProcessesMenu = ({ options = PROCESS_VIEW_OPTIONS, value, onChange }: Proc
                 index !== options.length - 1 && 'border-b border-[#D9DEE3]',
               )}
             >
-              <span>{option}</span>
+              <span>{option.name}</span>
               {isSelected && <Check className="size-4 text-[#0047BA]" />}
             </DropdownMenuItem>
           )

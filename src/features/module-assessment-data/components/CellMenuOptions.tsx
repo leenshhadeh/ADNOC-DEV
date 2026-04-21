@@ -14,11 +14,11 @@ const CellMenuOptions = (props:any) => {
     const { item } = props  /// use item id to perform actions on the specific item
 const options = [
     { label: 'View Details', action: () => onViewItemDetails(item) },
-    { label: 'Switch to Draft version', action: () => console.log('Add sub-process', item) },
-    { label: 'Copy assessment data', action: () => console.log('Delete', item)},
+    { label: 'Switch to Draft version', action: () => console.log('Switch sub-process', item) },
+    { label: 'Copy assessment data', action: () => console.log('Copy', item)},
     { label: 'Mark as reviewed', action: () => console.log('Delete', item) },
-    { label: 'Submit', action: () => console.log('Delete', item)},
-    { label: 'Archive', action: () => console.log('Delete', item)},
+    { label: 'Submit', action: () => console.log('Submit', item)},
+    { label: 'Archive', action: () => console.log('Archive', item)},
     { label: 'Discard', action: () => console.log('Delete', item), destructive: true },
   ]
 

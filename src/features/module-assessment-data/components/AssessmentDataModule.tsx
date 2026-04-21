@@ -21,11 +21,13 @@ import { SuccessToast } from '@/shared/components/SuccessToast'
 import { hasPermission } from '@/shared/lib/permissions'
 import { useUserStore } from '@/shared/auth/useUserStore'
 import { ASSESSMENT_BULK_ACTIONS, ASSESSMENT_TABS } from '../constants/assessment-toolbar'
-import { ASSESSMENT_DATA } from '../constants/assessment-data'
 import { flattenAssessmentData } from './tabels/ProcessDataTable'
 import { useAssessmentExport } from '../hooks/useAssessmentExport'
 import { useMyTasksExport } from '../hooks/useMyTasksExport'
-import ProcessesMenu from '../../../shared/components/ProcessesMenu'
+import ProcessesMenu, {
+  type ProcessViewOption,
+  type ProcessViewOptionId,
+} from '../../../shared/components/ProcessesMenu'
 import MyTasksTable from './tabels/MyTasksTable'
 import type { TaskRowAction } from './tabels/MyTasksTable'
 import type { ChangeRecord, TaskItem } from '../types/my-tasks'
@@ -78,9 +80,23 @@ import ManageColumnsSheet from './ManageColumnsSheet'
 import { useAssessmentNavStore, type AssessmentTabValue } from '../store/useAssessmentNavStore'
 import { useGetAssessmentProcess } from '@features/module-assessment-data/hooks/useGetAssessmentProcess'
 import type { DomainItem } from '../types/process'
+import type { FlatAssessmentRow } from '../types/process'
 
 type ActiveModal = 'edit' | 'comment' | 'copy' | 'review' | null
 type TaskModal = 'approve' | 'return' | 'reject' | 'request-endorsement' | null
+
+const toSearchableText = (value: unknown): string => {
+  if (value == null) return ''
+  return String(value)
+}
+
+const filterAssessmentRowsBySearch = (rows: FlatAssessmentRow[], searchValue: string) => {
+  const query = searchValue.trim().toLowerCase()
+  if (!query) return rows
+  return rows.filter((row) =>
+    Object.values(row).some((value) => toSearchableText(value).toLowerCase().includes(query)),
+  )
+}
 
 const AssessmentDataModule = () => {
   const { activeTab, setActiveTab } = useAssessmentNavStore()
@@ -100,9 +116,10 @@ const AssessmentDataModule = () => {
   const [showTaskActionToast, setShowTaskActionToast] = useState(false)
   const [taskActionMessage, setTaskActionMessage] = useState('')
   const [singleActionTask, setSingleActionTask] = useState<TaskItem | null>(null)
+  const [processView, setProcessView] = useState<ProcessViewOptionId>('published')
 
   // API:
-  const { data, isLoading, isError , error } = useGetAssessmentProcess()
+  const { data, isLoading, isError , error } = useGetAssessmentProcess(processView)
 
   const userRole = useUserStore((s) => s.user.role)
   const canCommentOnField = hasPermission(userRole, 'COMMENT_ON_FIELD')
@@ -136,24 +153,31 @@ const AssessmentDataModule = () => {
       setDataSet(data)
     }
     if(isError){
-      console.log('isError fetching Assessment data:',error)
+      console.log('Error fetching Assessment data:',error)
     }
   }, [data])
 
-  const tableData: any = useMemo(() => flattenAssessmentData(dataSet), [dataSet])
+  const tableData = useMemo(() => flattenAssessmentData(dataSet), [dataSet])
+  const searchedData = useMemo(
+    () => filterAssessmentRowsBySearch(tableData, search),
+    [tableData, search],
+  )
 
   // Global filters:-------------------------
   const globalFilterIds = ['domain', 'status']
-  const filterDefs = useProcessFilterDefinitions(DOMAINS_DATA, tableData)
+  const filterDefs = useProcessFilterDefinitions(DOMAINS_DATA, searchedData)
   const { pending, applied, activePerSection, toggle, apply, reset } =
     useProcessFilters(globalFilterIds)
-  const filteredData = useMemo(() => applyProcessFilters(tableData, applied), [tableData, applied])
+  const filteredData = useMemo(
+    () => applyProcessFilters(searchedData, applied),
+    [searchedData, applied],
+  )
 
   const handleExport = async () => {
     if (activeTab === 'my-tasks') {
       await exportTasks()
     } else {
-      await exportRows(tableData)
+      await exportRows(filteredData)
     }
     setShowExportToast(true)
   }
@@ -260,6 +284,10 @@ const AssessmentDataModule = () => {
     setSingleActionTask(null)
   }
 
+  const onChangeView = (option: ProcessViewOption) => {
+    setProcessView(option.id)
+  }
+
   return (
     <div className="flex h-full flex-col gap-0 overflow-hidden px-6">
       <Breadcrumb links={[{ title: 'Assessment Data Processes' }]} />
@@ -268,7 +296,7 @@ const AssessmentDataModule = () => {
       <div className="flex items-center py-3">
         <h1 className="text-foreground text-2xl font-bold">Assessment Data Processes</h1>
 
-        <ProcessesMenu />
+        <ProcessesMenu onChange={onChangeView} />
       </div>
 
       {/* ── Tabs + search + filter + toolbar ──────────────────────────── */}

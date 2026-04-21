@@ -4,6 +4,8 @@ import { MY_TASKS } from '../constants/my-tasks'
 import { SUBMITTED_REQUESTS } from '../constants/submitted-requests'
 import { PROESS_DETAILS } from '../constants/process-details'
 import { ASSESSMENT_DATA } from '../constants/assessment-data'
+import type { DomainItem } from '../types/process'
+import type { ProcessViewOptionId } from '@/shared/components/ProcessesMenu'
 
 export function getMyTasks(): Promise<TaskItem[]> {
   return new Promise((resolve) => setTimeout(() => resolve(MY_TASKS), 500))
@@ -15,7 +17,8 @@ export function getSubmittedRequests(): Promise<RequestItem[]> {
 }
 
 //getAssessmentProcess
-export function getAssessmentProcess(): Promise<RequestItem[]> {
+export function getAssessmentProcess(processView: ProcessViewOptionId): Promise<DomainItem[]> {
+  console.log('Call API getAssessmentProcess, with view=',processView)
   return new Promise((resolve) => setTimeout(() => resolve(ASSESSMENT_DATA), 500))
 }
 
