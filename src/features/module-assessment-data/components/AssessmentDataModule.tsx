@@ -24,7 +24,10 @@ import { ASSESSMENT_BULK_ACTIONS, ASSESSMENT_TABS } from '../constants/assessmen
 import { flattenAssessmentData } from './tabels/ProcessDataTable'
 import { useAssessmentExport } from '../hooks/useAssessmentExport'
 import { useMyTasksExport } from '../hooks/useMyTasksExport'
-import ProcessesMenu from '../../../shared/components/ProcessesMenu'
+import ProcessesMenu, {
+  type ProcessViewOption,
+  type ProcessViewOptionId,
+} from '../../../shared/components/ProcessesMenu'
 import MyTasksTable from './tabels/MyTasksTable'
 import type { TaskRowAction } from './tabels/MyTasksTable'
 import type { ChangeRecord, TaskItem } from '../types/my-tasks'
@@ -99,9 +102,10 @@ const AssessmentDataModule = () => {
   const [showTaskActionToast, setShowTaskActionToast] = useState(false)
   const [taskActionMessage, setTaskActionMessage] = useState('')
   const [singleActionTask, setSingleActionTask] = useState<TaskItem | null>(null)
+  const [processView, setProcessView] = useState<ProcessViewOptionId>('published')
 
   // API:
-  const { data, isLoading, isError , error } = useGetAssessmentProcess()
+  const { data, isLoading, isError , error } = useGetAssessmentProcess(processView)
 
   const userRole = useUserStore((s) => s.user.role)
   const canCommentOnField = hasPermission(userRole, 'COMMENT_ON_FIELD')
@@ -259,6 +263,10 @@ const AssessmentDataModule = () => {
     setSingleActionTask(null)
   }
 
+  const onChangeView = (option: ProcessViewOption) => {
+    setProcessView(option.id)
+  }
+
   return (
     <div className="flex h-full flex-col gap-0 overflow-hidden px-6">
       <Breadcrumb links={[{ title: 'Assessment Data Processes' }]} />
@@ -267,7 +275,7 @@ const AssessmentDataModule = () => {
       <div className="flex items-center py-3">
         <h1 className="text-foreground text-2xl font-bold">Assessment Data Processes</h1>
 
-        <ProcessesMenu />
+        <ProcessesMenu onChange={onChangeView} />
       </div>
 
       {/* ── Tabs + search + filter + toolbar ──────────────────────────── */}
