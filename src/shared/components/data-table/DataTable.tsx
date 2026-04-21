@@ -37,6 +37,7 @@ import { TableShell } from '@/shared/components/table-primitives'
 import DataTableHeader from './DataTableHeader'
 import DataTableRow from './DataTableRow'
 import type { DataTableProps } from './interfaces'
+import LoadingTable from './LoadingTable'
 
 /** Recursively collect leaf column IDs so columnOrder only contains sortable leaves. */
 function getLeafColumnIds<TData>(cols: ColumnDef<TData, unknown>[], offset = 0): string[] {
@@ -69,6 +70,7 @@ const DataTable = <TData,>({
   onColumnVisibilityChange,
   columnOrder: columnOrderProp,
   onColumnOrderChange,
+  isLoading
 }: DataTableProps<TData>) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -155,6 +157,8 @@ const DataTable = <TData,>({
       return newOrder
     })
   }
+
+  if(isLoading) return <LoadingTable/>
 
   return (
     <TableShell className={className}>
