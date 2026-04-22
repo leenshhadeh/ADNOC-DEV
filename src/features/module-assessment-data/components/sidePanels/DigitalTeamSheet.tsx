@@ -1,17 +1,82 @@
 import ActionSheet from '@/shared/components/ActionSheet'
 import { TreeSelect } from '@/shared/components/TreeSelect'
 import { Button } from '@/shared/components/ui/button'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Search } from 'lucide-react'
-import { DigitalTeam } from '../../constants/org-mapping-data'
+import { useProcessDigitalTeam } from '../../hooks/useProcessDigitalTeam'
+import type { TreeNode } from '@/shared/components/TreeSelect'
 
-const DigitalTeamSheet = (props: any) => {
-  const { open = true, handleOpenChange } = props
-  const [selected, setSelected] = useState<string[]>([])
+interface DigitalTeamSheetProps {
+  open?: boolean
+  title?: string
+  selected?: string[]
+  handleOpenChange: (value?: string[]) => void
+  onClose?: () => void
+}
+
+const getNodeLabel = (node: TreeNode) =>
+  (node.label || '').toLowerCase()
+
+const filterTreeData = (nodes: TreeNode[], query: string): TreeNode[] => {
+  const normalizedQuery = query.trim().toLowerCase()
+
+  if (!normalizedQuery) {
+    return nodes
+  }
+
+  return nodes.reduce<TreeNode[]>((acc, node) => {
+    const filteredChildren = filterTreeData(node.children ?? [], normalizedQuery)
+    const matchesCurrentNode = getNodeLabel(node).includes(normalizedQuery)
+
+    if (matchesCurrentNode || filteredChildren.length > 0) {
+      acc.push({
+        ...node,
+        children: filteredChildren,
+      })
+    }
+
+    return acc
+  }, [])
+}
+
+// Renders the digital team selection sheet and syncs its values with the digital team APIs.
+const DigitalTeamSheet = ({
+  open = true,
+  handleOpenChange,
+  selected = [],
+  title,
+  onClose,
+}: DigitalTeamSheetProps) => {
+  const [selectedValues, setSelectedValues] = useState<string[]>(selected)
   const [search, setSearch] = useState('')
+  const { digitalTeams } = useProcessDigitalTeam()
+
+  useEffect(() => {
+    setSelectedValues(selected)
+  }, [selected])
+
+  const filteredDigitalTeamData = useMemo(() => {
+    return filterTreeData(digitalTeams, search)
+  }, [digitalTeams, search])
+
+  // Closes the sheet when the sheet component itself requests a close action.
+  const handleSheetOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      handleOpenChange()
+    }
+  }
+
+  // Returns the selected digital team list to the parent when the user saves.
+  const handleSave = () => {
+    handleOpenChange(selectedValues)
+  }
 
   return (
-    <ActionSheet title="Responsible Digital Team" open={open} onOpenChange={handleOpenChange}>
+    <ActionSheet
+      title={title || 'Responsible Digital Team'}
+      open={open}
+      onOpenChange={handleSheetOpenChange}
+    >
       {/* Search */}
       <div className="shrink-0 px-6 pt-4 pb-2">
         <div className="relative">
@@ -21,7 +86,7 @@ const DigitalTeamSheet = (props: any) => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search..."
-            className="border-input bg-background text-foreground placeholder:text-muted-foreground w-full rounded-xl border py-2.5 ps-11 pe-4 text-sm outline-none"
+            className="ps-11 border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring/40 flex h-8 w-full min-w-0 rounded-md border pe-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-2"
           />
         </div>
       </div>
@@ -29,7 +94,11 @@ const DigitalTeamSheet = (props: any) => {
       {/* Tree */}
       <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-2">
         <div className="rounded-xl border p-4">
-          <TreeSelect data={DigitalTeam} selected={selected} onChange={setSelected} />
+          <TreeSelect
+            data={filteredDigitalTeamData}
+            selected={selectedValues}
+            onChange={setSelectedValues}
+          />
         </div>
       </div>
 
@@ -40,14 +109,14 @@ const DigitalTeamSheet = (props: any) => {
             type="button"
             variant="outline"
             className="flex-1 rounded-full"
-            onClick={handleOpenChange}
+            onClick={onClose ?? (() => handleOpenChange())}
           >
             Cancel
           </Button>
           <Button
             type="button"
             className="flex-1 rounded-full"
-            onClick={() => handleOpenChange(selected)}
+            onClick={handleSave}
           >
             Save
           </Button>

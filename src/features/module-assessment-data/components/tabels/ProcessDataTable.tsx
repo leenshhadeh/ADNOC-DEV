@@ -279,10 +279,14 @@ const ProcessDataTable = ({
 
       <DigitalTeamSheet
         open={isDigitalTeamOpen}
+        selected={
+          updatedDataTable.find((row) => row.id === selectedRowId)?.responsibleDigitalTeam ?? []
+        }
         handleOpenChange={(newVal: any) => {
           setIsDigitalTeamOpen(false)
           handleUpdateDraftRow(selectedRowId, 'responsibleDigitalTeam', newVal || [])
         }}
+        onClose={() => setIsDigitalTeamOpen(false)}
       />
     </div>
   )

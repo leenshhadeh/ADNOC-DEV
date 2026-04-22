@@ -262,7 +262,11 @@ export function BulkEditModal({
         <SharedServicesSheet open={sheetOpen} handleOpenChange={handleSheetSave} />
       )}
       {fieldValue === 'responsibleDigitalTeam' && (
-        <DigitalTeamSheet open={sheetOpen} handleOpenChange={handleSheetSave} />
+        <DigitalTeamSheet
+          open={sheetOpen}
+          selected={Array.isArray(value) ? value : []}
+          handleOpenChange={handleSheetSave}
+        />
       )}
 
       {/* Success toast */}
