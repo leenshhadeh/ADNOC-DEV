@@ -803,14 +803,12 @@ export const getProcessTableColumns = ({
 
       return (
         <MarkedAsReviewCell
-          marked={info.getValue<string>() === 'true' ? true : false}
           date={info.row.original.reviewedOn}
-          id={`${info.row.original.l4Code}__markedAsReviewed`}
-          onChange={() => {}}
-          handleMarkAsReviewed={() => {
+          id={info.row.original.id}
+          handleMarkAsReviewed={(rowId) => {
             if (onUpdate) {
-              onUpdate(info.row.original.id, 'markedAsReviewed', 'true')
-              onUpdate(info.row.original.reviewedOn, 'reviewedOn', Date.now().toString())
+              onUpdate(rowId, 'markedAsReviewed', 'true')
+              onUpdate(rowId, 'reviewedOn', new Date().toISOString())
             }
           }}
         />
