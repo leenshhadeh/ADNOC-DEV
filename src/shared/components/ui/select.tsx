@@ -15,6 +15,7 @@ type CustomSelectProps = {
   className?: string
   disabled?: boolean
   border?: boolean
+  name?:string
 }
 
 const Select: React.FC<CustomSelectProps> = ({
@@ -26,6 +27,7 @@ const Select: React.FC<CustomSelectProps> = ({
   className,
   disabled,
   border,
+  name
 }) => {
   return (
     <select
@@ -38,6 +40,7 @@ const Select: React.FC<CustomSelectProps> = ({
       value={value}
       onChange={(e) => onChange?.(e.target.value)}
       disabled={disabled}
+      name={name}
     >
       <option value="" disabled>
         {placeholder}
