@@ -4,6 +4,9 @@ import type { RequestItem, WorkflowHistoryItem } from '../types/submitted-reques
 import { MY_TASKS } from '../constants/my-tasks'
 import { SUBMITTED_REQUESTS } from '../constants/submitted-requests'
 import { PROESS_DETAILS } from '../constants/process-details'
+import { ASSESSMENT_DATA } from '../constants/assessment-data'
+import type { DomainItem } from '../types/process'
+import type { ProcessViewOptionId } from '@/shared/components/ProcessesMenu'
 
 export function getMyTasks(): Promise<TaskItem[]> {
   return new Promise((resolve) => setTimeout(() => resolve(MY_TASKS), 500))
@@ -12,6 +15,12 @@ export function getMyTasks(): Promise<TaskItem[]> {
 // getSubmittedRequests
 export function getSubmittedRequests(): Promise<RequestItem[]> {
   return new Promise((resolve) => setTimeout(() => resolve(SUBMITTED_REQUESTS), 500))
+}
+
+//getAssessmentProcess
+export function getAssessmentProcess(processView: ProcessViewOptionId): Promise<DomainItem[]> {
+  console.log('Call API getAssessmentProcess, with view=',processView)
+  return new Promise((resolve) => setTimeout(() => resolve(ASSESSMENT_DATA), 500))
 }
 
 // ── Bulk Actions (mock) ───────────────────────────────────────────────────────
@@ -214,4 +223,13 @@ export function addFieldComment({
   if (!MOCK_COMMENTS[key]) MOCK_COMMENTS[key] = []
   MOCK_COMMENTS[key].push(entry)
   return new Promise((resolve) => setTimeout(() => resolve(entry), 300))
+}
+
+// proces details - commets section
+export function getProcessCommentsByFiled(fieldId: string): Promise<any[]> {
+  void fieldId
+  return new Promise((resolve) => setTimeout(() => resolve([]), 500))
+}
+export function getProcessComments(): Promise<any> {
+  return new Promise((resolve) => setTimeout(() => resolve([]), 500))
 }

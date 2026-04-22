@@ -179,16 +179,20 @@ export const getProcessTableColumns = ({
     header: 'Description',
     size: 320,
     enableSorting: false,
-    cell: (info) => (
-      <EditableCell
-        value={info.getValue<string>()}
-        onChange={(newValue) => {
-          onDescChanged(newValue)
-          // Handle the change, e.g., update the data source or state
-          console.log('New description:', newValue)
-        }}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      return (
+        <EditableCell
+          value={info.getValue<string>()}
+          onChange={(newValue) => {
+            onDescChanged(newValue)
+            if (onUpdate) {
+              onUpdate(info.row.original.id, 'description', newValue)
+            }
+          }}
+        />
+      )
+    },
   },
   {
     id: 'centrallyGovernedProcess',
@@ -310,15 +314,19 @@ export const getProcessTableColumns = ({
     header: 'Scale of the Process',
     size: 250,
     enableSorting: false,
-    cell: (info) => (
-      <SelectCell
-        defaultValue={info.getValue<string>()}
-        options={SCALE_OF_PROCESS}
-        onValueChange={(newValue: string) => {
-          console.log('New scale of process:', newValue)
-        }}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      return (
+        <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={SCALE_OF_PROCESS}
+          onValueChange={(newValue: string) => {
+            console.log('New scale of process:', newValue)
+            onUpdate && onUpdate(info.row.original.id, 'scaleOfProcess', newValue)
+          }}
+        />
+      )
+    },
   },
   {
     id: 'automationMaturityLevel',
@@ -326,15 +334,19 @@ export const getProcessTableColumns = ({
     header: 'Automation Maturity Level',
     size: 250,
     enableSorting: false,
-    cell: (info) => (
-      <SelectCell
-        defaultValue={info.getValue<string>()}
-        options={AUTOMATION_MATURITY_LEVEL}
-        onValueChange={(newValue: string) => {
-          console.log('New automation maturity level:', newValue)
-        }}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      return (
+        <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={AUTOMATION_MATURITY_LEVEL}
+          onValueChange={(newValue: string) => {
+            console.log('New automation maturity level:', newValue)
+            onUpdate && onUpdate(info.row.original.id, 'scaleOfProcess', newValue)
+          }}
+        />
+      )
+    },
   },
   {
     id: 'automationLevel',
@@ -342,15 +354,20 @@ export const getProcessTableColumns = ({
     header: 'Automation Level (%)',
     size: 180,
     enableSorting: false,
-    cell: (info) => (
-      <SelectCell
-        defaultValue={info.getValue<string>()}
-        options={AUTOMATION_LEVEL}
-        onValueChange={(newValue: string) => {
-          console.log('New automation level:', newValue)
-        }}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+
+      return (
+        <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={AUTOMATION_LEVEL}
+          onValueChange={(newValue: string) => {
+            console.log('New automation level:', newValue)
+            onUpdate && onUpdate(info.row.original.id, 'automationLevel', newValue)
+          }}
+        />
+      )
+    },
   },
   {
     id: 'currentApplicationsSystems',
@@ -381,7 +398,21 @@ export const getProcessTableColumns = ({
     header: 'Ongoing Automation / Digital Initiatives',
     size: 320,
     enableSorting: false,
-    cell: (info) => <p>{info.getValue<string>()}</p>,
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+
+      return (
+        <EditableCell
+          value={info.getValue<string>()}
+          onChange={(newValue) => {
+            if (onUpdate) {
+              onUpdate(info.row.original.id, 'ongoingAutomationDigitalInitiatives', newValue || '')
+            }
+          }}
+          type={'textArea'}
+        />
+      )
+    },
   },
   {
     id: 'businessRecommendationForAutomation',
@@ -389,15 +420,20 @@ export const getProcessTableColumns = ({
     header: 'Business Recommendation for Automation',
     size: 320,
     enableSorting: false,
-    cell: (info) => (
-      <SelectCell
-        defaultValue={info.getValue<string>()}
-        options={BUSINESS_RECOMMENDATION_FOR_AUTOMATION}
-        onValueChange={(newValue: string) => {
-          console.log('New business recommendation for automation:', newValue)
-        }}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      return (
+        <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={BUSINESS_RECOMMENDATION_FOR_AUTOMATION}
+          onValueChange={(newValue: string) => {
+            if (onUpdate) {
+              onUpdate(info.row.original.id, 'businessRecommendationForAutomation', newValue || '')
+            }
+          }}
+        />
+      )
+    },
   },
   {
     id: 'keyChallengesAutomationNeeds',
@@ -405,7 +441,20 @@ export const getProcessTableColumns = ({
     header: 'Key Challenges & Automation Needs',
     size: 300,
     enableSorting: false,
-    cell: (info) => <p>{info.getValue<string>()}</p>,
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      return (
+        <EditableCell
+          value={info.getValue<string>()}
+          onChange={(newValue) => {
+            if (onUpdate) {
+              onUpdate(info.row.original.id, 'keyChallengesAutomationNeeds', newValue || '')
+            }
+          }}
+          type={'textArea'}
+        />
+      )
+    },
   },
   {
     id: 'aiPowered',
@@ -431,7 +480,20 @@ export const getProcessTableColumns = ({
     header: 'AI-Powered Use Case',
     size: 250,
     enableSorting: false,
-    cell: (info) => <p>{info.getValue<string>()}</p>,
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      return (
+        <EditableCell
+          value={info.getValue<string>()}
+          onChange={(newValue) => {
+            if (onUpdate) {
+              onUpdate(info.row.original.id, 'aiPoweredUseCase', newValue || '')
+            }
+          }}
+          type={'textArea'}
+        />
+      )
+    },
   },
   {
     id: 'autonomousUseCaseEnabled',
@@ -439,17 +501,24 @@ export const getProcessTableColumns = ({
     header: 'Autonomous Use Case Enabled',
     size: 250,
     enableSorting: false,
-    cell: (info) => (
-      <RadioCell
-        name={`${info.row.original.l4Code}__autonomousUseCaseEnabled`}
-        value={info.getValue<string>() ? true : false}
-        options={[
-          { label: 'Yes', value: 'yes' },
-          { label: 'No', value: 'no' },
-        ]}
-        onChange={() => {}}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      return (
+        <RadioCell
+          name={`${info.row.original.l4Code}__autonomousUseCaseEnabled`}
+          value={info.getValue<string>() ? true : false}
+          options={[
+            { label: 'Yes', value: 'yes' },
+            { label: 'No', value: 'no' },
+          ]}
+          onChange={(val: string) => {
+            if (onUpdate) {
+              onUpdate(info.row.original.id, 'autonomousUseCaseEnabled', val || '')
+            }
+          }}
+        />
+      )
+    },
   },
   {
     id: 'autonomousUseCaseDescriptionComment',
@@ -457,15 +526,20 @@ export const getProcessTableColumns = ({
     header: 'Autonomous Use Case Description/Comment',
     size: 320,
     enableSorting: false,
-    cell: (info) => (
-      <EditableCell
-        value={info.getValue<string>()}
-        onChange={(newValue) => {
-          // Handle the change, e.g., update the data source or state
-          console.log('New autonomous use case description/comment:', newValue)
-        }}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      return (
+        <EditableCell
+          value={info.getValue<string>()}
+          onChange={(newValue) => {
+            if (onUpdate) {
+              onUpdate(info.row.original.id, 'autonomousUseCaseDescriptionComment', newValue || '')
+            }
+          }}
+          type={'textArea'}
+        />
+      )
+    },
   },
   {
     id: 'processCycle',
@@ -473,15 +547,20 @@ export const getProcessTableColumns = ({
     header: 'How Often the Process Happens (Cycle)',
     size: 280,
     enableSorting: false,
-    cell: (info) => (
-      <SelectCell
-        defaultValue={info.getValue<string>()}
-        options={PROCESS_CYCLE}
-        onValueChange={(newValue: string) => {
-          console.log('New process cycle:', newValue)
-        }}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      return (
+        <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={PROCESS_CYCLE}
+          onValueChange={(newValue: string) => {
+            if (onUpdate) {
+              onUpdate(info.row.original.id, 'processCycle', newValue || '')
+            }
+          }}
+        />
+      )
+    },
   },
   {
     id: 'processRepetitionWithinCycle',
@@ -489,15 +568,21 @@ export const getProcessTableColumns = ({
     header: 'Number of Times Repeated within Selected Cycle',
     size: 320,
     enableSorting: false,
-    cell: (info) => (
-      <SelectCell
-        defaultValue={info.getValue<string>()}
-        options={['1-5 times', '6-10 times', '11-20 times', 'More than 20 times']}
-        onValueChange={(newValue: string) => {
-          console.log('New process repetition within cycle:', newValue)
-        }}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      return (
+        <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={['1-5 times', '6-10 times', '11-20 times', 'More than 20 times']}
+          onValueChange={(newValue: string) => {
+            console.log('New process repetition within cycle:', newValue)
+            if (onUpdate) {
+              onUpdate(info.row.original.id, 'processRepetitionWithinCycle', newValue || '')
+            }
+          }}
+        />
+      )
+    },
   },
   {
     id: 'totalPersonnelExecutingFTE',
@@ -505,15 +590,20 @@ export const getProcessTableColumns = ({
     header: 'Total Personnel Executing (FTE)',
     size: 240,
     enableSorting: false,
-    cell: (info) => (
-      <SelectCell
-        defaultValue={info.getValue<string>()}
-        options={['10', '20', '50', '100', 'More than 100']}
-        onValueChange={(newValue: string) => {
-          console.log('New total personnel executing (FTE):', newValue)
-        }}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      return (
+        <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={['10', '20', '50', '100', 'More than 100']}
+          onValueChange={(newValue: string) => {
+            if (onUpdate) {
+              onUpdate(info.row.original.id, 'totalPersonnelExecutingFTE', newValue || '')
+            }
+          }}
+        />
+      )
+    },
   },
 
   {
@@ -522,15 +612,20 @@ export const getProcessTableColumns = ({
     header: 'Total Process Duration (Days)',
     size: 220,
     enableSorting: false,
-    cell: (info) => (
-      <SelectCell
-        defaultValue={info.getValue<string>()}
-        options={['10', '20', '50', '100', 'More than 100']}
-        onValueChange={(newValue: string) => {
-          console.log('New total personnel executing (FTE):', newValue)
-        }}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      return (
+        <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={['10', '20', '50', '100', 'More than 100']}
+          onValueChange={(newValue: string) => {
+            if (onUpdate) {
+              onUpdate(info.row.original.id, 'totalPersonnelExecutingFTE', newValue || '')
+            }
+          }}
+        />
+      )
+    },
   },
   {
     id: 'timeSpentOnManualTasksPercent',
@@ -538,15 +633,21 @@ export const getProcessTableColumns = ({
     header: 'Time Spent on Manual Tasks (%)',
     size: 240,
     enableSorting: false,
-    cell: (info) => (
-      <SelectCell
-        defaultValue={info.getValue<string>()}
-        options={['10%', '20%', '50%', '100%']}
-        onValueChange={(newValue: string) => {
-          console.log('New total personnel executing (FTE):', newValue)
-        }}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+
+      return (
+        <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={['10%', '20%', '50%', '100%']}
+          onValueChange={(newValue: string) => {
+            if (onUpdate) {
+              onUpdate(info.row.original.id, 'totalPersonnelExecutingFTE', newValue || '')
+            }
+          }}
+        />
+      )
+    },
   },
   {
     id: 'keyManualSteps',
@@ -554,16 +655,22 @@ export const getProcessTableColumns = ({
     header: 'Key Manual Steps',
     size: 260,
     enableSorting: false,
-    cell: (info) => (
-      <EditableCell
-        value={info.getValue<string>()}
-        onChange={(newValue) => {
-          // Handle the change, e.g., update the data source or state
-          console.log('New key manual steps:', newValue)
-        }}
-        type={'textArea'}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+
+      return (
+        <EditableCell
+          value={info.getValue<string>()}
+          onChange={(newValue) => {
+            // Handle the change, e.g., update the data source or state
+            if (onUpdate) {
+              onUpdate(info.row.original.id, 'keyManualSteps', newValue || '')
+            }
+          }}
+          type={'textArea'}
+        />
+      )
+    },
   },
   {
     id: 'northStarTargetAutomation',
@@ -571,15 +678,19 @@ export const getProcessTableColumns = ({
     header: '"North Star" Target Automation',
     size: 240,
     enableSorting: false,
-    cell: (info) => (
-      <SelectCell
-        defaultValue={info.getValue<string>()}
-        options={NORTH_STAR_TARGET_AUTOMATION}
-        onValueChange={(newValue: string) => {
-          console.log('New total personnel executing (FTE):', newValue)
-        }}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      return (
+        <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={NORTH_STAR_TARGET_AUTOMATION}
+          onValueChange={(newValue: string) => {
+            console.log('New total personnel executing (FTE):', newValue)
+            onUpdate && onUpdate(info.row.original.id, 'northStarTargetAutomation', newValue || '')
+          }}
+        />
+      )
+    },
   },
   {
     id: 'targetAutomationLevelPercent',
@@ -587,15 +698,19 @@ export const getProcessTableColumns = ({
     header: 'Target Automation Level (%)',
     size: 220,
     enableSorting: false,
-    cell: (info) => (
-      <SelectCell
-        defaultValue={info.getValue<string>()}
-        options={['10%', '20%', '50%', '100%']}
-        onValueChange={(newValue: string) => {
-          console.log('New total personnel executing (FTE):', newValue)
-        }}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      return (
+        <SelectCell
+          defaultValue={info.getValue<string>()}
+          options={['10%', '20%', '50%', '100%']}
+          onValueChange={(newValue: string) => {
+            onUpdate &&
+              onUpdate(info.row.original.id, 'targetAutomationLevelPercent', newValue || '')
+          }}
+        />
+      )
+    },
   },
   {
     id: 'smeFeedback',
@@ -603,16 +718,20 @@ export const getProcessTableColumns = ({
     header: 'SME Feedback',
     size: 280,
     enableSorting: false,
-    cell: (info) => (
-      <EditableCell
-        value={info.getValue<string>()}
-        onChange={(newValue) => {
-          // Handle the change, e.g., update the data source or state
-          console.log('New key manual steps:', newValue)
-        }}
-        type={'textArea'}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      return (
+        <EditableCell
+          value={info.getValue<string>()}
+          onChange={(newValue) => {
+            // Handle the change, e.g., update the data source or state
+            console.log('New key manual steps:', newValue)
+            onUpdate && onUpdate(info.row.original.id, 'smeFeedback', newValue || '')
+          }}
+          type={'textArea'}
+        />
+      )
+    },
   },
   {
     id: 'toBeAIPowered',
@@ -620,17 +739,22 @@ export const getProcessTableColumns = ({
     header: 'To be AI Powered - Y/N',
     size: 220,
     enableSorting: false,
-    cell: (info) => (
-      <RadioCell
-        name={`${info.getValue<string>()}__toBeAIPowered`}
-        value={info.getValue<string>()}
-        options={[
-          { label: 'Yes', value: 'yes' },
-          { label: 'No', value: 'no' },
-        ]}
-        onChange={() => {}}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      return (
+        <RadioCell
+          name={`${info.getValue<string>()}__toBeAIPowered`}
+          value={info.getValue<string>()}
+          options={[
+            { label: 'Yes', value: 'yes' },
+            { label: 'No', value: 'no' },
+          ]}
+          onChange={(newValue: any) => {
+            onUpdate && onUpdate(info.row.original.id, 'toBeAIPowered', newValue || '')
+          }}
+        />
+      )
+    },
   },
   {
     id: 'toBeAIPoweredComments',
@@ -638,16 +762,19 @@ export const getProcessTableColumns = ({
     header: 'To be AI Powered - Comments',
     size: 260,
     enableSorting: false,
-    cell: (info) => (
-      <EditableCell
-        value={info.getValue<string>()}
-        onChange={(newValue) => {
-          // Handle the change, e.g., update the data source or state
-          console.log('New key manual steps:', newValue)
-        }}
-        type={'textArea'}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      return (
+        <EditableCell
+          value={info.getValue<string>()}
+          onChange={(newValue) => {
+            // Handle the change, e.g., update the data source or state
+            onUpdate && onUpdate(info.row.original.id, 'toBeAIPoweredComments', newValue || '')
+          }}
+          type={'textArea'}
+        />
+      )
+    },
   },
   {
     id: 'rateCardAED',
@@ -671,14 +798,24 @@ export const getProcessTableColumns = ({
     header: 'Marked as Reviewed?',
     size: 180,
     enableSorting: false,
-    cell: (info) => (
-      <MarkedAsReviewCell
-        marked={info.getValue<string>() === 'true' ? true : false}
-        date={info.row.original.reviewedOn}
-        id={`${info.row.original.l4Code}__markedAsReviewed`}
-        onChange={() => {}}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+
+      return (
+        <MarkedAsReviewCell
+          marked={info.getValue<string>() === 'true' ? true : false}
+          date={info.row.original.reviewedOn}
+          id={`${info.row.original.l4Code}__markedAsReviewed`}
+          onChange={() => {}}
+          handleMarkAsReviewed={() => {
+            if (onUpdate) {
+              onUpdate(info.row.original.id, 'markedAsReviewed', 'true')
+              onUpdate(info.row.original.reviewedOn, 'reviewedOn', Date.now().toString())
+            }
+          }}
+        />
+      )
+    },
   },
   {
     id: 'businessFocalPoint',

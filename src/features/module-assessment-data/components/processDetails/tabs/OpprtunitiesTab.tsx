@@ -26,7 +26,7 @@ const OpprtunitiesTab = (props: any) => {
         id: 'opportunity',
         accessorKey: 'opportunity',
         header: 'Opportunity',
-        size: 250,
+         size: 150,
         enableSorting: false,
         cell: (info) => (
           <div
@@ -34,7 +34,7 @@ const OpprtunitiesTab = (props: any) => {
               openOpportunitySheet(info.row.original)
             }}
           >
-            <p className="text-foreground">{info.row.original.opportunity}</p>
+            <p className="text-foreground text-wrap line-clamp-2">{info.row.original.opportunity}</p>
             <span className="text-muted-foreground">{info.row.original.id}</span>
           </div>
         ),
@@ -43,17 +43,17 @@ const OpprtunitiesTab = (props: any) => {
         id: 'description',
         accessorKey: 'description',
         header: 'Description',
-        size: 650,
+        // size: 550,
         enableSorting: false,
         cell: (info) => (
-          <p className="text-muted-foreground text-wrap">{info.row.original.description}</p>
+          <p className="text-muted-foreground text-wrap line-clamp-2">{info.row.original.description}</p>
         ),
       },
       {
         id: 'domain',
         accessorKey: 'domain',
         header: 'Domain',
-        // size: 250,
+        size: 150,
         enableSorting: false,
         cell: (info) => <p className="text-muted-foreground">{info.row.original.domain}</p>,
       },

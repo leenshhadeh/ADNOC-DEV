@@ -45,6 +45,7 @@ import { useGetProcessCatalogRows } from '@features/module-process-catalog/hooks
 import { useGetGroupCompanies } from '@features/module-process-catalog/hooks/useGetGroupCompanies'
 import { useCatalogNavStore } from '@features/module-process-catalog/store/useCatalogNavStore'
 import type { ProcessItem } from '@features/module-process-catalog/types'
+import { PROCESS_VIEW_OPTIONS } from '@/shared/components/ProcessesMenu'
 
 const CatalogModule = () => {
   const navigate = useNavigate()
@@ -64,7 +65,7 @@ const CatalogModule = () => {
   const [renameTarget, setRenameTarget] = useState<ProcessItem | null>(null)
   const [isExporting, setIsExporting] = useState(false)
   const [draftNotificationDismissed, setDraftNotificationDismissed] = useState(false)
-  const [processView, setProcessView] = useState<ProcessViewOption>('Published processes')
+  const [processView, setProcessView] = useState<ProcessViewOption>(PROCESS_VIEW_OPTIONS[0])
   const [successToast, setSuccessToast] = useState<string | null>(null)
   const [draftValidationErrors, setDraftValidationErrors] = useState<Record<string, string[]>>({})
 

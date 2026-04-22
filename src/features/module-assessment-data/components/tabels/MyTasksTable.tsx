@@ -402,16 +402,6 @@ const MyTasksTable = ({
     )
   }
 
-  if (isLoading) {
-    return (
-      <div className="space-y-3 py-2">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="bg-muted h-14 w-full animate-pulse rounded-xl" />
-        ))}
-      </div>
-    )
-  }
-
   return (
     <>
       <DataTable
@@ -427,6 +417,7 @@ const MyTasksTable = ({
         rowSelection={isBulkMode ? rowSelection : undefined}
         onRowSelectionChange={isBulkMode ? onRowSelectionChange : undefined}
         getRowId={(row) => row.id}
+        isLoading={isLoading}
       />
       <TaskDetailsSheet task={selectedTask} open={isSheetOpen} onOpenChange={setIsSheetOpen} />
     </>

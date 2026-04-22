@@ -11,12 +11,13 @@ import OpprtunitiesTab from './processDetails/tabs/OpprtunitiesTab'
 import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 import RecordedChangesTab from './processDetails/tabs/RecordedChangesTab'
 import CommentsTab from './processDetails/tabs/CommentsTab'
-import { Settings2, Upload} from 'lucide-react'
+import { Settings2, Upload } from 'lucide-react'
 import Breadcrumb from '@/shared/components/Breadcrumb'
 import { cn } from '@/shared/lib/utils'
 import CommentsSection from './processDetails/CommentsSection'
 import { useCurrentUser } from '@/shared/auth/useUserStore'
 import { ROLES } from '@/shared/lib/permissions'
+import type { ChangeRecord } from '../types/my-tasks'
 
 const ProcessDetailsPage = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -27,12 +28,13 @@ const ProcessDetailsPage = () => {
   const [disableSubmit, setDisableSubmit] = useState(true)
   const [updatedData, setUpdatedData] = useState([{}])
   const [showComment, setShowComment] = useState(false)
+  const [commentField, setCommentField] = useState('')
+  const [automationValidationTrigger, setAutomationValidationTrigger] = useState(0)
   const { role } = useCurrentUser()
-  const canEdit = role== ROLES.BusinessFocalPoint || role == ROLES.DigitalFocalPoint
-  const canComment = role== ROLES.QualityManager || role == ROLES.BPA_ProgramManager
+  const canEdit = role == ROLES.BusinessFocalPoint || role == ROLES.DigitalFocalPoint
+  const canComment = role == ROLES.QualityManager || role == ROLES.BPA_ProgramManager
 
   useEffect(() => {
-    //TODO: call getProcessDetails(processId) API
     if (data) {
       const domainName = DOMAINS_DATA.find((d) => d.id === data[0]?.domain)?.name ?? data[0]?.domain
       setProcessData([
@@ -85,10 +87,17 @@ const ProcessDetailsPage = () => {
     console.log('onFormChanged:', updatedData)
     setUpdatedData(updatedData)
   }
-  const onShowComment = (colName?:string) => {
-    console.log('colName:',colName)
+  const onShowComment = (colName?: string) => {
+    console.log('colName:', colName)
     setShowComment(true)
+    setCommentField(colName || '')
     // get Comments(colName) OR Comments(All)
+  }
+
+  const handleValidate = () => {
+    if (activeTab === 'AutomationParameters') {
+      setAutomationValidationTrigger((prev) => prev + 1) // to trigger a change
+    }
   }
 
   const mainActions = useMemo<any[]>(
@@ -100,23 +109,26 @@ const ProcessDetailsPage = () => {
         disabled: disableSubmit,
         onClick: handelOnSubmit,
       },
-      { id: 'save', label: 'save', icon: Upload, disabled: disableSubmit },
-      { id: 'validate', label: 'validate', icon: Upload },
+      { id: 'save', label: 'save', icon: Upload, disabled: disableSubmit, onClick: handelOnSubmit },
+      { id: 'validate', label: 'validate', icon: Upload, onClick: handleValidate },
       { id: 'Markasreviewed', label: 'Mark as reviewed', icon: Upload },
     ],
-    [updatedData],
+    [disableSubmit, handleValidate, handelOnSubmit],
   )
   const ApproveRejectActions = useMemo<any[]>(
     () => [
       { id: 'Approve', label: 'Approve', icon: Settings2 },
       { id: 'Return', label: 'Return', icon: Upload },
       { id: 'Reject', label: 'Reject', icon: Upload },
-      { id: 'Comment on field', label: 'Comment on field', icon: Upload , onClick:onShowComment },
+      {
+        id: 'Comment on field',
+        label: 'Comment on field',
+        icon: Upload,
+        onClick: () => onShowComment(''),
+      },
     ],
     [],
   )
-
-
 
   return (
     <>
@@ -167,50 +179,78 @@ const ProcessDetailsPage = () => {
                   actions={canEdit ? mainActions : ApproveRejectActions}
                 />
 
-                <div className="flex flex-col gap-0 overflow-hidden">
-                  <div className="grid grid-cols-12 gap-4">
-                    {/* forms and data */}
-                    <div
-                      className={cn(
-                        showComment ? 'col-span-9' : 'col-span-12',
-                        'mt-[24px] rounded-2xl bg-[linear-gradient(90.49deg,rgba(78,241,228,0.1)_0.03%,rgba(17,24,39,0.1)_99.89%)] p-[1px]',
-                      )}
-                    >
-                      <div className="relative rounded-2xl bg-white p-[24px]">
-                        {activeTab == 'GeneralInfo' && (
-                          <GeneralInfoTab
-                            processGeneralInfo={processGeneralInfo}
-                            process={data[0]}
-                            onFormSubmit={handelOnSubmit}
-                            onFormChanged={(data: any) => {
-                              handelDataChanged(data)
-                            }}
-                            isEditable={canEdit}
-                            canComment={canComment}
-                            onShowComment={onShowComment}
-                          />
-                        )}
-                        {activeTab == 'AutomationParameters' && (
-                          <AutomationParameterTab process={data[0]} isEditable={canEdit} canComment={canComment} onShowComment={onShowComment}/>
-                        )}
-                        {activeTab == 'ManualParameters' && (
-                          <ManualParametersTab process={data[0]} isEditable={canEdit} canComment={canComment} onShowComment={onShowComment}/>
-                        )}
-                        {activeTab == 'TargetRecommendations​​' && (
-                          <TargerRecommendationsTab process={data[0]} />
-                        )}
-                        {activeTab == 'Opportunities' && <OpprtunitiesTab process={data[0]} />}
-                        {activeTab == 'RecordedChanges' && <RecordedChangesTab process={data[0]} />}
-                        {activeTab == 'Comments' && <CommentsTab comments={data[0].comments} />}
-                        
-                      </div>
-                    </div>
-
-                    {/* Comments */}
-                    {showComment && (
-                      <CommentsSection onCloseComments={() => setShowComment(false)} />
+                <div className="flex min-h-0 flex-1 gap-4 py-1">
+                  {/* forms and data */}
+                  <div
+                    className={cn(
+                      activeTab == 'RecordedChanges' ? 'overflow-x-auto' : '',
+                      'mt-[24px] flex-1 rounded-2xl bg-[linear-gradient(90.49deg,rgba(78,241,228,0.1)_0.03%,rgba(17,24,39,0.1)_99.89%)] p-[1px]',
                     )}
+                  >
+                    <div className="relative rounded-2xl bg-white p-[24px]">
+                      {activeTab == 'GeneralInfo' && (
+                        <GeneralInfoTab
+                          processGeneralInfo={processGeneralInfo}
+                          process={data[0]}
+                          onFormSubmit={handelOnSubmit}
+                          onFormChanged={(data: any) => {
+                            handelDataChanged(data)
+                          }}
+                          isEditable={canEdit}
+                          canComment={canComment}
+                          onShowComment={onShowComment}
+                        />
+                      )}
+                      {activeTab == 'AutomationParameters' && (
+                        <AutomationParameterTab
+                          process={data[0]}
+                          isEditable={canEdit}
+                          canComment={canComment}
+                          onShowComment={onShowComment}
+                          validateTrigger={automationValidationTrigger}
+                        />
+                      )}
+                      {activeTab == 'ManualParameters' && (
+                        <ManualParametersTab
+                          process={data[0]}
+                          isEditable={canEdit}
+                          canComment={canComment}
+                          onShowComment={onShowComment}
+                        />
+                      )}
+                      {activeTab == 'TargetRecommendations​​' && (
+                        <TargerRecommendationsTab
+                          process={data[0]}
+                          canComment={canComment}
+                          onShowComment={onShowComment}
+                        />
+                      )}
+                      {activeTab == 'Opportunities' && (
+                        <OpprtunitiesTab
+                          process={data[0]}
+                          canComment={canComment}
+                          onShowComment={onShowComment}
+                        />
+                      )}
+                      {activeTab == 'RecordedChanges' && (
+                        <RecordedChangesTab
+                          process={data[0]}
+                          canComment={canComment}
+                          onShowComment={onShowComment}
+                        />
+                      )}
+                      {activeTab == 'Comments' && <CommentsTab comments={data[0].comments} />}
+                    </div>
                   </div>
+
+                  {/* Comments */}
+                  {showComment && (
+                    <CommentsSection
+                      onCloseComments={() => setShowComment(false)}
+                      commentField={commentField}
+                      processId={processId}
+                    />
+                  )}
                 </div>
               </>
             )}
