@@ -31,13 +31,11 @@ declare module '@tanstack/react-table' {
   interface TableMeta<TData> {
     isBulkMode?: boolean
     isFullReport?: boolean
-    onUpdateDraftRow?: (
-      id: string,
-      field: string,
-      value: string,
-    ) => void
+    onUpdateDraftRow?: (id: string, field: string, value: string) => void
     draftRowIds?: Set<string>
     firstDraftRowId?: string
+    /** Maps rowId → array of field names that failed validation. */
+    draftValidationErrors?: Record<string, string[]>
   }
 }
 // ─── DraftNameInput ──────────────────────────────────────────────────────────
@@ -46,6 +44,7 @@ const DraftNameInput = ({
   field,
   autoFocus,
   onUpdate,
+  hasError,
 }: {
   rowId: string
   field: 'level1Name' | 'level2Name' | 'level3Name'
@@ -55,6 +54,7 @@ const DraftNameInput = ({
     field: 'level1Name' | 'level2Name' | 'level3Name' | 'description',
     value: string,
   ) => void
+  hasError?: boolean
 }) => {
   const [value, setValue] = useState('')
   const ref = useRef<HTMLInputElement>(null)
@@ -68,17 +68,36 @@ const DraftNameInput = ({
   }, [autoFocus])
 
   return (
-    <input
-      ref={ref}
-      type="text"
-      value={value}
-      placeholder="Enter process name"
-      onChange={(e) => {
-        setValue(e.target.value)
-        onUpdate(rowId, field, e.target.value)
-      }}
-      className="text-foreground placeholder:text-muted-foreground/60 border-border focus:border-primary caret-primary w-full border-b bg-transparent text-sm outline-none"
-    />
+    <div className="relative w-full">
+      <input
+        ref={ref}
+        type="text"
+        value={value}
+        placeholder="Enter process name"
+        onChange={(e) => {
+          setValue(e.target.value)
+          onUpdate(rowId, field, e.target.value)
+        }}
+        className={cn(
+          'text-foreground placeholder:text-muted-foreground/60 focus:border-primary caret-primary w-full border-b bg-transparent text-sm outline-none',
+          hasError ? 'border-red-500' : 'border-border',
+        )}
+      />
+      {hasError && (
+        <div className="group/err absolute top-0 right-0 inline-flex">
+          <button
+            type="button"
+            aria-label="Validation error"
+            className="flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none font-bold text-white"
+          >
+            !
+          </button>
+          <div className="pointer-events-none absolute right-0 bottom-full z-50 mb-2 hidden w-[220px] rounded-xl bg-[#F1F3F5] px-4 py-3 text-sm leading-snug text-[#151718] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] group-hover/err:block">
+            Process name is required. Please add a process name before submitting.
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -86,22 +105,43 @@ const DraftNameInput = ({
 const DraftDescriptionInput = ({
   rowId,
   onUpdate,
+  hasError,
 }: {
   rowId: string
   onUpdate: (id: string, field: 'level3Name' | 'description', value: string) => void
+  hasError?: boolean
 }) => {
   const [value, setValue] = useState('')
   return (
-    <textarea
-      rows={2}
-      value={value}
-      placeholder="Enter description"
-      onChange={(e) => {
-        setValue(e.target.value)
-        onUpdate(rowId, 'description', e.target.value)
-      }}
-      className="text-foreground placeholder:text-muted-foreground/60 border-border focus:border-primary caret-primary w-full resize-none border-b bg-transparent text-sm outline-none"
-    />
+    <div className="group/desc relative w-full">
+      <textarea
+        rows={2}
+        value={value}
+        placeholder="Enter description"
+        onChange={(e) => {
+          setValue(e.target.value)
+          onUpdate(rowId, 'description', e.target.value)
+        }}
+        className={cn(
+          'text-foreground placeholder:text-muted-foreground/60 focus:border-primary caret-primary w-full resize-none border-b bg-transparent text-sm outline-none',
+          hasError ? 'border-red-500' : 'border-border',
+        )}
+      />
+      {hasError && (
+        <div className="group/err absolute top-0 right-0 inline-flex">
+          <button
+            type="button"
+            aria-label="Validation error"
+            className="flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none font-bold text-white"
+          >
+            !
+          </button>
+          <div className="pointer-events-none absolute right-0 bottom-full z-50 mb-2 hidden w-[220px] rounded-xl bg-[#F1F3F5] px-4 py-3 text-sm leading-snug text-[#151718] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] group-hover/err:block">
+            Description is required. Please add a description before submitting.
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
 // ─── Entity Site Cell ─────────────────────────────────────────────────────────
@@ -259,9 +299,47 @@ const CellRowActions = ({ item, actions }: { item: ProcessItem; actions: Catalog
   </DropdownMenu>
 )
 
+// ─── Switch-to-Draft confirmation modal ──────────────────────────────────────
+
+const SwitchToDraftConfirmModal = ({
+  open,
+  onConfirm,
+  onCancel,
+}: {
+  open: boolean
+  onConfirm: () => void
+  onCancel: () => void
+}) => {
+  if (!open) return null
+  return (
+    <div className="bg-foreground/40 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-[1px]">
+      <div className="w-full max-w-sm rounded-2xl bg-[#F1F3F5] p-6 shadow-2xl">
+        <h2 className="text-foreground text-lg font-semibold">Switch to Draft?</h2>
+        <p className="text-muted-foreground mt-2 text-sm">
+          This will create a draft from the published version. The published version will remain
+          unchanged until you save.
+        </p>
+        <div className="mt-6 flex justify-end gap-3">
+          <Button
+            type="button"
+            variant="secondary"
+            className="h-10 rounded-full px-6"
+            onClick={onCancel}
+          >
+            Cancel
+          </Button>
+          <Button type="button" className="h-10 rounded-full px-6" onClick={onConfirm}>
+            Switch to Draft
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Level 3 Row Actions (with icons + bold Draft) ────────────────────────────
 
-const Level3RowActions = ({
+function Level3RowActions({
   item,
   onViewRecordedChanges,
   onSwitchToDraft,
@@ -275,70 +353,84 @@ const Level3RowActions = ({
   onAddL4s: (item: ProcessItem) => void
   // onEditL4s?: (item: ProcessItem) => void
   onRename: (item: ProcessItem) => void
-}) => (
-  <DropdownMenu modal={false}>
-    <DropdownMenuTrigger asChild>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-xs"
-        className="text-muted-foreground ml-auto shrink-0 opacity-0 transition-opacity group-hover/cell:opacity-100"
-        aria-label="Row actions"
-      >
-        <MoreHorizontal className="size-4" />
-      </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent
-      align="end"
-      sideOffset={4}
-      className="w-56 overflow-hidden rounded-2xl border p-0 shadow-lg"
-    >
-      <DropdownMenuItem
-        onSelect={() => onViewRecordedChanges(item)}
-        className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-[#0047ba]"
-      >
-        <Eye className="text-muted-foreground size-4 shrink-0" />
-        View recorded changes
-      </DropdownMenuItem>
-      <DropdownMenuItem
-        onSelect={() => onSwitchToDraft(item)}
-        className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-[#0047ba]"
-      >
-        <RotateCcw className="text-muted-foreground size-4 shrink-0" />
-        <span>
-          Switch to <strong className="font-semibold">Draft</strong> version
-        </span>
-      </DropdownMenuItem>
-      <PermissionGuard action="ADD_LEVEL_4">
-        <DropdownMenuItem
-          onSelect={() => onAddL4s(item)}
-          className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-[#0047ba]"
+}) {
+  const [confirmOpen, setConfirmOpen] = useState(false)
+
+  return (
+    <>
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-xs"
+            className="text-muted-foreground ml-auto shrink-0 opacity-0 transition-opacity group-hover/cell:opacity-100"
+            aria-label="Row actions"
+          >
+            <MoreHorizontal className="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          sideOffset={4}
+          className="w-56 overflow-hidden rounded-2xl border p-0 shadow-lg"
         >
-          <Plus className="text-muted-foreground size-4 shrink-0" />
-          Add L4s
-        </DropdownMenuItem>
-      </PermissionGuard>
-      {/* {onEditL4s && (
-        <DropdownMenuItem
-          onSelect={() => onEditL4s(item)}
-          className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
-        >
-          <Pencil className="text-muted-foreground size-4 shrink-0" />
-          Edit L4s
-        </DropdownMenuItem>
-      )} */}
-      <PermissionGuard action="RENAME_PROCESS">
-        <DropdownMenuItem
-          onSelect={() => onRename(item)}
-          className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
-        >
-          <Pencil className="text-muted-foreground size-4 shrink-0" />
-          Rename
-        </DropdownMenuItem>
-      </PermissionGuard>
-    </DropdownMenuContent>
-  </DropdownMenu>
-)
+          <DropdownMenuItem
+            onSelect={() => onViewRecordedChanges(item)}
+            className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-[#0047ba]"
+          >
+            <Eye className="text-muted-foreground size-4 shrink-0" />
+            View recorded changes
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onSelect={() => setConfirmOpen(true)}
+            className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-[#0047ba]"
+          >
+            <RotateCcw className="text-muted-foreground size-4 shrink-0" />
+            <span>
+              Switch to <strong className="font-semibold">Draft</strong> version
+            </span>
+          </DropdownMenuItem>
+          <PermissionGuard action="ADD_LEVEL_4">
+            <DropdownMenuItem
+              onSelect={() => onAddL4s(item)}
+              className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-[#0047ba]"
+            >
+              <Plus className="text-muted-foreground size-4 shrink-0" />
+              Add L4s
+            </DropdownMenuItem>
+          </PermissionGuard>
+          {/* {onEditL4s && (
+            <DropdownMenuItem
+              onSelect={() => onEditL4s(item)}
+              className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
+            >
+              <Pencil className="text-muted-foreground size-4 shrink-0" />
+              Edit L4s
+            </DropdownMenuItem>
+          )} */}
+          <PermissionGuard action="RENAME_PROCESS">
+            <DropdownMenuItem
+              onSelect={() => onRename(item)}
+              className="flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal"
+            >
+              <Pencil className="text-muted-foreground size-4 shrink-0" />
+              Rename
+            </DropdownMenuItem>
+          </PermissionGuard>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <SwitchToDraftConfirmModal
+        open={confirmOpen}
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          onSwitchToDraft(item)
+          setConfirmOpen(false)
+        }}
+      />
+    </>
+  )
+}
 
 // ─── Entity matrix column group builder ──────────────────────────────────────
 
@@ -691,6 +783,8 @@ export function buildCatalogColumns(
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
 
       if (isDraft && onUpdate) {
+        const errors = info.table.options.meta?.draftValidationErrors?.[info.row.original.id] ?? []
+        const hasNameError = errors.includes('level3Name')
         return (
           <div className="flex w-full items-center gap-2">
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -699,6 +793,7 @@ export function buildCatalogColumns(
                 field="level3Name"
                 autoFocus={!!isFirstDraft && !!info.row.original.level2Name}
                 onUpdate={onUpdate}
+                hasError={hasNameError}
               />
               <span className="text-muted-foreground text-xs">{info.row.original.level3Code}</span>
             </div>
@@ -782,7 +877,15 @@ export function buildCatalogColumns(
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
       const isReport = info.table.options.meta?.isFullReport ?? false
       if (isDraft && onUpdate) {
-        return <DraftDescriptionInput rowId={info.row.original.id} onUpdate={onUpdate} />
+        const errors = info.table.options.meta?.draftValidationErrors?.[info.row.original.id] ?? []
+        const hasDescError = errors.includes('description')
+        return (
+          <DraftDescriptionInput
+            rowId={info.row.original.id}
+            onUpdate={onUpdate}
+            hasError={hasDescError}
+          />
+        )
       }
       return (
         <span

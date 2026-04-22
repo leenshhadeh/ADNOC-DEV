@@ -2,8 +2,15 @@ import { z } from 'zod'
 
 // ── Add Level 4s (multi-step flow from L3 dropdown) ───────────────────────────
 
+const PLACEHOLDER_RE = /^\s*(n\/a|na|tbd)\s*$/i
+
 export const addLevel4ItemSchema = z.object({
-  processName: z.string().min(1, 'Required'),
+  processName: z
+    .string()
+    .min(1, 'Process name is required.')
+    .refine((v) => !PLACEHOLDER_RE.test(v), {
+      message: 'Placeholders such as N/A or TBD are not allowed.',
+    }),
   processDescription: z.string().optional(),
 })
 

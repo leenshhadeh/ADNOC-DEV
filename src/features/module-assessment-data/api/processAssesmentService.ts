@@ -15,7 +15,6 @@ export function getSubmittedRequests(): Promise<RequestItem[]> {
 }
 
 // ── Bulk Actions (mock) ───────────────────────────────────────────────────────
-
 export function bulkCellAction(operations: BulkCellOperation[]): Promise<BulkCellActionResult> {
   const processedIds = [...new Set(operations.map((op) => op.rowId))]
   return new Promise((resolve) => setTimeout(() => resolve({ processedIds }), 600))
@@ -152,16 +151,16 @@ export function getProcess(processId: string): Promise<any[]> {
 // ── Field Comments (mock) ─────────────────────────────────────────────────────
 
 const MOCK_COMMENTS: Record<string, CommentEntry[]> = {
-  'task-1::Automation level': [
+  'task-1::Automation level 1': [
     {
-      id: 'cmt-1',
+      id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
       author: 'Maryam Al Shamsi',
       role: 'Quality Manager',
       text: 'Please review the automation level — the old value seems incorrect.',
       timestamp: '01 Mar 2024 at 12:30',
     },
     {
-      id: 'cmt-2',
+      id: 'b2c3d4e5-f6a7-8901-bcde-f12345678901',
       author: 'Sara Al Mansouri',
       role: 'Digital Focal Point',
       text: 'Confirmed with the team, the new value is correct.',
@@ -195,7 +194,7 @@ export function addFieldComment({
   text,
 }: AddFieldCommentParams): Promise<CommentEntry> {
   const entry: CommentEntry = {
-    id: `cmt-${Date.now()}`,
+    id: crypto.randomUUID(),
     author: 'Jane Doe',
     role: 'Quality Manager',
     text,

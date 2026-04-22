@@ -52,10 +52,10 @@ export const PROESS_DETAILS = [
     AutonomousUseCaseDescriptionComment: 'N/A',
     processCriticality: 'Standard',
     keyManualSteps: '<p>1.Data collection</p>',
-    processRepetitionWithinCycle:1,
-    totalPersonnelExecutingFTE:3,
-    totalProcessDurationDays:'30',
-    timeSpentOnManualTasksPercent:'80%',
+    processRepetitionWithinCycle: 1,
+    totalPersonnelExecutingFTE: 3,
+    totalProcessDurationDays: '30',
+    timeSpentOnManualTasksPercent: '80%',
     northStarTargetAutomation: 'To be intelligent',
     targetAutomationLevelPercent: '60%',
     SMEFeedback:
@@ -88,7 +88,7 @@ export const PROESS_DETAILS = [
     ],
     changes: [
       {
-        name: 'Automation level',
+        name: 'Automation level 1',
         comment:
           'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
         oldValue: '10%',
@@ -109,28 +109,28 @@ export const PROESS_DETAILS = [
       },
     ],
 
-    comments:[
+    comments: [
       {
-        username:'Ali Abdullah',
-        userPrfileImg:'',
-        comment:'please fill out the sutomation steps ',
-        date:'2026-10-10',
-        status:'Draft',
-        markedAsReviewed:false
+        username: 'Ali Abdullah',
+        userPrfileImg: '',
+        comment: 'please fill out the sutomation steps ',
+        date: '2026-10-10',
+        status: 'Draft',
+        markedAsReviewed: false,
       },
       {
-        username:'Ahmad Al Ezz',
-        userPrfileImg:'',
-        comment:'All are up to date',
-        date:'2026-10-10',
-        status:'Published',
-        markedAsReviewed:true
-      }
+        username: 'Ahmad Al Ezz',
+        userPrfileImg: '',
+        comment: 'All are up to date',
+        date: '2026-10-10',
+        status: 'Published',
+        markedAsReviewed: true,
+      },
     ],
 
-    orgMapping:{
-      BU:[{unit:'Shared service',subUnits:['supplier evaluation']}],
-      DT:[{unit:'Business Support',subUnits:['Data Analytics']}],
-    }
+    orgMapping: {
+      BU: [{ unit: 'Shared service', subUnits: ['supplier evaluation'] }],
+      DT: [{ unit: 'Business Support', subUnits: ['Data Analytics'] }],
+    },
   },
 ]

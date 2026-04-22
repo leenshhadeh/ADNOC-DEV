@@ -1,4 +1,3 @@
-
 import ModuleToolbar, {
   type BulkModeState,
   type ToolbarAction,
@@ -9,7 +8,7 @@ import {
   CATALOG_DRAFT_ACTIONS,
   CATALOG_FULL_REPORT_ACTIONS,
 } from '@features/module-process-catalog/constants/catalog-toolbar'
-import { LayoutGrid, Table2 } from 'lucide-react'
+import { FileText, Table2 } from 'lucide-react'
 import { useCurrentUser } from '@/shared/auth/useUserStore'
 import ViewToggle from '@/shared/components/ViewToggle'
 import { hasPermission } from '@/shared/lib/permissions'
@@ -32,6 +31,7 @@ interface CatalogHeaderProps {
   hasDraftRows?: boolean
   onSave?: () => void
   onValidate?: () => void
+  onDiscard?: () => void
   currentView?: CatalogView
   onViewChange?: (view: CatalogView) => void
   onExportFullReport?: () => void
@@ -57,6 +57,7 @@ const CatalogHeader = ({
   hasDraftRows = false,
   onSave,
   onValidate,
+  onDiscard,
   currentView = 'default',
   onViewChange,
   onExportFullReport,
@@ -89,9 +90,11 @@ const CatalogHeader = ({
     actionLabel: 'Bulk action',
   }
 
-  const draftActions: ToolbarAction[] = CATALOG_DRAFT_ACTIONS.map((a) =>
-    a.id === 'save' ? { ...a, onClick: onSave } : { ...a, onClick: onValidate },
-  )
+  const draftActions: ToolbarAction[] = CATALOG_DRAFT_ACTIONS.map((a) => {
+    if (a.id === 'save') return { ...a, onClick: onSave }
+    if (a.id === 'discard') return { ...a, onClick: onDiscard }
+    return { ...a, onClick: onValidate }
+  })
 
   const isFullReport = currentView === 'full-report'
   const fullReportActions: ToolbarAction[] = CATALOG_FULL_REPORT_ACTIONS.map((a) =>
@@ -102,15 +105,11 @@ const CatalogHeader = ({
   const defaultActions: ToolbarAction[] = CATALOG_ACTIONS.map((a) =>
     a.id === 'export' ? { ...a, onClick: onExport, disabled: isExporting } : a,
   )
-  const actions =
-    hasDraftRows || isBulkMode ? draftActions : isFullReport ? fullReportActions : defaultActions
+  const actions = hasDraftRows ? draftActions : isFullReport ? fullReportActions : defaultActions
 
   return (
     <header className="space-y-3">
-      <Breadcrumb
-          links={[
-            {title:' Process Catalog Management'}
-            ]} />
+      <Breadcrumb links={[{ title: ' Process Catalog Management' }]} />
 
       <div className="flex flex-wrap items-center gap-2">
         <h1 className="text-foreground text-start text-2xl font-semibold">
@@ -142,8 +141,8 @@ const CatalogHeader = ({
         {activeTab === 'processes' && !hasDraftRows && (
           <ViewToggle
             options={[
-              { value: 'full-report', icon: Table2, label: 'View full report' },
-              { value: 'default', icon: LayoutGrid, label: 'Default view' },
+              { value: 'default', icon: FileText, label: 'Editable view' },
+              { value: 'full-report', icon: Table2, label: 'Full report view' },
             ]}
             value={currentView}
             onChange={(v) => onViewChange?.(v as CatalogView)}

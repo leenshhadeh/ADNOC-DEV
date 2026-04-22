@@ -29,7 +29,18 @@ export const getProcessTableColumns = ({
   onDigitalTeamExpand,
   onExpandSharedServices,
   isBulkMode = false,
-}: any): ColumnDef<FlatAssessmentRow, unknown>[] => [
+  selectedL3Ids,
+  onL3SelectionChange,
+}: {
+  onDescChanged: (v: string) => void
+  onCentrallyGovernedProcessChanged: (v: string) => void
+  onBUExpand: (rowId: string) => void
+  onDigitalTeamExpand: (rowId: string) => void
+  onExpandSharedServices: (rowId: string) => void
+  isBulkMode?: boolean
+  selectedL3Ids?: Set<string>
+  onL3SelectionChange?: (l3GroupId: string, checked: boolean) => void
+}): ColumnDef<FlatAssessmentRow, unknown>[] => [
   {
     id: 'domain',
     accessorKey: 'domain',
@@ -92,11 +103,13 @@ export const getProcessTableColumns = ({
             {info.getValue<string>() ? info.row.original.l3Code : ''}
           </span>
         </div>
-        {isBulkMode && info.row.original.displayL3 && !info.row.original.l4Code ? (
+        {isBulkMode && info.row.original.displayL3 ? (
           <Checkbox
             className="shrink-0"
-            checked={info.row.getIsSelected()}
-            onCheckedChange={info.row.getToggleSelectedHandler()}
+            checked={selectedL3Ids?.has(info.row.original.l3GroupId) ?? false}
+            onCheckedChange={(checked) =>
+              onL3SelectionChange?.(info.row.original.l3GroupId, !!checked)
+            }
             aria-label={`Select ${info.row.original.l3}`}
           />
         ) : (

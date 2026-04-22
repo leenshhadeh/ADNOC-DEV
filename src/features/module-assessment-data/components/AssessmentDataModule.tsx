@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import {
   Check,
   Download,
@@ -23,6 +23,7 @@ import { useUserStore } from '@/shared/auth/useUserStore'
 import { ASSESSMENT_BULK_ACTIONS, ASSESSMENT_TABS } from '../constants/assessment-toolbar'
 import { ASSESSMENT_DATA } from '../constants/assessment-data'
 import { flattenAssessmentData } from './tabels/ProcessDataTable'
+import type { BulkCellAction, BulkCellOperation } from '../types/process'
 import { useAssessmentExport } from '../hooks/useAssessmentExport'
 import { useMyTasksExport } from '../hooks/useMyTasksExport'
 import ProcessesMenu from '../../../shared/components/ProcessesMenu'
@@ -83,6 +84,7 @@ const AssessmentDataModule = () => {
   const [search, setSearch] = useState('')
   const [isBulkMode, setIsBulkMode] = useState(false)
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [l3Selection, setL3Selection] = useState<Set<string>>(new Set())
   const [isTaskBulkMode, setIsTaskBulkMode] = useState(false)
   const [taskRowSelection, setTaskRowSelection] = useState<RowSelectionState>({})
   const [activeModal, setActiveModal] = useState<ActiveModal>(null)
@@ -222,12 +224,42 @@ const AssessmentDataModule = () => {
     [isExportingTasks, canCommentOnField, isCommentMode],
   )
 
-  const selectedIds = Object.keys(rowSelection)
+  // Map l3GroupId → l3ItemId for efficient lookup
+  const l3GroupToItemId = useMemo(
+    () => new Map(filteredData.map((row) => [row.l3GroupId, row.l3ItemId])),
+    [filteredData],
+  )
+
+  /** Builds a typed BulkCellOperation[] from the current L3 + L4 selections */
+  const buildBulkOps = useCallback(
+    (
+      action: BulkCellAction,
+      extras?: { columnKey?: string; payload?: string },
+    ): BulkCellOperation[] => {
+      const l4Ops: BulkCellOperation[] = Object.keys(rowSelection).map((rowId) => ({
+        rowId,
+        level: 'l4' as const,
+        action,
+        ...extras,
+      }))
+      const l3Ops: BulkCellOperation[] = Array.from(l3Selection).map((groupId) => ({
+        rowId: l3GroupToItemId.get(groupId) ?? groupId,
+        level: 'l3' as const,
+        action,
+        ...extras,
+      }))
+      return [...l4Ops, ...l3Ops]
+    },
+    [rowSelection, l3Selection, l3GroupToItemId],
+  )
+
+  const selectedIds = [...Object.keys(rowSelection), ...Array.from(l3Selection)]
   const taskSelectedIds = Object.keys(taskRowSelection)
 
   const exitBulkMode = () => {
     setIsBulkMode(false)
     setRowSelection({})
+    setL3Selection(new Set())
     setIsTaskBulkMode(false)
     setTaskRowSelection({})
     setIsCommentMode(false)
@@ -279,6 +311,7 @@ const AssessmentDataModule = () => {
                       onToggle: () => {
                         setIsBulkMode((v) => !v)
                         setRowSelection({})
+                        setL3Selection(new Set())
                       },
                     }
             }
@@ -334,9 +367,10 @@ const AssessmentDataModule = () => {
               selectedCount={selectedIds.length}
               onAction={(action) => {
                 if (action === 'submit') {
-                  bulkCellAction(
-                    selectedIds.map((rowId) => ({ rowId, action: 'submit' as const })),
-                  ).then(() => setRowSelection({}))
+                  bulkCellAction(buildBulkOps('submit')).then(() => {
+                    setRowSelection({})
+                    setL3Selection(new Set())
+                  })
                 } else if (action === 'copy-assessment-data') {
                   setActiveModal('copy')
                 } else if (action === 'mark-as-reviewed') {
@@ -367,6 +401,14 @@ const AssessmentDataModule = () => {
                   setRowSelection((prev) =>
                     typeof updater === 'function' ? updater(prev) : updater,
                   )
+                }
+                selectedL3Ids={l3Selection}
+                onL3SelectionChange={(id, checked) =>
+                  setL3Selection((prev) => {
+                    const next = new Set(prev)
+                    checked ? next.add(id) : next.delete(id)
+                    return next
+                  })
                 }
                 columnVisibility={columnVisibility}
                 onColumnVisibilityChange={setColumnVisibility}
@@ -422,14 +464,10 @@ const AssessmentDataModule = () => {
         open={activeModal === 'edit'}
         selectedCount={selectedIds.length}
         onConfirm={(field, value) => {
-          bulkCellAction(
-            selectedIds.map((rowId) => ({
-              rowId,
-              columnKey: field,
-              action: 'edit' as const,
-              payload: value,
-            })),
-          ).then(() => setRowSelection({}))
+          bulkCellAction(buildBulkOps('edit', { columnKey: field, payload: value })).then(() => {
+            setRowSelection({})
+            setL3Selection(new Set())
+          })
           setActiveModal(null)
         }}
         onOpenChange={(open) => {
@@ -440,9 +478,10 @@ const AssessmentDataModule = () => {
         open={activeModal === 'comment'}
         selectedCount={selectedIds.length}
         onConfirm={(comment) => {
-          bulkCellAction(
-            selectedIds.map((rowId) => ({ rowId, action: 'comment' as const, payload: comment })),
-          ).then(() => setRowSelection({}))
+          bulkCellAction(buildBulkOps('comment', { payload: comment })).then(() => {
+            setRowSelection({})
+            setL3Selection(new Set())
+          })
           setActiveModal(null)
         }}
         onOpenChange={(open) => {
@@ -453,7 +492,13 @@ const AssessmentDataModule = () => {
         open={activeModal === 'copy'}
         selectedCount={selectedIds.length}
         onConfirm={(sourceId) => {
-          copyAssessmentData(selectedIds, sourceId).then(() => setRowSelection({}))
+          copyAssessmentData(
+            buildBulkOps('edit').map((op) => op.rowId),
+            sourceId,
+          ).then(() => {
+            setRowSelection({})
+            setL3Selection(new Set())
+          })
           setActiveModal(null)
         }}
         onOpenChange={(open) => {
@@ -464,13 +509,10 @@ const AssessmentDataModule = () => {
         open={activeModal === 'review'}
         selectedCount={selectedIds.length}
         onConfirm={(comment) => {
-          bulkCellAction(
-            selectedIds.map((rowId) => ({
-              rowId,
-              action: 'mark-as-reviewed' as const,
-              payload: comment,
-            })),
-          ).then(() => setRowSelection({}))
+          bulkCellAction(buildBulkOps('mark-as-reviewed', { payload: comment })).then(() => {
+            setRowSelection({})
+            setL3Selection(new Set())
+          })
           setActiveModal(null)
         }}
         onOpenChange={(open) => {

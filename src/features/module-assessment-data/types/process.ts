@@ -98,6 +98,10 @@ export type FlatAssessmentRow = {
   l2Code?: string
   l3Code?: string
   l4Code?: string
+  /** Stable group key shared by all flat rows belonging to the same L3 item */
+  l3GroupId: string
+  /** Actual backend ID of the L3 item — used as rowId in bulk operations */
+  l3ItemId: string
   pinned?: boolean
   Site: string
   groupCompany: string
@@ -148,6 +152,8 @@ export type BulkCellAction = 'edit' | 'comment' | 'submit' | 'mark-as-reviewed'
 
 export interface BulkCellOperation {
   rowId: string
+  /** Whether the operation targets an L3 or L4 process */
+  level: 'l3' | 'l4'
   columnKey?: string
   action: BulkCellAction
   payload?: string

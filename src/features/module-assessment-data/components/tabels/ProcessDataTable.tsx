@@ -34,6 +34,8 @@ export const flattenAssessmentData = (data: DomainItem[]): FlatAssessmentRow[] =
               rowId:
                 l4Item?.id ?? `${domainItem.id}-${l1Item.id}-${l2Item.id}-${l3Item.id}-${l4Index}`,
               id: `${domainItem.id}-${l1Item.id}-${l2Item.id}-${l3Item.id}-${l4Item?.id ?? '0'}`,
+              l3GroupId: `${domainItem.id}-${l1Item.id}-${l2Item.id}-${l3Item.id}`,
+              l3ItemId: l3Item.id ?? `${domainItem.id}-${l1Item.id}-${l2Item.id}-${l3Item.id}`,
 
               // ✅ REAL values (always filled)
               domain: domainItem.domain ?? '',
@@ -178,6 +180,8 @@ interface ProcessDataTableProps {
   onRowSelectionChange?: (
     updater: RowSelectionState | ((prev: RowSelectionState) => RowSelectionState),
   ) => void
+  selectedL3Ids?: Set<string>
+  onL3SelectionChange?: (l3GroupId: string, checked: boolean) => void
   columnVisibility?: Record<string, boolean>
   onColumnVisibilityChange?: (visibility: Record<string, boolean>) => void
   columnOrder?: string[]
@@ -189,6 +193,8 @@ const ProcessDataTable = ({
   isBulkMode = false,
   rowSelection,
   onRowSelectionChange,
+  selectedL3Ids,
+  onL3SelectionChange,
   columnVisibility,
   onColumnVisibilityChange,
   columnOrder,
@@ -217,8 +223,10 @@ const ProcessDataTable = ({
           setIsSharedServiceOpen(true)
         },
         isBulkMode,
+        selectedL3Ids,
+        onL3SelectionChange,
       }),
-    [isBulkMode],
+    [isBulkMode, selectedL3Ids, onL3SelectionChange],
   )
   const [updatedDataTable, setUpdatedDataTable] = useState(data) // changed every time user edit table values
   useEffect(() => {

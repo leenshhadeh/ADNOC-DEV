@@ -212,7 +212,7 @@ function AddLevel4RowItem({
       </div>
 
       {/* Process Name */}
-      <div ref={containerRef} className="relative flex flex-1 items-center px-4 py-2">
+      <div ref={containerRef} className="relative flex flex-1 flex-col justify-center px-4 py-2">
         <input
           {...registerRest}
           placeholder="Start writing..."
@@ -229,6 +229,7 @@ function AddLevel4RowItem({
             nameError && 'text-[#EB3865]',
           )}
         />
+        {nameError && <p className="mt-0.5 text-xs text-[#EB3865]">{nameError}</p>}
         {showSuggestions && hasSuggestions && (
           <ProcessNameSuggestions
             suggestions={previousProcessNames}

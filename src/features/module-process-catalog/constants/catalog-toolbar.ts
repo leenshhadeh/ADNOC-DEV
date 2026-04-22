@@ -1,4 +1,4 @@
-import { Download, Save, ShieldCheck, Upload, FileSpreadsheet } from 'lucide-react'
+import { Download, Save, ShieldCheck, Trash2, Upload, FileSpreadsheet } from 'lucide-react'
 
 import type { TabConfig, ToolbarAction } from '@/shared/components/ModuleToolbar'
 
@@ -20,4 +20,5 @@ export const CATALOG_FULL_REPORT_ACTIONS: ToolbarAction[] = [
 export const CATALOG_DRAFT_ACTIONS: ToolbarAction[] = [
   { id: 'save', label: 'Save', icon: Save },
   { id: 'validate', label: 'Validate', icon: ShieldCheck },
+  { id: 'discard', label: 'Discard', icon: Trash2 },
 ]

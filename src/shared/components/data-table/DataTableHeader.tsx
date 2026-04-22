@@ -133,7 +133,7 @@ const DataTableHeader = <TData, TValue>({
             type="button"
             variant="ghost"
             size="sm"
-            className="h-auto min-h-7 w-full min-w-0 px-1.5 text-xs font-normal tracking-wide whitespace-normal uppercase"
+            className="h-auto min-h-7 min-w-0 px-1.5 text-xs font-normal tracking-wide whitespace-normal uppercase"
             onClick={
               enableSorting && column.getCanSort() ? column.getToggleSortingHandler() : undefined
             }

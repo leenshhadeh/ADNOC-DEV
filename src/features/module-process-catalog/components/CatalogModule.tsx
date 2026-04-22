@@ -28,6 +28,7 @@ import {
   bulkSubmitProcesses,
 } from '@features/module-process-catalog/api/processBulkActionService'
 import { exportToExcel } from '@features/module-process-catalog/utils/exportToExcel'
+import { Info, X } from 'lucide-react'
 import { FILTER_SECTION_IDS } from '@features/module-process-catalog/constants/filter-definitions'
 import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 import {
@@ -62,8 +63,10 @@ const CatalogModule = () => {
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false)
   const [renameTarget, setRenameTarget] = useState<ProcessItem | null>(null)
   const [isExporting, setIsExporting] = useState(false)
+  const [draftNotificationDismissed, setDraftNotificationDismissed] = useState(false)
   const [processView, setProcessView] = useState<ProcessViewOption>('Published processes')
   const [successToast, setSuccessToast] = useState<string | null>(null)
+  const [draftValidationErrors, setDraftValidationErrors] = useState<Record<string, string[]>>({})
 
   // ── Processes bulk action state ─────────────────────────────────────────────
   const [bulkEditOpen, setBulkEditOpen] = useState(false)
@@ -310,6 +313,7 @@ const CatalogModule = () => {
       })
 
       setFirstDraftRowId(newRows[0].id)
+      setDraftNotificationDismissed(false)
       setIsAddL2ModalOpen(false)
 
       requestAnimationFrame(() => {
@@ -370,6 +374,7 @@ const CatalogModule = () => {
       })
 
       setFirstDraftRowId(newRows[0].id)
+      setDraftNotificationDismissed(false)
       setIsAddL2ModalOpen(false)
 
       requestAnimationFrame(() => {
@@ -428,6 +433,7 @@ const CatalogModule = () => {
     })
 
     setFirstDraftRowId(newRows[0].id)
+    setDraftNotificationDismissed(false)
     setIsAddL2ModalOpen(false)
 
     // Scroll table to bottom after paint so first draft row is visible
@@ -447,6 +453,18 @@ const CatalogModule = () => {
       value: string,
     ) => {
       setTableData((prev) => prev.map((row) => (row.id === id ? { ...row, [field]: value } : row)))
+      if (value.trim()) {
+        setDraftValidationErrors((prev) => {
+          const rowErrors = prev[id]
+          if (!rowErrors?.includes(field)) return prev
+          const filtered = rowErrors.filter((f) => f !== field)
+          if (filtered.length === 0) {
+            const { [id]: _removed, ...rest } = prev
+            return rest
+          }
+          return { ...prev, [id]: filtered }
+        })
+      }
     },
     [],
   )
@@ -463,12 +481,28 @@ const CatalogModule = () => {
     setFirstDraftRowId(undefined)
   }, [])
 
+  const handleDiscard = useCallback(() => {
+    setTableData((prev) => prev.filter((r) => r.level3Status !== 'Draft'))
+    setFirstDraftRowId(undefined)
+    setDraftNotificationDismissed(false)
+    setDraftValidationErrors({})
+  }, [])
+
   const handleValidate = useCallback(() => {
-    // Placeholder — wire to backend validation when ready
-    console.log(
-      'Validate drafts',
-      tableData.filter((r) => r.level3Status === 'Draft'),
-    )
+    const PLACEHOLDER_RE = /^\s*(n\/a|na|tbd)\s*$/i
+    const errors: Record<string, string[]> = {}
+    for (const row of tableData) {
+      if (row.level3Status !== 'Draft') continue
+      const rowErrors: string[] = []
+      if (!row.description.trim() || PLACEHOLDER_RE.test(row.description)) {
+        rowErrors.push('description')
+      }
+      if (!row.level3Name.trim() || PLACEHOLDER_RE.test(row.level3Name)) {
+        rowErrors.push('level3Name')
+      }
+      if (rowErrors.length > 0) errors[row.id] = rowErrors
+    }
+    setDraftValidationErrors(errors)
   }, [tableData])
 
   const rowActions: CatalogColumnActions = {
@@ -547,6 +581,7 @@ const CatalogModule = () => {
         hasDraftRows={hasDraftRows}
         onSave={handleSave}
         onValidate={handleValidate}
+        onDiscard={handleDiscard}
         currentView={currentView}
         onViewChange={setCurrentView}
         onExportFullReport={handleExportFullReport}
@@ -585,6 +620,7 @@ const CatalogModule = () => {
               onUpdateDraftRow: handleUpdateDraftRow,
               firstDraftRowId,
               highlightedRowId: highlightedProcessId ?? undefined,
+              draftValidationErrors,
             }}
           />
         </div>
@@ -630,6 +666,32 @@ const CatalogModule = () => {
         onApply={apply}
         onReset={reset}
       />
+
+      {/* ── Draft editing notification ── */}
+      {hasDraftRows && !draftNotificationDismissed && (
+        <div className="fixed bottom-6 left-1/2 z-50 w-[380px] -translate-x-1/2">
+          <div className="bg-accent flex items-start gap-2 rounded-2xl p-4 shadow-[0px_10px_30px_0px_rgba(0,0,0,0.2)]">
+            <Info className="text-foreground mt-0.5 size-6 shrink-0" />
+            <div className="flex flex-1 flex-col gap-2">
+              <p className="text-foreground text-base leading-6 font-semibold">
+                Now editing Draft version
+              </p>
+              <p className="text-foreground text-sm leading-6 font-normal">
+                A Draft was created from the Published version. The Published version remains
+                unchanged.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setDraftNotificationDismissed(true)}
+              className="flex size-8 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-black/10"
+              aria-label="Dismiss notification"
+            >
+              <X className="text-foreground size-6" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── Exporting toast ── */}
       {isExporting && (

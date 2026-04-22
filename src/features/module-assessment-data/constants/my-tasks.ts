@@ -21,7 +21,7 @@ export const MY_TASKS: TaskItem[] = [
     changes: [
       {
         id: 'c1-0',
-        name: 'Automation level',
+        name: 'Automation level 1',
         comment:
           'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
         oldValue: '10%',
@@ -29,17 +29,17 @@ export const MY_TASKS: TaskItem[] = [
       },
       {
         id: 'c1-1',
-        name: 'Automation level',
+        name: 'Automation level 2',
         comment:
-          'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
+          'The proposed automation level of 75% seems low based on the process information. It should likely be above 80%.',
         oldValue: '10%',
         newValue: '40%',
       },
       {
         id: 'c1-2',
-        name: 'Automation level',
+        name: 'Automation level 3',
         comment:
-          'The proposed automation level of 65% seems low based on the process information. It should likely be above 80%.',
+          'The proposed automation level of 85% seems low based on the process information. It should likely be above 80%.',
         oldValue: '10%',
         newValue: '40%',
       },

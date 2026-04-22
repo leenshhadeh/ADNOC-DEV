@@ -94,7 +94,7 @@ const MOCK_TASK: TaskItem = {
   changes: [
     {
       id: 'c1-0',
-      name: 'Automation level',
+      name: 'Automation level 1',
       comment: 'Low automation',
       oldValue: '10%',
       newValue: '40%',
