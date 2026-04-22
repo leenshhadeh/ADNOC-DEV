@@ -259,7 +259,12 @@ export function BulkEditModal({
         />
       )}
       {fieldValue === 'sharedServices' && (
-        <SharedServicesSheet open={sheetOpen} handleOpenChange={handleSheetSave} />
+        <SharedServicesSheet open={sheetOpen} 
+        handleOpenChange={(payload:any) => {
+        console.log('payload',payload)
+        }}
+        onClose={() => setSheetOpen(false)}
+        />
       )}
       {fieldValue === 'responsibleDigitalTeam' && (
         <DigitalTeamSheet

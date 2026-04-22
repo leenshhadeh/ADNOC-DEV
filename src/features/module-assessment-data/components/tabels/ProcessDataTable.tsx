@@ -6,6 +6,7 @@ import BUSheet from '../sidePanels/BUSheet'
 import DigitalTeamSheet from '../sidePanels/DigitalTeamSheet'
 import { getProcessTableColumns } from './process-table-columns'
 import type { RowSelectionState } from '@tanstack/react-table'
+import type { ProcessSharedServiceItem } from '../../api/processSharedServicesService'
 
 const toText = (value: unknown): string => {
   if (value == null) return ''
@@ -204,6 +205,9 @@ const ProcessDataTable = ({
   const [isBUOpen, setIsBUOpen] = useState(false)
   const [isDigitalTeamOpen, setIsDigitalTeamOpen] = useState(false)
   const [selectedRowId, setSelectedRowId] = useState('')
+  const [sharedServicesByProcess, setSharedServicesByProcess] = useState<
+    Record<string, ProcessSharedServiceItem[]>
+  >({})
 
   const columns = useMemo(
     () =>
@@ -235,6 +239,7 @@ const ProcessDataTable = ({
 
   /** Updates a draft row field as the user types */
   const handleUpdateDraftRow = useCallback((id: string, field: string, value: string) => {
+    console.log('[ROW-CHANGED] field=[',field,'], value=[',value,']')
     setUpdatedDataTable((prev: any) =>
       prev.map((row: any) => (row.id === id ? { ...row, [field]: value } : row)),
     )
@@ -262,7 +267,19 @@ const ProcessDataTable = ({
       {/* side panels */}
       <SharedServicesSheet
         open={isSharedServiceOpen}
-        handleOpenChange={() => setIsSharedServiceOpen(false)}
+        processId={selectedRowId}
+        handleOpenChange={(payload:any) => {
+          setIsSharedServiceOpen(false)
+          if (payload) {
+            handleUpdateDraftRow(selectedRowId, 'sharedService', payload.summary as any)
+            // TODO: once submit: the shaared API should be submitted as well
+            // setSharedServicesByProcess((prev) => ({
+            //   ...prev,
+            //   [selectedRowId]: payload.processSharedServices,
+            // }))
+          }
+        }}
+        onClose={() => setIsSharedServiceOpen(false)}
       />
 
       <BUSheet
@@ -270,9 +287,8 @@ const ProcessDataTable = ({
         selected={updatedDataTable.find((row) => row.id === selectedRowId)?.businessUnit ?? []}
         handleOpenChange={(newVal: any) => {
           setIsBUOpen(false)
-          console.log('BU sheet open state changed:', newVal)
           handleUpdateDraftRow(selectedRowId, 'businessUnit', newVal || [])
-
+        
         }}
         onClose={()=>setIsBUOpen(false)}
       />
