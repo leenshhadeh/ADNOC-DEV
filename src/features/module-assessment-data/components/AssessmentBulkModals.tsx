@@ -252,7 +252,11 @@ export function BulkEditModal({
 
       {/* ── Dedicated sheets for drawer-type fields ───────────────────── */}
       {fieldValue === 'businessUnit' && (
-        <BUSheet open={sheetOpen} handleOpenChange={handleSheetSave} />
+        <BUSheet
+          open={sheetOpen}
+          selected={Array.isArray(value) ? value : []}
+          handleOpenChange={handleSheetSave}
+        />
       )}
       {fieldValue === 'sharedServices' && (
         <SharedServicesSheet open={sheetOpen} handleOpenChange={handleSheetSave} />

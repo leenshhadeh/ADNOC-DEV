@@ -267,12 +267,14 @@ const ProcessDataTable = ({
 
       <BUSheet
         open={isBUOpen}
+        selected={updatedDataTable.find((row) => row.id === selectedRowId)?.businessUnit ?? []}
         handleOpenChange={(newVal: any) => {
           setIsBUOpen(false)
           console.log('BU sheet open state changed:', newVal)
           handleUpdateDraftRow(selectedRowId, 'businessUnit', newVal || [])
 
         }}
+        onClose={()=>setIsBUOpen(false)}
       />
 
       <DigitalTeamSheet

@@ -17,7 +17,6 @@ import { cn } from '@/shared/lib/utils'
 import CommentsSection from './processDetails/CommentsSection'
 import { useCurrentUser } from '@/shared/auth/useUserStore'
 import { ROLES } from '@/shared/lib/permissions'
-import type { ChangeRecord } from '../types/my-tasks'
 
 const ProcessDetailsPage = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -33,6 +32,10 @@ const ProcessDetailsPage = () => {
   const { role } = useCurrentUser()
   const canEdit = role == ROLES.BusinessFocalPoint || role == ROLES.DigitalFocalPoint
   const canComment = role == ROLES.QualityManager || role == ROLES.BPA_ProgramManager
+  const breadcrumbLinks=[
+    { title: 'Assessment Data Processes', url: '/assessment-data' },
+    { title: 'Process Details', isCurrentPage: true },
+  ]
 
   useEffect(() => {
     if (data) {
@@ -134,10 +137,7 @@ const ProcessDetailsPage = () => {
     <>
       <div className="flex flex-col gap-0 overflow-hidden px-6">
         <Breadcrumb
-          links={[
-            { title: 'Assessment Data Processes', url: '/assessment-data' },
-            { title: 'Process Details', isCurrentPage: true },
-          ]}
+          links={breadcrumbLinks}
         />
 
         <div className="mb-[24px] flex items-center py-3">

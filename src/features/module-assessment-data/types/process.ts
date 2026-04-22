@@ -121,7 +121,7 @@ export type FlatAssessmentRow = {
   scaleOfProcess: string
   automationMaturityLevel: string
   automationLevel: string
-  currentApplicationsSystems: string[]
+  currentApplicationsSystems: currentApplicationsSystems[]
   ongoingAutomationDigitalInitiatives: string
   businessRecommendationForAutomation: string
   keyChallengesAutomationNeeds: string
