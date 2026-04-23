@@ -6,6 +6,8 @@ import { SummaryCard } from '../componenets/SummaryCard'
 import { ProgressBar } from '../componenets/ProgressBar'
 import CircularProgressCard from '../componenets/CircularProgressCard'
 import CompanyFilterMenu from '../componenets/CompanyFilterMenu'
+import { exportToExcel } from '../utils/exportToExcel'
+import excelSvg from '../../../assets/icons/excel.svg'
 
 type QualitySummary = {
   last_quality_review_date: string
@@ -121,31 +123,72 @@ const DataQualityReportPage = () => {
     return [...filteredRows].sort((a, b) => a.qualityScore - b.qualityScore).slice(0, 3)
   }, [filteredRows])
 
+  const handleExport = async () => {
+    await exportToExcel({
+      fileName: 'data-quality-report',
+      sheetName: 'Data Quality',
+      title: report.title,
+      data: filteredRows,
+      columns: [
+        { header: 'Domain', key: 'domain', width: 36 },
+        { header: 'Processes Reviewed', key: 'processesReviewed', width: 20 },
+        {
+          header: 'Fully Populated Processes',
+          key: 'fullyPopulated',
+          width: 22,
+          formatter: (value) => formatPercent(value),
+        },
+        {
+          header: 'Processes with Accurate Data',
+          key: 'accurateData',
+          width: 24,
+          formatter: (value) => formatPercent(value),
+        },
+        {
+          header: 'Processes without Inconsistencies',
+          key: 'withoutInconsistencies',
+          width: 28,
+          formatter: (value) => formatPercent(value),
+        },
+        {
+          header: 'Data Quality Score',
+          key: 'qualityScore',
+          width: 18,
+          formatter: (value) => formatPercent(value),
+        },
+      ],
+    })
+  }
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] p-6">
       <div className="align-center mx-auto max-w-[1440px]">
         <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center justify-between gap-5">
-            <button onClick={() => navigate('/reports-and-extracts')}>
-              <ChevronLeft className="h-5 w-5 text-[#344054]" />
-            </button>
-
-            <div>
-              <h1 className="text-[32px] font-semibold tracking-[-0.5px] text-[#101828]">
-                {report.title}
-              </h1>
-              <p className="w-[400px] text-sm text-[#667085]">
-                Review data quality across domains, including completeness, accuracy,
-                inconsistency-free records, and overall quality score.
-              </p>
+          <div className="mb-6 flex w-full items-center justify-between">
+            <div className="flex w-full items-center justify-between gap-5">
+              <div className="flex items-center gap-3">
+                <button onClick={() => navigate('/reports-and-extracts')}>
+                  <ChevronLeft className="h-5 w-5 text-[#344054]" />
+                </button>
+                <h1 className="text-[24px] font-[700] tracking-[-0.5px] text-[#101828]">
+                  {report.title}
+                </h1>
+                <CompanyFilterMenu
+                  options={domains}
+                  value={selectedDomain}
+                  onChange={setSelectedDomain}
+                />
+              </div>
             </div>
-          </div>
 
-          <CompanyFilterMenu
-            options={domains}
-            value={selectedDomain}
-            onChange={setSelectedDomain}
-          />
+            <button
+              onClick={handleExport}
+              className="flex items-center gap-2 text-sm font-medium text-[#0047BA] hover:underline"
+            >
+              <img src={excelSvg} alt="excel" className="h-4 w-4" />
+              Export
+            </button>
+          </div>
         </div>
 
         <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">

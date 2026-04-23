@@ -41,7 +41,6 @@ const CompanyFilterMenu = ({
             'border-none shadow-none outline-none',
             'focus:ring-0 focus:outline-none focus-visible:border-transparent focus-visible:ring-0 focus-visible:outline-none',
             'active:ring-0 active:outline-none',
-            'pb-5',
           )}
         >
           {selected || label}

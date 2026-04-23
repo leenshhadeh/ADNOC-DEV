@@ -6,7 +6,9 @@ import { SummaryCard } from '../componenets/SummaryCard'
 import { ProgressBar } from '../componenets/ProgressBar'
 import CircularProgressCard from '../componenets/CircularProgressCard'
 import CompanyFilterMenu from '../componenets/CompanyFilterMenu'
-
+import { exportToExcel } from '../utils/exportToExcel'
+import { formatPercentFromDecimal } from '../utils/exportFormatters'
+import excelSvg from '../../../assets/icons/excel.svg'
 type RawProgramAdoptionRow = {
   column_1: string | null
   GC: string | null
@@ -164,34 +166,74 @@ const ProgramAdoptionPage = () => {
       .slice(0, 3)
   }, [detailRows])
 
+  const handleExport = async () => {
+    await exportToExcel({
+      fileName: 'program-adoption',
+      sheetName: 'Program Adoption',
+      title: 'Program Adoption by Business and Digital Stakeholders',
+      data: filteredRows,
+      columns: [
+        { header: 'GC', key: 'gc', width: 20 },
+        { header: 'Domain', key: 'domain', width: 30 },
+        { header: 'Targeted Digital Stakeholders', key: 'targetedDigital', width: 24 },
+        { header: 'Engaged Digital Stakeholders', key: 'engagedDigital', width: 24 },
+        {
+          header: 'Digital Engagement Rate',
+          key: 'digitalEngagementRate',
+          width: 20,
+          formatter: (value) => formatPercentFromDecimal(value),
+        },
+        { header: 'Targeted Business Stakeholders', key: 'targetedBusiness', width: 26 },
+        { header: 'Engaged Business Stakeholders', key: 'engagedBusiness', width: 26 },
+        {
+          header: 'Business Engagement Rate',
+          key: 'businessEngagementRate',
+          width: 22,
+          formatter: (value) => formatPercentFromDecimal(value),
+        },
+        {
+          header: 'Overall Engagement Rate',
+          key: 'businessEngagementRate',
+          width: 22,
+          formatter: (_, row) =>
+            formatPercentFromDecimal((row.digitalEngagementRate + row.businessEngagementRate) / 2),
+        },
+      ],
+    })
+  }
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] p-6">
       <div className="align-center mx-auto max-w-[1440px]">
         <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center justify-between gap-5">
-            <button onClick={() => navigate('/reports-and-extracts')}>
-              <ChevronLeft className="h-5 w-5 text-[#344054]" />
-            </button>
-
-            <div>
-              <h1 className="text-[32px] font-semibold tracking-[-0.5px] text-[#101828]">
-                Program Adoption by Business and Digital Stakeholders
-              </h1>
-              <p className="max-w-[900px] text-sm text-[#667085]">
-                Measure how actively business and digital stakeholders are participating in the BPA
-                program across group companies and domains.
-              </p>
+          <div className="mb-6 flex w-full items-center justify-between">
+            <div className="flex items-center justify-between gap-5">
+              <div className="flex items-center gap-3">
+                <button onClick={() => navigate('/reports-and-extracts')}>
+                  <ChevronLeft className="h-5 w-5 text-[#344054]" />
+                </button>
+                <h1 className="text-[24px] font-[700] tracking-[-0.5px] text-[#101828]">
+                  Program Adoption by Business and Digital Stakeholders
+                </h1>
+                <CompanyFilterMenu
+                  options={companies}
+                  value={selectedCompany}
+                  onChange={(value) => {
+                    setSelectedCompany(value)
+                    setSelectedDomain('All')
+                  }}
+                />
+              </div>
             </div>
-          </div>
 
-          <CompanyFilterMenu
-            options={companies}
-            value={selectedCompany}
-            onChange={(value) => {
-              setSelectedCompany(value)
-              setSelectedDomain('All')
-            }}
-          />
+            <button
+              onClick={handleExport}
+              className="flex items-center gap-2 text-sm font-medium text-[#0047BA] hover:underline"
+            >
+              <img src={excelSvg} alt="excel" className="h-4 w-4" />
+              Export
+            </button>
+          </div>
         </div>
 
         <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">

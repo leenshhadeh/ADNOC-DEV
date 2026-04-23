@@ -6,6 +6,9 @@ import { SummaryCard } from '../componenets/SummaryCard'
 import { ProgressBar } from '../componenets/ProgressBar'
 import CircularProgressCard from '../componenets/CircularProgressCard'
 import CompanyFilterMenu from '../componenets/CompanyFilterMenu'
+import { exportToExcel } from '../utils/exportToExcel'
+import { formatPercentFromDecimal } from '../utils/exportFormatters'
+import excelSvg from '../../../assets/icons/excel.svg'
 
 type RawOpportunityRow = {
   GC: string | null
@@ -124,34 +127,74 @@ const OpportunityCoveragePage = () => {
     return [...detailRows].sort((a, b) => a.coverageRate - b.coverageRate).slice(0, 3)
   }, [detailRows])
 
+  const handleExport = async () => {
+    await exportToExcel({
+      fileName: 'opportunity-coverage',
+      sheetName: 'Opportunity Coverage',
+      title: 'Opportunity Coverage of Business Processes',
+      data: filteredRows,
+      columns: [
+        { header: 'GC', key: 'gc', width: 20 },
+        { header: 'Domain', key: 'domain', width: 30 },
+        {
+          header: 'Not Fully Automated Processes',
+          key: 'notFullyAutomated',
+          width: 24,
+        },
+        {
+          header: 'Covered by Opportunities',
+          key: 'coveredByOpportunities',
+          width: 24,
+        },
+        {
+          header: 'Uncovered Processes',
+          key: 'coveredByOpportunities',
+          width: 20,
+          formatter: (_, row) => row.notFullyAutomated - row.coveredByOpportunities,
+        },
+        {
+          header: 'Coverage Rate',
+          key: 'coverageRate',
+          width: 16,
+          formatter: (value) => formatPercentFromDecimal(value),
+        },
+      ],
+    })
+  }
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] p-6">
       <div className="align-center mx-auto max-w-[1440px]">
         <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center justify-between gap-5">
-            <button onClick={() => navigate('/reports-and-extracts')}>
-              <ChevronLeft className="h-5 w-5 text-[#344054]" />
-            </button>
+          <div className="mb-6 flex w-full items-center justify-between">
+            <div className="flex items-center justify-between gap-5">
+              <div className="flex items-center gap-3">
+                <button onClick={() => navigate('/reports-and-extracts')}>
+                  <ChevronLeft className="h-5 w-5 text-[#344054]" />
+                </button>
+                <h1 className="text-[24px] font-[700] tracking-[-0.5px] text-[#101828]">
+                  Opportunity Coverage of Business Processes
+                </h1>
 
-            <div>
-              <h1 className="text-[32px] font-semibold tracking-[-0.5px] text-[#101828]">
-                Opportunity Coverage of Business Processes
-              </h1>
-              <p className="max-w-[900px] text-sm text-[#667085]">
-                Measure the extent to which non-fully-automated business processes are covered by
-                identified opportunities across group companies and domains.
-              </p>
+                <CompanyFilterMenu
+                  options={companies}
+                  value={selectedCompany}
+                  onChange={(value) => {
+                    setSelectedCompany(value)
+                    setSelectedDomain('All')
+                  }}
+                />
+              </div>
             </div>
-          </div>
 
-          <CompanyFilterMenu
-            options={companies}
-            value={selectedCompany}
-            onChange={(value) => {
-              setSelectedCompany(value)
-              setSelectedDomain('All')
-            }}
-          />
+            <button
+              onClick={handleExport}
+              className="flex items-center gap-2 text-sm font-medium text-[#0047BA] hover:underline"
+            >
+              <img src={excelSvg} alt="excel" className="h-4 w-4" />
+              Export
+            </button>
+          </div>
         </div>
 
         <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">

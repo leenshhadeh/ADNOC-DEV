@@ -6,6 +6,9 @@ import { SummaryCard } from '../componenets/SummaryCard'
 import { ProgressBar } from '../componenets/ProgressBar'
 import CircularProgressCard from '../componenets/CircularProgressCard'
 import CompanyFilterMenu from '../componenets/CompanyFilterMenu'
+import { exportToExcel } from '../utils/exportToExcel'
+import { formatNumber, formatPercentFromDecimal } from '../utils/exportFormatters'
+import excelSvg from '../../../assets/icons/excel.svg'
 type AssessmentRow = {
   group_company: string
   business_domain: string
@@ -121,32 +124,116 @@ const AssessmentProgressDetailedL3Page = () => {
       .slice(0, 3)
   }, [filteredRows])
 
+  const handleExport = async () => {
+    await exportToExcel({
+      fileName: 'assessment-progress-detailed-l3',
+      sheetName: 'Assessment Progress L3',
+      title: 'Assessment Progress Detailed L3',
+      data: filteredRows,
+      columns: [
+        { header: 'Business Domain', key: 'business_domain', width: 28 },
+        { header: 'Group Company', key: 'group_company', width: 20 },
+        {
+          header: 'Applicable L3 Processes',
+          key: 'number_of_applicable_l3_business_processes',
+          width: 20,
+        },
+        {
+          header: 'Detailed with L4 Processes',
+          key: 'number_of_l3_processes_detailed_with_l4_processes',
+          width: 24,
+        },
+        {
+          header: 'Draft State Processes',
+          key: 'number_of_l3_business_processes_in_draft_state',
+          width: 18,
+        },
+        {
+          header: 'Quality Review Processes',
+          key: 'number_of_l3_processes_in_quality_review_state',
+          width: 20,
+        },
+        {
+          header: 'Digital VP Sign Off Processes',
+          key: 'number_of_l3_processes_in_digital_vp_sign_off_state',
+          width: 22,
+        },
+        {
+          header: 'Processes Reviewed Since Selected Date',
+          key: 'number_of_processes_reviewed_since_date_selected',
+          width: 24,
+        },
+        {
+          header: 'Processes Re-assessed Since Selected Date',
+          key: 'number_of_processes_re_assesed_since_date_selected',
+          width: 26,
+        },
+        {
+          header: 'Processes with Target Automation Update',
+          key: 'number_of_processes_with_target_automation_update_since_date_selected',
+          width: 28,
+        },
+        {
+          header: 'Automation Parameters Completion',
+          key: 'automation_parameters_data_completion',
+          width: 22,
+          formatter: (value) => formatPercentFromDecimal(value),
+        },
+        {
+          header: 'Manual Operations Parameters Completion',
+          key: 'manual_operations_parameters_data_completion',
+          width: 24,
+          formatter: (value) => formatPercentFromDecimal(value),
+        },
+        {
+          header: 'Automation Level',
+          key: 'automation_level',
+          width: 18,
+          formatter: (value) => formatPercentFromDecimal(value),
+        },
+        {
+          header: 'Target Automation Level',
+          key: 'target_automation_level',
+          width: 20,
+          formatter: (value) => formatPercentFromDecimal(value),
+        },
+        {
+          header: 'Cost of Manual Effort (kAED)',
+          key: 'cost_of_manual_effort_kaed',
+          width: 22,
+          formatter: (value) => formatNumber(value),
+        },
+      ],
+    })
+  }
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] p-6">
       <div className="align-center mx-auto max-w-[1440px]">
         <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center justify-between gap-5">
-            <button onClick={() => navigate('/reports-and-extracts')}>
-              <ChevronLeft className="h-5 w-5 text-[#344054]" />
-            </button>
-
-            <div>
-              <h1 className="text-[32px] font-semibold tracking-[-0.5px] text-[#101828]">
+          <div className="flex w-full items-center justify-between gap-5">
+            <div className="flex items-center gap-3">
+              <button onClick={() => navigate('/reports-and-extracts')}>
+                <ChevronLeft className="h-5 w-5 text-[#344054]" />
+              </button>
+              <h1 className="text-[24px] font-[700] tracking-[-0.5px] text-[#101828]">
                 Assessment Progress Detailed L3
               </h1>
-              <p className="text-sm text-[#667085]">
-                View assessment progress, completion status, automation metrics, and effort by
-                business domain.
-              </p>
+              <CompanyFilterMenu
+                options={companies}
+                value={selectedCompany}
+                onChange={(value) => {
+                  setSelectedCompany(value)
+                }}
+              />
             </div>
-          </div>
-
-          <div>
-            <CompanyFilterMenu
-              options={companies}
-              value={selectedCompany}
-              onChange={setSelectedCompany}
-            />
+            <button
+              onClick={handleExport}
+              className="flex items-center gap-2 text-sm font-medium text-[#0047BA] hover:underline"
+            >
+              <img src={excelSvg} alt="excel" className="h-4 w-4" />
+              Export
+            </button>
           </div>
         </div>
 

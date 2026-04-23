@@ -6,7 +6,9 @@ import { SummaryCard } from '../componenets/SummaryCard'
 import { ProgressBar } from '../componenets/ProgressBar'
 import CircularProgressCard from '../componenets/CircularProgressCard'
 import CompanyFilterMenu from '../componenets/CompanyFilterMenu'
-
+import { exportToExcel } from '../utils/exportToExcel'
+import { formatNumber, formatPercentFromDecimal } from '../utils/exportFormatters'
+import excelSvg from '../../../assets/icons/excel.svg'
 type RawAssessmentRow = {
   'Group Company': string | null
   'Business Domain': string | null
@@ -60,8 +62,6 @@ const avg = (arr: number[]) =>
   arr.length ? arr.reduce((sum, value) => sum + value, 0) / arr.length : 0
 
 const percent = (value: number) => `${Math.round(value * 100)}%`
-
-const formatNumber = (value: number) => new Intl.NumberFormat().format(value)
 
 const isValidDataRow = (row: RawAssessmentRow) => {
   const groupCompany = row['Group Company']
@@ -169,34 +169,71 @@ const AssessmentProgressDetailedL4Page = () => {
       .sort((a, b) => b.reassessedSinceDate - a.reassessedSinceDate)
       .slice(0, 5)
   }, [filteredRows])
+  const handleExport = async () => {
+    await exportToExcel({
+      fileName: 'assessment-progress-detailed-l4',
+      sheetName: 'Assessment Progress L4',
+      title: 'Assessment Progress Detailed L4',
+      data: filteredRows,
+      columns: [
+        { header: 'Business Domain', key: 'businessDomain', width: 28 },
+        { header: 'Group Company', key: 'groupCompany', width: 20 },
+        { header: 'Applicable L4', key: 'applicableL4', width: 18 },
+        { header: 'Draft', key: 'draft', width: 14 },
+        { header: 'Quality Review', key: 'qualityReview', width: 18 },
+        { header: 'VP Sign-Off', key: 'vpSignOff', width: 16 },
+        { header: 'Reviewed Since Date', key: 'reviewedSinceDate', width: 20 },
+        { header: 'Reassessed Since Date', key: 'reassessedSinceDate', width: 22 },
+        {
+          header: 'Automation Level',
+          key: 'automationLevel',
+          width: 18,
+          formatter: (value) => formatPercentFromDecimal(value),
+        },
+        {
+          header: 'Target Automation Level',
+          key: 'targetAutomationLevel',
+          width: 22,
+          formatter: (value) => formatPercentFromDecimal(value),
+        },
+        {
+          header: 'Manual Effort Cost (kAED)',
+          key: 'manualEffortCost',
+          width: 22,
+          formatter: (value) => formatNumber(value),
+        },
+      ],
+    })
+  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] p-6">
       <div className="align-center mx-auto max-w-[1440px]">
         <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center justify-between gap-5">
-            <button onClick={() => navigate('/reports-and-extracts')}>
-              <ChevronLeft className="h-5 w-5 text-[#344054]" />
-            </button>
-
-            <div>
-              <h1 className="text-[32px] font-semibold tracking-[-0.5px] text-[#101828]">
+          <div className="flex w-full items-center justify-between gap-5">
+            <div className="flex items-center gap-3">
+              <button onClick={() => navigate('/reports-and-extracts')}>
+                <ChevronLeft className="h-5 w-5 text-[#344054]" />
+              </button>
+              <h1 className="text-[24px] font-[700] tracking-[-0.5px] text-[#101828]">
                 Assessment Progress Detailed L4
               </h1>
-              <p className="w-[560px] text-sm text-[#667085]">
-                Track L4 reassessment progress, workflow status, automation maturity, and manual
-                effort cost across group companies and business domains.
-              </p>
+              <CompanyFilterMenu
+                options={companies}
+                value={selectedCompany}
+                onChange={(value) => {
+                  setSelectedCompany(value)
+                }}
+              />
             </div>
+            <button
+              onClick={handleExport}
+              className="flex items-center gap-2 text-sm font-medium text-[#0047BA] hover:underline"
+            >
+              <img src={excelSvg} alt="excel" className="h-4 w-4" />
+              Export
+            </button>
           </div>
-
-          <CompanyFilterMenu
-            options={companies}
-            value={selectedCompany}
-            onChange={(value) => {
-              setSelectedCompany(value)
-            }}
-          />
         </div>
 
         <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
