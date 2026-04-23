@@ -53,9 +53,10 @@ vi.mock('@features/module-process-catalog/hooks/useGetDomains', () => ({
 
 // Mock service functions called by CatalogModule handlers
 vi.mock('@features/module-process-catalog/api/processCatalogService', async (importOriginal) => {
-  const original = await importOriginal<
-    typeof import('@features/module-process-catalog/api/processCatalogService')
-  >()
+  const original =
+    await importOriginal<
+      typeof import('@features/module-process-catalog/api/processCatalogService')
+    >()
   return {
     ...original,
     createProcess: vi.fn().mockResolvedValue({ id: 'new-proc-1', level3Status: 'Published' }),
@@ -64,9 +65,8 @@ vi.mock('@features/module-process-catalog/api/processCatalogService', async (imp
 })
 
 vi.mock('@features/module-process-catalog/api/level4Service', async (importOriginal) => {
-  const original = await importOriginal<
-    typeof import('@features/module-process-catalog/api/level4Service')
-  >()
+  const original =
+    await importOriginal<typeof import('@features/module-process-catalog/api/level4Service')>()
   return {
     ...original,
     createLevel4s: vi.fn().mockResolvedValue(undefined),
@@ -74,9 +74,8 @@ vi.mock('@features/module-process-catalog/api/level4Service', async (importOrigi
 })
 
 vi.mock('@features/module-process-catalog/api/taskActionService', async (importOriginal) => {
-  const original = await importOriginal<
-    typeof import('@features/module-process-catalog/api/taskActionService')
-  >()
+  const original =
+    await importOriginal<typeof import('@features/module-process-catalog/api/taskActionService')>()
   return {
     ...original,
     requestEndorsement: vi.fn().mockResolvedValue(undefined),
@@ -89,11 +88,7 @@ vi.mock('../components/ProcessFilterSheet', () => ({
 }))
 
 vi.mock('../components/modals/AddLevel4sModal', () => ({
-  default: ({
-    onSave,
-  }: {
-    onSave: (companySites: unknown, items: unknown[]) => void
-  }) => {
+  default: ({ onSave }: { onSave: (companySites: unknown, items: unknown[]) => void }) => {
     capturedAddL4sOnSave = onSave
     return null
   },
@@ -347,9 +342,8 @@ describe('CatalogModule', () => {
   // ── renameProcess handler ─────────────────────────────────────────────────
 
   it('calls renameProcess when the RenameModal onRename fires', async () => {
-    const { renameProcess } = await import(
-      '@features/module-process-catalog/api/processCatalogService'
-    )
+    const { renameProcess } =
+      await import('@features/module-process-catalog/api/processCatalogService')
     renderModule()
 
     // Trigger row action for rename — sets renameTarget and opens RenameModal
@@ -378,9 +372,8 @@ describe('CatalogModule', () => {
   })
 
   it('does not call renameProcess when renameTarget is undefined', async () => {
-    const { renameProcess } = await import(
-      '@features/module-process-catalog/api/processCatalogService'
-    )
+    const { renameProcess } =
+      await import('@features/module-process-catalog/api/processCatalogService')
     renderModule()
 
     // Invoke the captured callback directly without opening via row action
@@ -395,9 +388,7 @@ describe('CatalogModule', () => {
   // ── createLevel4s handler ────────────────────────────────────────────────
 
   it('calls createLevel4s when the AddLevel4sModal onSave fires', async () => {
-    const { createLevel4s } = await import(
-      '@features/module-process-catalog/api/level4Service'
-    )
+    const { createLevel4s } = await import('@features/module-process-catalog/api/level4Service')
     renderModule()
 
     // Trigger the Add L4s row action to set targetL3Item

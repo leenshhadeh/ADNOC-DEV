@@ -200,7 +200,9 @@ const EntitySiteCell = ({
               onSelect={() => {
                 setValue(opt)
                 updateEntities({
-                  updates: [{ processId: parentId, company: companyId, site: siteName, value: opt }],
+                  updates: [
+                    { processId: parentId, company: companyId, site: siteName, value: opt },
+                  ],
                 }).catch(() => {
                   // Silently revert on failure — the next server fetch will correct the value
                   setValue(value)
@@ -221,7 +223,7 @@ const EntitySiteCell = ({
         <>
           <button
             type="button"
-            className="text-xs font-medium whitespace-nowrap text-brand-blue hover:underline"
+            className="text-brand-blue text-xs font-medium whitespace-nowrap hover:underline"
             onClick={() => setEditOpen(true)}
           >
             Edit L4s
@@ -299,7 +301,7 @@ const CellRowActions = ({ item, actions }: { item: ProcessItem; actions: Catalog
           className={cn(
             'flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal transition-colors',
             'border-b border-transparent',
-            'hover:border-b hover:border-brand-blue',
+            'hover:border-brand-blue hover:border-b',
             i < actions.length - 1 && 'border-border border-b',
           )}
         >
@@ -389,14 +391,14 @@ function Level3RowActions({
         >
           <DropdownMenuItem
             onSelect={() => onViewRecordedChanges(item)}
-            className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-brand-blue"
+            className="border-border hover:border-brand-blue flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors"
           >
             <Eye className="text-muted-foreground size-4 shrink-0" />
             View recorded changes
           </DropdownMenuItem>
           <DropdownMenuItem
             onSelect={() => setConfirmOpen(true)}
-            className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-brand-blue"
+            className="border-border hover:border-brand-blue flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors"
           >
             <RotateCcw className="text-muted-foreground size-4 shrink-0" />
             <span>
@@ -406,7 +408,7 @@ function Level3RowActions({
           <PermissionGuard action="ADD_LEVEL_4">
             <DropdownMenuItem
               onSelect={() => onAddL4s(item)}
-              className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-brand-blue"
+              className="border-border hover:border-brand-blue flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors"
             >
               <Plus className="text-muted-foreground size-4 shrink-0" />
               Add L4s

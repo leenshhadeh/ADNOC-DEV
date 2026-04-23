@@ -3,10 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createElement } from 'react'
 
-import {
-  useGetRecordedChanges,
-  recordedChangesQueryKeys,
-} from '../hooks/useGetRecordedChanges'
+import { useGetRecordedChanges, recordedChangesQueryKeys } from '../hooks/useGetRecordedChanges'
 import * as service from '../api/processCatalogService'
 import type { ChangeLogEntry } from '../types'
 
@@ -61,9 +58,7 @@ vi.mock('../api/processCatalogService', async (importOriginal) => {
   const original = await importOriginal<typeof service>()
   return {
     ...original,
-    getRecordedChanges: vi.fn((id: string) =>
-      Promise.resolve(id === 'r1' ? MOCK_ENTRIES : []),
-    ),
+    getRecordedChanges: vi.fn((id: string) => Promise.resolve(id === 'r1' ? MOCK_ENTRIES : [])),
   }
 })
 
@@ -164,4 +159,3 @@ describe('useGetRecordedChanges', () => {
     )
   })
 })
-

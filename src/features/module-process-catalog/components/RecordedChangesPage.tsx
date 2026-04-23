@@ -84,11 +84,12 @@ const RecordedChangesPage = () => {
   return (
     <section className="space-y-5 pb-10">
       {/* ── Breadcrumb ── */}
-      <Breadcrumb 
-       links={[
-        {title:'Process Catalog  Management',url:'/process-catalog'},
-        {title:'Recorded changes', isCurrentPage:true}
-        ]} />
+      <Breadcrumb
+        links={[
+          { title: 'Process Catalog  Management', url: '/process-catalog' },
+          { title: 'Recorded changes', isCurrentPage: true },
+        ]}
+      />
 
       {/* ── Title ── */}
       <div>
