@@ -8,7 +8,7 @@
  */
 
 import type { LucideProps } from 'lucide-react'
-import {Layers, Search, X } from 'lucide-react'
+import { Layers, Search, X } from 'lucide-react'
 
 import ShapeIcon from '@/assets/icons/Shape.svg?react'
 
@@ -46,9 +46,9 @@ export interface BulkModeState {
 
 export interface ModuleToolbarProps {
   // ── Tabs ──────────────────────────────────────────────────────────────────
-  tabs: TabConfig[]
-  activeTab: string
-  onTabChange: (value: string) => void
+  tabs?: TabConfig[]
+  activeTab?: string
+  onTabChange?: (value: string) => void
   moreOptions?: TabConfig[]
 
   // ── Search ────────────────────────────────────────────────────────────────
@@ -102,42 +102,40 @@ const ModuleToolbar = ({
            On mobile (< sm): basis-full forces tabs onto their own dedicated
            row so they never compete for space with search.
            On sm+: shrinks back to content width and sits inline with search. */}
-      <div className="w-full overflow-x-auto sm:w-auto sm:shrink-0 [&::-webkit-scrollbar]:hidden">
-        {/*
-          w-fit is critical: Tabs renders as flex-col whose align-items:stretch would
-          otherwise force TabsList to fill the parent width, squishing all tab labels.
-          w-fit lets the list size to its natural content width → overflow → scroll works.
-        */}
-        <Tabs value={activeTab} onValueChange={onTabChange} className="w-fit gap-0">
-          <TabsList className="font-small h-11 px-1.5">
-            {tabs.map((tab) => (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className={cn(
-                  'h-8 rounded-xl px-4',
-                  'font-light',
-                  'data-[state=active]:font-medium',
-                )}
-              >
-                {tab.label}
-              </TabsTrigger>
-            ))}
-            {moreOptions && moreOptions.length > 0 && (
-              <div className={'flex h-8 rounded-xl'} >
+      {((tabs && tabs.length > 0) || (moreOptions && moreOptions.length > 0)) && (
+        <div className="w-full overflow-x-auto sm:w-auto sm:shrink-0 [&::-webkit-scrollbar]:hidden">
+          <Tabs value={activeTab} onValueChange={onTabChange} className="w-fit gap-0">
+            <TabsList className="font-small h-11 px-1.5">
+              {tabs?.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className={cn(
+                    'h-8 rounded-xl px-4',
+                    'font-light',
+                    'data-[state=active]:font-medium',
+                  )}
+                >
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+
+              {moreOptions && moreOptions.length > 0 && (
+                <div className="flex h-8 rounded-xl">
                   <Dropdown
-                    defaultValue={'More'}
+                    defaultValue="More"
                     options={moreOptions}
                     onValueChange={(newValue: string) => {
-                      onTabChange(newValue)
+                      onTabChange?.(newValue)
                     }}
                     activeTab={activeTab}
                   />
                 </div>
-            )}
-          </TabsList>
-        </Tabs>
-      </div>
+              )}
+            </TabsList>
+          </Tabs>
+        </div>
+      )}
 
       {/* ── Search + filter ─────────────────────────────────────────────────
            flex-1 + min-w-0 lets this row grow to fill remaining space on sm+;
