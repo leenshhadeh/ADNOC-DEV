@@ -1,6 +1,6 @@
 # Process Catalog — API Contract
 
-> **Version:** 1.2 &nbsp;|&nbsp; **Date:** 2026-04-13 &nbsp;|&nbsp; **Frontend Team**
+> **Version:** 1.2 &nbsp;|&nbsp; **Date:** 2026-04-23 &nbsp;|&nbsp; **Frontend Team**
 >
 > JSON contracts the frontend expects from the .NET backend for the **Process Catalog** module. All endpoints return the **ApiResponse** envelope.
 
@@ -35,6 +35,8 @@
    - 3.22 [POST /api/tasks/bulk-approve](#322-post-apitasksbulk-approve)
    - 3.23 [POST /api/tasks/bulk-return](#323-post-apitasksbulk-return)
    - 3.24 [POST /api/tasks/bulk-reject](#324-post-apitasksbulk-reject)
+   - 3.25 [POST /api/tasks/:taskId/request-endorsement](#325-post-apitaskstaskidrequest-endorsement)
+   - 3.26 [POST /api/tasks/bulk-request-endorsement](#326-post-apitasksbulk-request-endorsement)
 4. [Enums & Shared Types](#4-enums--shared-types)
 5. [Error Handling](#5-error-handling)
 
@@ -981,6 +983,74 @@ Rejects multiple tasks with an optional shared reason.
 **Response — `data: BulkActionResponse`**
 
 Same shape as [3.21](#321-post-apitasksbulk-approve).
+
+Returns `200 OK`.
+
+---
+
+### 3.25 POST `/api/tasks/:taskId/request-endorsement`
+
+Requests endorsement from one or more reviewers for a single task.
+
+**Path params:** `taskId` — UUID of the task.
+
+**Request body:**
+
+```json
+{
+  "endorserNames": ["Jane Smith", "Ali Al Zaabi"],
+  "reason": "Requires domain expert sign-off"
+}
+```
+
+| Field           | Type       | Required | Description                        |
+| --------------- | ---------- | -------- | ---------------------------------- |
+| `endorserNames` | `string[]` | ✅       | Display names of the endorsers     |
+| `reason`        | `string`   | ✅       | Reason for the endorsement request |
+
+**Response — `data: TaskActionResponse`**
+
+```json
+{
+  "taskId": "task-001",
+  "status": "approved",
+  "message": "Endorsement request has been sent."
+}
+```
+
+| Field     | Type     | Description            |
+| --------- | -------- | ---------------------- |
+| `taskId`  | `string` | Affected task ID       |
+| `status`  | `string` | New status of the task |
+| `message` | `string` | Human-readable result  |
+
+Returns `200 OK`.
+
+---
+
+### 3.26 POST `/api/tasks/bulk-request-endorsement`
+
+Requests endorsement for multiple tasks in a single call.
+
+**Request body:**
+
+```json
+{
+  "taskIds": ["task-001", "task-002"],
+  "endorserNames": ["Jane Smith"],
+  "reason": "Batch endorsement required"
+}
+```
+
+| Field           | Type       | Required | Description                    |
+| --------------- | ---------- | -------- | ------------------------------ |
+| `taskIds`       | `string[]` | ✅       | IDs of the tasks to endorse    |
+| `endorserNames` | `string[]` | ✅       | Display names of the endorsers |
+| `reason`        | `string`   | ✅       | Shared endorsement reason      |
+
+**Response — `data: BulkActionResponse`**
+
+Same shape as [3.22](#322-post-apitasksbulk-approve).
 
 Returns `200 OK`.
 

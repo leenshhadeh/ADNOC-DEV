@@ -8,6 +8,7 @@ import {
   useGetLevel4Names,
 } from '@features/module-process-catalog/hooks/useGetLevel4s'
 import { saveLevel4s } from '@features/module-process-catalog/api/level4Service'
+import { updateEntities } from '@features/module-process-catalog/api/processCatalogService'
 import { SuccessToast } from '@/shared/components/SuccessToast'
 import { PermissionGuard } from '@/shared/components/PermissionGuard'
 import { includeListFilterFn, firstCharFilterFn } from '@/shared/components/data-table/ColumnFilter'
@@ -152,6 +153,7 @@ const EntitySiteCell = ({
   siteName,
   parentCode,
   parentId,
+  companyId,
 }: {
   initialValue: YesNo
   entityName: string
@@ -159,6 +161,8 @@ const EntitySiteCell = ({
   parentCode: string
   /** The Level 3 row id — used to fetch scoped L4 records from the query cache. */
   parentId: string
+  /** Group company ID used when calling updateEntities. */
+  companyId: string
 }) => {
   const [value, setValue] = useState<YesNo>(initialValue)
   const [editOpen, setEditOpen] = useState(false)
@@ -193,7 +197,15 @@ const EntitySiteCell = ({
           {(['Yes', 'No'] as const).map((opt) => (
             <DropdownMenuItem
               key={opt}
-              onSelect={() => setValue(opt)}
+              onSelect={() => {
+                setValue(opt)
+                updateEntities({
+                  updates: [{ processId: parentId, company: companyId, site: siteName, value: opt }],
+                }).catch(() => {
+                  // Silently revert on failure — the next server fetch will correct the value
+                  setValue(value)
+                })
+              }}
               className={cn(
                 'rounded-none px-3 py-2 text-sm font-normal',
                 value === opt && 'bg-accent',
@@ -456,6 +468,7 @@ function buildEntityColumns(groupCompanies: GroupCompany[]): ColumnDef<ProcessIt
             siteName={site.name}
             parentCode={row.level3Code}
             parentId={row.id}
+            companyId={entity.id}
           />
         )
       },

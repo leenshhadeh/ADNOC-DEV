@@ -70,3 +70,22 @@ export interface CompanySiteRef {
   groupCompanyId: string
   siteId: string
 }
+
+// ── Change log ────────────────────────────────────────────────────────────────
+
+export type ChangeSection = 'parent' | 'this' | 'child'
+
+export interface ChangeLogEntry {
+  id: string
+  processName: string
+  levelLabel: string
+  levelNum: number
+  changeType: 'Update' | 'Create'
+  changedItem: string
+  groupCompany: string
+  oldValue: string
+  newValue: string
+  modifiedBy: string
+  modifiedOn: string
+  section: ChangeSection
+}

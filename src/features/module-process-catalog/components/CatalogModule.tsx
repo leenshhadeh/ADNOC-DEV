@@ -28,9 +28,15 @@ import {
   bulkSubmitProcesses,
 } from '@features/module-process-catalog/api/processBulkActionService'
 import { exportToExcel } from '@features/module-process-catalog/utils/exportToExcel'
+import {
+  createProcess,
+  renameProcess,
+} from '@features/module-process-catalog/api/processCatalogService'
+import { createLevel4s } from '@features/module-process-catalog/api/level4Service'
+import { requestEndorsement } from '@features/module-process-catalog/api/taskActionService'
+import { useGetDomains } from '@features/module-process-catalog/hooks/useGetDomains'
 import { Info, X } from 'lucide-react'
 import { FILTER_SECTION_IDS } from '@features/module-process-catalog/constants/filter-definitions'
-import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 import {
   useProcessFilters,
   applyProcessFilters,
@@ -174,6 +180,7 @@ const CatalogModule = () => {
   // Row data comes from API; group companies are a user-scoped lookup.
   const { data: serverRows } = useGetProcessCatalogRows()
   const { data: groupCompanies } = useGetGroupCompanies()
+  const { data: domains } = useGetDomains()
 
   // Table data as mutable state so we can inject draft rows.
   // Seeded from the server response; draft rows are injected locally.
@@ -203,7 +210,7 @@ const CatalogModule = () => {
   const [firstDraftRowId, setFirstDraftRowId] = useState<string | undefined>()
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
-  const filterDefs = useProcessFilterDefinitions(groupCompanies, serverRows, DOMAINS_DATA)
+  const filterDefs = useProcessFilterDefinitions(groupCompanies, serverRows, domains ?? [])
   const { pending, applied, activeCount, activePerSection, toggle, apply, reset } =
     useProcessFilters(FILTER_SECTION_IDS)
 
@@ -223,7 +230,7 @@ const CatalogModule = () => {
       await exportToExcel({
         rows: filteredData,
         groupCompanies: groupCompanies ?? [],
-        domains: DOMAINS_DATA,
+        domains: domains ?? [],
         includeL4: true,
         filename: 'process-catalog-full-report',
       })
@@ -238,7 +245,7 @@ const CatalogModule = () => {
       await exportToExcel({
         rows: filteredData,
         groupCompanies: groupCompanies ?? [],
-        domains: DOMAINS_DATA,
+        domains: domains ?? [],
         includeL4: false,
         filename: 'process-catalog',
       })
@@ -274,7 +281,7 @@ const CatalogModule = () => {
 
       const newRows: ProcessItem[] = Array.from({ length: count }, (_, i) => {
         const idx = maxIndex + i + 1
-        const domainEntry = DOMAINS_DATA.find((d) => d.id === targetItem.domain)
+        const domainEntry = (domains ?? []).find((d) => d.id === targetItem.domain)
         const domainCode = domainEntry?.code ?? targetItem.domain.slice(0, 3).toUpperCase()
         const level1Code = `${domainCode}.${idx}`
         const level2Code = `${level1Code}.1`
@@ -472,15 +479,24 @@ const CatalogModule = () => {
 
   const hasDraftRows = tableData.some((r) => r.level3Status === 'Draft')
 
-  const handleSave = useCallback(() => {
-    // Promote all Draft rows to Published (replace with API call when ready)
-    setTableData((prev) =>
-      prev.map((row) =>
-        row.level3Status === 'Draft' ? { ...row, level3Status: 'Published' } : row,
-      ),
-    )
-    setFirstDraftRowId(undefined)
-  }, [])
+  const handleSave = useCallback(async () => {
+    const draftRows = tableData.filter((r) => r.level3Status === 'Draft')
+    if (draftRows.length === 0) return
+    try {
+      await Promise.all(
+        draftRows.map(({ id: _id, level3Status: _status, ...payload }) => createProcess(payload)),
+      )
+      setTableData((prev) =>
+        prev.map((row) =>
+          row.level3Status === 'Draft' ? { ...row, level3Status: 'Published' } : row,
+        ),
+      )
+      setFirstDraftRowId(undefined)
+      setSuccessToast(`${draftRows.length} process(es) created successfully.`)
+    } catch {
+      setSuccessToast('Failed to save processes. Please try again.')
+    }
+  }, [tableData])
 
   const handleDiscard = useCallback(() => {
     setTableData((prev) => prev.filter((r) => r.level3Status !== 'Draft'))
@@ -556,7 +572,7 @@ const CatalogModule = () => {
         rowActions,
         groupCompanies ?? [],
         currentView === 'full-report',
-        DOMAINS_DATA,
+        domains ?? [],
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [groupCompanies, currentView],
@@ -728,14 +744,15 @@ const CatalogModule = () => {
             : null
         }
         previousProcessNames={previousL4Names}
-        onSave={(companySites, items) => {
-          // Wire to a POST /api/level4s call here when the backend is ready.
-          console.log('Save L4s (Entry A)', {
-            companySites,
-            items,
-            parent: targetL3Item?.level3Code,
-          })
-          setSuccessToast('Level 4s added as draft. Submit Level 3s to publish.')
+        onSave={async (companySites, items) => {
+          if (!targetL3Item) return
+          try {
+            await createLevel4s(targetL3Item.id, companySites, items)
+            setSuccessToast('Level 4s added as draft. Submit Level 3s to publish.')
+          } catch {
+            setSuccessToast('Failed to add Level 4s.')
+          }
+          setIsAddL4sModalOpen(false)
         }}
       />
 
@@ -749,9 +766,20 @@ const CatalogModule = () => {
           renameTarget?.domain ||
           ''
         }
-        onRename={(newName) => {
+        onRename={async (newName) => {
           if (!renameTarget) return
-          console.log('Rename', renameTarget.id, '->', newName)
+          try {
+            await renameProcess(renameTarget.id, newName)
+            setTableData((prev) =>
+              prev.map((row) =>
+                row.id === renameTarget.id ? { ...row, level3Name: newName } : row,
+              ),
+            )
+            setSuccessToast('Process renamed successfully.')
+            setIsRenameModalOpen(false)
+          } catch {
+            setSuccessToast('Failed to rename process.')
+          }
         }}
       />
 
@@ -817,9 +845,17 @@ const CatalogModule = () => {
         open={bulkEndorsementOpen}
         onOpenChange={setBulkEndorsementOpen}
         selectedCount={taskSelectedCount}
-        onConfirm={(_names, _reason) => {
+        onConfirm={async (names, reason) => {
+          const selectedIds = Object.keys(taskRowSelection).filter((k) => taskRowSelection[k])
+          try {
+            await Promise.all(
+              selectedIds.map((taskId) => requestEndorsement(taskId, names, reason)),
+            )
+            setSuccessToast(`Endorsement requested for ${taskSelectedCount} request(s).`)
+          } catch {
+            setSuccessToast('Failed to request endorsements.')
+          }
           setBulkEndorsementOpen(false)
-          setSuccessToast(`Endorsement requested for ${taskSelectedCount} request(s).`)
           setTaskRowSelection({})
           setIsTaskBulkMode(false)
         }}

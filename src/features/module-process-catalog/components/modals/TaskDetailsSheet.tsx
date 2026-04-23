@@ -44,9 +44,9 @@ function WorkflowStepper({ currentStep, totalSteps }: { currentStep: number; tot
                 )}
               >
                 {isCompleted ? (
-                  <Check className="size-3.5 text-brand-blue" strokeWidth={2.5} />
+                  <Check className="text-brand-blue size-3.5" strokeWidth={2.5} />
                 ) : isActive ? (
-                  <div className="size-3 rounded-full bg-brand-blue" />
+                  <div className="bg-brand-blue size-3 rounded-full" />
                 ) : (
                   <div className="size-3 rounded-full bg-gradient-to-b from-[rgba(76,195,255,0.2)] to-[rgba(25,62,117,0.2)]" />
                 )}
@@ -221,14 +221,14 @@ const TaskDetailsSheet = ({ task, open, onOpenChange, onAction }: TaskDetailsShe
                 </span>
               </div>
               {/* Stage card */}
-              <div className="mt-4 rounded-2xl p-3 px-4 shadow-[7px_8px_28px_0px_rgba(0,0,0,0.2)]">
+              <div className="mt-2 rounded-2xl p-3 px-4 shadow-[7px_8px_28px_0px_rgba(0,0,0,0.2)]">
                 <WorkflowStepper currentStep={task.stageCurrent} totalSteps={task.stageTotal} />
 
                 <div className="mt-4 flex flex-col">
                   <Separator className="bg-[#DFE3E6]" />
                   <button
                     type="button"
-                    className="mx-auto flex w-full items-center justify-center gap-1 py-2 text-sm font-medium text-brand-blue"
+                    className="text-brand-blue mx-auto flex w-full items-center justify-center gap-1 py-2 text-sm font-medium"
                     onClick={() => setShowMore((v) => !v)}
                   >
                     {showMore ? (

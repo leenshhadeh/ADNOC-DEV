@@ -208,3 +208,32 @@ export function getLevel4NamesByParent(parentId: string): Promise<string[]> {
     }, SIMULATED_LATENCY_MS / 2)
   })
 }
+
+// ── PUT — update a single L4 record ──────────────────────────────────────────
+
+/**
+ * Updates an existing Level 4 record by id.
+ * PUT /api/level4/:id
+ *
+ * Replace the mock body with:
+ *   return apiClient.put<ApiResponse<Level4Item>>(
+ *     `/level4/${id}`, data
+ *   ).then(r => r.data)
+ */
+export function updateLevel4(id: string, data: UpdateLevel4Request): Promise<Level4Item> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const existing = MOCK_LEVEL4_DATA.find((item) => item.id === id)
+      if (!existing) {
+        reject(new Error(`Level 4 record not found: ${id}`))
+        return
+      }
+      resolve({
+        ...existing,
+        name: data.processName,
+        description: data.processDescription ?? existing.description,
+        status: data.status ?? existing.status,
+      })
+    }, SIMULATED_LATENCY_MS)
+  })
+}

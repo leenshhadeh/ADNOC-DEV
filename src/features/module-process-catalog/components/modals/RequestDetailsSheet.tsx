@@ -263,7 +263,7 @@ const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsShee
             </div>
             {/* Stage card */}
             <div
-              className="mt-6 rounded-2xl p-3 px-4"
+              className="mt-2 rounded-2xl p-3 px-4"
               style={{
                 // background: 'linear-gradient(180deg, #E9EFFF 0%, #FFFFFF 92%)',
                 boxShadow: '7px 8px 28px 0px rgba(0,0,0,0.2)',

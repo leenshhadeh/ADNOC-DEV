@@ -1,134 +1,9 @@
-import {useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
-import { CATALOG_DATA } from '@features/module-process-catalog/constants/catalog-data'
+import { useGetRecordedChanges } from '@features/module-process-catalog/hooks/useGetRecordedChanges'
+import { useGetProcessCatalogRows } from '@features/module-process-catalog/hooks/useGetProcessCatalogRows'
+import type { ChangeLogEntry } from '@features/module-process-catalog/types'
 import Breadcrumb from '@/shared/components/Breadcrumb'
-
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-type ChangeSection = 'parent' | 'this' | 'child'
-
-interface ChangeLogEntry {
-  id: string
-  processName: string
-  levelLabel: string
-  levelNum: number
-  changeType: 'Update' | 'Create'
-  changedItem: string
-  groupCompany: string
-  oldValue: string
-  newValue: string
-  modifiedBy: string
-  modifiedOn: string
-  section: ChangeSection
-}
-
-// ── Mock data builder ─────────────────────────────────────────────────────────
-
-function buildMockEntries(processId: string): ChangeLogEntry[] {
-  const process = CATALOG_DATA.find((r) => r.id === processId)
-  if (!process) return []
-
-  return [
-    {
-      id: 'c1',
-      section: 'parent',
-      processName: process.level1Name,
-      levelLabel: 'L 1',
-      levelNum: 1,
-      changeType: 'Update',
-      changedItem: 'Process Name',
-      groupCompany: '-',
-      oldValue: process.level1Name,
-      newValue: process.domain,
-      modifiedBy: 'Dania Al Farsi',
-      modifiedOn: '04 Apr 2024, 3:33PM',
-    },
-    {
-      id: 'c2',
-      section: 'parent',
-      processName: process.level2Name,
-      levelLabel: 'L 2',
-      levelNum: 2,
-      changeType: 'Update',
-      changedItem: 'Process Name',
-      groupCompany: '-',
-      oldValue: process.level2Name,
-      newValue: 'Studies',
-      modifiedBy: 'Dania Al Farsi',
-      modifiedOn: '04 Apr 2024, 4:21PM',
-    },
-    {
-      id: 'c3',
-      section: 'this',
-      processName: process.level3Name,
-      levelLabel: 'L 3',
-      levelNum: 3,
-      changeType: 'Update',
-      changedItem: 'Process Name',
-      groupCompany: '-',
-      oldValue: `${process.level3Name} 2`,
-      newValue: process.level3Name,
-      modifiedBy: 'Mohammed Al Hajeri',
-      modifiedOn: '05 Apr 2024, 1:03PM',
-    },
-    {
-      id: 'c4',
-      section: 'this',
-      processName: process.level3Name,
-      levelLabel: 'L 3',
-      levelNum: 3,
-      changeType: 'Update',
-      changedItem: 'Applicability',
-      groupCompany: '-',
-      oldValue: 'ADNOC Sour Gas',
-      newValue: 'ADNOC Sour Gas, ADNOC Onshore - Sit...',
-      modifiedBy: 'Dania Al Farsi',
-      modifiedOn: '06 Apr 2024, 2:24PM',
-    },
-    {
-      id: 'c5',
-      section: 'this',
-      processName: process.level3Name,
-      levelLabel: 'L 3',
-      levelNum: 3,
-      changeType: 'Update',
-      changedItem: 'Shared service',
-      groupCompany: '-',
-      oldValue: 'Yes',
-      newValue: 'No',
-      modifiedBy: 'Dania Al Farsi',
-      modifiedOn: '04 Apr 2024, 6:09PM',
-    },
-    {
-      id: 'c6',
-      section: 'child',
-      processName: 'Define basin framework',
-      levelLabel: 'L 4',
-      levelNum: 4,
-      changeType: 'Create',
-      changedItem: 'Process Name',
-      groupCompany: 'Sour Gas',
-      oldValue: '-',
-      newValue: 'Define basin framework',
-      modifiedBy: 'Dania Al Farsi',
-      modifiedOn: '03 Apr 2024, 1:11PM',
-    },
-    {
-      id: 'c7',
-      section: 'child',
-      processName: 'Define basin framework',
-      levelLabel: 'L 4',
-      levelNum: 4,
-      changeType: 'Update',
-      changedItem: 'Description',
-      groupCompany: 'Sour Gas',
-      oldValue: '-',
-      newValue: 'Defines the structural and stratigraphic fra...',
-      modifiedBy: 'Dania Al Farsi',
-      modifiedOn: '04 Apr 2024, 2:13PM',
-    },
-  ]
-}
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
@@ -197,8 +72,10 @@ const COLUMNS: Array<{ id: string; label: string; minWidth: number }> = [
 const RecordedChangesPage = () => {
   const { processId } = useParams<{ processId: string }>()
 
-  const process = CATALOG_DATA.find((r) => r.id === processId)
-  const entries = buildMockEntries(processId ?? '')
+  const { data: rows } = useGetProcessCatalogRows()
+  const process = rows?.find((r) => r.id === processId)
+
+  const { data: entries = [] } = useGetRecordedChanges(processId)
 
   const parentEntries = entries.filter((e) => e.section === 'parent')
   const thisEntries = entries.filter((e) => e.section === 'this')
