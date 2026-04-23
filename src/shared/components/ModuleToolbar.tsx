@@ -134,8 +134,8 @@ const ModuleToolbar = ({
               )}
             </TabsList>
           </Tabs>
-</div>
-        )}
+        </div>
+      )}
 
       {/* ── Search + filter ─────────────────────────────────────────────────
            flex-1 + min-w-0 lets this row grow to fill remaining space on sm+;
@@ -218,7 +218,7 @@ const ModuleToolbar = ({
             ) : (
               <Button
                 type="button"
-                className="h-9 bg-transparent px-3 text-brand-blue"
+                className="text-brand-blue h-9 bg-transparent px-3"
                 onClick={bulkMode.onToggle}
               >
                 <Layers className="size-4" />
@@ -237,7 +237,7 @@ const ModuleToolbar = ({
             {index > 0 && <Separator orientation="vertical" className="h-8!" />}
             <Button
               type="button"
-              className="h-9 bg-transparent px-3 text-brand-blue"
+              className="text-brand-blue h-9 bg-transparent px-3"
               disabled={action.disabled}
               onClick={action.onClick}
               aria-label={action.label}
