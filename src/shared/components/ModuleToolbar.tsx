@@ -46,9 +46,9 @@ export interface BulkModeState {
 
 export interface ModuleToolbarProps {
   // ── Tabs ──────────────────────────────────────────────────────────────────
-  tabs: TabConfig[]
-  activeTab: string
-  onTabChange: (value: string) => void
+  tabs?: TabConfig[]
+  activeTab?: string
+  onTabChange?: (value: string) => void
   moreOptions?: TabConfig[]
 
   // ── Search ────────────────────────────────────────────────────────────────
@@ -102,11 +102,11 @@ const ModuleToolbar = ({
            On mobile (< sm): basis-full forces tabs onto their own dedicated
            row so they never compete for space with search.
            On sm+: shrinks back to content width and sits inline with search. */}
-      <div className="w-full overflow-x-auto sm:w-auto sm:shrink-0 [&::-webkit-scrollbar]:hidden">
-        {tabs.length > 0 && (
+      {((tabs && tabs.length > 0) || (moreOptions && moreOptions.length > 0)) && (
+        <div className="w-full overflow-x-auto sm:w-auto sm:shrink-0 [&::-webkit-scrollbar]:hidden">
           <Tabs value={activeTab} onValueChange={onTabChange} className="w-fit gap-0">
             <TabsList className="font-small h-11 px-1.5">
-              {tabs.map((tab) => (
+              {tabs?.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
@@ -119,13 +119,14 @@ const ModuleToolbar = ({
                   {tab.label}
                 </TabsTrigger>
               ))}
+
               {moreOptions && moreOptions.length > 0 && (
-                <div className={'flex h-8 rounded-xl'}>
+                <div className="flex h-8 rounded-xl">
                   <Dropdown
-                    defaultValue={'More'}
+                    defaultValue="More"
                     options={moreOptions}
                     onValueChange={(newValue: string) => {
-                      onTabChange(newValue)
+                      onTabChange?.(newValue)
                     }}
                     activeTab={activeTab}
                   />
@@ -133,8 +134,8 @@ const ModuleToolbar = ({
               )}
             </TabsList>
           </Tabs>
+</div>
         )}
-      </div>
 
       {/* ── Search + filter ─────────────────────────────────────────────────
            flex-1 + min-w-0 lets this row grow to fill remaining space on sm+;
