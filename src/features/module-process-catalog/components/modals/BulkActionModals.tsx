@@ -5,7 +5,6 @@
  * Reject: simple confirm with Cancel + Reject gradient buttons.
  * Return (Figma 6349-327515): includes a required "Reason" text field.
  *
- * All use #F1F3F5 background, rounded-2xl, gradient pill buttons.
  */
 import { useState } from 'react'
 import { X } from 'lucide-react'
@@ -54,7 +53,7 @@ export function BulkApproveModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showClose={false}
-        className="max-w-lg gap-8 rounded-2xl bg-[#F1F3F5] p-8 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]"
+        className="bg-accent max-w-lg gap-8 rounded-2xl p-8 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]"
       >
         {/* Header */}
         <div className="flex items-start gap-2">
@@ -124,7 +123,7 @@ export function BulkRejectModal({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         showClose={false}
-        className="max-w-lg gap-8 rounded-2xl bg-[#F1F3F5] p-8 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]"
+        className="bg-accent max-w-lg gap-8 rounded-2xl p-8 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]"
       >
         {/* Header */}
         <div className="flex items-start gap-2">
@@ -145,7 +144,7 @@ export function BulkRejectModal({
               type="text"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="rounded-2xl border border-[#DFE3E6] bg-white px-6 py-4 text-sm text-[#151718] outline-none placeholder:text-[#A1A8AD] focus:border-[#0047BA]"
+              className="rounded-2xl border border-[#DFE3E6] bg-white px-6 py-4 text-sm text-[#151718] outline-none placeholder:text-[#A1A8AD] focus:border-brand-blue"
               placeholder="Enter reject reason..."
             />
           </div>
@@ -207,7 +206,7 @@ export function BulkReturnModal({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         showClose={false}
-        className="max-w-lg gap-8 rounded-2xl bg-[#F1F3F5] p-8 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]"
+        className="bg-accent max-w-lg gap-8 rounded-2xl p-8 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]"
       >
         {/* Header */}
         <div className="flex items-start gap-2">
@@ -232,7 +231,7 @@ export function BulkReturnModal({
             type="text"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            className="rounded-2xl border border-[#DFE3E6] bg-white px-6 py-4 text-sm text-[#151718] outline-none placeholder:text-[#A1A8AD] focus:border-[#0047BA]"
+            className="rounded-2xl border border-[#DFE3E6] bg-white px-6 py-4 text-sm text-[#151718] outline-none placeholder:text-[#A1A8AD] focus:border-brand-blue"
             placeholder="Enter return reason..."
           />
         </div>

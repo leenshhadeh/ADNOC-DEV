@@ -75,7 +75,7 @@ const NotificationsDrawer = ({
         <div className="flex items-center justify-between px-6 py-5">
           <div className="flex items-center gap-3">
             <h2 className="text-[26px] leading-none font-semibold text-[#151718]">Notifications</h2>
-            <span className="flex h-8 min-w-8 items-center justify-center rounded-full bg-[#F1F3F5] px-2 text-[16px] font-semibold text-[#151718]">
+            <span className="bg-accent text-foreground flex h-8 min-w-8 items-center justify-center rounded-full px-2 text-[16px] font-semibold">
               {unreadCount}
             </span>
           </div>
@@ -83,7 +83,7 @@ const NotificationsDrawer = ({
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#151718] transition hover:bg-[#F1F3F5]"
+            className="text-foreground hover:bg-accent inline-flex h-10 w-10 items-center justify-center rounded-full transition"
             aria-label="Close"
           >
             <X className="h-5 w-5 cursor-pointer" />
@@ -101,7 +101,7 @@ const NotificationsDrawer = ({
                 <button
                   type="button"
                   onClick={onMarkAllAsRead}
-                  className="flex cursor-pointer items-center gap-1 text-[14px] text-[#0047BA] transition hover:opacity-70"
+                  className="flex cursor-pointer items-center gap-1 text-[14px] text-brand-blue transition hover:opacity-70"
                 >
                   <Check className="h-4.5 w-4.5" />
                   Mark all as read

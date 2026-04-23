@@ -143,8 +143,8 @@ function ProcessNameSuggestions({ suggestions, onSelect }: ProcessNameSuggestion
   return (
     <div className="absolute top-full left-0 z-20 mt-1 w-full overflow-hidden rounded-2xl border border-[#DFE3E6] bg-white shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]">
       {/* Search row */}
-      <div className="flex items-center gap-2 border-b border-[#DFE3E6] bg-[#F1F3F5] px-3 py-2">
-        <Search className="size-4 shrink-0 text-[#0047BA]" />
+      <div className="flex items-center gap-2 border-b border-[#DFE3E6] bg-accent px-3 py-2">
+        <Search className="size-4 shrink-0 text-brand-blue" />
         <input
           ref={inputRef}
           value={search}
@@ -161,7 +161,7 @@ function ProcessNameSuggestions({ suggestions, onSelect }: ProcessNameSuggestion
             <button
               key={i}
               type="button"
-              className="flex w-full items-center border-b border-[#DFE3E6]/50 px-3 py-2 text-left text-sm font-normal text-[#687076] transition-colors last:border-b-0 hover:bg-[#F1F3F5]"
+              className="flex w-full items-center border-b border-[#DFE3E6]/50 px-3 py-2 text-left text-sm font-normal text-[#687076] transition-colors last:border-b-0 hover:bg-accent"
               onMouseDown={(e) => {
                 e.preventDefault()
                 onSelect(name)
@@ -351,7 +351,7 @@ const Level4FormTable = ({
           <button
             type="button"
             onClick={onAddRow}
-            className="flex items-center gap-1 text-sm font-medium text-[#0047BA] hover:underline focus-visible:underline focus-visible:outline-none"
+            className="flex items-center gap-1 text-sm font-medium text-brand-blue hover:underline focus-visible:underline focus-visible:outline-none"
           >
             <Plus className="size-4" />
             Add Level 4
@@ -509,7 +509,7 @@ const AddLevel4sModal = ({
     <div className="bg-foreground/40 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-[1px]">
       <div
         className={cn(
-          'flex flex-col rounded-2xl bg-[#F1F3F5] p-8 shadow-2xl',
+          'flex flex-col rounded-2xl bg-accent p-8 shadow-2xl',
           step === 'select' ? 'max-h-[90vh] w-full max-w-xl' : 'h-[90vh] w-full max-w-5xl',
         )}
       >

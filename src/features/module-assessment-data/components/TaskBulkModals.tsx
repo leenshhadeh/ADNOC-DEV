@@ -110,7 +110,7 @@ export const RequestEndorsementModal = ({
         <div className="relative">
           <div
             className={`flex min-h-[48px] flex-wrap items-center gap-1.5 rounded-xl border bg-white px-3 py-2 ${
-              isDropdownOpen ? 'border-[#0047BA] ring-2 ring-[#0047BA]/20' : 'border-border'
+              isDropdownOpen ? 'border-brand-blue ring-2 ring-brand-blue/20' : 'border-border'
             }`}
             onClick={() => setIsDropdownOpen(true)}
           >
@@ -166,7 +166,7 @@ export const RequestEndorsementModal = ({
                       >
                         <span
                           className={`flex size-4 shrink-0 items-center justify-center rounded border ${
-                            isSelected ? 'border-[#0047BA] bg-[#0047BA]' : 'border-border bg-white'
+                            isSelected ? 'border-brand-blue bg-brand-blue' : 'border-border bg-white'
                           }`}
                         >
                           {isSelected && <Check className="size-3 text-white" />}

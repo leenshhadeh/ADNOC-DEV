@@ -40,7 +40,7 @@ const TaskBulkActionBar = ({ selectedCount, onAction, onCancel }: TaskBulkAction
             <Button
               type="button"
               variant="ghost"
-              className="gap-1 text-sm font-medium text-[#0047BA] hover:bg-transparent hover:text-[#0047BA]/80"
+              className="gap-1 text-sm font-medium text-brand-blue hover:bg-transparent hover:text-brand-blue/80"
               disabled={selectedCount === 0}
               onClick={() => onAction('approve')}
             >
@@ -57,7 +57,7 @@ const TaskBulkActionBar = ({ selectedCount, onAction, onCancel }: TaskBulkAction
             <Button
               type="button"
               variant="ghost"
-              className="gap-1 text-sm font-medium text-[#0047BA] hover:bg-transparent hover:text-[#0047BA]/80"
+              className="gap-1 text-sm font-medium text-brand-blue hover:bg-transparent hover:text-brand-blue/80"
               disabled={selectedCount === 0}
               onClick={() => onAction('return')}
             >
@@ -91,7 +91,7 @@ const TaskBulkActionBar = ({ selectedCount, onAction, onCancel }: TaskBulkAction
             <Button
               type="button"
               variant="ghost"
-              className="gap-1 text-sm font-medium text-[#0047BA] hover:bg-transparent hover:text-[#0047BA]/80"
+              className="gap-1 text-sm font-medium text-brand-blue hover:bg-transparent hover:text-brand-blue/80"
               disabled={selectedCount === 0}
               onClick={() => onAction('request-endorsement')}
             >

@@ -172,3 +172,24 @@ export function bulkRejectTasks(body: BulkRejectRequest): Promise<BulkActionResp
     ),
   )
 }
+
+/** POST /api/tasks/:taskId/request-endorsement — body: { endorserNames, reason } */
+export function requestEndorsement(
+  taskId: string,
+  endorserNames: string[],
+  reason: string,
+): Promise<TaskActionResponse> {
+  void endorserNames
+  void reason
+  return new Promise((resolve) =>
+    setTimeout(
+      () =>
+        resolve({
+          taskId,
+          status: 'approved',
+          message: 'Endorsement request has been sent.',
+        }),
+      SIMULATED_LATENCY_MS,
+    ),
+  )
+}

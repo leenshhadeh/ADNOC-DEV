@@ -16,7 +16,7 @@ interface TargetRecommendationsTabProps {
 const ReadOnlyDropdown = ({ label, value }: { label: string; value: string }) => (
   <div className="flex min-w-[280px] flex-1 flex-col gap-2">
     <span className="text-base font-normal text-[#889096]">{label}</span>
-    <div className="flex items-center rounded-2xl border border-[#DFE3E6] bg-[#F1F3F5] px-4 py-3">
+    <div className="flex items-center rounded-2xl border border-[#DFE3E6] bg-accent px-4 py-3">
       <span className="flex-1 text-base font-medium text-[#889096]">{value || '—'}</span>
     </div>
   </div>

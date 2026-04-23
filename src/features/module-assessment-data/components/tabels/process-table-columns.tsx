@@ -886,7 +886,7 @@ export const getProcessTableColumns = ({
     size: 180,
     enableSorting: false,
     cell: (info) => (
-      <div className="text-muted-foreground rounded-[99px] bg-[#F1F3F5] p-1 text-center">
+      <div className="text-muted-foreground bg-accent rounded-[99px] p-1 text-center">
         {info.getValue<string>()}
       </div>
     ),

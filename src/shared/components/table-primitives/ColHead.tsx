@@ -38,7 +38,7 @@ const ColHead = ({
       ...(isSticky ? { position: 'sticky', left: leftOffset ?? 0, zIndex: 20 } : {}),
     }}
     className={cn(
-      'border-border text-muted-foreground sticky top-0 border-b bg-[#F1F3F5] py-2 text-xs font-semibold tracking-wide uppercase',
+      'border-border text-muted-foreground sticky top-0 border-b bg-accent py-2 text-xs font-semibold tracking-wide uppercase',
       isSticky ? 'z-20' : 'z-10',
       className,
     )}

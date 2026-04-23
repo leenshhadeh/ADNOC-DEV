@@ -128,7 +128,7 @@ const NameCell = ({
             type="checkbox"
             checked={isSelected}
             onChange={(e) => onToggleSelection?.(e.target.checked)}
-            className="h-4 w-4 cursor-pointer rounded-[2px] accent-[#0047BA]"
+            className="h-4 w-4 cursor-pointer rounded-[2px] accent-brand-blue"
             aria-label={`Select ${name}`}
           />
         ) : (

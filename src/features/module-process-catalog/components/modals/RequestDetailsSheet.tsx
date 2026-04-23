@@ -175,13 +175,13 @@ function ChangeAccordionItem({ change }: { change: RequestItem['changes'][number
         <div className="flex flex-col gap-6 pb-4">
           <div>
             <p className="mb-2 text-base font-normal text-[#889096]">Old Value</p>
-            <div className="min-h-10 rounded-2xl border border-[#DFE3E6] bg-[#F1F3F5] px-6 py-3 text-base font-medium text-[#889096]">
+            <div className="bg-accent min-h-10 rounded-2xl border border-[#DFE3E6] px-6 py-3 text-base font-medium text-[#889096]">
               {change.oldValue}
             </div>
           </div>
           <div>
             <p className="mb-2 text-base font-normal text-[#889096]">New Value</p>
-            <div className="min-h-10 rounded-2xl border border-[#DFE3E6] bg-[#F1F3F5] px-6 py-4 text-base leading-6 font-medium text-[#889096]">
+            <div className="bg-accent min-h-10 rounded-2xl border border-[#DFE3E6] px-6 py-4 text-base leading-6 font-medium text-[#889096]">
               {change.newValue}
             </div>
           </div>
@@ -252,25 +252,23 @@ const RequestDetailsSheet = ({ request, open, onOpenChange }: RequestDetailsShee
                 </button>
               </div>
             </div>
-
+            {/* Stage header */}
+            <div className="mt-4 flex items-center gap-2">
+              <p className="text-foreground text-md font-medium">
+                Stage {request.stageCurrent}/{request.stageTotal}
+              </p>
+              <Badge className="h-6 rounded-full border-transparent bg-[#FEE5D3] px-1.5 text-xs font-normal text-[#151718]">
+                {request.stageText}
+              </Badge>
+            </div>
             {/* Stage card */}
             <div
               className="mt-6 rounded-2xl p-3 px-4"
               style={{
-                background: 'linear-gradient(180deg, #E9EFFF 0%, #FFFFFF 92%)',
+                // background: 'linear-gradient(180deg, #E9EFFF 0%, #FFFFFF 92%)',
                 boxShadow: '7px 8px 28px 0px rgba(0,0,0,0.2)',
               }}
             >
-              {/* Stage header */}
-              <div className="mb-4 flex items-center gap-2">
-                <p className="text-foreground text-base font-medium">
-                  Stage {request.stageCurrent}/{request.stageTotal}
-                </p>
-                <Badge className="h-6 rounded-full border-transparent bg-[#FEE5D3] px-1.5 text-xs font-normal text-[#151718]">
-                  {request.stageText}
-                </Badge>
-              </div>
-
               {/* Horizontal stepper */}
               <WorkflowStepper currentStep={request.stageCurrent} totalSteps={request.stageTotal} />
 

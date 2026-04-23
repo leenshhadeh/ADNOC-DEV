@@ -29,7 +29,7 @@ function BreadcrumbItem({ className, ...props }: React.ComponentProps<'li'>) {
 
 function BreadcrumbLink({
   className,
-  color = '#0047BA',
+  color = 'var(--brand-blue)',
   style,
   ...props
 }: React.ComponentProps<'a'> & { color?: string }) {

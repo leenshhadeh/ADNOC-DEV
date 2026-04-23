@@ -36,7 +36,7 @@ const RowActions = <TData,>({ rowData, actions }: RowActionsProps<TData>) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="min-w-56 rounded-2xl bg-[#F1F3F5] p-0 shadow-[0px_10px_30px_rgba(0,0,0,0.2)]"
+        className="bg-accent min-w-56 rounded-2xl p-0 shadow-[0px_10px_30px_rgba(0,0,0,0.2)]"
       >
         {actions.map((action, index) => (
           <div key={action.id}>

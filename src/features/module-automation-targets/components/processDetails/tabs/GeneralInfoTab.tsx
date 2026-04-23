@@ -31,7 +31,7 @@ const DefinitionItem = ({
 const ReadOnlyField = ({ label, value }: { label: string; value: string }) => (
   <div className="flex min-w-[280px] flex-1 flex-col gap-2">
     <span className="text-base font-normal text-[#889096]">{label}</span>
-    <div className="rounded-2xl border border-[#DFE3E6] bg-[#F1F3F5] px-6 py-3">
+    <div className="rounded-2xl border border-[#DFE3E6] bg-accent px-6 py-3">
       <span className="text-base font-medium text-[#889096]">{value || '—'}</span>
     </div>
   </div>
@@ -42,7 +42,7 @@ const ReadOnlyField = ({ label, value }: { label: string; value: string }) => (
 const ReadOnlyTextarea = ({ label, value }: { label: string; value: string }) => (
   <div className="flex min-w-[280px] flex-1 flex-col gap-2">
     <span className="text-base font-normal text-[#889096]">{label}</span>
-    <div className="min-h-[80px] rounded-2xl border border-[#DFE3E6] bg-[#F1F3F5] px-6 py-4">
+    <div className="min-h-[80px] rounded-2xl border border-[#DFE3E6] bg-accent px-6 py-4">
       <span className="text-base font-medium text-[#889096]">{value || '—'}</span>
     </div>
   </div>
@@ -51,7 +51,7 @@ const ReadOnlyTextarea = ({ label, value }: { label: string; value: string }) =>
 /* ── Tag chip for focal points ───────────────────────────────────────────────── */
 
 const TagChip = ({ label }: { label: string }) => (
-  <span className="rounded-full border border-[#DFE3E6]/50 bg-[#F1F3F5] px-3 py-1.5 text-xs font-medium text-[#889096]">
+  <span className="rounded-full border border-[#DFE3E6]/50 bg-accent px-3 py-1.5 text-xs font-medium text-[#889096]">
     {label}
   </span>
 )
@@ -61,7 +61,7 @@ const TagChip = ({ label }: { label: string }) => (
 const TagDropdownField = ({ label, values }: { label: string; values: string[] }) => (
   <div className="flex min-w-[280px] flex-1 flex-col gap-2">
     <span className="text-base font-normal text-[#889096]">{label}</span>
-    <div className="flex items-center gap-2 rounded-2xl border border-[#DFE3E6] bg-[#F1F3F5] px-4 py-2">
+    <div className="flex items-center gap-2 rounded-2xl border border-[#DFE3E6] bg-accent px-4 py-2">
       <div className="flex flex-1 flex-wrap items-center gap-1">
         {values.length > 0 ? (
           values.map((v) => <TagChip key={v} label={v} />)
@@ -90,7 +90,7 @@ const ToggleItem = ({
       <span className="text-sm font-light text-[#687076]">{label}</span>
       <div className="flex items-center gap-2 pt-1 opacity-50">
         <div
-          className={`flex h-5 w-9 items-center rounded-full p-[1px] ${value ? 'justify-end bg-[#0047BA]' : 'justify-start bg-[#889096]'}`}
+          className={`flex h-5 w-9 items-center rounded-full p-[1px] ${value ? 'justify-end bg-brand-blue' : 'justify-start bg-[#889096]'}`}
         >
           <div className="size-[18px] rounded-full bg-white" />
         </div>

@@ -44,7 +44,7 @@ const ViewAll = ({ open, onOpenChange, taskGroups, onViewAll }: ViewAllProps) =>
         <div className="flex items-center justify-between px-6 py-5">
           <div className="flex items-center gap-3">
             <h2 className="text-[26px] leading-none font-semibold text-[#151718]">My tasks</h2>
-            <span className="flex h-8 min-w-8 items-center justify-center rounded-full bg-[#F1F3F5] px-2 text-[16px] font-semibold text-[#151718]">
+            <span className="bg-accent text-foreground flex h-8 min-w-8 items-center justify-center rounded-full px-2 text-[16px] font-semibold">
               {totalCount}
             </span>
           </div>
@@ -52,7 +52,7 @@ const ViewAll = ({ open, onOpenChange, taskGroups, onViewAll }: ViewAllProps) =>
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#151718] transition hover:bg-[#F1F3F5]"
+            className="text-foreground hover:bg-accent inline-flex h-10 w-10 items-center justify-center rounded-full transition"
             aria-label="Close"
           >
             <X className="h-5 w-5 cursor-pointer" />
@@ -73,14 +73,14 @@ const ViewAll = ({ open, onOpenChange, taskGroups, onViewAll }: ViewAllProps) =>
                       <h3 className="text-[14px] font-medium text-[#687076]">
                         {group.module.title}
                       </h3>
-                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#F1F3F5] px-1.5 text-[10px] font-medium text-[#687076]">
+                      <span className="bg-accent text-muted-foreground flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-medium">
                         {group.items.length}
                       </span>
                     </div>
 
                     <button
                       type="button"
-                      className="cursor-pointer text-[14px] font-semibold text-[#0047BA] transition hover:opacity-70"
+                      className="cursor-pointer text-[14px] font-semibold text-brand-blue transition hover:opacity-70"
                       onClick={() => {
                         onViewAll(group.module.title, group.module.url)
                         onOpenChange(false)

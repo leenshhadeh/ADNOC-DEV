@@ -19,7 +19,7 @@ const TaskActionFooter = ({
     <Button
       variant="ghost"
       disabled={disabled}
-      className="shrink-0 text-sm font-medium text-[#0047BA] hover:bg-transparent hover:text-[#0047BA]/80 disabled:opacity-50"
+      className="shrink-0 text-sm font-medium text-brand-blue hover:bg-transparent hover:text-brand-blue/80 disabled:opacity-50"
       onClick={onCancel}
     >
       Cancel

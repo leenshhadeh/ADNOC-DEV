@@ -57,7 +57,7 @@ const ActionBarButton = ({
     type="button"
     onClick={onClick}
     disabled={disabled || isPending}
-    className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40 ${variant === 'destructive' ? 'text-[#EB3865]' : 'text-[#0047BA]'} ${active ? 'bg-[#0047BA]/10' : ''}`}
+    className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40 ${variant === 'destructive' ? 'text-[#EB3865]' : 'text-brand-blue'} ${active ? 'bg-brand-blue/10' : ''}`}
   >
     {isPending ? <Loader2 className="size-4 animate-spin" /> : icon}
     {label}
@@ -272,7 +272,7 @@ const ProcessDetailActionBar = ({ processId, activeTab }: ProcessDetailActionBar
             <button
               type="button"
               disabled={isAnyPending}
-              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-[#0047BA] transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-brand-blue transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
             >
               More
               <ChevronDown className="size-4" />
@@ -280,7 +280,7 @@ const ProcessDetailActionBar = ({ processId, activeTab }: ProcessDetailActionBar
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="min-w-48 rounded-2xl bg-[#F1F3F5] p-0 shadow-[0px_10px_30px_rgba(0,0,0,0.2)]"
+            className="min-w-48 rounded-2xl bg-accent p-0 shadow-[0px_10px_30px_rgba(0,0,0,0.2)]"
           >
             {canDiscard && (
               <DropdownMenuItem

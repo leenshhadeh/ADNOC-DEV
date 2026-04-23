@@ -8,7 +8,7 @@
  */
 
 import type { LucideProps } from 'lucide-react'
-import {Layers, Search, X } from 'lucide-react'
+import { Layers, Search, X } from 'lucide-react'
 
 import ShapeIcon from '@/assets/icons/Shape.svg?react'
 
@@ -103,28 +103,24 @@ const ModuleToolbar = ({
            row so they never compete for space with search.
            On sm+: shrinks back to content width and sits inline with search. */}
       <div className="w-full overflow-x-auto sm:w-auto sm:shrink-0 [&::-webkit-scrollbar]:hidden">
-        {/*
-          w-fit is critical: Tabs renders as flex-col whose align-items:stretch would
-          otherwise force TabsList to fill the parent width, squishing all tab labels.
-          w-fit lets the list size to its natural content width → overflow → scroll works.
-        */}
-        <Tabs value={activeTab} onValueChange={onTabChange} className="w-fit gap-0">
-          <TabsList className="font-small h-11 px-1.5">
-            {tabs.map((tab) => (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className={cn(
-                  'h-8 rounded-xl px-4',
-                  'font-light',
-                  'data-[state=active]:font-medium',
-                )}
-              >
-                {tab.label}
-              </TabsTrigger>
-            ))}
-            {moreOptions && moreOptions.length > 0 && (
-              <div className={'flex h-8 rounded-xl'} >
+        {tabs.length > 0 && (
+          <Tabs value={activeTab} onValueChange={onTabChange} className="w-fit gap-0">
+            <TabsList className="font-small h-11 px-1.5">
+              {tabs.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className={cn(
+                    'h-8 rounded-xl px-4',
+                    'font-light',
+                    'data-[state=active]:font-medium',
+                  )}
+                >
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+              {moreOptions && moreOptions.length > 0 && (
+                <div className={'flex h-8 rounded-xl'}>
                   <Dropdown
                     defaultValue={'More'}
                     options={moreOptions}
@@ -134,9 +130,10 @@ const ModuleToolbar = ({
                     activeTab={activeTab}
                   />
                 </div>
-            )}
-          </TabsList>
-        </Tabs>
+              )}
+            </TabsList>
+          </Tabs>
+        )}
       </div>
 
       {/* ── Search + filter ─────────────────────────────────────────────────
@@ -220,7 +217,7 @@ const ModuleToolbar = ({
             ) : (
               <Button
                 type="button"
-                className="h-9 bg-transparent px-3 text-[#0047BA]"
+                className="h-9 bg-transparent px-3 text-brand-blue"
                 onClick={bulkMode.onToggle}
               >
                 <Layers className="size-4" />
@@ -239,7 +236,7 @@ const ModuleToolbar = ({
             {index > 0 && <Separator orientation="vertical" className="h-8!" />}
             <Button
               type="button"
-              className="h-9 bg-transparent px-3 text-[#0047BA]"
+              className="h-9 bg-transparent px-3 text-brand-blue"
               disabled={action.disabled}
               onClick={action.onClick}
               aria-label={action.label}

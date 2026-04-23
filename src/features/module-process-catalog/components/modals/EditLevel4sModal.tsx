@@ -76,8 +76,8 @@ function ProcessNameSuggestions({ suggestions, onSelect }: ProcessNameSuggestion
   return (
     <div className="absolute top-full left-0 z-20 mt-1 w-full overflow-hidden rounded-2xl border border-[#DFE3E6] bg-white shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]">
       {/* Search row */}
-      <div className="flex items-center gap-2 border-b border-[#DFE3E6] bg-[#F1F3F5] px-3 py-2">
-        <Search className="size-4 shrink-0 text-[#0047BA]" />
+      <div className="border-border bg-accent flex items-center gap-2 border-b px-3 py-2">
+        <Search className="size-4 shrink-0 text-brand-blue" />
         <input
           ref={inputRef}
           value={search}
@@ -94,7 +94,7 @@ function ProcessNameSuggestions({ suggestions, onSelect }: ProcessNameSuggestion
             <button
               key={i}
               type="button"
-              className="flex w-full items-center border-b border-[#DFE3E6]/50 px-3 py-2 text-left text-sm font-normal text-[#687076] transition-colors last:border-b-0 hover:bg-[#F1F3F5]"
+              className="border-border/50 text-muted-foreground hover:bg-accent flex w-full items-center border-b px-3 py-2 text-left text-sm font-normal transition-colors last:border-b-0"
               onMouseDown={(e) => {
                 e.preventDefault()
                 onSelect(name)
@@ -267,7 +267,7 @@ export const EditLevel4sModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-[1px]">
-      <div className="flex h-[90vh] w-full max-w-6xl flex-col gap-8 rounded-2xl bg-[#F1F3F5] p-8 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]">
+      <div className="bg-accent flex h-[90vh] w-full max-w-6xl flex-col gap-8 rounded-2xl p-8 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]">
         {/* ── Header block ── */}
         <div className="flex shrink-0 flex-col gap-[18px]">
           {/* Title row */}
@@ -354,7 +354,7 @@ export const EditLevel4sModal = ({
                   <button
                     type="button"
                     onClick={handleAddRow}
-                    className="flex items-center gap-1 text-sm font-medium text-[#0047BA] hover:underline focus-visible:underline focus-visible:outline-none"
+                    className="flex items-center gap-1 text-sm font-medium text-brand-blue hover:underline focus-visible:underline focus-visible:outline-none"
                   >
                     <Plus className="size-4" />
                     Add Level 4

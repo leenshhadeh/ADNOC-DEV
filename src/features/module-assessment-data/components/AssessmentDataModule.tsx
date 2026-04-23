@@ -115,7 +115,7 @@ const AssessmentDataModule = () => {
   const [processView, setProcessView] = useState<ProcessViewOptionId>('published')
 
   // API:
-  const { data, isLoading, isError , error } = useGetAssessmentProcess(processView)
+  const { data, isLoading, isError, error } = useGetAssessmentProcess(processView)
 
   const userRole = useUserStore((s) => s.user.role)
   const canCommentOnField = hasPermission(userRole, 'COMMENT_ON_FIELD')
@@ -147,8 +147,8 @@ const AssessmentDataModule = () => {
     if (data) {
       setDataSet(data)
     }
-    if(isError){
-      console.log('Error fetching Assessment data:',error)
+    if (isError) {
+      console.log('Error fetching Assessment data:', error)
     }
   }, [data])
 

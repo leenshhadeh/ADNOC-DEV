@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import { ChevronDown, Eye, MoreHorizontal, Pencil, Plus, RotateCcw } from 'lucide-react'
 
-import { EditLevel4sModal } from './EditLevel4sModal'
+import { EditLevel4sModal } from './modals/EditLevel4sModal'
 import {
   useGetLevel4s,
   useGetLevel4Names,
@@ -92,7 +92,7 @@ const DraftNameInput = ({
           >
             !
           </button>
-          <div className="pointer-events-none absolute right-0 bottom-full z-50 mb-2 hidden w-[220px] rounded-xl bg-[#F1F3F5] px-4 py-3 text-sm leading-snug text-[#151718] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] group-hover/err:block">
+          <div className="bg-accent pointer-events-none absolute right-0 bottom-full z-50 mb-2 hidden w-[220px] rounded-xl px-4 py-3 text-sm leading-snug text-[#151718] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] group-hover/err:block">
             Process name is required. Please add a process name before submitting.
           </div>
         </div>
@@ -136,7 +136,7 @@ const DraftDescriptionInput = ({
           >
             !
           </button>
-          <div className="pointer-events-none absolute right-0 bottom-full z-50 mb-2 hidden w-[220px] rounded-xl bg-[#F1F3F5] px-4 py-3 text-sm leading-snug text-[#151718] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] group-hover/err:block">
+          <div className="bg-accent pointer-events-none absolute right-0 bottom-full z-50 mb-2 hidden w-[220px] rounded-xl px-4 py-3 text-sm leading-snug text-[#151718] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] group-hover/err:block">
             Description is required. Please add a description before submitting.
           </div>
         </div>
@@ -209,7 +209,7 @@ const EntitySiteCell = ({
         <>
           <button
             type="button"
-            className="text-xs font-medium whitespace-nowrap text-[#0047BA] hover:underline"
+            className="text-xs font-medium whitespace-nowrap text-brand-blue hover:underline"
             onClick={() => setEditOpen(true)}
           >
             Edit L4s
@@ -287,7 +287,7 @@ const CellRowActions = ({ item, actions }: { item: ProcessItem; actions: Catalog
           className={cn(
             'flex items-center gap-3 rounded-none px-4 py-2.5 text-sm font-normal transition-colors',
             'border-b border-transparent',
-            'hover:border-b hover:border-[#0047ba]',
+            'hover:border-b hover:border-brand-blue',
             i < actions.length - 1 && 'border-border border-b',
           )}
         >
@@ -313,7 +313,7 @@ const SwitchToDraftConfirmModal = ({
   if (!open) return null
   return (
     <div className="bg-foreground/40 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-[1px]">
-      <div className="w-full max-w-sm rounded-2xl bg-[#F1F3F5] p-6 shadow-2xl">
+      <div className="bg-accent w-full max-w-sm rounded-2xl p-6 shadow-2xl">
         <h2 className="text-foreground text-lg font-semibold">Switch to Draft?</h2>
         <p className="text-muted-foreground mt-2 text-sm">
           This will create a draft from the published version. The published version will remain
@@ -377,14 +377,14 @@ function Level3RowActions({
         >
           <DropdownMenuItem
             onSelect={() => onViewRecordedChanges(item)}
-            className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-[#0047ba]"
+            className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-brand-blue"
           >
             <Eye className="text-muted-foreground size-4 shrink-0" />
             View recorded changes
           </DropdownMenuItem>
           <DropdownMenuItem
             onSelect={() => setConfirmOpen(true)}
-            className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-[#0047ba]"
+            className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-brand-blue"
           >
             <RotateCcw className="text-muted-foreground size-4 shrink-0" />
             <span>
@@ -394,7 +394,7 @@ function Level3RowActions({
           <PermissionGuard action="ADD_LEVEL_4">
             <DropdownMenuItem
               onSelect={() => onAddL4s(item)}
-              className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-[#0047ba]"
+              className="border-border flex items-center gap-3 rounded-none border-b px-4 py-2.5 text-sm font-normal transition-colors hover:border-brand-blue"
             >
               <Plus className="text-muted-foreground size-4 shrink-0" />
               Add L4s
@@ -654,12 +654,13 @@ export function buildCatalogColumns(
       const rows = info.table.getRowModel().rows
       const prev = info.row.index > 0 ? rows[info.row.index - 1] : null
       if (prev?.original.domain === info.row.original.domain) return null
+      const isFullReport = info.table.options.meta?.isFullReport ?? false
       const domainName =
         domains.find((d) => d.id === info.row.original.domain)?.name ?? info.row.original.domain
       return (
         <div className="flex w-full min-w-0 items-center gap-1">
           <span className="text-foreground flex-1 truncate text-sm font-medium">{domainName}</span>
-          {domainActions.length > 0 && (
+          {domainActions.length > 0 && !isFullReport && (
             <CellRowActions item={info.row.original} actions={domainActions} />
           )}
         </div>
@@ -687,6 +688,7 @@ export function buildCatalogColumns(
       const isDraftL1 = info.row.original.level3Status === 'Draft' && !info.row.original.level1Name
       const isFirstDraft = info.table.options.meta?.firstDraftRowId === info.row.original.id
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const isFullReport = info.table.options.meta?.isFullReport ?? false
 
       if (isDraftL1 && onUpdate) {
         return (
@@ -710,7 +712,9 @@ export function buildCatalogColumns(
             </span>
             <span className="text-muted-foreground text-xs">{info.row.original.level1Code}</span>
           </div>
-          {l1Actions.length > 0 && <CellRowActions item={info.row.original} actions={l1Actions} />}
+          {l1Actions.length > 0 && !isFullReport && (
+            <CellRowActions item={info.row.original} actions={l1Actions} />
+          )}
         </div>
       )
     },
@@ -736,6 +740,7 @@ export function buildCatalogColumns(
       const isDraftL2 = info.row.original.level3Status === 'Draft' && !info.row.original.level2Name
       const isFirstDraft = info.table.options.meta?.firstDraftRowId === info.row.original.id
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const isFullReport = info.table.options.meta?.isFullReport ?? false
 
       if (isDraftL2 && onUpdate) {
         return (
@@ -759,7 +764,9 @@ export function buildCatalogColumns(
             </span>
             <span className="text-muted-foreground text-xs">{info.row.original.level2Code}</span>
           </div>
-          {l2Actions.length > 0 && <CellRowActions item={info.row.original} actions={l2Actions} />}
+          {l2Actions.length > 0 && !isFullReport && (
+            <CellRowActions item={info.row.original} actions={l2Actions} />
+          )}
         </div>
       )
     },
@@ -797,7 +804,7 @@ export function buildCatalogColumns(
               />
               <span className="text-muted-foreground text-xs">{info.row.original.level3Code}</span>
             </div>
-            {rowActions && !isBulkMode && (
+            {rowActions && !isBulkMode && !isFullReport && (
               <Level3RowActions
                 item={info.row.original}
                 onViewRecordedChanges={rowActions.onViewRecordedChanges}
@@ -826,7 +833,7 @@ export function buildCatalogColumns(
               {info.row.original.level3Code}
             </span>
           </div>
-          {rowActions && !isBulkMode && (
+          {rowActions && !isBulkMode && !isFullReport && (
             <Level3RowActions
               item={info.row.original}
               onViewRecordedChanges={rowActions.onViewRecordedChanges}
