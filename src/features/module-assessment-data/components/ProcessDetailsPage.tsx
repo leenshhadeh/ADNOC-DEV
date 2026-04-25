@@ -81,7 +81,7 @@ const ProcessDetailsPage = () => {
   }, [data])
 
   const handelOnSubmit = () => {
-    // call API to submit the new changes
+    //TODO: call API to submit the new changes 
     console.log('[submit] payload:', updatedData)
   }
 
@@ -93,8 +93,7 @@ const ProcessDetailsPage = () => {
   const onShowComment = (colName?: string) => {
     console.log('colName:', colName)
     setShowComment(true)
-    setCommentField(colName || '')
-    // get Comments(colName) OR Comments(All)
+    setCommentField(colName || '') //TOBeUpdated: first filed should be selected by defualt, each peocess tab has its own first-field
   }
 
   const handleValidate = () => {
@@ -103,6 +102,7 @@ const ProcessDetailsPage = () => {
     }
   }
 
+  // TODO: use a statemengment to perform the actions (mainActions and ApproveRejectActions), somthing like the ProcessDetailActionBar under the "module-automation-targets"
   const mainActions = useMemo<any[]>(
     () => [
       {
@@ -118,6 +118,8 @@ const ProcessDetailsPage = () => {
     ],
     [disableSubmit, handleValidate, handelOnSubmit],
   )
+
+  // TODO: change the icons of apporce,return, reject, and Comment
   const ApproveRejectActions = useMemo<any[]>(
     () => [
       { id: 'Approve', label: 'Approve', icon: Settings2 },
@@ -255,6 +257,7 @@ const ProcessDetailsPage = () => {
               </>
             )}
 
+{/* TODO: add frindly message and add button for reload the page, or go home */}
             {isError && <> Somthing went wrong</>}
           </>
         )}

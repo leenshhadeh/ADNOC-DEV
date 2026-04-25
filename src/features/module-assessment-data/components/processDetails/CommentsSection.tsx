@@ -3,7 +3,6 @@ import { Input } from '@/shared/components/ui/input'
 import { SendHorizontal, X } from 'lucide-react'
 import { useEffect } from 'react'
 import {
-  useGetProcessComments,
   useGetProcessCommentsByField,
 } from '../../hooks/useGetProcessComments'
 import { useCurrentUser } from '@/shared/auth/useUserStore'
@@ -12,9 +11,7 @@ import { useCurrentUser } from '@/shared/auth/useUserStore'
 const CommentsSection = (props: any) => {
   const { onCloseComments, commentField , processId } = props
   const { name } = useCurrentUser()
-  const { data, isLoading } = commentField
-    ? useGetProcessCommentsByField(processId,commentField)
-    : useGetProcessComments(processId)
+  const { data, isLoading } =useGetProcessCommentsByField(processId,commentField) //comments here are only By field, first field will be selected by defulat
 
   useEffect(() => {
     console.log('commentField', commentField, data)
