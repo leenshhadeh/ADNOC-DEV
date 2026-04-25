@@ -1,26 +1,66 @@
 import { MoreHorizontal } from 'lucide-react'
 
 import { Button } from '@/shared/components/ui/button'
+import { SuccessToast } from '@/shared/components/SuccessToast'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import {
+  useArchiveProcess,
+  useMarkProcessAsReviewed,
+  useSubmitProcess,
+  useSwitchProcessToDraft,
+} from '../hooks/useProcessRowActions'
 
 const CellMenuOptions = (props:any) => {
     const navigate = useNavigate()
+    const [toastMessage, setToastMessage] = useState('')
+    const [isToastOpen, setIsToastOpen] = useState(false)
     const { item } = props  /// use item id to perform actions on the specific item
-const options = [
+    const submitProcessMutation = useSubmitProcess()
+    const switchProcessToDraftMutation = useSwitchProcessToDraft()
+    const markProcessAsReviewedMutation = useMarkProcessAsReviewed()
+    const archiveProcessMutation = useArchiveProcess()
+
+const showToast = (message: string) => {
+    setToastMessage(message)
+    setIsToastOpen(true)
+}
+
+const handleSubmit = async () => {
+    const response = await submitProcessMutation.mutateAsync({ processId: item.id })
+    showToast(response.message)
+}
+
+const handleSwitchToDraft = async () => {
+    const response = await switchProcessToDraftMutation.mutateAsync({ processId: item.id })
+    showToast(response.message)
+}
+
+const handleMarkAsReviewed = async () => {
+    const response = await markProcessAsReviewedMutation.mutateAsync({ processId: item.id })
+    showToast(response.message)
+}
+
+const handleArchive = async () => {
+    const response = await archiveProcessMutation.mutateAsync({ processId: item.id })
+    showToast(response.message)
+}
+
+const options = useMemo(() => [
     { label: 'View Details', action: () => onViewItemDetails(item) },
-    { label: 'Switch to Draft version', action: () => console.log('Switch sub-process', item) },
+    { label: 'Switch to Draft version', action: handleSwitchToDraft },
     { label: 'Copy assessment data', action: () => console.log('Copy', item)},
-    { label: 'Mark as reviewed', action: () => console.log('Delete', item) },
-    { label: 'Submit', action: () => console.log('Submit', item)},
-    { label: 'Archive', action: () => console.log('Archive', item)},
+    { label: 'Mark as reviewed', action: handleMarkAsReviewed },
+    { label: 'Submit', action: handleSubmit},
+    { label: 'Archive', action: handleArchive},
     { label: 'Discard', action: () => console.log('Delete', item), destructive: true },
-  ]
+  ], [item])
 
 const onViewItemDetails = (item:any) => {
     // Implement the logic to view item details, e.g., navigate to a details page or open a modal
@@ -28,7 +68,10 @@ const onViewItemDetails = (item:any) => {
 
 }
 
+
+
 return (
+<>
 <DropdownMenu modal={false}>
 <DropdownMenuTrigger asChild>
   <Button
@@ -59,6 +102,12 @@ return (
     ))} 
 </DropdownMenuContent>
 </DropdownMenu>
+<SuccessToast
+  open={isToastOpen}
+  message={toastMessage}
+  onClose={() => setIsToastOpen(false)}
+/>
+</>
 )
 }
 
