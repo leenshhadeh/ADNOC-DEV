@@ -2,74 +2,72 @@ import ActionSheet from '@/shared/components/ActionSheet'
 import { RadioCell } from '@/shared/components/table-primitives'
 import { Button } from '@/shared/components/ui/button'
 import { useEffect, useState } from 'react'
-import { useProcessSharedData } from '../../hooks/useProcessSharedData'
 
-interface SharedServicesSheetPayload {
-  summary: {
-    services: number
-    shared: number
-  }
-  processSharedServices:{
-    GC: string
-    shared: boolean
-  }[]
-}
 
 interface SharedServicesSheetProps {
   open?: boolean
   processId?: string
   process?: { id?: string; name?: string }
-  handleOpenChange: (value?: SharedServicesSheetPayload) => void
+  handleOpenChange: (value?: any ) => void
   onClose: () => void
+  selected?:{
+    services:string[],
+    shared:string[] }
 }
 
 // Renders the shared-services sheet and syncs its rows with the shared-services APIs.
 const SharedServicesSheet = ({
   open = true,
   process = { name: 'Define basin framework' },
-  processId = '',
   handleOpenChange,
   onClose,
+  selected,
 }: SharedServicesSheetProps) => {
+
   const [sharedServices, setSharedServices] = useState<{
-    GC: string
-    shared: boolean
-  }[]>([])
-  const targetProcessId = processId || process.id || ''
-  const { processSharedServices, isPending ,isLoading} =
-    useProcessSharedData(targetProcessId)
+    services: string[]
+    shared: string[]
+  }>()
 
   useEffect(() => {
-    if (open && processSharedServices) {
-      setSharedServices(processSharedServices)
+    if (open) {
+      console.log(selected)
+      setSharedServices(selected)
     }
-  }, [open, processSharedServices])
+  }, [open])
 
 
+  const handleSharedChange = (service: string, isShared: string) => {
+    // Updates the shared services state by adding or removing the service from the shared list.
+    setSharedServices((prev) => {
+      if (!prev) {
+        return {
+          services: [service],
+          shared: isShared === 'yes' ? [service] : [],
+        }
+      }
 
-  // Updates one group-company row when the shared toggle changes.
-  const handleSharedChange = (GC: string, nextValue: string) => {
-    setSharedServices((prev) =>
-      prev.map((item) => (item.GC === GC ? { ...item, shared: nextValue === 'yes' } : item)),
-    )
+      const nextShared = prev.shared.includes(service)
+        ? prev.shared.filter((item) => item !== service)
+        : [...prev.shared, service]
+
+      return {
+        ...prev,
+        shared: isShared === 'yes' ? nextShared : prev.shared.filter((item) => item !== service),
+      }
+    })
   }
 
-  // Saves the updated rows and returns both the summary and the detailed list.
   const handleSave = async () => {
     const summary = {
-      services: sharedServices.length,
-      shared: sharedServices.filter((item) => item.shared).length,
+      services: sharedServices?.services ||[],
+      shared: sharedServices?.shared ||[]
     }
+    handleOpenChange(summary)
+  }
 
-    // await updateProcessSharedData({
-    //   processId: targetProcessId,
-    //   processSharedServices: sharedServices,
-    // })
-
-    handleOpenChange({
-      summary,
-      processSharedServices: sharedServices,
-    })
+  const getIsSharedService=(service:string)=>{
+    return selected?.shared.includes(service)
   }
 
   return (
@@ -96,17 +94,17 @@ const SharedServicesSheet = ({
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        {isLoading && <div className='text-center p-5'>data loading...</div>}
-        {sharedServices?.map((service) => (
+        {/* {isLoading && <div className='text-center p-5'>data loading...</div>} */}
+        {sharedServices?.services?.map((service) => (
           <div
-            key={service.GC}
+            key={service}
             className="grid grid-cols-2 gap-4 border-b px-6 py-4 last:border-0"
           >
-            <p className="text-foreground text-sm">{service.GC}</p>
+            <p className="text-foreground text-sm">{service}</p>
             <div>
               <RadioCell
-                value={service.shared}
-                onValChange={(value: string) => handleSharedChange(service.GC, value)}
+                value={getIsSharedService(service)}
+                onValChange={(value: string) => handleSharedChange(service, value)}
               />
             </div>
           </div>
@@ -126,7 +124,7 @@ const SharedServicesSheet = ({
           <Button
             type="button"
             className="flex-1 rounded-full"
-            disabled={isPending}
+            // disabled={isPending}
             onClick={handleSave}
           >
             Save

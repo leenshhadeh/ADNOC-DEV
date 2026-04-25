@@ -1,7 +1,7 @@
 export type SharedService =
   | {
-      services?: number
-      shared?: number
+      services?: string[]
+      shared?: string[]
     }
   | string
   | null
@@ -113,7 +113,8 @@ export type FlatAssessmentRow = {
   status: string
   description: string
   centrallyGovernedProcess: string
-  sharedService: string
+  SharedServiceDisply: any
+  SharedService:{services?: string[]; shared?: string[]} | string | null | undefined
   businessUnit: Array<string>
   responsibleDigitalTeam: Array<string>
   processCriticality: string

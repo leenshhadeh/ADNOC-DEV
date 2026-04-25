@@ -36,7 +36,7 @@ export const getProcessTableColumns = ({
   onCentrallyGovernedProcessChanged: (v: string) => void
   onBUExpand: (rowId: string) => void
   onDigitalTeamExpand: (rowId: string) => void
-  onExpandSharedServices: (rowId: string) => void
+  onExpandSharedServices: (rowId: string , list:string[]) => void
   isBulkMode?: boolean
   selectedL3Ids?: Set<string>
   onL3SelectionChange?: (l3GroupId: string, checked: boolean) => void
@@ -221,8 +221,8 @@ export const getProcessTableColumns = ({
     cell: (info) => (
       <>
         <SharedServices
-          val={info.getValue<string>()}
-          onExpand={() => onExpandSharedServices(info.row.original.id)}
+          val={info.row.original.SharedServiceDisply}
+          onExpand={(processSharedServices:any) => onExpandSharedServices(info.row.original.id,processSharedServices)}
         />
       </>
     ),

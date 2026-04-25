@@ -6,7 +6,6 @@ import BUSheet from '../sidePanels/BUSheet'
 import DigitalTeamSheet from '../sidePanels/DigitalTeamSheet'
 import { getProcessTableColumns } from './process-table-columns'
 import type { RowSelectionState } from '@tanstack/react-table'
-import type { ProcessSharedServiceItem } from '../../api/processSharedServicesService'
 
 const toText = (value: unknown): string => {
   if (value == null) return ''
@@ -19,8 +18,9 @@ const formatSharedService = (value: SharedService): any => {
   if (!value) return ''
   if (typeof value === 'string') return value
 
-  return { services: value?.services, shared: value?.shared }
+  return { services: value?.services, shared: value?.shared || [] }
 }
+
 
 const pickValue = <T,>(l4Value: T | undefined, l3Value: T | undefined): T | undefined =>
   l4Value ?? l3Value
@@ -38,7 +38,6 @@ export const flattenAssessmentData = (data: DomainItem[]): FlatAssessmentRow[] =
               l3GroupId: `${domainItem.id}-${l1Item.id}-${l2Item.id}-${l3Item.id}`,
               l3ItemId: l3Item.id ?? `${domainItem.id}-${l1Item.id}-${l2Item.id}-${l3Item.id}`,
 
-              // ✅ REAL values (always filled)
               domain: domainItem.domain ?? '',
               l1: l1Item.level1Name ?? '',
               l2: l2Item.level2Name ?? '',
@@ -64,7 +63,8 @@ export const flattenAssessmentData = (data: DomainItem[]): FlatAssessmentRow[] =
               centrallyGovernedProcess: toText(
                 pickValue(l4Item?.centrallyGovernedProcess, l3Item.centrallyGovernedProcess),
               ),
-              sharedService: formatSharedService(l4Item?.sharedService || l3Item.sharedService),
+              SharedServiceDisply: formatSharedService(l4Item?.sharedService || l3Item.sharedService),
+              SharedService: l4Item?.sharedService || l3Item.sharedService,
               businessUnit: l4Item?.businessUnit || l3Item.businessUnit || [],
               responsibleDigitalTeam:
                 l4Item?.ResponsibleDigitalTeam || l3Item.ResponsibleDigitalTeam || [],
@@ -205,9 +205,8 @@ const ProcessDataTable = ({
   const [isBUOpen, setIsBUOpen] = useState(false)
   const [isDigitalTeamOpen, setIsDigitalTeamOpen] = useState(false)
   const [selectedRowId, setSelectedRowId] = useState('')
-  const [sharedServicesByProcess, setSharedServicesByProcess] = useState<
-    Record<string, ProcessSharedServiceItem[]>
-  >({})
+  const [selectedProcessSercives, setSelectedProcessSercives] = useState<any>({services:[],shared:[]})
+
 
   const columns = useMemo(
     () =>
@@ -222,8 +221,9 @@ const ProcessDataTable = ({
           setSelectedRowId(rowId)
           setIsDigitalTeamOpen(true)
         },
-        onExpandSharedServices: (rowId: string) => {
+        onExpandSharedServices: (rowId: string , sharedServiceList:string[]) => {
           setSelectedRowId(rowId)
+          setSelectedProcessSercives(sharedServiceList)
           setIsSharedServiceOpen(true)
         },
         isBulkMode,
@@ -264,21 +264,18 @@ const ProcessDataTable = ({
         isLoading={isLoading}
       />
 
-      {/* side panels */}
+      {/* side panels ------------------------------------------ */}
       <SharedServicesSheet
         open={isSharedServiceOpen}
         processId={selectedRowId}
         handleOpenChange={(payload:any) => {
           setIsSharedServiceOpen(false)
           if (payload) {
-            handleUpdateDraftRow(selectedRowId, 'sharedService', payload.summary as any)
-            // TODO: once submit: the shaared API should be submitted as well
-            // setSharedServicesByProcess((prev) => ({
-            //   ...prev,
-            //   [selectedRowId]: payload.processSharedServices,
-            // }))
+            handleUpdateDraftRow(selectedRowId, 'SharedService', payload as any)
+            handleUpdateDraftRow(selectedRowId, 'SharedServiceDisply', payload as any)
           }
         }}
+        selected={selectedProcessSercives}
         onClose={() => setIsSharedServiceOpen(false)}
       />
 

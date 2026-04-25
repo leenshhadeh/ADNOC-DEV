@@ -27,17 +27,19 @@ const DATA_COLUMNS: DataColumn[] = [
   { key: 'description', header: 'Process Description', width: 280 },
   { key: 'centrallyGovernedProcess', header: 'Centrally Governed Process', width: 200 },
   {
-    key: 'sharedService',
+    key: 'SharedService',
     header: 'Shared Service',
     width: 140,
     render: (row) => {
-      const val = row.sharedService
+      const val:any = row.SharedServiceDisply
+      // const val2:any = row.SharedServiceDisply?.shared?.length
       if (!val) return null
       if (typeof val === 'object' && 'services' in val) {
         return (
           <span>
-            {(val as { services: number; shared: number }).shared} /{' '}
-            {(val as { services: number; shared: number }).services}
+            {val.services ? `${val.services.length} services` : ''}
+            {val.shared ? ` / ${val.shared.length} shared` : ''}
+            
           </span>
         )
       }
@@ -127,16 +129,41 @@ const DATA_COLUMNS: DataColumn[] = [
 
 /* ─── Small tag pill used for arrays (BU, Digital Team, etc.) ───────── */
 
-const TagsCell = ({ values }: { values: string[] }) => {
+const getTagLabel = (value: unknown): string => {
+  if (typeof value === 'string') {
+    return value
+  }
+
+  if (typeof value === 'object' && value !== null && 'name' in value) {
+    return String((value as { name?: unknown }).name ?? '')
+  }
+
+  return String(value ?? '')
+}
+
+const getTagKey = (value: unknown, index: number): string => {
+  if (typeof value === 'string') {
+    return value
+  }
+
+  if (typeof value === 'object' && value !== null && 'id' in value) {
+    return String((value as { id?: unknown }).id ?? index)
+  }
+
+  return String(index)
+}
+
+const TagsCell = ({ values }: { values: unknown[] }) => {
   if (!values?.length) return null
   return (
     <div className="flex flex-wrap gap-1">
-      {values.map((v) => (
+      {values.map((value, index) => (
         <span
-          key={v}
+          key={getTagKey(value, index)}
           className="max-w-[200px] truncate rounded-full border border-[#DFE3E6] bg-[#F1F3F5] px-3 py-1 text-xs text-[#889096]"
         >
-          {v}
+          {getTagLabel(value)}
+          test
         </span>
       ))}
     </div>
