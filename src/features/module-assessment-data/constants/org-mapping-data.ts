@@ -52,10 +52,6 @@ export const DigitalTeam = [
         value: 'Digital Operations',
       },
       {
-        label: 'Business Support',
-        value: 'Business Support',
-      },
-      {
         label: 'Data Analytics',
         value: 'Data Analytics',
       },
@@ -64,11 +60,11 @@ export const DigitalTeam = [
   {
     label: 'Enterprise Technology',
     value: 'Enterprise Technology',
-    Children: [
+    children: [
       {
         label: 'Infrastructure Services',
         value: 'Infrastructure Services',
-        Children: [
+        children: [
           {
             label: 'Application Services',
             value: 'Application Services',

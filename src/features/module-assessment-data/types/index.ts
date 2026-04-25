@@ -11,6 +11,8 @@ export interface Level4Row {
   businessUnit?: string[]
   processCriticality?: string
   OngoingAutomation?: string
+  currentApplicationsSystems?: string[]
+
 
 
 }

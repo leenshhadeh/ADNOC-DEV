@@ -17,7 +17,6 @@ import { cn } from '@/shared/lib/utils'
 import CommentsSection from './processDetails/CommentsSection'
 import { useCurrentUser } from '@/shared/auth/useUserStore'
 import { ROLES } from '@/shared/lib/permissions'
-import type { ChangeRecord } from '../types/my-tasks'
 
 const ProcessDetailsPage = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -33,6 +32,10 @@ const ProcessDetailsPage = () => {
   const { role } = useCurrentUser()
   const canEdit = role == ROLES.BusinessFocalPoint || role == ROLES.DigitalFocalPoint
   const canComment = role == ROLES.QualityManager || role == ROLES.BPA_ProgramManager
+  const breadcrumbLinks=[
+    { title: 'Assessment Data Processes', url: '/assessment-data' },
+    { title: 'Process Details', isCurrentPage: true },
+  ]
 
   useEffect(() => {
     if (data) {
@@ -78,7 +81,7 @@ const ProcessDetailsPage = () => {
   }, [data])
 
   const handelOnSubmit = () => {
-    // call API to submit the new changes
+    //TODO: call API to submit the new changes 
     console.log('[submit] payload:', updatedData)
   }
 
@@ -90,8 +93,7 @@ const ProcessDetailsPage = () => {
   const onShowComment = (colName?: string) => {
     console.log('colName:', colName)
     setShowComment(true)
-    setCommentField(colName || '')
-    // get Comments(colName) OR Comments(All)
+    setCommentField(colName || '') //TOBeUpdated: first filed should be selected by defualt, each peocess tab has its own first-field
   }
 
   const handleValidate = () => {
@@ -100,6 +102,7 @@ const ProcessDetailsPage = () => {
     }
   }
 
+  // TODO: use a statemengment to perform the actions (mainActions and ApproveRejectActions), somthing like the ProcessDetailActionBar under the "module-automation-targets"
   const mainActions = useMemo<any[]>(
     () => [
       {
@@ -115,6 +118,8 @@ const ProcessDetailsPage = () => {
     ],
     [disableSubmit, handleValidate, handelOnSubmit],
   )
+
+  // TODO: change the icons of apporce,return, reject, and Comment
   const ApproveRejectActions = useMemo<any[]>(
     () => [
       { id: 'Approve', label: 'Approve', icon: Settings2 },
@@ -134,10 +139,7 @@ const ProcessDetailsPage = () => {
     <>
       <div className="flex flex-col gap-0 overflow-hidden px-6">
         <Breadcrumb
-          links={[
-            { title: 'Assessment Data Processes', url: '/assessment-data' },
-            { title: 'Process Details', isCurrentPage: true },
-          ]}
+          links={breadcrumbLinks}
         />
 
         <div className="mb-[24px] flex items-center py-3">
@@ -255,6 +257,7 @@ const ProcessDetailsPage = () => {
               </>
             )}
 
+{/* TODO: add frindly message and add button for reload the page, or go home */}
             {isError && <> Somthing went wrong</>}
           </>
         )}
