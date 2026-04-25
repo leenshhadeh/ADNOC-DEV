@@ -17,7 +17,7 @@ const GroupCompanySitesCell = ({ row, onOpenSitesDrawer }: Props) => {
               key={site.id}
               className={clsx(
                 site.name === 'General'
-                  ? 'inline-flex h-7 items-center rounded-full border border-[#DFE3E6] bg-[#F1F3F5] px-4 text-[14px] text-[#151718]'
+                  ? 'inline-flex h-7 items-center rounded-full border border-[#DFE3E6] bg-accent px-4 text-[14px] text-[#151718]'
                   : 'inline-flex h-7 items-center rounded-full border border-[#2F68D9] bg-[#DCE5F9] px-4 text-[14px] text-[#151718]',
               )}
             >

@@ -84,31 +84,31 @@ const GroupCompanySitesDrawer = ({ open, row, onOpenChange, onSave }: Props) => 
         )}
       >
         <div className="flex items-center justify-between px-6 py-5">
-          <h2 className="text-[26px] font-semibold text-[#151718]">Add Sites</h2>
+          <h2 className="text-foreground text-[26px] font-semibold">Add Sites</h2>
 
           <button
             type="button"
             onClick={handleDrawerClose}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#151718] hover:bg-[#F1F3F5]"
+            className="text-foreground hover:bg-accent inline-flex h-10 w-10 items-center justify-center rounded-full"
           >
             <X className="h-6 w-6" />
           </button>
         </div>
 
-        <div className="mx-6 border-t border-[#DFE3E6]" />
+        <div className="border-border mx-6 border-t" />
 
         <div className="px-6 py-5">
-          <div className="flex items-center justify-between gap-4 border-b border-[#DFE3E6] pb-4">
+          <div className="border-border flex items-center justify-between gap-4 border-b pb-4">
             <div className="min-w-0">
-              <div className="text-[14px] font-[300] text-[#687076]">Group company:</div>
-              <div className="truncate text-[14px] font-[500] text-[#151718]">{title}</div>
+              <div className="text-muted-foreground text-[14px] font-[300]">Group company:</div>
+              <div className="text-foreground truncate text-[14px] font-[500]">{title}</div>
             </div>
 
-            <div className="h-6 w-px bg-[#DFE3E6]" />
+            <div className="bg-border h-6 w-px" />
 
-            <div className="text-[14px] font-[400] whitespace-nowrap text-[#687076]">
+            <div className="text-muted-foreground text-[14px] font-[400] whitespace-nowrap">
               Sites Number
-              <span className="ml-2 text-[14px] font-[500] text-[#151718]">{totalSites}</span>
+              <span className="text-foreground ml-2 text-[14px] font-[500]">{totalSites}</span>
             </div>
           </div>
         </div>
@@ -122,7 +122,7 @@ const GroupCompanySitesDrawer = ({ open, row, onOpenChange, onSave }: Props) => 
                 <div key={site.id} className="flex items-end gap-3">
                   <div className="flex-1">
                     <div className="flex justify-between">
-                      <label className="mb-2 block text-[16px] font-[400] text-[#889096]">
+                      <label className="text-muted-foreground mb-2 block text-[16px] font-[400]">
                         Site name
                       </label>
 
@@ -130,7 +130,7 @@ const GroupCompanySitesDrawer = ({ open, row, onOpenChange, onSave }: Props) => 
                         <button
                           type="button"
                           onClick={() => handleDeleteSite(site.id)}
-                          className="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#151718] hover:bg-[#F5F7FA]"
+                          className="text-foreground hover:bg-accent mb-2 inline-flex h-10 w-10 items-center justify-center rounded-full"
                         >
                           <Trash2 className="h-5 w-5" />
                         </button>
@@ -146,8 +146,8 @@ const GroupCompanySitesDrawer = ({ open, row, onOpenChange, onSave }: Props) => 
                         className={clsx(
                           'h-12 w-full rounded-[18px] border px-6 text-[16px] outline-none',
                           isGeneral
-                            ? 'cursor-not-allowed border-[#DFE3E6] bg-[#F5F7FA] text-[#98A2B3]'
-                            : 'border-[#DFE3E6] text-[#151718] placeholder:text-[#B0B7C3]',
+                            ? 'border-border bg-accent text-muted-foreground cursor-not-allowed'
+                            : 'border-border text-foreground placeholder:text-muted-foreground',
                         )}
                       />
                     </div>
@@ -156,7 +156,7 @@ const GroupCompanySitesDrawer = ({ open, row, onOpenChange, onSave }: Props) => 
               )
             })}
 
-            <div className="border-t border-[#DFE3E6] pt-5">
+            <div className="border-border border-t pt-5">
               <button
                 type="button"
                 onClick={handleAddSite}
@@ -173,7 +173,7 @@ const GroupCompanySitesDrawer = ({ open, row, onOpenChange, onSave }: Props) => 
           <button
             type="button"
             onClick={handleDrawerClose}
-            className="h-8 flex-1 rounded-[36px] bg-[linear-gradient(180deg,#EAEFFF_0%,#C7D6F9_100%)] text-[16px] font-semibold text-[#151718] shadow-[0_4px_8px_0_rgba(209,213,223,0.50)]"
+            className="text-foreground h-8 flex-1 rounded-[36px] bg-[linear-gradient(180deg,#EAEFFF_0%,#C7D6F9_100%)] text-[16px] font-semibold shadow-[0_4px_8px_0_rgba(209,213,223,0.50)]"
           >
             Cancel
           </button>

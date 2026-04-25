@@ -89,6 +89,48 @@ export const router = createBrowserRouter([
           })),
       },
       {
+        path: 'reports-and-extracts/assessment-progress-detailed-l3',
+        lazy: () =>
+          import('@features/module-reports-extracts').then((m) => ({
+            Component: m.AssessmentProgressDetailedL3Page,
+          })),
+      },
+      {
+        path: 'reports-and-extracts/assessment-progress-detailed-l4',
+        lazy: () =>
+          import('@features/module-reports-extracts').then((m) => ({
+            Component: m.AssessmentProgressDetailedL4Page,
+          })),
+      },
+      {
+        path: 'reports-and-extracts/data-quality-report',
+        lazy: () =>
+          import('@features/module-reports-extracts').then((m) => ({
+            Component: m.DataQualityReportPage,
+          })),
+      },
+      {
+        path: 'reports-and-extracts/data-opportunity-coverage',
+        lazy: () =>
+          import('@features/module-reports-extracts').then((m) => ({
+            Component: m.OpportunityCoveragePage,
+          })),
+      },
+      {
+        path: '/reports-and-extracts/data-program-adoption',
+        lazy: () =>
+          import('@features/module-reports-extracts').then((m) => ({
+            Component: m.ProgramAdoptionPage,
+          })),
+      },
+      {
+        path: 'reports-and-extracts/extracts_assessment_data_l3',
+        lazy: () =>
+          import('@features/module-reports-extracts').then((m) => ({
+            Component: m.ExtractsAssessmentDataL3Page,
+          })),
+      },
+      {
         path: 'settings',
         lazy: () =>
           import('@features/module-admin').then((m) => ({

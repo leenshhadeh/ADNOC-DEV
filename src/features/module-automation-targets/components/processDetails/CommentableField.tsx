@@ -26,8 +26,8 @@ const CommentableField = ({ fieldId, fieldName, children }: CommentableFieldProp
       }}
       className={`cursor-pointer rounded-2xl transition-all ${
         isSelected
-          ? 'ring-2 ring-[#0047BA]'
-          : 'ring-dashed ring-1 ring-[#0047BA]/40 hover:ring-[#0047BA]/70'
+          ? 'ring-2 ring-brand-blue'
+          : 'ring-dashed ring-1 ring-brand-blue/40 hover:ring-brand-blue/70'
       }`}
     >
       {children}

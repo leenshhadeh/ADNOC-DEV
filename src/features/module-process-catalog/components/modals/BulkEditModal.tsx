@@ -52,7 +52,7 @@ export const BulkEditModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-[1px]">
-      <div className="flex w-full max-w-lg flex-col gap-8 rounded-2xl bg-[#F1F3F5] p-8 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]">
+      <div className="bg-accent flex w-full max-w-lg flex-col gap-8 rounded-2xl p-8 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]">
         {/* ── Header ── */}
         <div className="flex items-start gap-2">
           <div className="flex flex-1 flex-col gap-2">
@@ -84,7 +84,7 @@ export const BulkEditModal = ({
                 onClick={() => setDropdownOpen((prev) => !prev)}
                 className={cn(
                   'flex w-full items-center justify-between rounded-2xl border border-[#DFE3E6] bg-white px-4 py-3 text-left',
-                  'transition-colors hover:border-[#0047BA]/30',
+                  'transition-colors hover:border-brand-blue/30',
                 )}
               >
                 <span
@@ -111,8 +111,8 @@ export const BulkEditModal = ({
                         key={option}
                         type="button"
                         className={cn(
-                          'flex w-full items-center border-b border-[#DFE3E6]/50 px-4 py-2.5 text-left text-sm font-normal text-[#687076] transition-colors last:border-b-0 hover:bg-[#F1F3F5]',
-                          selected === option && 'bg-[#F1F3F5] font-medium text-[#151718]',
+                          'flex w-full items-center border-b border-[#DFE3E6]/50 px-4 py-2.5 text-left text-sm font-normal text-[#687076] transition-colors last:border-b-0 hover:bg-[#]',
+                          selected === option && 'bg-accent font-medium text-[#151718]',
                         )}
                         onClick={() => {
                           setSelected(option)
@@ -146,7 +146,7 @@ export const BulkEditModal = ({
             className="flex flex-1 items-center justify-center rounded-full bg-gradient-to-r from-[#5B23FF] to-[#3C00EB] px-6 py-3 text-sm font-medium text-white shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90 disabled:opacity-50"
             onClick={handleApply}
           >
-            Apply
+            Apply changes
           </button>
         </div>
       </div>

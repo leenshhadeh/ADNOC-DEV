@@ -1,0 +1,127 @@
+{
+  "title": "Data Quality Report",
+  "company": "ADNOC Sour Gas",
+  "summary": {
+    "last_quality_review_date": "26-Sep-25",
+    "number_of_processes_reviewed": 215,
+    "data_quality_score": "60%",
+    "fully_populated_processes": "27%",
+    "processes_with_accurate_data": "50%",
+    "processes_without_inconsistencies": "99%",
+    "top_3_domains_with_most_issues": [
+      "Assets Maintenance, Integrity & Reliability",
+      "Capital Projects",
+      "Drilling & Field Services"
+    ],
+    "top_3_domains_with_least_issues": [
+      "Audit & Assurance",
+      "Business Support",
+      "Corporate Communications"
+    ]
+  },
+  "table": {
+    "columns": [
+      "Domain",
+      "Processes Reviewed",
+      "% Of Fully Populated Processes",
+      "% of Processes with Accurate Data",
+      "% of Processes without Inconsistencies",
+      "Data Quality Score"
+    ],
+    "rows": [
+      {
+        "Domain": "Health, Safety & Environment",
+        "Processes Reviewed": 14,
+        "% Of Fully Populated Processes": "57%",
+        "% of Processes with Accurate Data": "64%",
+        "% of Processes without Inconsistencies": "93%",
+        "Data Quality Score": "71%"
+      },
+      {
+        "Domain": "Production",
+        "Processes Reviewed": 9,
+        "% Of Fully Populated Processes": "11%",
+        "% of Processes with Accurate Data": "100%",
+        "% of Processes without Inconsistencies": "100%",
+        "Data Quality Score": "70%"
+      },
+      {
+        "Domain": "Assets Maintenance, Integrity & Reliability",
+        "Processes Reviewed": 39,
+        "% Of Fully Populated Processes": "41%",
+        "% of Processes with Accurate Data": "69%",
+        "% of Processes without Inconsistencies": "100%",
+        "Data Quality Score": "70%"
+      },
+      {
+        "Domain": "Exploration & Planning",
+        "Processes Reviewed": 21,
+        "% Of Fully Populated Processes": "14%",
+        "% of Processes with Accurate Data": "86%",
+        "% of Processes without Inconsistencies": "100%",
+        "Data Quality Score": "67%"
+      },
+      {
+        "Domain": "Gas Processing",
+        "Processes Reviewed": 17,
+        "% Of Fully Populated Processes": "0%",
+        "% of Processes with Accurate Data": "100%",
+        "% of Processes without Inconsistencies": "100%",
+        "Data Quality Score": "67%"
+      },
+      {
+        "Domain": "Sites Operations",
+        "Processes Reviewed": 26,
+        "% Of Fully Populated Processes": "35%",
+        "% of Processes with Accurate Data": "62%",
+        "% of Processes without Inconsistencies": "100%",
+        "Data Quality Score": "65%"
+      },
+      {
+        "Domain": "Technical Innovation and Quality",
+        "Processes Reviewed": 26,
+        "% Of Fully Populated Processes": "42%",
+        "% of Processes with Accurate Data": "54%",
+        "% of Processes without Inconsistencies": "100%",
+        "Data Quality Score": "65%"
+      },
+      {
+        "Domain": "Technical Engineering",
+        "Processes Reviewed": 4,
+        "% Of Fully Populated Processes": "75%",
+        "% of Processes with Accurate Data": "0%",
+        "% of Processes without Inconsistencies": "100%",
+        "Data Quality Score": "58%"
+      },
+      {
+        "Domain": "Capital Projects",
+        "Processes Reviewed": 25,
+        "% Of Fully Populated Processes": "24%",
+        "% of Processes with Accurate Data": "0%",
+        "% of Processes without Inconsistencies": "100%",
+        "Data Quality Score": "41%"
+      },
+      {
+        "Domain": "Drilling & Field Services",
+        "Processes Reviewed": 33,
+        "% Of Fully Populated Processes": "0%",
+        "% of Processes with Accurate Data": "12%",
+        "% of Processes without Inconsistencies": "100%",
+        "Data Quality Score": "37%"
+      },
+      {
+        "Domain": "Sustainability & Low Carbon",
+        "Processes Reviewed": 1,
+        "% Of Fully Populated Processes": "0%",
+        "% of Processes with Accurate Data": "0%",
+        "% of Processes without Inconsistencies": "100%",
+        "Data Quality Score": "33%"
+      }
+    ]
+  },
+  "ui_filters": {
+    "company_selector_button": "Change Company",
+    "dropdown_value": "All"
+  },
+  "footer": "© Abu Dhabi National Oil Company"
+}

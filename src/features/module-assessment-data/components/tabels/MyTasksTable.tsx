@@ -123,7 +123,7 @@ const MyTasksTable = ({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className="w-56 rounded-2xl bg-[#F1F3F5] p-0 shadow-[0px_10px_30px_rgba(0,0,0,0.2)]"
+                    className="w-56 rounded-2xl bg-accent p-0 shadow-[0px_10px_30px_rgba(0,0,0,0.2)]"
                   >
                     <DropdownMenuItem
                       className="gap-4 px-4 py-2"

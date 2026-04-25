@@ -445,7 +445,7 @@ const LEVEL_OPTIONS = [
 
 const STATUS_BADGE_STYLES: Record<SourceProcess['status'], string> = {
   Published: 'bg-[#DFEBFF] text-[#151718]',
-  Draft: 'bg-[#F1F3F5] text-[#687076]',
+  Draft: 'bg-accent text-[#687076]',
   'In Review': 'bg-[#FFF3D6] text-[#7A4F00]',
 }
 
@@ -519,7 +519,7 @@ export function CopyAssessmentDataModal({
           <button
             type="button"
             onClick={closeDrawer}
-            className="mt-1 rounded-full p-1.5 text-[#687076] transition-colors hover:bg-[#F1F3F5]"
+            className="mt-1 rounded-full p-1.5 text-[#687076] transition-colors hover:bg-accent"
             aria-label="Close"
           >
             <X className="size-5" />
@@ -538,7 +538,7 @@ export function CopyAssessmentDataModal({
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search processes…"
                 className={`w-full rounded-2xl border bg-white py-3 ps-11 pe-4 text-base text-[#151718] transition-colors outline-none placeholder:text-[#889096] ${
-                  search ? 'border-[#0047BA]' : 'border-[#DFE3E6]'
+                  search ? 'border-brand-blue' : 'border-[#DFE3E6]'
                 }`}
               />
             </div>
@@ -613,7 +613,7 @@ export function CopyAssessmentDataModal({
         <>
           <div className="fixed inset-0 z-[60] bg-black/50" onClick={() => setConfirmOpen(false)} />
           <div className="fixed inset-0 z-[61] flex items-center justify-center p-4">
-            <div className="w-full max-w-[540px] rounded-2xl bg-[#F1F3F5] p-8 shadow-2xl">
+            <div className="w-full max-w-[540px] rounded-2xl bg-accent p-8 shadow-2xl">
               <div className="flex items-start gap-2">
                 <div className="flex flex-1 flex-col gap-2">
                   <h3 className="text-[24px] leading-8 font-[500] text-[#151718]">

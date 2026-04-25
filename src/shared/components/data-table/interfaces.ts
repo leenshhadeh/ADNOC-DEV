@@ -32,6 +32,8 @@ export interface DataTableCellProps<TData, TValue> {
   rowDividers?: boolean
   leading?: ReactNode
   actions?: RowAction<TData>[]
+  isSelectedCell?: boolean
+  onCellSelect?: (cellId: string) => void
 }
 
 export interface DataTableRowProps<TData> {
@@ -43,6 +45,8 @@ export interface DataTableRowProps<TData> {
   isHighlighted?: boolean
   /** When provided, the row actions dropdown is only shown inside cells whose column id is in this list. */
   actionColumnIds?: string[]
+  selectedCellIds?: Set<string>
+  onCellSelect?: (cellId: string) => void
 }
 
 export interface DataTableProps<TData> {

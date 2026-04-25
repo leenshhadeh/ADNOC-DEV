@@ -12,7 +12,7 @@ import {
   type CatalogStatus,
   UserBadgeCell,
 } from '@/shared/components/cells'
-import RequestDetailsSheet from './RequestDetailsSheet'
+import RequestDetailsSheet from '../modals/RequestDetailsSheet'
 
 import type { RequestItem } from '@features/module-process-catalog/types/submitted-requests'
 import { useGetSubmittedRequests } from '@features/module-process-catalog/hooks/useGetSubmittedRequests'
@@ -164,10 +164,10 @@ const SubmittedRequestsTable = () => {
     <>
       <DataTable
         columns={columns}
+        enableColumnDnd={false}
         data={requests ?? []}
-        className="table-light"
+        className="table-light overflow-x-auto"
         density="comfortable"
-        className="overflow-x-auto"
         initialColumnPinning={{ left: ['processName'] }}
         tableMeta={{ rowDividers: true }}
       />

@@ -43,7 +43,7 @@ const RenameModal = ({ open, onOpenChange, currentName, onRename }: RenameModalP
 
   return (
     <div className="bg-foreground/40 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-[1px]">
-      <div className="w-full max-w-[480px] rounded-2xl bg-[#F1F3F5] p-6 shadow-2xl">
+      <div className="bg-accent w-full max-w-[480px] rounded-2xl p-6 shadow-2xl">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div>

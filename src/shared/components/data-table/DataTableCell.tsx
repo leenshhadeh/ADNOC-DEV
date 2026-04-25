@@ -13,6 +13,8 @@ const DataTableCell = <TData, TValue>({
   rowDividers = false,
   leading,
   actions = [],
+  isSelectedCell = false,
+  onCellSelect,
 }: DataTableCellProps<TData, TValue>) => {
   const startPadding = isFirstCell && level > 0 ? `${level * 1.25 + 0.75}rem` : undefined
   const isPinned = cell.column.getIsPinned()
@@ -25,15 +27,24 @@ const DataTableCell = <TData, TValue>({
     minWidth: colSize,
     maxWidth: colSize,
     ...(isPinned === 'left' ? { position: 'sticky', left: leftOffset, zIndex: 10 } : {}),
-    ...( cell.column.columnDef?.meta?.pinnedCol ? { position: 'sticky', left: cell.column.columnDef?.meta?.offset || 0, zIndex: 10 ,backgroundColor:'#fff'} : {}),
+    ...(cell.column.columnDef?.meta?.pinnedCol
+      ? {
+          position: 'sticky',
+          left: cell.column.columnDef?.meta?.offset || 0,
+          zIndex: 10,
+          backgroundColor: '#fff',
+        }
+      : {}),
     ...(startPadding ? { paddingInlineStart: startPadding } : {}),
   }
 
   return (
     <TableCell
       style={cellStyle}
+      onClick={() => onCellSelect?.(cell.id)}
       className={cn(
         'overflow-hidden align-middle',
+        onCellSelect && 'cursor-pointer select-none',
         density === 'compact' ? 'py-1.5 text-sm' : 'py-2.5 text-sm',
         'text-foreground',
         rowDividers && 'border-border/50 border-b',
@@ -41,6 +52,7 @@ const DataTableCell = <TData, TValue>({
         isLastLeftPinned &&
           'border-r-border/60 border-r-2 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.07)]',
         isDivider && 'border-r-border/60 border-r-2',
+        isSelectedCell && 'bg-cell-selected',
       )}
     >
       <div className="group/cell flex items-center gap-2 overflow-hidden">

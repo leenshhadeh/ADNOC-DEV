@@ -41,7 +41,7 @@ const AssessmentBulkActionBar = ({
       <Button
         type="button"
         variant="ghost"
-        className="gap-1 text-sm font-medium text-[#0047BA] hover:bg-transparent hover:text-[#0047BA]/80"
+        className="gap-1 text-sm font-medium text-brand-blue hover:bg-transparent hover:text-brand-blue/80"
         disabled={selectedCount === 0}
         onClick={() => onAction('edit')}
       >
@@ -54,7 +54,7 @@ const AssessmentBulkActionBar = ({
       <Button
         type="button"
         variant="ghost"
-        className="gap-1 text-sm font-medium text-[#0047BA] hover:bg-transparent hover:text-[#0047BA]/80"
+        className="gap-1 text-sm font-medium text-brand-blue hover:bg-transparent hover:text-brand-blue/80"
         disabled={selectedCount === 0}
         onClick={() => onAction('comment')}
       >
@@ -67,7 +67,7 @@ const AssessmentBulkActionBar = ({
       <Button
         type="button"
         variant="ghost"
-        className="gap-1 text-sm font-medium text-[#0047BA] hover:bg-transparent hover:text-[#0047BA]/80"
+        className="gap-1 text-sm font-medium text-brand-blue hover:bg-transparent hover:text-brand-blue/80"
         disabled={selectedCount === 0}
         onClick={() => onAction('copy-assessment-data')}
       >
@@ -80,7 +80,7 @@ const AssessmentBulkActionBar = ({
       <Button
         type="button"
         variant="ghost"
-        className="gap-1 text-sm font-medium text-[#0047BA] hover:bg-transparent hover:text-[#0047BA]/80"
+        className="gap-1 text-sm font-medium text-brand-blue hover:bg-transparent hover:text-brand-blue/80"
         disabled={selectedCount === 0}
         onClick={() => onAction('submit')}
       >
@@ -93,7 +93,7 @@ const AssessmentBulkActionBar = ({
       <Button
         type="button"
         variant="ghost"
-        className="gap-1 text-sm font-medium text-[#0047BA] hover:bg-transparent hover:text-[#0047BA]/80"
+        className="gap-1 text-sm font-medium text-brand-blue hover:bg-transparent hover:text-brand-blue/80"
         disabled={selectedCount === 0}
         onClick={() => onAction('mark-as-reviewed')}
       >

@@ -199,7 +199,7 @@ const ProcessDataTable = ({
   onColumnVisibilityChange,
   columnOrder,
   onColumnOrderChange,
-  isLoading
+  isLoading,
 }: ProcessDataTableProps) => {
   const [isSharedServiceOpen, setIsSharedServiceOpen] = useState(false)
   const [isBUOpen, setIsBUOpen] = useState(false)
@@ -285,7 +285,6 @@ const ProcessDataTable = ({
         handleOpenChange={(newVal: any) => {
           setIsBUOpen(false)
           handleUpdateDraftRow(selectedRowId, 'businessUnit', newVal || [])
-        
         }}
         onClose={()=>setIsBUOpen(false)}
       />

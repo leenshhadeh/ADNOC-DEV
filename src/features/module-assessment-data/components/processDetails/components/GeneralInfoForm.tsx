@@ -97,7 +97,7 @@ const GeneralInfoForm = (props: any) => {
           <div
             className={cn(
               'border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring/40 flex h-auto w-full min-w-0 rounded-md border p-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-3',
-              !isEditable && 'bg-[#f1f3f5]',
+              !isEditable && 'bg-accent',
             )}
           >
             <TagsSelect
@@ -126,7 +126,7 @@ const GeneralInfoForm = (props: any) => {
           <div
             className={cn(
               'border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring/40 flex h-auto w-full min-w-0 rounded-md border p-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-3',
-              !isEditable && 'bg-[#f1f3f5]',
+              !isEditable && 'bg-accent',
             )}
           >
             {' '}

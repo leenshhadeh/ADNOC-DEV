@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import AddProcessesModal from './AddProcessesModal'
+import AddProcessesModal from './modals/AddProcessesModal'
 import type { RowSelectionState } from '@tanstack/react-table'
 import CatalogHeader from './CatalogHeader'
 import DataTable from '../../../shared/components/data-table/DataTable'
@@ -10,8 +10,8 @@ import type { ProcessViewOption } from '@/shared/components/ProcessesMenu'
 import MyTasksTable from './tables/MyTasksTable'
 import SubmittedRequestsTable from './tables/SubmittedRequestsTable'
 import ProcessFilterSheet from './ProcessFilterSheet'
-import AddLevel4sModal from './AddLevel4sModal'
-import { EditLevel4sModal } from './EditLevel4sModal'
+import AddLevel4sModal from './modals/AddLevel4sModal'
+import { EditLevel4sModal } from './modals/EditLevel4sModal'
 import RenameModal from './RenameModal'
 import BulkActionBar, { type BulkAction } from './BulkActionBar'
 import ProcessBulkActionBar, { type ProcessBulkAction } from './ProcessBulkActionBar'
@@ -607,7 +607,7 @@ const CatalogModule = () => {
           <DataTable
             columns={columns}
             data={filteredData}
-            className="table-light"
+            className="table-accent"
             density="compact"
             enableColumnDnd={false}
             enableSorting={false}

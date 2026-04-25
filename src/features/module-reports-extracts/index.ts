@@ -1,1 +1,7 @@
 export { default as ReportsAndExtracts } from './ReportsAndExtractsModule'
+export { default as AssessmentProgressDetailedL3Page } from './reports/AssessmentProgressDetailedL3Page'
+export { default as AssessmentProgressDetailedL4Page } from './reports/AssessmentProgressDetailedL4Page'
+export { default as DataQualityReportPage } from './reports/DataQualityReportPage'
+export { default as OpportunityCoveragePage } from './reports/OpportunityCoveragePage'
+export { default as ProgramAdoptionPage } from './reports/ProgramAdoptionPage'
+export { default as ExtractsAssessmentDataL3Page } from './extracts/ExtractsAssessmentDataL3Page'

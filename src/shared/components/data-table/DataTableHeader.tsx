@@ -48,7 +48,7 @@ const DataTableHeader = <TData, TValue>({
           position: 'sticky',
           left: column.columnDef?.meta?.offset || 0,
           zIndex: 12,
-          backgroundColor: '#F1F3F5',
+          backgroundColor: 'var(--accent)',
         }
       : {}),
   }
@@ -56,8 +56,8 @@ const DataTableHeader = <TData, TValue>({
   const headClassName = cn(
     'sticky top-0 border-b border-border',
     isPinned === 'left'
-      ? 'z-20 bg-[#F1F3F5]'
-      : 'z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-[#F1F3F5]',
+      ? 'z-20 bg-accent'
+      : 'z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-accent',
     isLastLeftPinned && 'border-r-2 border-r-border/60 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.07)]',
     // Divider on the right of the Shared Service wrapper group (separates flat from matrix).
     !!(column.columnDef.meta as { isDivider?: boolean } | undefined)?.isDivider &&
