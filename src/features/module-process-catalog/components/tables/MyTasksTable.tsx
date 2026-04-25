@@ -22,10 +22,11 @@ import {
 import { ApproveModal } from '@/shared/components/modals/ApproveModal'
 import { ReturnModal } from '@/shared/components/modals/ReturnModal'
 import { RejectModal } from '@/shared/components/modals/RejectModal'
+import { RequestEndorsementModal } from '@features/module-assessment-data/components/TaskBulkModals'
 import { SuccessToast } from '@/shared/components/SuccessToast'
 import LevelsIcon from '@/assets/icons/Levels.svg?react'
 
-import TaskDetailsSheet from './TaskDetailsSheet'
+import TaskDetailsSheet from '../modals/TaskDetailsSheet'
 
 import type { TaskItem } from '@features/module-process-catalog/types/my-tasks'
 import { useGetMyTasks } from '@features/module-process-catalog/hooks/useGetMyTasks'
@@ -34,7 +35,11 @@ import {
   approveTask,
   returnTask,
   rejectTask,
+  requestEndorsement,
 } from '@features/module-process-catalog/api/taskActionService'
+import HalfEyeIcon from '@/assets/icons/halfEye.svg?react'
+import RequestEndorsmentIcon from '@/assets/icons/requestEndorsmentIcon.svg?react'
+import ErrorCircleIcon from '@/assets/icons/error-circle.svg?react'
 
 const LevelCell = ({ level }: { level: string }) => {
   return (
@@ -64,7 +69,9 @@ const MyTasksTable = ({
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
   // action modal state
-  const [activeModal, setActiveModal] = useState<'approve' | 'return' | 'reject' | null>(null)
+  const [activeModal, setActiveModal] = useState<
+    'approve' | 'return' | 'reject' | 'endorsement' | null
+  >(null)
   const [actionTask, setActionTask] = useState<TaskItem | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [isActionLoading, setIsActionLoading] = useState(false)
@@ -74,10 +81,13 @@ const MyTasksTable = ({
     setIsDetailsOpen(true)
   }
 
-  const openActionModal = useCallback((task: TaskItem, action: 'approve' | 'return' | 'reject') => {
-    setActionTask(task)
-    setActiveModal(action)
-  }, [])
+  const openActionModal = useCallback(
+    (task: TaskItem, action: 'approve' | 'return' | 'reject' | 'endorsement') => {
+      setActionTask(task)
+      setActiveModal(action)
+    },
+    [],
+  )
 
   const handleTaskAction = async (
     taskId: string,
@@ -158,15 +168,15 @@ const MyTasksTable = ({
                     className="w-56 overflow-hidden rounded-2xl border-0 bg-[#151718] p-0 shadow-[0px_10px_30px_0px_rgba(0,0,0,0.2)]"
                   >
                     <DropdownMenuItem
-                      className="cursor-pointer gap-4 bg-[#F1F3F5] px-4 py-2 text-base font-normal text-[#151718] focus:bg-[#E8EAED]"
+                      className="bg-accent text-foreground focus:bg-accent/80 cursor-pointer gap-4 rounded-none px-4 py-2 text-base font-normal"
                       onClick={() => handleOpenDetails(row)}
                     >
-                      <Eye className="size-4 shrink-0" />
+                      <HalfEyeIcon className="size-4 shrink-0" />
                       View change details
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="m-0 h-px bg-[#DFE3E6]" />
                     <DropdownMenuItem
-                      className="cursor-pointer gap-4 bg-[#F1F3F5] px-4 py-2 text-base font-normal text-[#151718] focus:bg-[#E8EAED]"
+                      className="bg-accent text-foreground focus:bg-accent/80 cursor-pointer gap-4 rounded-none px-4 py-2 text-base font-normal"
                       disabled={!row.processId}
                       onClick={() => row.processId && navigateToProcess(row.processId)}
                     >
@@ -175,7 +185,15 @@ const MyTasksTable = ({
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="m-0 h-px bg-[#DFE3E6]" />
                     <DropdownMenuItem
-                      className="cursor-pointer gap-4 bg-[#F1F3F5] px-4 py-2 text-base font-normal text-[#151718] focus:bg-[#E8EAED]"
+                      className="bg-accent text-foreground focus:bg-accent/80 cursor-pointer gap-4 rounded-none px-4 py-2 text-base font-normal"
+                      onClick={() => openActionModal(row, 'endorsement')}
+                    >
+                      <RequestEndorsmentIcon className="size-4 shrink-0" />
+                      Request endorsement
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="m-0 h-px bg-[#DFE3E6]" />
+                    <DropdownMenuItem
+                      className="bg-accent text-foreground focus:bg-accent/80 cursor-pointer gap-4 rounded-none px-4 py-2 text-base font-normal"
                       onClick={() => openActionModal(row, 'approve')}
                     >
                       <Check className="size-4 shrink-0" />
@@ -183,7 +201,7 @@ const MyTasksTable = ({
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="m-0 h-px bg-[#DFE3E6]" />
                     <DropdownMenuItem
-                      className="cursor-pointer gap-4 bg-[#F1F3F5] px-4 py-2 text-base font-normal text-[#151718] focus:bg-[#E8EAED]"
+                      className="bg-accent text-foreground focus:bg-accent/80 cursor-pointer gap-4 rounded-none px-4 py-2 text-base font-normal"
                       onClick={() => openActionModal(row, 'return')}
                     >
                       <CornerDownLeft className="size-4 shrink-0" />
@@ -191,11 +209,12 @@ const MyTasksTable = ({
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="m-0 h-px bg-[#DFE3E6]" />
                     <DropdownMenuItem
-                      className="cursor-pointer gap-4 bg-[#F1F3F5] px-4 py-2 text-base font-normal text-[#EB3865] focus:bg-[#E8EAED]"
+                      className="bg-accent focus:bg-accent/80 cursor-pointer gap-4 rounded-none px-4 py-2 text-base font-normal text-[#EB3865]"
                       onClick={() => openActionModal(row, 'reject')}
                     >
                       <XIcon className="size-4 shrink-0 text-[#EB3865]" />
                       Reject
+                      <ErrorCircleIcon className="ms-auto size-4 shrink-0 text-[#EB3865]" />
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -443,6 +462,20 @@ const MyTasksTable = ({
         description="The request will be marked as Rejected. Please add the reject reason below."
         requireReason
         onConfirm={(reason) => actionTask && handleTaskAction(actionTask.id, 'reject', reason)}
+      />
+
+      <RequestEndorsementModal
+        open={activeModal === 'endorsement'}
+        onOpenChange={(open) => !open && setActiveModal(null)}
+        selectedCount={1}
+        onConfirm={(names, reason) =>
+          actionTask &&
+          requestEndorsement(actionTask.id, names, reason).then((res) => {
+            setSuccessMessage(res.message)
+            setActiveModal(null)
+            setActionTask(null)
+          })
+        }
       />
 
       {/* Success toast */}

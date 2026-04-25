@@ -8,12 +8,13 @@ import {
   CATALOG_DRAFT_ACTIONS,
   CATALOG_FULL_REPORT_ACTIONS,
 } from '@features/module-process-catalog/constants/catalog-toolbar'
-import { FileText, Table2 } from 'lucide-react'
+import { FileText } from 'lucide-react'
 import { useCurrentUser } from '@/shared/auth/useUserStore'
 import ViewToggle from '@/shared/components/ViewToggle'
 import { hasPermission } from '@/shared/lib/permissions'
 import ProcessesMenu, { type ProcessViewOption } from '@/shared/components/ProcessesMenu'
 import Breadcrumb from '@/shared/components/Breadcrumb'
+import EditableIcon from '@/assets/icons/editable.svg?react'
 
 export type CatalogTabValue = 'processes' | 'myTasks' | 'submittedRequests'
 export type CatalogView = 'default' | 'full-report'
@@ -105,7 +106,15 @@ const CatalogHeader = ({
   const defaultActions: ToolbarAction[] = CATALOG_ACTIONS.map((a) =>
     a.id === 'export' ? { ...a, onClick: onExport, disabled: isExporting } : a,
   )
-  const actions = hasDraftRows ? draftActions : isFullReport ? fullReportActions : defaultActions
+  const exportOnlyActions: ToolbarAction[] = defaultActions.filter((a) => a.id !== 'import')
+  const actions =
+    hasDraftRows && activeTab === 'processes'
+      ? draftActions
+      : isFullReport
+        ? fullReportActions
+        : activeTab === 'processes'
+          ? defaultActions
+          : exportOnlyActions
 
   return (
     <header className="space-y-3">
@@ -115,13 +124,15 @@ const CatalogHeader = ({
         <h1 className="text-foreground text-start text-2xl font-semibold">
           {isFullReport ? 'Process Catalog Management - Full Report' : 'Process Catalog Management'}
         </h1>
-        {!isFullReport && <ProcessesMenu value={processView} onChange={onProcessViewChange} />}
+        {!isFullReport && activeTab === 'processes' && (
+          <ProcessesMenu value={processView} onChange={onProcessViewChange} />
+        )}
       </div>
 
       <div className="flex items-center gap-2">
         <div className="flex-1">
           <ModuleToolbar
-            tabs={visibleTabs}
+            tabs={isFullReport ? [] : visibleTabs}
             activeTab={activeTab}
             onTabChange={(value) => onTabChange(value as CatalogTabValue)}
             onFilterClick={onFilterClick}
@@ -129,7 +140,7 @@ const CatalogHeader = ({
             bulkMode={
               activeTab === 'myTasks'
                 ? taskBulkMode
-                : hasDraftRows || isFullReport || isBulkMode
+                : activeTab === 'submittedRequests' || hasDraftRows || isFullReport || isBulkMode
                   ? undefined
                   : bulkMode
             }
@@ -141,8 +152,8 @@ const CatalogHeader = ({
         {activeTab === 'processes' && !hasDraftRows && (
           <ViewToggle
             options={[
-              { value: 'default', icon: FileText, label: 'Editable view' },
-              { value: 'full-report', icon: Table2, label: 'Full report view' },
+              { value: 'default', icon: EditableIcon, label: 'Editable view' },
+              { value: 'full-report', icon: FileText, label: 'Full report view' },
             ]}
             value={currentView}
             onChange={(v) => onViewChange?.(v as CatalogView)}

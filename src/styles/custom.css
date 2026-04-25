@@ -41,7 +41,7 @@ td {
 }
 [role='menuitemcheckbox'] span svg {
   padding: 1px;
-  background-color: #0047ba;
+  background-color: var(--brand-blue);
   color: #fff;
   border-radius: 3px;
 }
@@ -60,6 +60,18 @@ table-light-styles
 }
 .table-light table th {
   background-color: #fff !important;
+}
+.table-accent div.border-border,
+.table-accent td,
+.table-accent th {
+  border-width: 0px !important;
+}
+.table-accent td,
+.table-accent th {
+  border-bottom-width: 1px !important;
+}
+.table-accent table th {
+  background-color: var(--accent) !important;
 }
 /* [End] - table-light-styles */
 
@@ -82,7 +94,7 @@ select:disabled,
 input:disabled,
 textarea:disabled {
   opacity: 100%;
-  background-color: #f1f3f5;
+  background-color: var(--accent);
   border: 1px solid #dfe3e6;
 }
 

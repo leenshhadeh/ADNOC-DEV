@@ -41,7 +41,7 @@ return (
     <MoreHorizontal className="size-4" />
   </Button>
 </DropdownMenuTrigger>
-<DropdownMenuContent align="end" sideOffset={4} className="w-60 overflow-hidden rounded-xl border p-0 shadow-md bg-[#F1F3F5]">
+<DropdownMenuContent align="end" sideOffset={4} className="w-60 overflow-hidden rounded-xl border p-0 shadow-md bg-accent">
     {options.map((option) => (
         <DropdownMenuItem
         key={option.label}

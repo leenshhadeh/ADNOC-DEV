@@ -47,7 +47,7 @@ export function HomePage() {
       <button
         type="button"
         onClick={() => logout()}
-        className="rounded-full border border-[#DFE3E6] bg-white px-6 py-2.5 text-sm font-medium text-[#151718] shadow-sm transition-colors hover:bg-[#F1F3F5]"
+        className="rounded-full border border-[#DFE3E6] bg-white px-6 py-2.5 text-sm font-medium text-[#151718] shadow-sm transition-colors hover:bg-accent"
       >
         Sign out
       </button>

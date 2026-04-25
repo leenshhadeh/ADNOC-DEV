@@ -44,7 +44,7 @@ const ProcessesMenu = ({ options = PROCESS_VIEW_OPTIONS, value, onChange }: Proc
         <Button
           className={cn(
             'inline-flex items-center gap-1.5',
-            'bg-transparent text-[#0047BA] hover:bg-transparent',
+            'bg-transparent text-brand-blue hover:bg-transparent',
             'shadow-none outline-none',
           )}
         >
@@ -69,12 +69,12 @@ const ProcessesMenu = ({ options = PROCESS_VIEW_OPTIONS, value, onChange }: Proc
               className={cn(
                 'flex justify-between rounded-none px-4 text-[15px] text-[#1F2430]',
                 'focus:text-[#1F2430]',
-                isSelected ? 'bg-[#DCE5F9] focus:bg-[#DCE4F5]' : 'bg-[#F1F3F5] focus:bg-[#ECEFF2]',
+                isSelected ? 'bg-[#DCE5F9] focus:bg-[#DCE4F5]' : 'bg-accent focus:bg-[#ECEFF2]',
                 index !== options.length - 1 && 'border-b border-[#D9DEE3]',
               )}
             >
               <span>{option.name}</span>
-              {isSelected && <Check className="size-4 text-[#0047BA]" />}
+              {isSelected && <Check className="size-4 text-brand-blue" />}
             </DropdownMenuItem>
           )
         })}

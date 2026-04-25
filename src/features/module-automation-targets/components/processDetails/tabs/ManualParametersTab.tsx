@@ -11,7 +11,7 @@ interface ManualParametersTabProps {
 const DropdownField = ({ label, value }: { label: string; value: string }) => (
   <div className="flex min-w-[280px] flex-1 flex-col gap-2">
     <span className="text-base font-normal text-[#889096]">{label}</span>
-    <div className="flex items-center rounded-2xl border border-[#DFE3E6] bg-[#F1F3F5] px-4 py-3">
+    <div className="flex items-center rounded-2xl border border-[#DFE3E6] bg-accent px-4 py-3">
       <span className="flex-1 text-base font-medium text-[#889096]">{value || '—'}</span>
     </div>
   </div>
@@ -22,7 +22,7 @@ const DropdownField = ({ label, value }: { label: string; value: string }) => (
 const InputField = ({ label, value }: { label: string; value: string }) => (
   <div className="flex min-w-[280px] flex-1 flex-col gap-2">
     <span className="text-base font-normal text-[#889096]">{label}</span>
-    <div className="rounded-2xl border border-[#DFE3E6] bg-[#F1F3F5] px-6 py-3">
+    <div className="rounded-2xl border border-[#DFE3E6] bg-accent px-6 py-3">
       <span className="text-base font-medium text-[#889096]">{value || '—'}</span>
     </div>
   </div>
@@ -33,7 +33,7 @@ const InputField = ({ label, value }: { label: string; value: string }) => (
 const TextareaField = ({ label, value }: { label: string; value: string }) => (
   <div className="flex flex-1 flex-col gap-2">
     <span className="text-base font-normal text-[#889096]">{label}</span>
-    <div className="min-h-[120px] rounded-2xl border border-[#DFE3E6] bg-[#F1F3F5] px-6 py-4">
+    <div className="min-h-[120px] rounded-2xl border border-[#DFE3E6] bg-accent px-6 py-4">
       <span className="text-base font-medium whitespace-pre-wrap text-[#889096]">
         {value || '—'}
       </span>
@@ -110,7 +110,7 @@ const ManualParametersTab = ({ process }: ManualParametersTabProps) => {
       </div>
 
       {/* ── Summary: Annual Cost of Manual Effort ─────────────────────── */}
-      <div className="rounded-none border border-[#DFE3E6] bg-[#F1F3F5] px-6 pt-6 pb-4">
+      <div className="rounded-none border border-[#DFE3E6] bg-accent px-6 pt-6 pb-4">
         <div className="flex items-center gap-4">
           <div className="flex flex-col gap-1">
             <span className="text-lg font-normal text-[#687076]">

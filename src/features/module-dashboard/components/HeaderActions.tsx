@@ -52,7 +52,7 @@ const HeaderActions = () => {
           type="button"
           aria-label="Open notifications"
           onClick={() => setOpen(true)}
-          className="relative inline-flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-[#F1F3F5]"
+          className="relative inline-flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-accent"
         >
           <Bell className="h-5 w-5" />
 

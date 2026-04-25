@@ -70,11 +70,24 @@ const DataTable = <TData,>({
   onColumnVisibilityChange,
   columnOrder: columnOrderProp,
   onColumnOrderChange,
-  isLoading
+  isLoading,
 }: DataTableProps<TData>) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>(initialColumnPinning ?? {})
+  const [selectedCellIds, setSelectedCellIds] = useState<Set<string>>(new Set())
+
+  const handleCellSelect = (cellId: string) => {
+    setSelectedCellIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(cellId)) {
+        next.delete(cellId)
+      } else {
+        next.add(cellId)
+      }
+      return next
+    })
+  }
 
   const initialColumnOrder = useMemo(() => getLeafColumnIds(columns), [columns])
   const [columnOrder, setColumnOrder] = useState(initialColumnOrder)
@@ -158,7 +171,7 @@ const DataTable = <TData,>({
     })
   }
 
-  if(isLoading) return <LoadingTable/>
+  if (isLoading) return <LoadingTable />
 
   return (
     <TableShell className={className}>
@@ -202,6 +215,8 @@ const DataTable = <TData,>({
                     getRowActions={getRowActions}
                     isHighlighted={row.id === (tableMeta?.highlightedRowId ?? null)}
                     actionColumnIds={actionColumnIds}
+                    selectedCellIds={selectedCellIds}
+                    onCellSelect={handleCellSelect}
                   />
                 ))
             ) : (

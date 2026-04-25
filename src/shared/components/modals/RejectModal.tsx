@@ -35,7 +35,7 @@ export function RejectModal({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         showClose={false}
-        className="max-w-lg gap-6 rounded-2xl bg-[#F1F3F5] p-8 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]"
+        className="max-w-lg gap-6 rounded-2xl bg-accent p-8 shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]"
       >
         <div className="flex items-start gap-2">
           <div className="flex flex-1 flex-col gap-2">
@@ -54,7 +54,7 @@ export function RejectModal({
               type="text"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="rounded-2xl border border-[#DFE3E6] bg-white px-6 py-4 text-sm text-[#151718] outline-none placeholder:text-[#A1A8AD] focus:border-[#0047BA]"
+              className="rounded-2xl border border-[#DFE3E6] bg-white px-6 py-4 text-sm text-[#151718] outline-none placeholder:text-[#A1A8AD] focus:border-brand-blue"
               placeholder="Enter reject reason..."
             />
           </div>
@@ -63,7 +63,7 @@ export function RejectModal({
         <div className="flex gap-2 pt-4">
           <button
             type="button"
-            className="flex flex-1 items-center justify-center rounded-[36px] px-6 py-3 text-sm font-medium text-[#0047BA] transition-colors hover:bg-[#0047BA]/5"
+            className="flex flex-1 items-center justify-center rounded-[36px] px-6 py-3 text-sm font-medium text-brand-blue transition-colors hover:bg-brand-blue/5"
             onClick={() => handleOpenChange(false)}
           >
             Cancel

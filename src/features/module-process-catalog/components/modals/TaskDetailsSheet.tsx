@@ -44,15 +44,15 @@ function WorkflowStepper({ currentStep, totalSteps }: { currentStep: number; tot
                 )}
               >
                 {isCompleted ? (
-                  <Check className="size-3.5 text-[#0047BA]" strokeWidth={2.5} />
+                  <Check className="size-3.5 text-brand-blue" strokeWidth={2.5} />
                 ) : isActive ? (
-                  <div className="size-3 rounded-full bg-[#0047BA]" />
+                  <div className="size-3 rounded-full bg-brand-blue" />
                 ) : (
                   <div className="size-3 rounded-full bg-gradient-to-b from-[rgba(76,195,255,0.2)] to-[rgba(25,62,117,0.2)]" />
                 )}
               </div>
               {!isLast && (
-                <div className={cn('h-0.5 flex-1', lineBlue ? 'bg-[#0047BA]' : 'bg-[#CCC]')} />
+                <div className={cn('h-0.5 flex-1', lineBlue ? 'bg-brand-blue' : 'bg-[#CCC]')} />
               )}
             </div>
             <div className="mt-2 max-w-[90px]">
@@ -195,7 +195,7 @@ const TaskDetailsSheet = ({ task, open, onOpenChange, onAction }: TaskDetailsShe
                 <div className="grid grid-cols-2">
                   <button
                     type="button"
-                    className="text-primary inline-flex items-center gap-1.5 text-sm font-medium hover:underline"
+                    className="text-sidebar-primary inline-flex items-center gap-1.5 text-sm font-medium hover:underline"
                     disabled={!task.processId}
                   >
                     <Eye className="size-4" />
@@ -203,7 +203,7 @@ const TaskDetailsSheet = ({ task, open, onOpenChange, onAction }: TaskDetailsShe
                   </button>
                   <button
                     type="button"
-                    className="text-primary inline-flex items-center justify-end gap-1.5 text-sm font-medium hover:underline"
+                    className="text-sidebar-primary inline-flex items-center justify-end gap-1.5 text-sm font-medium hover:underline"
                     onClick={() => setShowWorkflowHistory(true)}
                   >
                     <Clock className="size-4" />
@@ -212,24 +212,23 @@ const TaskDetailsSheet = ({ task, open, onOpenChange, onAction }: TaskDetailsShe
                 </div>
               </div>
 
+              <div className="mt-4 flex items-center gap-2">
+                <p className="text-base font-medium text-[#151718]">
+                  Stage {task.stageCurrent}/{task.stageTotal}
+                </p>
+                <span className="inline-flex items-center rounded-full bg-[#FEE5D3] px-1.5 text-xs font-normal text-[#151718]">
+                  {task.stageText}
+                </span>
+              </div>
               {/* Stage card */}
-              <div className="mt-6 rounded-2xl bg-gradient-to-b from-[#E9EFFF] to-white p-3 px-4 shadow-[7px_8px_28px_0px_rgba(0,0,0,0.2)]">
-                <div className="mb-4 flex items-center gap-2">
-                  <p className="text-base font-medium text-[#151718]">
-                    Stage {task.stageCurrent}/{task.stageTotal}
-                  </p>
-                  <span className="inline-flex items-center rounded-full bg-[#FEE5D3] px-1.5 text-xs font-normal text-[#151718]">
-                    {task.stageText}
-                  </span>
-                </div>
-
+              <div className="mt-4 rounded-2xl p-3 px-4 shadow-[7px_8px_28px_0px_rgba(0,0,0,0.2)]">
                 <WorkflowStepper currentStep={task.stageCurrent} totalSteps={task.stageTotal} />
 
                 <div className="mt-4 flex flex-col">
                   <Separator className="bg-[#DFE3E6]" />
                   <button
                     type="button"
-                    className="mx-auto flex w-full items-center justify-center gap-1 py-2 text-sm font-medium text-[#0047BA]"
+                    className="mx-auto flex w-full items-center justify-center gap-1 py-2 text-sm font-medium text-brand-blue"
                     onClick={() => setShowMore((v) => !v)}
                   >
                     {showMore ? (

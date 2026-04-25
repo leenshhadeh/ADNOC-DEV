@@ -1,0 +1,241 @@
+{
+  "workbook_name": "Reports.xlsx",
+  "worksheet_name": "Opportunity Coverage",
+  "title": "Opportunity Coverage of Business processes",
+  "purpose": "Purpose: The report  measures the extent to which business processes are addressed/covered by proposed opportunities.",
+  "filters": "Filters: GC (drop list), Domain (drop list)",
+  "record_count": 33,
+  "data": [
+    {
+      "GC": "ADNOC HQ",
+      "Domain": "Capital Projects",
+      "Num of Not Fully Automated Business Processes": 30,
+      "Num of L3 Process Covered by Opportunities": 21,
+      "% of L3 Process Covered by Opportunities": 0.7
+    },
+    {
+      "GC": "ADNOC HQ",
+      "Domain": "Audit & Assurance",
+      "Num of Not Fully Automated Business Processes": 40,
+      "Num of L3 Process Covered by Opportunities": 32,
+      "% of L3 Process Covered by Opportunities": 0.8
+    },
+    {
+      "GC": "ADNOC HQ",
+      "Domain": "Business support",
+      "Num of Not Fully Automated Business Processes": 27,
+      "Num of L3 Process Covered by Opportunities": 4,
+      "% of L3 Process Covered by Opportunities": 0.14814814814814814
+    },
+    {
+      "GC": "ADNOC HQ",
+      "Domain": "Corporate Communications",
+      "Num of Not Fully Automated Business Processes": 20,
+      "Num of L3 Process Covered by Opportunities": 12,
+      "% of L3 Process Covered by Opportunities": 0.6
+    },
+    {
+      "GC": "ADNOC HQ",
+      "Domain": "Drilling and Field Services",
+      "Num of Not Fully Automated Business Processes": 45,
+      "Num of L3 Process Covered by Opportunities": 32,
+      "% of L3 Process Covered by Opportunities": 0.7111111111111111
+    },
+    {
+      "GC": "ADNOC HQ",
+      "Domain": "Aggregated",
+      "Num of Not Fully Automated Business Processes": 162,
+      "Num of L3 Process Covered by Opportunities": 101,
+      "% of L3 Process Covered by Opportunities": 0.6234567901234568
+    },
+    {
+      "GC": "ADNOC L&S",
+      "Domain": "Capital Projects",
+      "Num of Not Fully Automated Business Processes": 23,
+      "Num of L3 Process Covered by Opportunities": 15,
+      "% of L3 Process Covered by Opportunities": 0.6521739130434783
+    },
+    {
+      "GC": "ADNOC L&S",
+      "Domain": "Audit & Assurance",
+      "Num of Not Fully Automated Business Processes": 8,
+      "Num of L3 Process Covered by Opportunities": 2,
+      "% of L3 Process Covered by Opportunities": 0.25
+    },
+    {
+      "GC": "ADNOC L&S",
+      "Domain": "Business support",
+      "Num of Not Fully Automated Business Processes": 17,
+      "Num of L3 Process Covered by Opportunities": 5,
+      "% of L3 Process Covered by Opportunities": 0.29411764705882354
+    },
+    {
+      "GC": "ADNOC L&S",
+      "Domain": "Corporate Communications",
+      "Num of Not Fully Automated Business Processes": 20,
+      "Num of L3 Process Covered by Opportunities": 15,
+      "% of L3 Process Covered by Opportunities": 0.75
+    },
+    {
+      "GC": "ADNOC L&S",
+      "Domain": "Aggregated",
+      "Num of Not Fully Automated Business Processes": 68,
+      "Num of L3 Process Covered by Opportunities": 37,
+      "% of L3 Process Covered by Opportunities": 0.5441176470588235
+    },
+    {
+      "GC": "ADNOC Offshore",
+      "Domain": "Capital Projects",
+      "Num of Not Fully Automated Business Processes": 15,
+      "Num of L3 Process Covered by Opportunities": 5,
+      "% of L3 Process Covered by Opportunities": 0.3333333333333333
+    },
+    {
+      "GC": "ADNOC Offshore",
+      "Domain": "Audit & Assurance",
+      "Num of Not Fully Automated Business Processes": 24,
+      "Num of L3 Process Covered by Opportunities": 18,
+      "% of L3 Process Covered by Opportunities": 0.75
+    },
+    {
+      "GC": "ADNOC Offshore",
+      "Domain": "Business support",
+      "Num of Not Fully Automated Business Processes": 33,
+      "Num of L3 Process Covered by Opportunities": 10,
+      "% of L3 Process Covered by Opportunities": 0.30303030303030304
+    },
+    {
+      "GC": "ADNOC Offshore",
+      "Domain": "Corporate Communications",
+      "Num of Not Fully Automated Business Processes": 29,
+      "Num of L3 Process Covered by Opportunities": 12,
+      "% of L3 Process Covered by Opportunities": 0.41379310344827586
+    },
+    {
+      "GC": "ADNOC Offshore",
+      "Domain": "Aggregated",
+      "Num of Not Fully Automated Business Processes": 101,
+      "Num of L3 Process Covered by Opportunities": 45,
+      "% of L3 Process Covered by Opportunities": 0.44554455445544555
+    },
+    {
+      "GC": "ADNOC Onshore",
+      "Domain": "Capital Projects",
+      "Num of Not Fully Automated Business Processes": 28,
+      "Num of L3 Process Covered by Opportunities": 19,
+      "% of L3 Process Covered by Opportunities": 0.6785714285714286
+    },
+    {
+      "GC": "ADNOC Onshore",
+      "Domain": "Audit & Assurance",
+      "Num of Not Fully Automated Business Processes": 21,
+      "Num of L3 Process Covered by Opportunities": 10,
+      "% of L3 Process Covered by Opportunities": 0.47619047619047616
+    },
+    {
+      "GC": "ADNOC Onshore",
+      "Domain": "Business support",
+      "Num of Not Fully Automated Business Processes": 23,
+      "Num of L3 Process Covered by Opportunities": 11,
+      "% of L3 Process Covered by Opportunities": 0.4782608695652174
+    },
+    {
+      "GC": "Field Description/calculation logic:",
+      "Domain": null,
+      "Num of Not Fully Automated Business Processes": null,
+      "Num of L3 Process Covered by Opportunities": null,
+      "% of L3 Process Covered by Opportunities": null
+    },
+    {
+      "GC": "For all GC's and HQ",
+      "Domain": "Row for each applicable domain within the Group company, plus a summary row for the Group company aggregating the data from all domains.",
+      "Num of Not Fully Automated Business Processes": "Unit: number of processes\n\nThis field represents the total number of business process within the GC and Domain.\n\nNote: use latest L3 data even if draft",
+      "Num of L3 Process Covered by Opportunities": "Unit: number of processes\n\nThis field represents the number of business processes that are mapped to an opportunities\n\nNote: use latest L3 data even if draft",
+      "% of L3 Process Covered by Opportunities": "Unit: (%)\n\nThis field represents the percentage of L3 processes covered(mapped to) by opportunities. \n\nCalculation(%):\n(num of business Processes mapped to  opportunities/ total num of business Processes)x100\n\nNote: use L3 data even if draft"
+    },
+    {
+      "GC": "User Access:",
+      "Domain": null,
+      "Num of Not Fully Automated Business Processes": null,
+      "Num of L3 Process Covered by Opportunities": null,
+      "% of L3 Process Covered by Opportunities": null
+    },
+    {
+      "GC": "Role/ Data",
+      "Domain": "Restrictions",
+      "Num of Not Fully Automated Business Processes": null,
+      "Num of L3 Process Covered by Opportunities": null,
+      "% of L3 Process Covered by Opportunities": null
+    },
+    {
+      "GC": "Business focal point - assigned to GC and Domain (View restricted to GC and domain - many-to-many)",
+      "Domain": "View (for assigned GC & Domains)",
+      "Num of Not Fully Automated Business Processes": null,
+      "Num of L3 Process Covered by Opportunities": null,
+      "% of L3 Process Covered by Opportunities": null
+    },
+    {
+      "GC": "Digital focal point - assigned to GC and Domain (View restricted to GC and domain - many-to-many)",
+      "Domain": "View (for assigned GC & Domains)",
+      "Num of Not Fully Automated Business Processes": null,
+      "Num of L3 Process Covered by Opportunities": null,
+      "% of L3 Process Covered by Opportunities": null
+    },
+    {
+      "GC": "Digital VP- assigned to GC (View restricted to GC and domain - many-to-many)",
+      "Domain": "View (for assigned GC & Domains)",
+      "Num of Not Fully Automated Business Processes": null,
+      "Num of L3 Process Covered by Opportunities": null,
+      "% of L3 Process Covered by Opportunities": null
+    },
+    {
+      "GC": "Digital Expert/SME  (View restricted to GC and domain - many-to-many)",
+      "Domain": "View (for assigned GC & Domains)",
+      "Num of Not Fully Automated Business Processes": null,
+      "Num of L3 Process Covered by Opportunities": null,
+      "% of L3 Process Covered by Opportunities": null
+    },
+    {
+      "GC": "Opportunity Evaluator  (View restricted to GC and domain - many-to-many)",
+      "Domain": "View (for assigned GC & Domains)",
+      "Num of Not Fully Automated Business Processes": null,
+      "Num of L3 Process Covered by Opportunities": null,
+      "% of L3 Process Covered by Opportunities": null
+    },
+    {
+      "GC": "BPA Program Manager (BPA Team)",
+      "Domain": "View (all)",
+      "Num of Not Fully Automated Business Processes": null,
+      "Num of L3 Process Covered by Opportunities": null,
+      "% of L3 Process Covered by Opportunities": null
+    },
+    {
+      "GC": "BPA Quality Manager  (BPA Team)",
+      "Domain": "View (all)",
+      "Num of Not Fully Automated Business Processes": null,
+      "Num of L3 Process Covered by Opportunities": null,
+      "% of L3 Process Covered by Opportunities": null
+    },
+    {
+      "GC": "BPA Domain Framework Custodian  (BPA Team)",
+      "Domain": "View (all)",
+      "Num of Not Fully Automated Business Processes": null,
+      "Num of L3 Process Covered by Opportunities": null,
+      "% of L3 Process Covered by Opportunities": null
+    },
+    {
+      "GC": "Super Admin",
+      "Domain": "View (all)",
+      "Num of Not Fully Automated Business Processes": null,
+      "Num of L3 Process Covered by Opportunities": null,
+      "% of L3 Process Covered by Opportunities": null
+    },
+    {
+      "GC": "GC Admin, assigned to GC",
+      "Domain": "View (for assigned GC & Domains)",
+      "Num of Not Fully Automated Business Processes": null,
+      "Num of L3 Process Covered by Opportunities": null,
+      "% of L3 Process Covered by Opportunities": null
+    }
+  ]
+}

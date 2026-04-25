@@ -157,7 +157,7 @@ const UserDomainsDrawer = ({
           <button
             type="button"
             onClick={handleClose}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#151718] transition hover:bg-[#F1F3F5]"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#151718] transition hover:bg-accent"
             aria-label="Close"
           >
             <X className="h-5 w-5" />
@@ -221,7 +221,7 @@ const UserDomainsDrawer = ({
                         type="checkbox"
                         checked={gcSelected}
                         onChange={() => handleToggleGroupCompany(gc.publicId)}
-                        className="h-4 w-4 rounded-[2px] accent-[#0047BA]"
+                        className="h-4 w-4 rounded-[2px] accent-brand-blue"
                       />
 
                       <div className="flex flex-col">
@@ -234,7 +234,7 @@ const UserDomainsDrawer = ({
                     <button
                       type="button"
                       onClick={() => toggleGroupOpen(gc.publicId)}
-                      className="flex items-center gap-1 text-[14px] font-[500] text-[#0047BA]"
+                      className="flex items-center gap-1 text-[14px] font-[500] text-brand-blue"
                     >
                       <span>View</span>
                       <ChevronDown
@@ -258,7 +258,7 @@ const UserDomainsDrawer = ({
                             type="checkbox"
                             checked={allSelected}
                             onChange={() => handleToggleAllDomainsForGroup(gc.publicId)}
-                            className="h-4 w-4 rounded-[2px] accent-[#0047BA]"
+                            className="h-4 w-4 rounded-[2px] accent-brand-blue"
                           />
                           <span>All</span>
                         </label>
@@ -275,7 +275,7 @@ const UserDomainsDrawer = ({
                                   (selectedDomain) => selectedDomain.publicId === domain.publicId,
                                 )}
                                 onChange={() => handleToggleDomain(gc.publicId, domain.publicId)}
-                                className="h-4 w-4 rounded-[2px] accent-[#0047BA]"
+                                className="h-4 w-4 rounded-[2px] accent-brand-blue"
                               />
                               <span>{domain.name}</span>
                             </label>

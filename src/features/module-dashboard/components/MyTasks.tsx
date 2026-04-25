@@ -91,7 +91,7 @@ const MyTasks = () => {
             <div className="flex items-center gap-3">
               <h2 className="text-[18px] leading-none font-semibold text-[#151718]">My tasks</h2>
 
-              <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-[#F1F3F5] px-2 text-[12px] font-semibold text-[#151718]">
+              <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-accent px-2 text-[12px] font-semibold text-[#151718]">
                 {totalCount}
               </span>
 
@@ -107,7 +107,7 @@ const MyTasks = () => {
             <button
               type="button"
               onClick={() => setIsViewAllOpen(true)}
-              className="inline-flex items-center justify-center text-[#0047BA] transition hover:opacity-70"
+              className="inline-flex items-center justify-center text-brand-blue transition hover:opacity-70"
             >
               <Maximize2 className="h-4 w-4 cursor-pointer" strokeWidth={2} />
             </button>
@@ -126,14 +126,14 @@ const MyTasks = () => {
                       <h3 className="text-[14px] font-medium text-[#687076]">
                         {group.module.title}
                       </h3>
-                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#F1F3F5] px-1.5 text-[10px] font-medium text-[#687076]">
+                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1.5 text-[10px] font-medium text-[#687076]">
                         {group.items.length}
                       </span>
                     </div>
 
                     <button
                       type="button"
-                      className="cursor-pointer text-[14px] font-semibold text-[#0047BA] transition hover:opacity-70"
+                      className="cursor-pointer text-[14px] font-semibold text-brand-blue transition hover:opacity-70"
                       onClick={() => handleViewAll(group.module.title, group.module.url)}
                     >
                       View all

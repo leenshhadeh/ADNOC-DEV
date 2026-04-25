@@ -1,6 +1,7 @@
 import { Download, Save, ShieldCheck, Trash2, Upload, FileSpreadsheet } from 'lucide-react'
 
 import type { TabConfig, ToolbarAction } from '@/shared/components/ModuleToolbar'
+import ExcelIcon from '@/assets/icons/excel.svg?react'
 
 export const CATALOG_TABS: TabConfig[] = [
   { value: 'processes', label: 'Processes' },
@@ -14,7 +15,7 @@ export const CATALOG_ACTIONS: ToolbarAction[] = [
 ]
 
 export const CATALOG_FULL_REPORT_ACTIONS: ToolbarAction[] = [
-  { id: 'export-full-report', label: 'Export full report', icon: FileSpreadsheet },
+  { id: 'export-full-report', label: 'Export full report', icon: ExcelIcon },
 ]
 
 export const CATALOG_DRAFT_ACTIONS: ToolbarAction[] = [

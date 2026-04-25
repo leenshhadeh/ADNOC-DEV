@@ -58,7 +58,7 @@ const FieldCommentSheet = ({ open, onOpenChange, taskId, fieldName }: FieldComme
   }
 
   return (
-    <div className="flex w-[400px] shrink-0 flex-col rounded-3xl bg-[#F1F3F5] p-4">
+    <div className="bg-accent flex w-[400px] shrink-0 flex-col rounded-3xl p-4">
       {/* ── Title ────────────────────────────────────────────────────── */}
       <div className="flex min-h-0 flex-1 flex-col gap-3">
         {/* ── Close button ─────────────────────────────────────────────── */}
@@ -81,7 +81,7 @@ const FieldCommentSheet = ({ open, onOpenChange, taskId, fieldName }: FieldComme
         <div className="flex flex-col gap-4 rounded-2xl border border-[#DFE3E6] bg-white p-3">
           {/* Avatar + name */}
           <div className="flex items-center gap-2">
-            <div className="flex size-8 items-center justify-center rounded-full bg-[#0047BA] text-xs font-bold text-white shadow-[0px_1.5px_14px_0px_rgba(0,0,0,0.2)]">
+            <div className="flex size-8 items-center justify-center rounded-full bg-brand-blue text-xs font-bold text-white shadow-[0px_1.5px_14px_0px_rgba(0,0,0,0.2)]">
               {getInitials(userName)}
             </div>
             <span className="text-base font-normal text-[#151718]">{userName}</span>
@@ -131,7 +131,7 @@ const FieldCommentSheet = ({ open, onOpenChange, taskId, fieldName }: FieldComme
                 className="flex flex-col gap-2 rounded-2xl border border-[#DFE3E6] bg-white p-3"
               >
                 <div className="flex items-start gap-2">
-                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#0047BA] text-xs font-bold text-white shadow-[0px_1.5px_14px_0px_rgba(0,0,0,0.2)]">
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-blue text-xs font-bold text-white shadow-[0px_1.5px_14px_0px_rgba(0,0,0,0.2)]">
                     {getInitials(entry.author)}
                   </div>
                   <div className="flex flex-1 flex-col gap-3">

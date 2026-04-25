@@ -68,7 +68,7 @@ const RecordedChangesTab = (props: any) => {
         accessorKey: 'modifiedBy',
         header: 'Modified By',
         enableSorting: false,
-        cell: (info) =>  <div className="text-muted-foreground rounded-[99px] bg-[#F1F3F5] p-1 text-center"><p className="text-muted-foreground">{info.row.original.modifiedBy}</p></div>
+        cell: (info) =>  <div className="text-muted-foreground rounded-[99px] bg-accent p-1 text-center"><p className="text-muted-foreground">{info.row.original.modifiedBy}</p></div>
       },
       {
         id: 'modifiedOn',
