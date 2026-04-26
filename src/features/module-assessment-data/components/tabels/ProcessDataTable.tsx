@@ -6,6 +6,9 @@ import BUSheet from '../sidePanels/BUSheet'
 import DigitalTeamSheet from '../sidePanels/DigitalTeamSheet'
 import { getProcessTableColumns } from './process-table-columns'
 import type { RowSelectionState } from '@tanstack/react-table'
+import {
+  useSaveAssessmentDraftRows,
+} from '../../hooks/useProcessActions'
 
 const toText = (value: unknown): string => {
   if (value == null) return ''
@@ -212,6 +215,7 @@ const ProcessDataTable = ({
   const [isDigitalTeamOpen, setIsDigitalTeamOpen] = useState(false)
   const [selectedRowId, setSelectedRowId] = useState('')
   const [selectedProcessSercives, setSelectedProcessSercives] = useState<any>({services:[],shared:[]})
+  const saveAssessmentDraftRowsMutation = useSaveAssessmentDraftRows()
 
 
   const columns = useMemo(
@@ -262,22 +266,27 @@ const ProcessDataTable = ({
 
   useEffect(()=>{
     if(startSaving){
-      onSave()
+      void onSave()
     }
 
   },[startSaving])
   // OnSave
-  const onSave=()=>{
-    // toDo: change the status to draft for the updated records 
-    // console.log the changes rows
+  const onSave=async ()=>{
     const recordsReadyForSave = updatedDataTable.filter((row) => row.readyForSave)
     console.log('save the changes records',recordsReadyForSave)
-    onSaveComplete && onSaveComplete()
+    await saveAssessmentDraftRowsMutation.mutateAsync(recordsReadyForSave)
+    onSaveComplete && onSaveComplete();
+   
+    // reset readyForSave records
+    setUpdatedDataTable((prev) =>
+      prev.map((row) => (row.readyForSave ? { ...row, readyForSave: false } : row)),
+    )
   }
 
   // onValidate
-  const onValidate=()=>{
-    // toDo: check if all fileds are valid "all filed should be filled" for the updated rows 
+  const onValidate=async ()=>{
+    const recordsReadyForSave = updatedDataTable.filter((row) => row.readyForSave)
+    console.log('validate the changes records')
   }
 
 

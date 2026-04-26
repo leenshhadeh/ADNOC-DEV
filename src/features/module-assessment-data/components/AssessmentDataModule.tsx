@@ -113,6 +113,7 @@ const AssessmentDataModule = () => {
   const [taskActionMessage, setTaskActionMessage] = useState('')
   const [singleActionTask, setSingleActionTask] = useState<TaskItem | null>(null)
   const [processView, setProcessView] = useState<ProcessViewOptionId>('published')
+  // save and validate data:
   const [onChangeMode, setOnChangeMode]= useState(false)
   const [startSaving, setStartSaveing]= useState(false)
   const [showEDataSavedToast,setShowEDataSavedToast]= useState(false)
@@ -483,6 +484,7 @@ const AssessmentDataModule = () => {
                 columnOrder={managedColumnOrder}
                 onColumnOrderChange={setManagedColumnOrder}
                 isLoading={isLoading}
+              //  once user start edit the table , save and edit actions appears:
                 onChangeMode={setOnChangeMode}
                 startSaving={startSaving}
                 onSaveComplete={()=>{setOnChangeMode(false); setShowEDataSavedToast(true)}}
