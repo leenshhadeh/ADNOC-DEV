@@ -7,14 +7,14 @@ type RichTextEditorProps = {
   placeholder?: string
   minHeight?: number
   onChange?: (value: string) => void
-  disabled?:boolean
+  disabled?: boolean
 }
 
 export default function RichTextEditor({
   value = '',
   placeholder = 'Write here...',
   onChange,
-  disabled=false
+  disabled = false,
 }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement | null>(null)
   const quillRef = useRef<Quill | null>(null)
@@ -35,12 +35,12 @@ export default function RichTextEditor({
       theme: 'snow',
       placeholder,
       modules: {
-        toolbar: true
+        toolbar: true,
       },
     })
 
     if (value) {
-      quill.root.innerHTML = value
+      quill.clipboard.dangerouslyPasteHTML(value)
     }
 
     quill.on('text-change', () => {
@@ -60,12 +60,12 @@ export default function RichTextEditor({
     const nextValue = value || ''
 
     if (currentValue !== nextValue) {
-      quill.root.innerHTML = nextValue
+      quill.clipboard.dangerouslyPasteHTML(nextValue)
     }
   }, [value])
 
   return (
-    <div className="overflow-hidden rounded-[16px] border border-[#DFE3E6] bg-background focus-within:ring-1 focus-within:ring-ring">
+    <div className="bg-background focus-within:ring-ring overflow-hidden rounded-[16px] border border-[#DFE3E6] focus-within:ring-1">
       <div ref={editorRef} className="text-editor" />
     </div>
   )

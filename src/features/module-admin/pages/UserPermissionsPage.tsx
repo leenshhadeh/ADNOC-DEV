@@ -330,7 +330,7 @@ const UserPermissionsPage = ({ searchValue, setToolbarActions }: UserPermissions
   )
 
   const handleView = useCallback((user: UserPermissionRow) => {
-    console.log('view', user)
+    // TODO: implement view user details
   }, [])
 
   const handleDeactivate = useCallback((user: UserPermissionRow) => {
@@ -581,7 +581,6 @@ const UserPermissionsPage = ({ searchValue, setToolbarActions }: UserPermissions
                 label: 'Export',
                 icon: Download,
                 onClick: () => {
-                  console.log('Export')
                   showToast('Export started successfully')
                 },
               },

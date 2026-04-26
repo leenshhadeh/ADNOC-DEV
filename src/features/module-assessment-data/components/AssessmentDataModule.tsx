@@ -148,7 +148,7 @@ const AssessmentDataModule = () => {
       setDataSet(data)
     }
     if (isError) {
-      console.log('Error fetching Assessment data:', error)
+      // Error is surfaced via React Query's isError state
     }
   }, [data])
 

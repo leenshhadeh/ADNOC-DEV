@@ -1,10 +1,10 @@
 import { LogLevel, type Configuration } from '@azure/msal-browser'
 
-// ── Placeholder IDs — replace with your actual Azure AD values ────────────────
+// ── Azure AD configuration from environment variables ──────────────────────────────
 
-export const TENANT_ID = 'YOUR_TENANT_ID'
-export const CLIENT_ID = 'YOUR_CLIENT_ID'
-export const BACKEND_CLIENT_ID = 'YOUR_BACKEND_CLIENT_ID'
+export const TENANT_ID = import.meta.env.VITE_TENANT_ID ?? ''
+export const CLIENT_ID = import.meta.env.VITE_CLIENT_ID ?? ''
+export const BACKEND_CLIENT_ID = import.meta.env.VITE_BACKEND_CLIENT_ID ?? ''
 
 // ── Authority & redirect ──────────────────────────────────────────────────────
 

@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { Dashboard } from '@/features/module-dashboard'
 import { ProtectedRoute } from '@/shared/auth/ProtectedRoute'
+import { PermissionGuard } from '@/shared/components/PermissionGuard'
 import { LoginPage, HomePage } from '@/shared/auth/pages'
 
 const PlaceholderPage = ({ title }: { title: string }) => {
@@ -134,7 +135,14 @@ export const router = createBrowserRouter([
         path: 'settings',
         lazy: () =>
           import('@features/module-admin').then((m) => ({
-            Component: m.AdminModule,
+            Component: () => (
+              <PermissionGuard
+                allowedRoles={['Super Admin']}
+                fallback={<Navigate to="/assessment-data" replace />}
+              >
+                <m.AdminModule />
+              </PermissionGuard>
+            ),
           })),
       },
       {

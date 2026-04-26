@@ -5,19 +5,19 @@ export const USER_PERMISSONS_ACTIONS: ToolbarAction[] = [
     id: 'add-new',
     label: 'Add new',
     icon: Plus,
-    onClick: () => console.log('Add New'),
+    onClick: () => {},
   },
   {
     id: 'bulk-action',
     label: 'Bulk action',
     icon: Layers,
-    onClick: () => console.log('Bulk Action'),
+    onClick: () => {},
   },
   {
     id: 'export',
     label: 'Export',
     icon: Download,
-    onClick: () => console.log('Export'),
+    onClick: () => {},
   },
 ]
 
@@ -26,13 +26,13 @@ export const GROUP_COMPANIES_ACTIONS: ToolbarAction[] = [
     id: 'add-new',
     label: 'Add new',
     icon: Plus,
-    onClick: () => console.log('Add New'),
+    onClick: () => {},
   },
   {
     id: 'export',
     label: 'Export',
     icon: Download,
-    onClick: () => console.log('Export'),
+    onClick: () => {},
   },
 ]
 export const DOMAINS_ACTIONS: ToolbarAction[] = [
@@ -40,13 +40,13 @@ export const DOMAINS_ACTIONS: ToolbarAction[] = [
     id: 'add-new',
     label: 'Add new',
     icon: Plus,
-    onClick: () => console.log('Add New'),
+    onClick: () => {},
   },
   {
     id: 'export',
     label: 'Export',
     icon: Download,
-    onClick: () => console.log('Export'),
+    onClick: () => {},
   },
 ]
 export const ASSESSMENT_CYCLE_ACTIONS: ToolbarAction[] = [
@@ -54,13 +54,13 @@ export const ASSESSMENT_CYCLE_ACTIONS: ToolbarAction[] = [
     id: 'add-new',
     label: 'Add new',
     icon: Plus,
-    onClick: () => console.log('Add New'),
+    onClick: () => {},
   },
   {
     id: 'export',
     label: 'Export',
     icon: Download,
-    onClick: () => console.log('Export'),
+    onClick: () => {},
   },
 ]
 export const RATE_CARDS_ACTIONS: ToolbarAction[] = [
@@ -68,13 +68,13 @@ export const RATE_CARDS_ACTIONS: ToolbarAction[] = [
     id: 'bulk-action',
     label: 'Bulk action',
     icon: Layers,
-    onClick: () => console.log('Bulk Action'),
+    onClick: () => {},
   },
   {
     id: 'export',
     label: 'Export',
     icon: Download,
-    onClick: () => console.log('Export'),
+    onClick: () => {},
   },
 ]
 export const EMAIL_NOTIFICATION_ACTIONS: ToolbarAction[] = [
@@ -82,13 +82,13 @@ export const EMAIL_NOTIFICATION_ACTIONS: ToolbarAction[] = [
     id: 'enable-all',
     label: 'Enable all',
     icon: Check,
-    onClick: () => console.log('Enable all'),
+    onClick: () => {},
   },
   {
     id: 'disable-all',
     label: 'Disable all',
     icon: Ban,
-    onClick: () => console.log('Export'),
+    onClick: () => {},
   },
 ]
 

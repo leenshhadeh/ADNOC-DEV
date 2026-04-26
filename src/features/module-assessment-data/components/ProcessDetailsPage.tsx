@@ -79,16 +79,13 @@ const ProcessDetailsPage = () => {
 
   const handelOnSubmit = () => {
     // call API to submit the new changes
-    console.log('[submit] payload:', updatedData)
   }
 
   const handelDataChanged = (updatedData: any) => {
     setDisableSubmit(false)
-    console.log('onFormChanged:', updatedData)
     setUpdatedData(updatedData)
   }
   const onShowComment = (colName?: string) => {
-    console.log('colName:', colName)
     setShowComment(true)
     setCommentField(colName || '')
     // get Comments(colName) OR Comments(All)

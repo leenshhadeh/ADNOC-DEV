@@ -14,7 +14,6 @@ interface StepsProps {
 }
 
 const WorkflowStepper = (props: StepsProps) => {
-  console.log('WorkflowStepper', props)
   const { steps } = props
   return (
     <div className="flex items-start">

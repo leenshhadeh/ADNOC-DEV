@@ -19,7 +19,6 @@ export function getSubmittedRequests(): Promise<RequestItem[]> {
 
 //getAssessmentProcess
 export function getAssessmentProcess(processView: ProcessViewOptionId): Promise<DomainItem[]> {
-  console.log('Call API getAssessmentProcess, with view=',processView)
   return new Promise((resolve) => setTimeout(() => resolve(ASSESSMENT_DATA), 500))
 }
 

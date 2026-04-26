@@ -301,7 +301,6 @@ export const getProcessTableColumns = ({
           defaultValue={info.getValue<string>()}
           options={NUMBER_OF_PEOPLE_IMPACTED}
           onValueChange={(newValue: string) => {
-            console.log('New users impacted:', newValue)
             if (onUpdate) onUpdate(info.row.original.id, 'usersImpacted', newValue)
           }}
         />
@@ -321,7 +320,6 @@ export const getProcessTableColumns = ({
           defaultValue={info.getValue<string>()}
           options={SCALE_OF_PROCESS}
           onValueChange={(newValue: string) => {
-            console.log('New scale of process:', newValue)
             onUpdate && onUpdate(info.row.original.id, 'scaleOfProcess', newValue)
           }}
         />
@@ -341,7 +339,6 @@ export const getProcessTableColumns = ({
           defaultValue={info.getValue<string>()}
           options={AUTOMATION_MATURITY_LEVEL}
           onValueChange={(newValue: string) => {
-            console.log('New automation maturity level:', newValue)
             onUpdate && onUpdate(info.row.original.id, 'scaleOfProcess', newValue)
           }}
         />
@@ -362,7 +359,6 @@ export const getProcessTableColumns = ({
           defaultValue={info.getValue<string>()}
           options={AUTOMATION_LEVEL}
           onValueChange={(newValue: string) => {
-            console.log('New automation level:', newValue)
             onUpdate && onUpdate(info.row.original.id, 'automationLevel', newValue)
           }}
         />
@@ -575,7 +571,6 @@ export const getProcessTableColumns = ({
           defaultValue={info.getValue<string>()}
           options={['1-5 times', '6-10 times', '11-20 times', 'More than 20 times']}
           onValueChange={(newValue: string) => {
-            console.log('New process repetition within cycle:', newValue)
             if (onUpdate) {
               onUpdate(info.row.original.id, 'processRepetitionWithinCycle', newValue || '')
             }
@@ -685,7 +680,6 @@ export const getProcessTableColumns = ({
           defaultValue={info.getValue<string>()}
           options={NORTH_STAR_TARGET_AUTOMATION}
           onValueChange={(newValue: string) => {
-            console.log('New total personnel executing (FTE):', newValue)
             onUpdate && onUpdate(info.row.original.id, 'northStarTargetAutomation', newValue || '')
           }}
         />
@@ -725,7 +719,6 @@ export const getProcessTableColumns = ({
           value={info.getValue<string>()}
           onChange={(newValue) => {
             // Handle the change, e.g., update the data source or state
-            console.log('New key manual steps:', newValue)
             onUpdate && onUpdate(info.row.original.id, 'smeFeedback', newValue || '')
           }}
           type={'textArea'}
@@ -835,7 +828,6 @@ export const getProcessTableColumns = ({
           isUsers={false}
           onUpdate={(newTags: any) => {
             const newValue = newTags.map((tag: any) => tag.name)
-            console.log('New current applications/systems:', newValue)
             if (onUpdate) {
               onUpdate(info.row.original.id, 'businessFocalPoint', newValue)
             }
@@ -862,7 +854,6 @@ export const getProcessTableColumns = ({
           isUsers={true}
           onUpdate={(newTags: any) => {
             const newValue = newTags.map((tag: any) => tag.name)
-            console.log('New digitalFocalPoint:', newValue)
             if (onUpdate) {
               onUpdate(info.row.original.id, 'digitalFocalPoint', newValue || [])
             }

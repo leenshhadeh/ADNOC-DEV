@@ -4,7 +4,8 @@ import { InteractionRequiredAuthError } from '@azure/msal-browser'
 import { loginRequest } from './authConfig'
 import { msalInstance } from './msalInstance'
 
-export const MOCK_AUTH = import.meta.env.VITE_MOCK_AUTH === 'true'
+// MOCK_AUTH is only allowed in development builds to prevent accidental production bypass.
+export const MOCK_AUTH = import.meta.env.DEV && import.meta.env.VITE_MOCK_AUTH === 'true'
 
 // ── Mock user returned when MSAL is bypassed ──────────────────────────────────
 

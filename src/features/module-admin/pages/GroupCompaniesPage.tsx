@@ -292,7 +292,7 @@ const GroupCompaniesPage = ({ searchValue, setToolbarActions }: GroupCompaniesPa
               id: 'export',
               label: 'Export',
               icon: Download,
-              onClick: () => console.log('Export'),
+              onClick: () => {},
             },
           ],
     [editingRow, handleAddNew, handleCancelEdit, handleSaveEdit],

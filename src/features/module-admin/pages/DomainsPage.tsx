@@ -208,27 +208,24 @@ const DomainsPage = ({ searchValue, setToolbarActions }: DomainsPageProps) => {
     [],
   )
 
-  const handleEditingFieldChange = useCallback(
-    (rowId: string, field: EditableDomainField) => {
-      setRows((prev) => {
-        const nextRows = prev.map((row) => {
-          if (row.id !== rowId || row.editingField === field) {
-            return row
-          }
+  const handleEditingFieldChange = useCallback((rowId: string, field: EditableDomainField) => {
+    setRows((prev) => {
+      const nextRows = prev.map((row) => {
+        if (row.id !== rowId || row.editingField === field) {
+          return row
+        }
 
-          return {
-            ...row,
-            editingField: field,
-          }
-        })
-
-        const hasChanged = nextRows.some((row, index) => row !== prev[index])
-
-        return hasChanged ? nextRows : prev
+        return {
+          ...row,
+          editingField: field,
+        }
       })
-    },
-    [],
-  )
+
+      const hasChanged = nextRows.some((row, index) => row !== prev[index])
+
+      return hasChanged ? nextRows : prev
+    })
+  }, [])
 
   const handleCloseStatusModal = useCallback(() => {
     setStatusModalOpen(false)
@@ -287,7 +284,7 @@ const DomainsPage = ({ searchValue, setToolbarActions }: DomainsPageProps) => {
               id: 'export',
               label: 'Export',
               icon: Download,
-              onClick: () => console.log('Export'),
+              onClick: () => {},
             },
           ],
     [editingRow, handleAddNew, handleCancelEdit, handleSaveEdit],

@@ -41,12 +41,16 @@ const AutomationParameterForm = (props: any) => {
     }
 
     if (maturityLevel === 'Fully Automated' && numericValue !== 100) {
-      setAutomationLevelError('Automation level must be exactly 100% when maturity level is Fully Automated.')
+      setAutomationLevelError(
+        'Automation level must be exactly 100% when maturity level is Fully Automated.',
+      )
       return
     }
 
     if (maturityLevel === 'Medium' && numericValue <= 40) {
-      setAutomationLevelError('Automation level must be more than 40% when maturity level is Medium.')
+      setAutomationLevelError(
+        'Automation level must be more than 40% when maturity level is Medium.',
+      )
       return
     }
 
@@ -68,7 +72,6 @@ const AutomationParameterForm = (props: any) => {
   }
   const handleRadioChange = (filed: string, value: string) => {
     setFormData((prev) => ({ ...prev, [filed]: value }))
-    console.log(filed, value)
   }
 
   useEffect(() => {
@@ -84,7 +87,7 @@ const AutomationParameterForm = (props: any) => {
     <div>
       <form className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {/* row 1 */}
-        <div className="flex w-full flex-col group">
+        <div className="group flex w-full flex-col">
           <div className="flex items-center justify-between">
             <label className="text-muted-foreground text-sm">Process Criticality​</label>
             {canComment && (
@@ -110,7 +113,7 @@ const AutomationParameterForm = (props: any) => {
           />
         </div>
 
-        <div className="flex w-full flex-col group">
+        <div className="group flex w-full flex-col">
           <div className="flex items-center justify-between">
             <label className="text-muted-foreground text-sm">Number of People Involved</label>
             {canComment && (
@@ -138,7 +141,7 @@ const AutomationParameterForm = (props: any) => {
           />
         </div>
 
-        <div className="flex w-full flex-col group">
+        <div className="group flex w-full flex-col">
           <div className="flex items-center justify-between">
             <label className="text-muted-foreground text-sm">Scale of Process</label>
             {canComment && (
@@ -165,7 +168,7 @@ const AutomationParameterForm = (props: any) => {
         </div>
 
         {/* row 2 */}
-        <div className="flex w-full flex-col group">
+        <div className="group flex w-full flex-col">
           <div className="flex items-center justify-between">
             <label className="text-muted-foreground text-sm">
               Process Automation Maturity Level ​
@@ -182,7 +185,7 @@ const AutomationParameterForm = (props: any) => {
             )}
           </div>
           <Select
-          name={'ProcessAutomationMaturityLevel'}
+            name={'ProcessAutomationMaturityLevel'}
             options={AUTOMATION_MATURITY_LEVEL.map((option) => ({
               label: option,
               value: option,
@@ -199,7 +202,7 @@ const AutomationParameterForm = (props: any) => {
             disabled={!isEditable}
           />
         </div>
-        <div className="flex w-full flex-col group">
+        <div className="group flex w-full flex-col">
           <div className="flex items-center justify-between">
             <label className="text-muted-foreground text-sm">{'Automation level (%)'}​</label>
             {canComment && (
@@ -225,7 +228,7 @@ const AutomationParameterForm = (props: any) => {
           )}
         </div>
 
-        <div className="flex w-full flex-col group">
+        <div className="group flex w-full flex-col">
           <div className="flex items-center justify-between">
             <label className="text-muted-foreground text-sm">Current Applications / Systems</label>
             {canComment && (
@@ -256,7 +259,7 @@ const AutomationParameterForm = (props: any) => {
 
         {/* row 3  */}
 
-        <div className="flex w-full flex-col group">
+        <div className="group flex w-full flex-col">
           <div className="flex items-center justify-between">
             <label className="text-muted-foreground text-sm">
               {' '}
@@ -287,7 +290,7 @@ const AutomationParameterForm = (props: any) => {
             disabled={!isEditable}
           />
         </div>
-        <div className="flex w-full flex-col group">
+        <div className="group flex w-full flex-col">
           <div className="flex items-center justify-between">
             <label className="text-muted-foreground text-sm">
               Key Challenges & Automation Needs​
@@ -311,7 +314,7 @@ const AutomationParameterForm = (props: any) => {
           />
         </div>
 
-        <div className="flex w-full flex-col group">
+        <div className="group flex w-full flex-col">
           <div className="flex items-center justify-between">
             <label className="text-muted-foreground text-sm">Ongoing Digital Initiatives</label>
             {canComment && (
@@ -336,7 +339,7 @@ const AutomationParameterForm = (props: any) => {
 
         {/* row 4 , 2 radio */}
 
-        <div className="flex w-full flex-col group">
+        <div className="group flex w-full flex-col">
           <div className="flex items-center justify-between">
             <label className="text-muted-foreground text-sm">AI-Powered​</label>
             {canComment && (
@@ -356,7 +359,7 @@ const AutomationParameterForm = (props: any) => {
             disabled={!isEditable}
           />
         </div>
-        <div className="flex w-full flex-col group">
+        <div className="group flex w-full flex-col">
           <div className="flex items-center justify-between">
             <label className="text-muted-foreground text-sm">Autonomous Use-case Enabled​</label>
             {canComment && (
@@ -378,7 +381,7 @@ const AutomationParameterForm = (props: any) => {
         </div>
 
         {/* row 5 textrea */}
-        <div className="flex w-full flex-col group">
+        <div className="group flex w-full flex-col">
           <div className="flex items-center justify-between">
             <label className="text-muted-foreground text-sm">AI-Powered Use-case</label>
             {canComment && (

@@ -16,7 +16,7 @@ type ApiPayload = {
 }
 
 const OrgMappingSheet = (props: any) => {
-  const { open = true, handleOnSubmitData, title, handleOpenChange ,currentOrgData} = props
+  const { open = true, handleOnSubmitData, title, handleOpenChange, currentOrgData } = props
 
   const [selectedBU, setSelectedBU] = useState<any[]>(currentOrgData.BU[0]?.subUnits)
   const [selectedDT, setSelectedDT] = useState<any[]>(currentOrgData.DT[0]?.subUnits)
@@ -106,7 +106,6 @@ const OrgMappingSheet = (props: any) => {
   const onSubmit = () => {
     const formattedBU = mapSelectedToUnits(BUData, selectedBU)
     const formattedDT = mapSelectedToUnits(DigitalTeam, selectedDT)
-    console.log('selectedBU maping==>>>>  ', formattedBU, formattedDT)
     handleOnSubmitData({
       BU: formattedBU,
       DT: formattedDT,
@@ -121,10 +120,10 @@ const OrgMappingSheet = (props: any) => {
         <div>
           <div className="m-4 flex items-center gap-2">
             <div className="h-2 w-full rounded-full bg-gray-200">
-              <div className="h-2 rounded-full bg-brand-blue"></div>
+              <div className="bg-brand-blue h-2 rounded-full"></div>
             </div>
             <div className="h-2 w-full rounded-full bg-gray-200">
-              {activeStep === 'team' && <div className="h-2 rounded-full bg-brand-blue"></div>}
+              {activeStep === 'team' && <div className="bg-brand-blue h-2 rounded-full"></div>}
             </div>
             <span className="text-foreground text-sm">
               <span className="text-primary text-[14px] font-bold">
@@ -153,11 +152,7 @@ const OrgMappingSheet = (props: any) => {
         {/* Main scrollable body */}
         <div className="m-4 h-full overflow-y-scroll rounded-md border p-3">
           {activeStep === 'unit' && (
-            <TreeSelect 
-            data={filteredBUData} 
-            selected={selectedBU} 
-            onChange={setSelectedBU} 
-            />
+            <TreeSelect data={filteredBUData} selected={selectedBU} onChange={setSelectedBU} />
           )}
 
           {activeStep === 'team' && (

@@ -9,57 +9,59 @@ import {
 } from '@/shared/components/ui/dropdown-menu'
 import { useNavigate } from 'react-router-dom'
 
-const CellMenuOptions = (props:any) => {
-    const navigate = useNavigate()
-    const { item } = props  /// use item id to perform actions on the specific item
-const options = [
+const CellMenuOptions = (props: any) => {
+  const navigate = useNavigate()
+  const { item } = props /// use item id to perform actions on the specific item
+  const options = [
     { label: 'View Details', action: () => onViewItemDetails(item) },
-    { label: 'Switch to Draft version', action: () => console.log('Switch sub-process', item) },
-    { label: 'Copy assessment data', action: () => console.log('Copy', item)},
-    { label: 'Mark as reviewed', action: () => console.log('Delete', item) },
-    { label: 'Submit', action: () => console.log('Submit', item)},
-    { label: 'Archive', action: () => console.log('Archive', item)},
-    { label: 'Discard', action: () => console.log('Delete', item), destructive: true },
+    { label: 'Switch to Draft version', action: () => {} },
+    { label: 'Copy assessment data', action: () => {} },
+    { label: 'Mark as reviewed', action: () => {} },
+    { label: 'Submit', action: () => {} },
+    { label: 'Archive', action: () => {} },
+    { label: 'Discard', action: () => {}, destructive: true },
   ]
 
-const onViewItemDetails = (item:any) => {
+  const onViewItemDetails = (item: any) => {
     // Implement the logic to view item details, e.g., navigate to a details page or open a modal
     navigate(`/assessment-data/process/${item.id}`)
+  }
 
-}
-
-return (
-<DropdownMenu modal={false}>
-<DropdownMenuTrigger asChild>
-  <Button
-    type="button"
-    variant="ghost"
-    size="icon-xs"
-    className="shrink-0 text-muted-foreground"
-    // aria-label={`Actions for ${item.id}`}
-  >
-    <MoreHorizontal className="size-4" />
-  </Button>
-</DropdownMenuTrigger>
-<DropdownMenuContent align="end" sideOffset={4} className="w-60 overflow-hidden rounded-xl border p-0 shadow-md bg-accent">
-    {options.map((option) => (
-        <DropdownMenuItem
-        key={option.label}
-        className={`rounded-none px-3 py-2 text-sm border  first:border-t-0 ${
-            option.destructive ? 'text-destructive focus:text-destructive' : ''
-        }`}
-        onSelect={option.action}
+  return (
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-xs"
+          className="text-muted-foreground shrink-0"
+          // aria-label={`Actions for ${item.id}`}
         >
-          <div className='flex'>
-            {/* <img src={copyIcon} className='me-2'/> */}
-             {option.label}
-          </div>
-   
-        </DropdownMenuItem>
-    ))} 
-</DropdownMenuContent>
-</DropdownMenu>
-)
+          <MoreHorizontal className="size-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        sideOffset={4}
+        className="bg-accent w-60 overflow-hidden rounded-xl border p-0 shadow-md"
+      >
+        {options.map((option) => (
+          <DropdownMenuItem
+            key={option.label}
+            className={`rounded-none border px-3 py-2 text-sm first:border-t-0 ${
+              option.destructive ? 'text-destructive focus:text-destructive' : ''
+            }`}
+            onSelect={option.action}
+          >
+            <div className="flex">
+              {/* <img src={copyIcon} className='me-2'/> */}
+              {option.label}
+            </div>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
 }
 
 export default CellMenuOptions

@@ -22,13 +22,8 @@ export const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
-    try {
-      const token = await getAccessToken()
-      config.headers.Authorization = `Bearer ${token}`
-    } catch {
-      // No active account or token acquisition failed — let the request
-      // proceed unauthenticated; the 401 response interceptor will handle it.
-    }
+    const token = await getAccessToken()
+    config.headers.Authorization = `Bearer ${token}`
     return config
   },
   (error: unknown) => Promise.reject(error),
