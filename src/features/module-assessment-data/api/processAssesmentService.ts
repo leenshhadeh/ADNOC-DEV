@@ -5,7 +5,7 @@ import { MY_TASKS } from '../constants/my-tasks'
 import { SUBMITTED_REQUESTS } from '../constants/submitted-requests'
 import { PROESS_DETAILS } from '../constants/process-details'
 import { ASSESSMENT_DATA } from '../constants/assessment-data'
-import type { DomainItem } from '../types/process'
+import type { DomainItem, FlatAssessmentRow } from '../types/process'
 import type { ProcessViewOptionId } from '@/shared/components/ProcessesMenu'
 
 export function getMyTasks(): Promise<TaskItem[]> {
@@ -21,6 +21,25 @@ export function getSubmittedRequests(): Promise<RequestItem[]> {
 export function getAssessmentProcess(processView: ProcessViewOptionId): Promise<DomainItem[]> {
   return new Promise((resolve) => setTimeout(() => resolve(ASSESSMENT_DATA), 500))
 }
+
+// Saves the changed assessment rows and returns the saved row ids.
+export function saveAssessmentDraftRows(
+  rows: FlatAssessmentRow[],
+): Promise<{ success: boolean; savedIds: string[]; message: string }> {
+  return new Promise((resolve) =>
+    setTimeout(
+      () =>
+        resolve({
+          success: true,
+          savedIds: rows.map((row) => row.id),
+          message: 'Assessment draft rows saved successfully.',
+        }),
+      700,
+    ),
+  )
+}
+
+
 
 // ── Process row actions (mock) ───────────────────────────────────────────────
 
