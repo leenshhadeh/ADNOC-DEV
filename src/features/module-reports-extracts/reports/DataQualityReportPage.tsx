@@ -161,7 +161,7 @@ const DataQualityReportPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] p-6">
+    <div className="min-h-screen p-6">
       <div className="align-center mx-auto max-w-[1440px]">
         <div className="mb-6 flex items-center justify-between">
           <div className="mb-6 flex w-full items-center justify-between">

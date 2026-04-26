@@ -252,13 +252,26 @@ export function BulkEditModal({
 
       {/* ── Dedicated sheets for drawer-type fields ───────────────────── */}
       {fieldValue === 'businessUnit' && (
-        <BUSheet open={sheetOpen} handleOpenChange={handleSheetSave} />
+        <BUSheet
+          open={sheetOpen}
+          selected={Array.isArray(value) ? value : []}
+          handleOpenChange={handleSheetSave}
+        />
       )}
       {fieldValue === 'sharedServices' && (
-        <SharedServicesSheet open={sheetOpen} handleOpenChange={handleSheetSave} />
+        <SharedServicesSheet open={sheetOpen} 
+        handleOpenChange={(payload:any) => {
+        console.log('payload',payload)
+        }}
+        onClose={() => setSheetOpen(false)}
+        />
       )}
       {fieldValue === 'responsibleDigitalTeam' && (
-        <DigitalTeamSheet open={sheetOpen} handleOpenChange={handleSheetSave} />
+        <DigitalTeamSheet
+          open={sheetOpen}
+          selected={Array.isArray(value) ? value : []}
+          handleOpenChange={handleSheetSave}
+        />
       )}
 
       {/* Success toast */}

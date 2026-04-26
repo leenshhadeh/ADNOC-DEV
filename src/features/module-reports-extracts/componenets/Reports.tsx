@@ -9,7 +9,6 @@ import assessmentL4Data from '../data/assessment_progress_detailed_l4.json'
 import qualityReportData from '../data/data_quality_report.json'
 import opportunityCoverageData from '../data/opportunity_coverage.json'
 import programAdoptionData from '../data/program_adoption.json'
-
 const accessCardItems = [
   {
     title: 'Assessment Progress Detailed L3',
@@ -47,6 +46,7 @@ const accessCardItems = [
     to: '/reports-and-extracts/data-program-adoption',
   },
 ]
+
 const handleExportAll = async () => {
   await exportToExcel({
     fileName: 'assessment-progress-detailed-l3',
@@ -339,11 +339,12 @@ const handleExportAll = async () => {
 const Reports = () => {
   return (
     <div>
-      <div className="flex justify-between pb-3">
+      <div className="mb-4 flex justify-between pt-3">
         <span className="text-base leading-6 font-normal tracking-[-0.312px] text-[#4A5565] not-italic">
           View analytics and insights from BPA assessments, including progress, data quality, and
           program adoption.
         </span>
+
         <button
           onClick={handleExportAll}
           className="flex items-center gap-2 text-sm font-medium text-[#0047BA] hover:underline"

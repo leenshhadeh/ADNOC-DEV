@@ -72,7 +72,7 @@ const ASSESSMENT_COLUMNS: SheetColumn<FlatAssessmentRow>[] = [
     header: 'Shared Service',
     key: 'sharedService',
     width: 22,
-    getValue: (row) => resolveSharedService(row.sharedService),
+    getValue: (row) => resolveSharedService(row.SharedServiceDisply),
   },
   {
     header: 'Business Unit',

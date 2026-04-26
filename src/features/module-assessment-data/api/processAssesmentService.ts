@@ -22,6 +22,51 @@ export function getAssessmentProcess(processView: ProcessViewOptionId): Promise<
   return new Promise((resolve) => setTimeout(() => resolve(ASSESSMENT_DATA), 500))
 }
 
+// ── Process row actions (mock) ───────────────────────────────────────────────
+
+export function submitProcess(processId: string): Promise<{ success: boolean; message: string }> {
+  void processId
+  return new Promise((resolve) =>
+    setTimeout(() => resolve({ success: true, message: 'Process submitted successfully.' }), 600),
+  )
+}
+
+export function switchProcessToDraft(
+  processId: string,
+): Promise<{ success: boolean; status: string; message: string }> {
+  void processId
+  return new Promise((resolve) =>
+    setTimeout(
+      () => resolve({ success: true, status: 'Draft', message: 'Process switched to draft.' }),
+      600,
+    ),
+  )
+}
+
+export function markProcessAsReviewed(
+  processId: string,
+): Promise<{ success: boolean; message: string }> {
+  void processId
+  return new Promise((resolve) =>
+    setTimeout(
+      () => resolve({ success: true, message: 'Process marked as reviewed successfully.' }),
+      600,
+    ),
+  )
+}
+
+export function archiveProcess(
+  processId: string,
+): Promise<{ success: boolean; status: string; message: string }> {
+  void processId
+  return new Promise((resolve) =>
+    setTimeout(
+      () => resolve({ success: true, status: 'Archived', message: 'Process archived successfully.' }),
+      600,
+    ),
+  )
+}
+
 // ── Bulk Actions (mock) ───────────────────────────────────────────────────────
 export function bulkCellAction(operations: BulkCellOperation[]): Promise<BulkCellActionResult> {
   const processedIds = [...new Set(operations.map((op) => op.rowId))]

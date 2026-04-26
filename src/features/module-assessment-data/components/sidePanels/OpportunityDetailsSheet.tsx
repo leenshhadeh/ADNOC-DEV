@@ -1,7 +1,7 @@
 import { useState } from 'react'
 // import { useNavigate } from 'react-router-dom'
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
-import { ChevronDown, ChevronRight, ChevronUp, Eye } from 'lucide-react'
+import { ChevronDown, ChevronRight, ChevronUp } from 'lucide-react'
 
 import ActionSheet from '@/shared/components/ActionSheet'
 import { Accordion, AccordionContent, AccordionItem } from '@/shared/components/ui/accordion'

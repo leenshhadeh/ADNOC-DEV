@@ -2,7 +2,6 @@ import Avatar from '@/shared/components/ui/Avatar'
 import { Input } from '@/shared/components/ui/input'
 import { SendHorizontal, X } from 'lucide-react'
 import {
-  useGetProcessComments,
   useGetProcessCommentsByField,
 } from '../../hooks/useGetProcessComments'
 import { useCurrentUser } from '@/shared/auth/useUserStore'
@@ -11,9 +10,7 @@ import { useCurrentUser } from '@/shared/auth/useUserStore'
 const CommentsSection = (props: any) => {
   const { onCloseComments, commentField, processId } = props
   const { name } = useCurrentUser()
-  const { data, isLoading } = commentField
-    ? useGetProcessCommentsByField(processId, commentField)
-    : useGetProcessComments(processId)
+  const { data, isLoading } = useGetProcessCommentsByField(processId, commentField)
 
   return (
     <div className="bg-sidebar-accent col-span-3 mt-[24px] min-w-[300px] rounded-2xl p-5">

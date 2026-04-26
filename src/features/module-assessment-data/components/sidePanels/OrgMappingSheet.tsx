@@ -2,7 +2,8 @@ import ActionSheet from '@/shared/components/ActionSheet'
 import { TreeSelect } from '@/shared/components/TreeSelect'
 import { Button } from '@/shared/components/ui/button'
 import { useEffect, useMemo, useState } from 'react'
-import { BUData, DigitalTeam } from '../../constants/org-mapping-data'
+import { useProcessBU } from '../../hooks/useProcessBU'
+import { useProcessDigitalTeam } from '../../hooks/useProcessDigitalTeam'
 
 type TreeNode = {
   label: string
@@ -17,6 +18,8 @@ type ApiPayload = {
 
 const OrgMappingSheet = (props: any) => {
   const { open = true, handleOnSubmitData, title, handleOpenChange, currentOrgData } = props
+  const { businessUnits } = useProcessBU()
+  const { digitalTeams } = useProcessDigitalTeam()
 
   const [selectedBU, setSelectedBU] = useState<any[]>(currentOrgData.BU[0]?.subUnits)
   const [selectedDT, setSelectedDT] = useState<any[]>(currentOrgData.DT[0]?.subUnits)
@@ -26,9 +29,12 @@ const OrgMappingSheet = (props: any) => {
   const [searchValue, setSearchValue] = useState('')
 
   useEffect(() => {
-    setOrgBUData(BUData)
-    setOrgDTData(DigitalTeam)
-  }, [])
+    setOrgBUData(businessUnits)
+  }, [businessUnits])
+
+  useEffect(() => {
+    setOrgDTData(digitalTeams)
+  }, [digitalTeams])
 
   // reset search when switching between steps
   useEffect(() => {
@@ -104,8 +110,8 @@ const OrgMappingSheet = (props: any) => {
   }
 
   const onSubmit = () => {
-    const formattedBU = mapSelectedToUnits(BUData, selectedBU)
-    const formattedDT = mapSelectedToUnits(DigitalTeam, selectedDT)
+    const formattedBU = mapSelectedToUnits(orgBUData, selectedBU)
+    const formattedDT = mapSelectedToUnits(orgDTData, selectedDT)
     handleOnSubmitData({
       BU: formattedBU,
       DT: formattedDT,
