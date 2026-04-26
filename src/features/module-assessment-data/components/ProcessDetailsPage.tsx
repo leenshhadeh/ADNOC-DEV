@@ -11,12 +11,13 @@ import OpprtunitiesTab from './processDetails/tabs/OpprtunitiesTab'
 import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 import RecordedChangesTab from './processDetails/tabs/RecordedChangesTab'
 import CommentsTab from './processDetails/tabs/CommentsTab'
-import { Settings2, Upload } from 'lucide-react'
+import { CheckSquare, MessageSquare, Settings2, Upload } from 'lucide-react'
 import Breadcrumb from '@/shared/components/Breadcrumb'
 import { cn } from '@/shared/lib/utils'
-import CommentsSection from './processDetails/CommentsSection'
+import FieldCommentSheet from './sidePanels/FieldCommentSheet'
 import { useCurrentUser } from '@/shared/auth/useUserStore'
 import { ROLES } from '@/shared/lib/permissions'
+import { useProcessDetailActionsStore } from '../store/processDetailActionsStore'
 
 const ProcessDetailsPage = () => {
   const { processId } = useParams<{ processId: string }>()
@@ -26,13 +27,12 @@ const ProcessDetailsPage = () => {
   const [processGeneralInfo, setProcessGeneralInfo] = useState([{}])
   const [disableSubmit, setDisableSubmit] = useState(true)
   const [updatedData, setUpdatedData] = useState([{}])
-  const [showComment, setShowComment] = useState(false)
-  const [commentField, setCommentField] = useState('')
   const [automationValidationTrigger, setAutomationValidationTrigger] = useState(0)
   const { role } = useCurrentUser()
+  const { isCommentMode, setIsCommentMode, clearField, selectedField } =
+    useProcessDetailActionsStore()
   const canEdit = role == ROLES.BusinessFocalPoint || role == ROLES.DigitalFocalPoint
-  const canComment = role == ROLES.QualityManager || role == ROLES.BPA_ProgramManager
-  const breadcrumbLinks=[
+  const breadcrumbLinks = [
     { title: 'Assessment Data Processes', url: '/assessment-data' },
     { title: 'Process Details', isCurrentPage: true },
   ]
@@ -88,10 +88,6 @@ const ProcessDetailsPage = () => {
     setDisableSubmit(false)
     setUpdatedData(updatedData)
   }
-  const onShowComment = (colName?: string) => {
-    setShowComment(true)
-    setCommentField(colName || '') //TOBeUpdated: first filed should be selected by defualt, each peocess tab has its own first-field
-  }
 
   const handleValidate = () => {
     if (activeTab === 'AutomationParameters') {
@@ -116,28 +112,29 @@ const ProcessDetailsPage = () => {
     [disableSubmit, handleValidate, handelOnSubmit],
   )
 
-  // TODO: change the icons of apporce,return, reject, and Comment
   const ApproveRejectActions = useMemo<any[]>(
     () => [
-      { id: 'Approve', label: 'Approve', icon: Settings2 },
+      { id: 'Approve', label: 'Approve', icon: CheckSquare },
       { id: 'Return', label: 'Return', icon: Upload },
       { id: 'Reject', label: 'Reject', icon: Upload },
       {
         id: 'Comment on field',
         label: 'Comment on field',
-        icon: Upload,
-        onClick: () => onShowComment(''),
+        icon: MessageSquare,
+        active: isCommentMode,
+        onClick: () => {
+          setIsCommentMode(!isCommentMode)
+          if (isCommentMode) clearField()
+        },
       },
     ],
-    [],
+    [isCommentMode, setIsCommentMode, clearField],
   )
 
   return (
     <>
       <div className="flex flex-col gap-0 overflow-hidden px-6">
-        <Breadcrumb
-          links={breadcrumbLinks}
-        />
+        <Breadcrumb links={breadcrumbLinks} />
 
         <div className="mb-[24px] flex items-center py-3">
           {!isLoading && data && (
@@ -196,65 +193,46 @@ const ProcessDetailsPage = () => {
                             handelDataChanged(data)
                           }}
                           isEditable={canEdit}
-                          canComment={canComment}
-                          onShowComment={onShowComment}
                         />
                       )}
                       {activeTab == 'AutomationParameters' && (
                         <AutomationParameterTab
                           process={data[0]}
                           isEditable={canEdit}
-                          canComment={canComment}
-                          onShowComment={onShowComment}
                           validateTrigger={automationValidationTrigger}
                         />
                       )}
                       {activeTab == 'ManualParameters' && (
-                        <ManualParametersTab
-                          process={data[0]}
-                          isEditable={canEdit}
-                          canComment={canComment}
-                          onShowComment={onShowComment}
-                        />
+                        <ManualParametersTab process={data[0]} isEditable={canEdit} />
                       )}
                       {activeTab == 'TargetRecommendations​​' && (
-                        <TargerRecommendationsTab
-                          process={data[0]}
-                          canComment={canComment}
-                          onShowComment={onShowComment}
-                        />
+                        <TargerRecommendationsTab process={data[0]} />
                       )}
-                      {activeTab == 'Opportunities' && (
-                        <OpprtunitiesTab
-                          process={data[0]}
-                          canComment={canComment}
-                          onShowComment={onShowComment}
-                        />
-                      )}
-                      {activeTab == 'RecordedChanges' && (
-                        <RecordedChangesTab
-                          process={data[0]}
-                          canComment={canComment}
-                          onShowComment={onShowComment}
-                        />
-                      )}
+                      {activeTab == 'Opportunities' && <OpprtunitiesTab process={data[0]} />}
+                      {activeTab == 'RecordedChanges' && <RecordedChangesTab process={data[0]} />}
                       {activeTab == 'Comments' && <CommentsTab comments={data[0].comments} />}
                     </div>
                   </div>
 
-                  {/* Comments */}
-                  {showComment && (
-                    <CommentsSection
-                      onCloseComments={() => setShowComment(false)}
-                      commentField={commentField}
-                      processId={processId}
+                  {/* Field comment panel */}
+                  {isCommentMode && (
+                    <FieldCommentSheet
+                      open
+                      onOpenChange={(open) => {
+                        if (!open) {
+                          clearField()
+                          setIsCommentMode(false)
+                        }
+                      }}
+                      fieldName={selectedField?.fieldName ?? ''}
+                      taskId={processId}
                     />
                   )}
                 </div>
               </>
             )}
 
-{/* TODO: add frindly message and add button for reload the page, or go home */}
+            {/* TODO: add frindly message and add button for reload the page, or go home */}
             {isError && <> Somthing went wrong</>}
           </>
         )}

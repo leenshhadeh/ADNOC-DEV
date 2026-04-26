@@ -52,15 +52,18 @@ const CellMenuOptions = (props: any) => {
     showToast(response.message)
   }
 
-  const options = useMemo(() => [
-    { label: 'View Details', action: () => onViewItemDetails(item) },
-    { label: 'Switch to Draft version', action: handleSwitchToDraft },
-    { label: 'Copy assessment data', action: () => {} },
-    { label: 'Mark as reviewed', action: handleMarkAsReviewed },
-    { label: 'Submit', action: handleSubmit },
-    { label: 'Archive', action: handleArchive },
-    { label: 'Discard', action: () => {}, destructive: true },
-  ], [item])
+  const options = useMemo(
+    () => [
+      { label: 'View Details', action: () => onViewItemDetails(item) },
+      { label: 'Switch to Draft version', action: handleSwitchToDraft },
+      { label: 'Copy assessment data', action: () => {} },
+      { label: 'Mark as reviewed', action: handleMarkAsReviewed },
+      { label: 'Submit', action: handleSubmit },
+      { label: 'Archive', action: handleArchive },
+      { label: 'Discard', action: () => {}, destructive: true },
+    ],
+    [item],
+  )
 
   const onViewItemDetails = (item: any) => {
     // Implement the logic to view item details, e.g., navigate to a details page or open a modal
@@ -75,7 +78,7 @@ const CellMenuOptions = (props: any) => {
             type="button"
             variant="ghost"
             size="icon-xs"
-            className="shrink-0 text-muted-foreground"
+            className="text-muted-foreground shrink-0"
           >
             <MoreHorizontal className="size-4" />
           </Button>
@@ -83,7 +86,7 @@ const CellMenuOptions = (props: any) => {
         <DropdownMenuContent
           align="end"
           sideOffset={4}
-          className="w-60 overflow-hidden rounded-xl border bg-accent p-0 shadow-md"
+          className="bg-accent w-60 overflow-hidden rounded-xl border p-0 shadow-md"
         >
           {options.map((option) => (
             <DropdownMenuItem

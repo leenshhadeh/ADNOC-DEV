@@ -33,6 +33,8 @@ export interface ToolbarAction {
   icon: React.ComponentType<LucideProps>
   onClick?: () => void
   disabled?: boolean
+  /** Highlights the button as active (e.g. comment mode toggled on) */
+  active?: boolean
 }
 
 export interface BulkModeState {
@@ -237,7 +239,7 @@ const ModuleToolbar = ({
             {index > 0 && <Separator orientation="vertical" className="h-8!" />}
             <Button
               type="button"
-              className="text-brand-blue h-9 bg-transparent px-3"
+              className={`text-brand-blue h-9 bg-transparent px-3 ${action.active ? 'bg-brand-blue/10' : ''}`}
               disabled={action.disabled}
               onClick={action.onClick}
               aria-label={action.label}

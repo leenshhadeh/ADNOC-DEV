@@ -11,10 +11,10 @@ import {
   PROCESS_CRITICALITY,
   SCALE_OF_PROCESS,
 } from '@/constants/dropdownOptions'
-import commentIcon from '@/assets/icons/Comment-circle.svg'
+import CommentableField from '../CommentableField'
 
 const AutomationParameterForm = (props: any) => {
-  const { process, isEditable, canComment, showComments, validateTrigger } = props
+  const { process, isEditable, validateTrigger } = props
   const [formData, setFormData] = useState({
     peopleInvoled: process.numberOfPeopleInvolved || '',
     numberOfPeopleInvolved: process.numberOfPeopleInvolved || '',
@@ -87,322 +87,219 @@ const AutomationParameterForm = (props: any) => {
     <div>
       <form className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {/* row 1 */}
-        <div className="group flex w-full flex-col">
-          <div className="flex items-center justify-between">
+        <CommentableField fieldId="processCriticality" fieldName="Process Criticality">
+          <div className="flex w-full flex-col">
             <label className="text-muted-foreground text-sm">Process Criticality​</label>
-            {canComment && (
-              <div className="opacity-0 transition-opacity group-hover:opacity-100">
-                <img
-                  src={commentIcon}
-                  width={'23px'}
-                  className="mb-1"
-                  onClick={() => showComments('processCriticality')}
-                />
-              </div>
-            )}
-          </div>
-          <Select
-            options={PROCESS_CRITICALITY.map((option) => ({
-              label: option,
-              value: option,
-            }))}
-            value={formData.processCriticality}
-            onChange={(value) => setFormData((prev) => ({ ...prev, processCriticality: value }))}
-            border
-            disabled={!isEditable}
-          />
-        </div>
-
-        <div className="group flex w-full flex-col">
-          <div className="flex items-center justify-between">
-            <label className="text-muted-foreground text-sm">Number of People Involved</label>
-            {canComment && (
-              <div className="opacity-0 transition-opacity group-hover:opacity-100">
-                <img
-                  src={commentIcon}
-                  width={'23px'}
-                  className="mb-1"
-                  onClick={() => showComments('numberOfPeopleInvolved')}
-                />
-              </div>
-            )}
-          </div>
-          <Select
-            options={NUMBER_OF_PEOPLE_IMPACTED.map((option) => ({
-              label: option,
-              value: option,
-            }))}
-            value={formData.numberOfPeopleInvolved}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, numberOfPeopleInvolved: value }))
-            }
-            border
-            disabled={!isEditable}
-          />
-        </div>
-
-        <div className="group flex w-full flex-col">
-          <div className="flex items-center justify-between">
-            <label className="text-muted-foreground text-sm">Scale of Process</label>
-            {canComment && (
-              <div className="opacity-0 transition-opacity group-hover:opacity-100">
-                <img
-                  src={commentIcon}
-                  width={'23px'}
-                  className="mb-1"
-                  onClick={() => showComments('scaleOfProcess')}
-                />
-              </div>
-            )}
-          </div>
-          <Select
-            options={SCALE_OF_PROCESS.map((option) => ({
-              label: option,
-              value: option,
-            }))}
-            border
-            value={formData.scaleOfProcess}
-            onChange={(value) => setFormData((prev) => ({ ...prev, scaleOfProcess: value }))}
-            disabled={!isEditable}
-          />
-        </div>
-
-        {/* row 2 */}
-        <div className="group flex w-full flex-col">
-          <div className="flex items-center justify-between">
-            <label className="text-muted-foreground text-sm">
-              Process Automation Maturity Level ​
-            </label>{' '}
-            {canComment && (
-              <div className="opacity-0 transition-opacity group-hover:opacity-100">
-                <img
-                  src={commentIcon}
-                  width={'23px'}
-                  className="mb-1"
-                  onClick={() => showComments('automationMaturityLevel')}
-                />
-              </div>
-            )}
-          </div>
-          <Select
-            name={'ProcessAutomationMaturityLevel'}
-            options={AUTOMATION_MATURITY_LEVEL.map((option) => ({
-              label: option,
-              value: option,
-            }))}
-            border
-            value={formData.automationMaturityLevel}
-            onChange={(value) => {
-              setFormData((prev) => ({ ...prev, automationMaturityLevel: value }))
-
-              if (automationLevelError) {
-                validateAutomationLevel(String(formData.automationLevel ?? ''), value)
-              }
-            }}
-            disabled={!isEditable}
-          />
-        </div>
-        <div className="group flex w-full flex-col">
-          <div className="flex items-center justify-between">
-            <label className="text-muted-foreground text-sm">{'Automation level (%)'}​</label>
-            {canComment && (
-              <div className="opacity-0 transition-opacity group-hover:opacity-100">
-                <img
-                  src={commentIcon}
-                  width={'23px'}
-                  className="mb-1"
-                  onClick={() => showComments('automationLevel')}
-                />
-              </div>
-            )}
-          </div>
-          <Input
-            name="automationLevel"
-            className="rounded-md border p-2"
-            value={formData.automationLevel}
-            onChange={handleChange}
-            disabled={!isEditable}
-          />
-          {automationLevelError && (
-            <p className="mt-1 text-sm text-red-600">{automationLevelError}</p>
-          )}
-        </div>
-
-        <div className="group flex w-full flex-col">
-          <div className="flex items-center justify-between">
-            <label className="text-muted-foreground text-sm">Current Applications / Systems</label>
-            {canComment && (
-              <div className="opacity-0 transition-opacity group-hover:opacity-100">
-                <img
-                  src={commentIcon}
-                  width={'23px'}
-                  className="mb-1"
-                  onClick={() => showComments('currentApplicationsSystems')}
-                />
-              </div>
-            )}
-          </div>
-          <div className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring/40 flex h-10 w-full min-w-0 rounded-md border p-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-3 disabled:cursor-not-allowed disabled:opacity-50">
-            <TagsSelect
-              tags={formData.currentApplicationsSystems}
-              allTags={ASSESSMENT_APPLICATIONS}
-              onChange={(tags: any[]) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  currentApplicationsSystems: tags || [],
-                }))
-              }
+            <Select
+              options={PROCESS_CRITICALITY.map((option) => ({
+                label: option,
+                value: option,
+              }))}
+              value={formData.processCriticality}
+              onChange={(value) => setFormData((prev) => ({ ...prev, processCriticality: value }))}
+              border
               disabled={!isEditable}
             />
           </div>
-        </div>
+        </CommentableField>
+
+        <CommentableField fieldId="numberOfPeopleInvolved" fieldName="Number of People Involved">
+          <div className="flex w-full flex-col">
+            <label className="text-muted-foreground text-sm">Number of People Involved</label>
+            <Select
+              options={NUMBER_OF_PEOPLE_IMPACTED.map((option) => ({
+                label: option,
+                value: option,
+              }))}
+              value={formData.numberOfPeopleInvolved}
+              onChange={(value) =>
+                setFormData((prev) => ({ ...prev, numberOfPeopleInvolved: value }))
+              }
+              border
+              disabled={!isEditable}
+            />
+          </div>
+        </CommentableField>
+
+        <CommentableField fieldId="scaleOfProcess" fieldName="Scale of Process">
+          <div className="flex w-full flex-col">
+            <label className="text-muted-foreground text-sm">Scale of Process</label>
+            <Select
+              options={SCALE_OF_PROCESS.map((option) => ({
+                label: option,
+                value: option,
+              }))}
+              border
+              value={formData.scaleOfProcess}
+              onChange={(value) => setFormData((prev) => ({ ...prev, scaleOfProcess: value }))}
+              disabled={!isEditable}
+            />
+          </div>
+        </CommentableField>
+
+        {/* row 2 */}
+        <CommentableField
+          fieldId="automationMaturityLevel"
+          fieldName="Process Automation Maturity Level"
+        >
+          <div className="flex w-full flex-col">
+            <label className="text-muted-foreground text-sm">
+              Process Automation Maturity Level ​
+            </label>
+            <Select
+              name={'ProcessAutomationMaturityLevel'}
+              options={AUTOMATION_MATURITY_LEVEL.map((option) => ({
+                label: option,
+                value: option,
+              }))}
+              border
+              value={formData.automationMaturityLevel}
+              onChange={(value) => {
+                setFormData((prev) => ({ ...prev, automationMaturityLevel: value }))
+
+                if (automationLevelError) {
+                  validateAutomationLevel(String(formData.automationLevel ?? ''), value)
+                }
+              }}
+              disabled={!isEditable}
+            />
+          </div>
+        </CommentableField>
+        <CommentableField fieldId="automationLevel" fieldName="Automation level (%)">
+          <div className="flex w-full flex-col">
+            <label className="text-muted-foreground text-sm">{'Automation level (%)'}​</label>
+            <Input
+              name="automationLevel"
+              className="rounded-md border p-2"
+              value={formData.automationLevel}
+              onChange={handleChange}
+              disabled={!isEditable}
+            />
+            {automationLevelError && (
+              <p className="mt-1 text-sm text-red-600">{automationLevelError}</p>
+            )}
+          </div>
+        </CommentableField>
+
+        <CommentableField
+          fieldId="currentApplicationsSystems"
+          fieldName="Current Applications / Systems"
+        >
+          <div className="flex w-full flex-col">
+            <label className="text-muted-foreground text-sm">Current Applications / Systems</label>
+            <div className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring/40 flex h-10 w-full min-w-0 rounded-md border p-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-3 disabled:cursor-not-allowed disabled:opacity-50">
+              <TagsSelect
+                tags={formData.currentApplicationsSystems}
+                allTags={ASSESSMENT_APPLICATIONS}
+                onChange={(tags: any[]) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    currentApplicationsSystems: tags || [],
+                  }))
+                }
+                disabled={!isEditable}
+              />
+            </div>
+          </div>
+        </CommentableField>
 
         {/* row 3  */}
 
-        <div className="group flex w-full flex-col">
-          <div className="flex items-center justify-between">
+        <CommentableField
+          fieldId="businessRecommendationForAutomation"
+          fieldName="Business Recommendation for Automation"
+        >
+          <div className="flex w-full flex-col">
             <label className="text-muted-foreground text-sm">
               {' '}
               Business Recommendation for Automation{' '}
             </label>
-            {canComment && (
-              <div className="opacity-0 transition-opacity group-hover:opacity-100">
-                <img
-                  src={commentIcon}
-                  width={'23px'}
-                  className="mb-1"
-                  onClick={() => showComments('businessRecommendationForAutomation')}
-                />
-              </div>
-            )}
+            <Select
+              options={BUSINESS_RECOMMENDATION_FOR_AUTOMATION.map((option) => ({
+                label: option,
+                value: option,
+              }))}
+              border
+              value={formData.businessRecommendationForAutomation}
+              onChange={(value) =>
+                setFormData((prev) => ({ ...prev, businessRecommendationForAutomation: value }))
+              }
+              disabled={!isEditable}
+            />
           </div>
-
-          <Select
-            options={BUSINESS_RECOMMENDATION_FOR_AUTOMATION.map((option) => ({
-              label: option,
-              value: option,
-            }))}
-            border
-            value={formData.businessRecommendationForAutomation}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, businessRecommendationForAutomation: value }))
-            }
-            disabled={!isEditable}
-          />
-        </div>
-        <div className="group flex w-full flex-col">
-          <div className="flex items-center justify-between">
+        </CommentableField>
+        <CommentableField
+          fieldId="challengesAndNeeds"
+          fieldName="Key Challenges & Automation Needs"
+        >
+          <div className="flex w-full flex-col">
             <label className="text-muted-foreground text-sm">
               Key Challenges & Automation Needs​
-            </label>{' '}
-            {canComment && (
-              <div className="opacity-0 transition-opacity group-hover:opacity-100">
-                <img
-                  src={commentIcon}
-                  width={'23px'}
-                  className="mb-1"
-                  onClick={() => showComments('challengesAndNeeds')}
-                />
-              </div>
-            )}
+            </label>
+            <Input
+              className="rounded-md border p-2"
+              onChange={handleChange}
+              value={formData.challengesAndNeeds}
+              disabled={!isEditable}
+            />
           </div>
-          <Input
-            className="rounded-md border p-2"
-            onChange={handleChange}
-            value={formData.challengesAndNeeds}
-            disabled={!isEditable}
-          />
-        </div>
+        </CommentableField>
 
-        <div className="group flex w-full flex-col">
-          <div className="flex items-center justify-between">
+        <CommentableField
+          fieldId="OngoingAutomationDigitalInitiatives"
+          fieldName="Ongoing Digital Initiatives"
+        >
+          <div className="flex w-full flex-col">
             <label className="text-muted-foreground text-sm">Ongoing Digital Initiatives</label>
-            {canComment && (
-              <div className="opacity-0 transition-opacity group-hover:opacity-100">
-                <img
-                  src={commentIcon}
-                  width={'23px'}
-                  className="mb-1"
-                  onClick={() => showComments('OngoingAutomationDigitalInitiatives')}
-                />
-              </div>
-            )}
+            <textarea
+              name="processDescription"
+              value={formData.OngoingAutomationDigitalInitiatives}
+              onChange={handleChange}
+              className="rounded-md border p-2 text-sm"
+              disabled={!isEditable}
+            />
           </div>
-          <textarea
-            name="processDescription"
-            value={formData.OngoingAutomationDigitalInitiatives}
-            onChange={handleChange}
-            className="rounded-md border p-2 text-sm"
-            disabled={!isEditable}
-          />
-        </div>
+        </CommentableField>
 
         {/* row 4 , 2 radio */}
 
-        <div className="group flex w-full flex-col">
-          <div className="flex items-center justify-between">
+        <CommentableField fieldId="AIPowered" fieldName="AI-Powered">
+          <div className="flex w-full flex-col">
             <label className="text-muted-foreground text-sm">AI-Powered​</label>
-            {canComment && (
-              <div className="opacity-0 transition-opacity group-hover:opacity-100">
-                <img
-                  src={commentIcon}
-                  width={'23px'}
-                  className="mb-1"
-                  onClick={() => showComments('AIPowered')}
-                />
-              </div>
-            )}
+            <RadioCell
+              value={formData.AIPowered}
+              onValChange={(val: string) => handleRadioChange('AIPowered', val)}
+              disabled={!isEditable}
+            />
           </div>
-          <RadioCell
-            value={formData.AIPowered}
-            onValChange={(val: string) => handleRadioChange('AIPowered', val)}
-            disabled={!isEditable}
-          />
-        </div>
-        <div className="group flex w-full flex-col">
-          <div className="flex items-center justify-between">
+        </CommentableField>
+        <CommentableField
+          fieldId="autonomousUseCaseEnabled"
+          fieldName="Autonomous Use-case Enabled"
+        >
+          <div className="flex w-full flex-col">
             <label className="text-muted-foreground text-sm">Autonomous Use-case Enabled​</label>
-            {canComment && (
-              <div className="opacity-0 transition-opacity group-hover:opacity-100">
-                <img
-                  src={commentIcon}
-                  width={'23px'}
-                  className="mb-1"
-                  onClick={() => showComments('autonomousUseCaseEnabled')}
-                />
-              </div>
-            )}
+            <RadioCell
+              value={formData.autonomousUseCaseEnabled}
+              onValChange={(val: string) => handleRadioChange('autonomousUseCaseEnabled', val)}
+              disabled={!isEditable}
+            />
           </div>
-          <RadioCell
-            value={formData.autonomousUseCaseEnabled}
-            onValChange={(val: string) => handleRadioChange('autonomousUseCaseEnabled', val)}
-            disabled={!isEditable}
-          />
-        </div>
+        </CommentableField>
 
         {/* row 5 textrea */}
-        <div className="group flex w-full flex-col">
-          <div className="flex items-center justify-between">
+        <CommentableField fieldId="AIPoweredUseCase" fieldName="AI-Powered Use-case">
+          <div className="flex w-full flex-col">
             <label className="text-muted-foreground text-sm">AI-Powered Use-case</label>
-            {canComment && (
-              <div className="opacity-0 transition-opacity group-hover:opacity-100">
-                <img
-                  src={commentIcon}
-                  width={'23px'}
-                  className="mb-1"
-                  onClick={() => showComments('AIPoweredUseCase')}
-                />
-              </div>
-            )}
+            <textarea
+              name="processDescription"
+              value={formData.AIPoweredUseCase}
+              onChange={handleChange}
+              className="rounded-md border p-2 text-sm"
+              disabled={!isEditable}
+            />
           </div>
-          <textarea
-            name="processDescription"
-            value={formData.AIPoweredUseCase}
-            onChange={handleChange}
-            className="rounded-md border p-2 text-sm"
-            disabled={!isEditable}
-          />
-        </div>
+        </CommentableField>
       </form>
     </div>
   )

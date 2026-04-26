@@ -1,4 +1,4 @@
-// Connects the shared presentation component to the Automation Targets store instance
+// Connects the shared presentation component to the Assessment Data store instance
 import CommentableFieldBase from '@/shared/components/CommentableField'
 import { useProcessDetailActionsStore } from '../../store/processDetailActionsStore'
 

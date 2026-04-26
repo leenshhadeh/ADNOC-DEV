@@ -1,9 +1,7 @@
 import Avatar from '@/shared/components/ui/Avatar'
 import { Input } from '@/shared/components/ui/input'
 import { SendHorizontal, X } from 'lucide-react'
-import {
-  useGetProcessCommentsByField,
-} from '../../hooks/useGetProcessComments'
+import { useGetProcessCommentsByField } from '../../hooks/useGetProcessComments'
 import { useCurrentUser } from '@/shared/auth/useUserStore'
 
 // TODO: read comments from API + save the new added comment
