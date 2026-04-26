@@ -487,7 +487,7 @@ const AssessmentDataModule = () => {
               //  once user start edit the table , save and edit actions appears:
                 onChangeMode={setOnChangeMode}
                 startSaving={startSaving}
-                onSaveComplete={()=>{setOnChangeMode(false); setShowEDataSavedToast(true)}}
+                onSaveComplete={()=>{setOnChangeMode(false); setShowEDataSavedToast(true);setStartSaveing(false)}}
               />
             )
           ) : activeTab == 'my-tasks' ? (
