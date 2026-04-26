@@ -14,78 +14,87 @@ interface orgRows {
   team?: string[]
 }
 const GeneralInfoTab = (props: any) => {
-  const { processGeneralInfo ,process , onFormSubmit , onFormChanged ,isEditable ,canComment , onShowComment } = props
+  const {
+    processGeneralInfo,
+    process,
+    onFormSubmit,
+    onFormChanged,
+    isEditable,
+    canComment,
+    onShowComment,
+  } = props
   const [openBUSheet, setOpenBUSheet] = useState(false)
   const [orgData, setOrgData] = useState<any>(process.orgMapping)
   const [dataToSubmit, setDataToSubmit] = useState<any>([])
-  
 
+  const columnsBU = useMemo<ColumnDef<orgRows>[]>(
+    () => [
+      {
+        id: 'unit',
+        accessorKey: 'unit',
+        header: 'ORG UNIT',
+        size: 250,
+        enableSorting: false,
+        meta: { isDivider: true },
+        cell: (info) => <p>{info.row.original.unit}</p>,
+      },
+      {
+        id: 'subUnits',
+        accessorKey: 'subUnits',
+        header: 'SUB UNIT',
+        size: 250,
+        enableSorting: false,
+        meta: { isDivider: true },
+        cell: (info) => (
+          <TagsList
+            tags={
+              info.row.original?.subUnits?.map((unit: string, teamIndex: number) => ({
+                id: `${unit}-${teamIndex}`,
+                text: unit,
+              })) || []
+            }
+            readOnly
+          />
+        ),
+      },
+    ],
+    [],
+  )
 
-  const columnsBU = useMemo<ColumnDef<orgRows>[]>(() => [
-    {
-      id: 'unit',
-      accessorKey: 'unit',
-      header: 'ORG UNIT',
-      size: 250,
-      enableSorting: false,
-      meta: { isDivider: true },
-      cell: (info) => <p>{info.row.original.unit}</p>,
-    },
-    {
-      id: 'subUnits',
-      accessorKey: 'subUnits',
-      header: 'SUB UNIT',
-      size: 250,
-      enableSorting: false,
-      meta: { isDivider: true },
-      cell: (info) => (
-        <TagsList
-          tags={
-            info.row.original?.subUnits?.map((unit: string, teamIndex: number) => ({
-              id: `${unit}-${teamIndex}`,
-              text: unit,
-            })) || []
-          }
-          readOnly
-        />
-      ),
-    },
-  ], [])
+  const columnsTeam = useMemo<ColumnDef<orgRows, unknown>[]>(
+    () => [
+      {
+        id: 'unit',
+        accessorKey: 'unit',
+        header: 'Responsible Digital Department',
+        size: 250,
+        enableSorting: false,
+        cell: (info) => <p>{info.row.original.unit}</p>,
+      },
+      {
+        id: 'subUnits',
+        accessorKey: 'subUnits',
+        header: 'Team',
+        size: 250,
+        enableSorting: false,
+        cell: (info) => (
+          <TagsList
+            tags={
+              info.row.original?.subUnits?.map((unit: string, teamIndex: number) => ({
+                id: `${unit}-${teamIndex}`,
+                text: unit,
+              })) || []
+            }
+            readOnly
+          />
+        ),
+      },
+    ],
+    [],
+  )
 
-
-  const columnsTeam = useMemo<ColumnDef<orgRows, unknown>[]>(() => [
-    {
-      id: 'unit',
-      accessorKey: 'unit',
-      header: 'Responsible Digital Department',
-      size: 250,
-      enableSorting: false,
-      cell: (info) => <p>{info.row.original.unit}</p>,
-    },
-    {
-      id: 'subUnits',
-      accessorKey: 'subUnits',
-      header: 'Team',
-      size: 250,
-      enableSorting: false,
-      cell: (info) => (
-        <TagsList
-          tags={
-            info.row.original?.subUnits?.map((unit: string, teamIndex: number) => ({
-              id: `${unit}-${teamIndex}`,
-              text: unit,
-            })) || []
-          }
-          readOnly
-        />
-      ),
-    },
-  ], [])
-
-
-  const formChangeHandler=(data:any, hasOrgData?:boolean)=>{
-
-    const formData=hasOrgData?data:{...data, dataorgMapping:orgData}
+  const formChangeHandler = (data: any, hasOrgData?: boolean) => {
+    const formData = hasOrgData ? data : { ...data, dataorgMapping: orgData }
     setDataToSubmit(formData)
     onFormChanged(formData)
   }
@@ -95,15 +104,15 @@ const GeneralInfoTab = (props: any) => {
       <ProcessDetails data={processGeneralInfo} isEditable={isEditable} />
 
       {/* Form: */}
-      <GeneralInfoForm 
-      initialData={process}
-      onFormSubmit={onFormSubmit}
-      onFormChanged={formChangeHandler}
-      isEditable={isEditable}
-      canComment={canComment}
-      showComments={onShowComment}
+      <GeneralInfoForm
+        initialData={process}
+        onFormSubmit={onFormSubmit}
+        onFormChanged={formChangeHandler}
+        isEditable={isEditable}
+        canComment={canComment}
+        showComments={onShowComment}
       />
-      
+
       <div className="mt-9 flex items-center gap-3">
         <p className="text-foreground text-md shrink-0 font-normal">Organization data mapping</p>
         <Separator className="flex-1" />
@@ -128,15 +137,17 @@ const GeneralInfoTab = (props: any) => {
       )}
 
       {/* link with icon */}
-      {isEditable && <div
-        className="my-4 flex items-center gap-2"
-        onClick={() => {
-          setOpenBUSheet(true)
-        }}
-      >
-        <img src={TreeIcon} alt="link icon" className="h-4 w-4" />
-        <p className="font-[14px] text-blue-600">{orgData ? 'Edit Mapping' : 'Start mapping'}</p>
-      </div>}
+      {isEditable && (
+        <div
+          className="my-4 flex items-center gap-2"
+          onClick={() => {
+            setOpenBUSheet(true)
+          }}
+        >
+          <img src={TreeIcon} alt="link icon" className="h-4 w-4" />
+          <p className="font-[14px] text-blue-600">{orgData ? 'Edit Mapping' : 'Start mapping'}</p>
+        </div>
+      )}
 
       <OrgMappingSheet
         title="Organization mapping"
@@ -145,8 +156,8 @@ const GeneralInfoTab = (props: any) => {
         handleOnSubmitData={(valuse: any) => {
           setOpenBUSheet(false)
           setOrgData(valuse)
-          const newChanges={ ...dataToSubmit, orgMapping: valuse }
-          formChangeHandler(newChanges , true)
+          const newChanges = { ...dataToSubmit, orgMapping: valuse }
+          formChangeHandler(newChanges, true)
         }}
         currentOrgData={process.orgMapping || []}
       />

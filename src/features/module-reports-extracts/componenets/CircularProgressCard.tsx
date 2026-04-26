@@ -6,11 +6,7 @@ type CircularProgressCardProps = {
   color?: string
 }
 
-const CircularProgressCard = ({
-  title,
-  value,
-  color = '#1554C0',
-}: CircularProgressCardProps) => {
+const CircularProgressCard = ({ title, value, color = '#1554C0' }: CircularProgressCardProps) => {
   const safeValue = Math.max(0, Math.min(100, value))
 
   const data = [
