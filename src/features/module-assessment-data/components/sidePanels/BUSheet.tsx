@@ -20,8 +20,9 @@ const BUSheet = ({ open = true, handleOpenChange, selected = [], title ,onClose}
   const { businessUnits } = useProcessBU()
 
   useEffect(()=>{
+    if(open)
     setSelectedValues(selected)
-  },[selected])
+  },[selected , open])
 
   // Closes the sheet when the sheet component itself requests a close action.
   const handleSheetOpenChange = (isOpen: boolean) => {
@@ -60,7 +61,7 @@ const BUSheet = ({ open = true, handleOpenChange, selected = [], title ,onClose}
 
     const filteredDTData = useMemo(() => {
       return filterTreeData(businessUnits, search)
-    }, [search])
+    }, [search, open])
   
 
   return (

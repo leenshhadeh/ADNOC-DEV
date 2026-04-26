@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { ASSESSMENT_DATA } from '../../constants/assessment-data'
 import { flattenAssessmentData } from './ProcessDataTable'
 import type { FlatAssessmentRow } from '../../types/process'
 import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
@@ -176,8 +175,9 @@ const domainMap = new Map(DOMAINS_DATA.map((d) => [d.id, d.name]))
 
 /* ─── Main Report Component ─────────────────────────────────────────── */
 
-const ProcessDataReport = () => {
-  const rows: FlatAssessmentRow[] = useMemo(() => flattenAssessmentData(ASSESSMENT_DATA), [])
+const ProcessDataReport = (props:any) => {
+  const {data=[]} = props
+  const rows: FlatAssessmentRow[] = useMemo(() => flattenAssessmentData(data), [])
 
   return (
     <div className="overflow-hidden rounded-3xl border border-[#DFE3E6] bg-white shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]">
