@@ -185,7 +185,10 @@ interface ProcessDataTableProps {
   onColumnVisibilityChange?: (visibility: Record<string, boolean>) => void
   columnOrder?: string[]
   onColumnOrderChange?: (newOrder: string[]) => void
-  isLoading?: boolean
+  isLoading?: boolean,
+  onChangeMode:any,
+  startSaving?:boolean
+  onSaveComplete?:()=>void
 }
 
 const ProcessDataTable = ({
@@ -200,6 +203,9 @@ const ProcessDataTable = ({
   columnOrder,
   onColumnOrderChange,
   isLoading,
+  onChangeMode,
+  startSaving,
+  onSaveComplete
 }: ProcessDataTableProps) => {
   const [isSharedServiceOpen, setIsSharedServiceOpen] = useState(false)
   const [isBUOpen, setIsBUOpen] = useState(false)
@@ -238,12 +244,42 @@ const ProcessDataTable = ({
   }, [data])
 
   /** Updates a draft row field as the user types */
-  const handleUpdateDraftRow = useCallback((id: string, field: string, value: string) => {
+  const handleUpdateDraftRow = useCallback((id: string, field: string, value: any) => {
     console.log('[ROW-CHANGED] field=[',field,'], value=[',value,']')
-    setUpdatedDataTable((prev: any) =>
-      prev.map((row: any) => (row.id === id ? { ...row, [field]: value } : row)),
-    )
-  }, [])
+    setUpdatedDataTable((prev: FlatAssessmentRow[]) => {
+      return prev.map((row) => {
+        if (row.id !== id) {
+          return row
+        }
+
+        return { ...row, [field]: value, readyForSave: true }
+      })
+    })
+    // set mode to onchange
+    onChangeMode(true)
+  }, [onChangeMode])
+
+
+  useEffect(()=>{
+    if(startSaving){
+      onSave()
+    }
+
+  },[startSaving])
+  // OnSave
+  const onSave=()=>{
+    // toDo: change the status to draft for the updated records 
+    // console.log the changes rows
+    const recordsReadyForSave = updatedDataTable.filter((row) => row.readyForSave)
+    console.log('save the changes records',recordsReadyForSave)
+    onSaveComplete && onSaveComplete()
+  }
+
+  // onValidate
+  const onValidate=()=>{
+    // toDo: check if all fileds are valid "all filed should be filled" for the updated rows 
+  }
+
 
   return (
     <div className="table-hierarchy">

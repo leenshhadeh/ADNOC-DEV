@@ -113,6 +113,9 @@ const AssessmentDataModule = () => {
   const [taskActionMessage, setTaskActionMessage] = useState('')
   const [singleActionTask, setSingleActionTask] = useState<TaskItem | null>(null)
   const [processView, setProcessView] = useState<ProcessViewOptionId>('published')
+  const [onChangeMode, setOnChangeMode]= useState(false)
+  const [startSaving, setStartSaveing]= useState(false)
+  const [showEDataSavedToast,setShowEDataSavedToast]= useState(false)
 
   // API:
   const { data, isLoading, isError, error } = useGetAssessmentProcess(processView)
@@ -159,7 +162,7 @@ const AssessmentDataModule = () => {
   )
 
   // Global filters:-------------------------
-  const globalFilterIds = ['domain', 'status']
+  const globalFilterIds = ['domain', 'status' , 'businessUnit']
   const filterDefs = useProcessFilterDefinitions(DOMAINS_DATA, searchedData)
   const { pending, applied, activePerSection, toggle, apply, reset } =
     useProcessFilters(globalFilterIds)
@@ -168,6 +171,7 @@ const AssessmentDataModule = () => {
     [searchedData, applied],
   )
 
+  // Export:-------------------------
   const handleExport = async () => {
     if (activeTab === 'my-tasks') {
       await exportTasks()
@@ -176,9 +180,9 @@ const AssessmentDataModule = () => {
     }
     setShowExportToast(true)
   }
-
   const currentIsExporting = activeTab === 'my-tasks' ? isExportingTasks : isExporting
 
+// toolbar actions:-------------------------
   const defaultActions = useMemo<ToolbarAction[]>(
     () => [
       {
@@ -198,6 +202,24 @@ const AssessmentDataModule = () => {
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentIsExporting],
+  )
+  const onEditActions = useMemo<ToolbarAction[]>(
+    () => [
+      {
+        id: 'save',
+        label: 'save',
+        icon: Settings2,
+        onClick:()=>setStartSaveing(true),
+      },
+      {
+        id: 'validate',
+        label: 'validate',
+        icon: currentIsExporting ? Loader2 : Download,
+        onClick: ()=>{console.log('start validate')},
+      },
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [onChangeMode],
   )
 
   const myTasksActions = useMemo<ToolbarAction[]>(
@@ -308,6 +330,7 @@ const AssessmentDataModule = () => {
     setSingleActionTask(null)
   }
 
+  // on change view "pyblished/lateset/archived"
   const onChangeView = (option: ProcessViewOption) => {
     setProcessView(option.id)
   }
@@ -374,7 +397,7 @@ const AssessmentDataModule = () => {
                     ]
                   : isBulkMode
                     ? ASSESSMENT_BULK_ACTIONS
-                    : defaultActions
+                    :  onChangeMode? onEditActions: defaultActions
             }
             showFilter={true}
             onFilterClick={() => setIsFilterOpen(true)}
@@ -435,7 +458,8 @@ const AssessmentDataModule = () => {
           )}
           {activeTab == 'processes' ? (
             activeView === 'report' ? (
-              <ProcessDataReport />
+              <ProcessDataReport 
+              data={dataSet}/>
             ) : (
               <ProcessDataTable
                 data={filteredData}
@@ -459,6 +483,9 @@ const AssessmentDataModule = () => {
                 columnOrder={managedColumnOrder}
                 onColumnOrderChange={setManagedColumnOrder}
                 isLoading={isLoading}
+                onChangeMode={setOnChangeMode}
+                startSaving={startSaving}
+                onSaveComplete={()=>{setOnChangeMode(false); setShowEDataSavedToast(true)}}
               />
             )
           ) : activeTab == 'my-tasks' ? (
@@ -568,6 +595,11 @@ const AssessmentDataModule = () => {
         open={showExportToast}
         message="Assessment data exported successfully."
         onClose={() => setShowExportToast(false)}
+      />
+       <SuccessToast
+        open={showEDataSavedToast}
+        message="Data Saved successfully"
+        onClose={() => setShowEDataSavedToast(false)}
       />
 
       {/* ── Task bulk action modals ────────────────────────────────────── */}

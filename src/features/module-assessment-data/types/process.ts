@@ -150,6 +150,7 @@ export type FlatAssessmentRow = {
   publishedDate: string
   submittedBy: string
   submittedOn: string
+  readyForSave?: boolean
 }
 
 // ── Bulk Cell Operations ──────────────────────────────────────────────────────
