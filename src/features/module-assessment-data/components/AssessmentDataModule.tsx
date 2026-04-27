@@ -101,6 +101,7 @@ const AssessmentDataModule = () => {
   const [managedColumnOrder, setManagedColumnOrder] = useState<string[]>([])
   const [search, setSearch] = useState('')
   const [isBulkMode, setIsBulkMode] = useState(false)
+  const [isValidateMode , setIsValidateMode] = useState(false)
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const [l3Selection, setL3Selection] = useState<Set<string>>(new Set())
   const [isTaskBulkMode, setIsTaskBulkMode] = useState(false)
@@ -216,7 +217,7 @@ const AssessmentDataModule = () => {
         id: 'validate',
         label: 'validate',
         icon: currentIsExporting ? Loader2 : Download,
-        onClick: ()=>{console.log('start validate')},
+        onClick: ()=>{setIsValidateMode(true)},
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -465,6 +466,7 @@ const AssessmentDataModule = () => {
               <ProcessDataTable
                 data={filteredData}
                 isBulkMode={isBulkMode}
+                isValidateMode={isValidateMode}
                 rowSelection={rowSelection}
                 onRowSelectionChange={(updater: any) =>
                   setRowSelection((prev) =>

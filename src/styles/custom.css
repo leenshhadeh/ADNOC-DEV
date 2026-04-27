@@ -35,6 +35,10 @@ td {
   border-top-width: 0px !important;
 }
 
+.table-hierarchy td:has(.invalid-field) {
+  border: 1px solid #EB3865 !important;
+}
+
 [role='menuitemcheckbox'] span.pointer-events-none {
   border: 1px solid #a9afb3;
   border-radius: 3px;

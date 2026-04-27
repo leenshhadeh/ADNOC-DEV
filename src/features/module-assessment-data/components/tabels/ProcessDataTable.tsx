@@ -178,6 +178,7 @@ export type DisplayAssessmentRow = FlatAssessmentRow & {
 interface ProcessDataTableProps {
   data: FlatAssessmentRow[]
   isBulkMode?: boolean
+  isValidateMode?: boolean
   rowSelection?: RowSelectionState
   onRowSelectionChange?: (
     updater: RowSelectionState | ((prev: RowSelectionState) => RowSelectionState),
@@ -197,6 +198,7 @@ interface ProcessDataTableProps {
 const ProcessDataTable = ({
   data,
   isBulkMode = false,
+  isValidateMode = false,
   rowSelection,
   onRowSelectionChange,
   selectedL3Ids,
@@ -216,7 +218,6 @@ const ProcessDataTable = ({
   const [selectedRowId, setSelectedRowId] = useState('')
   const [selectedProcessSercives, setSelectedProcessSercives] = useState<any>({services:[],shared:[]})
   const saveAssessmentDraftRowsMutation = useSaveAssessmentDraftRows()
-
 
   const columns = useMemo(
     () =>
@@ -239,8 +240,9 @@ const ProcessDataTable = ({
         isBulkMode,
         selectedL3Ids,
         onL3SelectionChange,
+        isValidateMode
       }),
-    [isBulkMode, selectedL3Ids, onL3SelectionChange],
+    [isBulkMode, isValidateMode,selectedL3Ids, onL3SelectionChange],
   )
   const [updatedDataTable, setUpdatedDataTable] = useState(data) // changed every time user edit table values
   useEffect(() => {
