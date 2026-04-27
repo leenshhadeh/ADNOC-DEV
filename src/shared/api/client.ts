@@ -4,13 +4,13 @@ import { getAccessToken } from '@/shared/auth/useAuth'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL as string
 const TIMEOUT_MS = 10_000
 
 // ── Instance ──────────────────────────────────────────────────────────────────
+// baseURL is NOT set here — it is assigned in main.tsx after loadRuntimeConfig()
+// resolves, so it can be injected from the Kubernetes ConfigMap at runtime.
 
 export const apiClient = axios.create({
-  baseURL: BASE_URL,
   timeout: TIMEOUT_MS,
   headers: {
     'Content-Type': 'application/json',

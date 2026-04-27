@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useMsal, useAccount } from '@azure/msal-react'
 import { InteractionRequiredAuthError } from '@azure/msal-browser'
-import { loginRequest } from './authConfig'
+import { getLoginRequest } from './authConfig'
 import { msalInstance } from './msalInstance'
 
 // MOCK_AUTH is only allowed in development builds to prevent accidental production bypass.
@@ -19,7 +19,7 @@ export function useAuth() {
 
   const login = useCallback(() => {
     if (MOCK_AUTH) return
-    msalInstance.loginRedirect(loginRequest)
+    msalInstance.loginRedirect(getLoginRequest())
   }, [])
 
   const logout = useCallback(() => {
@@ -51,14 +51,14 @@ export async function getAccessToken(): Promise<string> {
 
   try {
     const response = await msalInstance.acquireTokenSilent({
-      ...loginRequest,
+      ...getLoginRequest(),
       account,
     })
     return response.accessToken
   } catch (error) {
     if (error instanceof InteractionRequiredAuthError) {
       // Silent renewal failed — fall back to redirect.
-      await msalInstance.acquireTokenRedirect(loginRequest)
+      await msalInstance.acquireTokenRedirect(getLoginRequest())
       // acquireTokenRedirect navigates away; code below is unreachable.
       return ''
     }

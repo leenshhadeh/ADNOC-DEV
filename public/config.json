@@ -1,0 +1,8 @@
+{
+  "API_BASE_URL": "https://api.example.com/v1",
+  "TENANT_ID": "",
+  "CLIENT_ID": "",
+  "BACKEND_CLIENT_ID": "",
+  "BPA_GUIDELINES_URL": "https://example.com/bpa-guidelines",
+  "SERVICENOW_URL": "https://example.service-now.com"
+}

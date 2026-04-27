@@ -1,5 +1,5 @@
 import { msalInstance } from './msalInstance'
-import { loginRequest } from './authConfig'
+import { getLoginRequest } from './authConfig'
 
 // ── Role helpers ──────────────────────────────────────────────────────────────
 // Reads the `roles` claim from the **ID token** claims exposed by MSAL.
@@ -18,4 +18,4 @@ export function hasRole(role: string): boolean {
 
 // ── Scopes helper (re-export for convenience) ────────────────────────────────
 
-export { loginRequest }
+export { getLoginRequest as loginRequest }

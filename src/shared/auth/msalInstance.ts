@@ -4,18 +4,19 @@ import {
   type EventMessage,
   type AuthenticationResult,
 } from '@azure/msal-browser'
-import { msalConfig } from './authConfig'
+import { buildMsalConfig } from './authConfig'
 
 // ── Singleton MSAL instance ───────────────────────────────────────────────────
-// Exported so it can be used outside the React component tree
-// (e.g. Axios interceptors).
+// Not created at module load time — assigned in initialiseMsal() after
+// loadRuntimeConfig() has resolved so TENANT_ID / CLIENT_ID are available.
 
-export const msalInstance = new PublicClientApplication(msalConfig)
+export let msalInstance: PublicClientApplication = null!
 
 // ── Initialisation ────────────────────────────────────────────────────────────
 // Must be awaited before rendering the React tree.
 
 export async function initialiseMsal(): Promise<void> {
+  msalInstance = new PublicClientApplication(buildMsalConfig())
   await msalInstance.initialize()
 
   // If returning from a redirect, set the active account automatically.
