@@ -21,6 +21,7 @@ import {
   PROCESS_CYCLE,
   SCALE_OF_PROCESS,
 } from '@/constants/dropdownOptions'
+import { InfoTooltip } from '@/shared/components/InfoTooltip'
 
 export const getProcessTableColumns = ({
   onDescChanged,
@@ -29,6 +30,7 @@ export const getProcessTableColumns = ({
   onDigitalTeamExpand,
   onExpandSharedServices,
   isBulkMode = false,
+  isValidateMode = false,
   selectedL3Ids,
   onL3SelectionChange,
 }: {
@@ -38,6 +40,7 @@ export const getProcessTableColumns = ({
   onDigitalTeamExpand: (rowId: string) => void
   onExpandSharedServices: (rowId: string , list:string[]) => void
   isBulkMode?: boolean
+  isValidateMode?: boolean
   selectedL3Ids?: Set<string>
   onL3SelectionChange?: (l3GroupId: string, checked: boolean) => void
 }): ColumnDef<FlatAssessmentRow, unknown>[] => [
@@ -181,9 +184,12 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const val=info.getValue<string>()
+      const hasErr= isValidateMode && val=='' || val==undefined
       return (
-        <EditableCell
-          value={info.getValue<string>()}
+        <div className={hasErr?'invalid-field flex justify-between':''}>
+          <EditableCell
+          value={val}
           onChange={(newValue) => {
             onDescChanged(newValue)
             if (onUpdate) {
@@ -191,6 +197,8 @@ export const getProcessTableColumns = ({
             }
           }}
         />
+        {hasErr && <InfoTooltip text={'this field is requied'} />}
+          </div>
       )
     },
   },
