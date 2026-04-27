@@ -246,13 +246,7 @@ const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) =
         }
         stageCurrent={task?.stageCurrent}
         stageTotal={task?.stageTotal}
-        stageBadge={
-          task ? (
-            <StatusBadgeCell
-              status={task.status as CatalogStatus}
-            />
-          ) : undefined
-        }
+        stageBadge={task ? <StatusBadgeCell status={task.status as CatalogStatus} /> : undefined}
         stepper={<WorkflowStepper steps={WORKFLOW_STEPS} />}
         expandedContent={
           task ? (
