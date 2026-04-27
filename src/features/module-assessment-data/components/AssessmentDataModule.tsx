@@ -210,13 +210,13 @@ const AssessmentDataModule = () => {
       {
         id: 'save',
         label: 'save',
-        icon: Settings2,
+        icon: Save,
         onClick:()=>setStartSaveing(true),
       },
       {
         id: 'validate',
         label: 'validate',
-        icon: currentIsExporting ? Loader2 : Download,
+        icon: Check,
         onClick: ()=>{setIsValidateMode(true)},
       },
     ],
