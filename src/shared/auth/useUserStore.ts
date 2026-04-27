@@ -22,8 +22,8 @@ interface UserStore {
 export const useUserStore = create<UserStore>((set) => ({
   user: {
     name: 'Jane Doe',
-    // role: 'BPA Process Catalog Custodian',
-    role: 'Quality Manager',
+    role: 'BPA Process Catalog Custodian',
+    // role: 'Quality Manager',
     // role: 'Business Focal Point',
   },
   setUser: (user) => set({ user }),

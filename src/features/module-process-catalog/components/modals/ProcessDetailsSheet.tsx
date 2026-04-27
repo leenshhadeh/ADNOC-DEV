@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react'
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
-import { ArrowRight, Check, ChevronDown, ChevronUp, Clock, Eye } from 'lucide-react'
+import { ArrowRight, Check, ChevronDown, Eye } from 'lucide-react'
 
-import ActionSheet from '@/shared/components/ActionSheet'
+import { StatusBadgeCell } from '@/shared/components/cells'
+import type { CatalogStatus } from '@/shared/components/cells'
+import ProcessSheetShell from '@/shared/components/sheets/ProcessSheetShell'
 import { Accordion, AccordionContent, AccordionItem } from '@/shared/components/ui/accordion'
 import { Separator } from '@/shared/components/ui/separator'
-import WorkflowHistoryPanel from '@/shared/components/WorkflowHistoryPanel'
 import type { WorkflowHistoryEntry } from '@/shared/components/WorkflowHistoryPanel'
 import { cn } from '@/shared/lib/utils'
 
@@ -156,6 +156,13 @@ export interface ProcessDetailsSheetProps {
   changes: ChangeItem[]
   workflowHistory: WorkflowHistoryEntry[]
 
+  /** Optional badge rendered above the action links (e.g. processCategory). */
+  headerBadge?: React.ReactNode
+  /** Label for the primary nav button. Defaults to "Go to affected record". */
+  primaryLinkLabel?: string
+  /** Content rendered between the "Change details" heading and the accordion. */
+  changesPreamble?: React.ReactNode
+
   /**
    * Optional sticky footer rendered below the scrollable body.
    * Pass `<PermissionGuard><TaskActionFooter /></PermissionGuard>` for task sheets.
@@ -176,122 +183,60 @@ const ProcessDetailsSheet = ({
   detailsGrid,
   changes,
   workflowHistory,
+  headerBadge,
+  primaryLinkLabel = 'Go to affected record',
+  changesPreamble,
   footer,
-}: ProcessDetailsSheetProps) => {
-  const [showMore, setShowMore] = useState(false)
-  const [showWorkflowHistory, setShowWorkflowHistory] = useState(false)
-
-  // Reset sub-panel state whenever the sheet closes, regardless of close trigger.
-  useEffect(() => {
-    if (!open) {
-      setShowMore(false)
-      setShowWorkflowHistory(false)
+}: ProcessDetailsSheetProps) => (
+  <ProcessSheetShell
+    title={title}
+    open={open}
+    onOpenChange={onOpenChange}
+    headerBadge={headerBadge}
+    primaryLink={
+      <button
+        type="button"
+        className="text-brand-blue inline-flex items-center gap-1.5 text-sm font-medium hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+        disabled={!processId}
+        onClick={() => {
+          onGoToRecord?.()
+          onOpenChange(false)
+        }}
+      >
+        <Eye className="size-4" />
+        {primaryLinkLabel}
+      </button>
     }
-  }, [open])
-
-  return (
-    <ActionSheet title={title} open={open} onOpenChange={onOpenChange}>
-      <div className="relative flex flex-1 flex-col overflow-hidden">
-        {/* ── Scrollable body ──────────────────────────────────────────────── */}
-        <div className="flex-1 overflow-y-auto p-6">
-          {/* Action links */}
-          <div className="grid grid-cols-2 pe-2">
-            <button
-              type="button"
-              className="text-brand-blue inline-flex items-center gap-1.5 text-sm font-medium hover:underline disabled:cursor-not-allowed disabled:opacity-40"
-              disabled={!processId}
-              onClick={() => {
-                onGoToRecord?.()
-                onOpenChange(false)
-              }}
-            >
-              <Eye className="size-4" />
-              Go to affected record
-            </button>
-            <button
-              type="button"
-              className="text-brand-blue inline-flex items-center justify-end gap-1.5 text-sm font-medium hover:underline"
-              onClick={() => setShowWorkflowHistory(true)}
-            >
-              <Clock className="size-4" />
-              View workflow history
-            </button>
+    stageCurrent={stageCurrent}
+    stageTotal={stageTotal}
+    stageBadge={<StatusBadgeCell status={stageText as CatalogStatus} />}
+    stepper={<WorkflowStepper currentStep={stageCurrent} totalSteps={stageTotal} />}
+    expandedContent={detailsGrid}
+    changeSection={
+      changes.length > 0 || changesPreamble ? (
+        <section className="mt-6">
+          <div className="flex items-center gap-3">
+            <h3 className="text-foreground shrink-0 text-base font-medium">Change details</h3>
+            <Separator className="flex-1" />
           </div>
-
-          {/* Stage header */}
-          <div className="mt-4 flex items-center gap-2">
-            <p className="text-foreground text-md font-medium">
-              Stage {stageCurrent}/{stageTotal}
-            </p>
-            <span className="inline-flex items-center rounded-full bg-[#FEE5D3] px-1.5 text-xs font-normal text-[#151718]">
-              {stageText}
-            </span>
-          </div>
-
-          {/* Stage card */}
-          <div className="mt-2 rounded-2xl p-3 px-4 shadow-[7px_8px_28px_0px_rgba(0,0,0,0.2)]">
-            <WorkflowStepper currentStep={stageCurrent} totalSteps={stageTotal} />
-
-            <div className="mt-4 flex flex-col">
-              <Separator className="bg-border" />
-              <button
-                type="button"
-                className="text-brand-blue mx-auto flex w-full items-center justify-center gap-1 py-2 text-sm font-medium"
-                onClick={() => setShowMore((v) => !v)}
-              >
-                {showMore ? (
-                  <>
-                    Hide <ChevronUp className="size-4" />
-                  </>
-                ) : (
-                  <>
-                    More <ChevronDown className="size-4" />
-                  </>
-                )}
-              </button>
-            </div>
-
-            {showMore && (
-              <>
-                <Separator className="bg-border" />
-                {detailsGrid}
-              </>
-            )}
-          </div>
-
-          {/* Change details */}
+          {changesPreamble}
           {changes.length > 0 && (
-            <section className="mt-6">
-              <div className="flex items-center gap-3">
-                <h3 className="text-foreground shrink-0 text-base font-medium">Change details</h3>
-                <Separator className="flex-1" />
-              </div>
-              <Accordion
-                type="single"
-                collapsible
-                className="[&>*:first-child]:border-border mt-3 w-full [&>*:first-child]:border-t"
-              >
-                {changes.map((change) => (
-                  <ChangeAccordionItem key={change.id} change={change} />
-                ))}
-              </Accordion>
-            </section>
+            <Accordion
+              type="single"
+              collapsible
+              className="[&>*:first-child]:border-border mt-3 w-full [&>*:first-child]:border-t"
+            >
+              {changes.map((change) => (
+                <ChangeAccordionItem key={change.id} change={change} />
+              ))}
+            </Accordion>
           )}
-        </div>
-
-        {/* ── Workflow history overlay ──────────────────────────────────────── */}
-        {showWorkflowHistory && (
-          <WorkflowHistoryPanel
-            items={workflowHistory}
-            onClose={() => setShowWorkflowHistory(false)}
-          />
-        )}
-
-        {/* ── Optional sticky footer ───────────────────────────────────────── */}
-        {footer}
-      </div>
-    </ActionSheet>
-  )
-}
+        </section>
+      ) : undefined
+    }
+    workflowHistory={workflowHistory}
+    footer={footer}
+  />
+)
 
 export default ProcessDetailsSheet

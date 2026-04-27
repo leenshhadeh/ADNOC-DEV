@@ -2,10 +2,7 @@ import { useState } from 'react'
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
 import {
   ArrowRight,
-  ChevronDown,
   ChevronRight,
-  ChevronUp,
-  Clock,
   ExternalLink,
   Loader2,
   MessageSquare,
@@ -13,7 +10,6 @@ import {
 } from 'lucide-react'
 
 import { useNavigate } from 'react-router-dom'
-import ActionSheet from '@/shared/components/ActionSheet'
 import { Accordion, AccordionContent, AccordionItem } from '@/shared/components/ui/accordion'
 import { Separator } from '@/shared/components/ui/separator'
 import { Textarea } from '@/shared/components/ui/textarea'
@@ -21,9 +17,9 @@ import { cn } from '@/shared/lib/utils'
 import { hasPermission } from '@/shared/lib/permissions'
 import { useUserStore } from '@/shared/auth/useUserStore'
 import WorkflowStepper from '@/shared/components/WorkFlowStepper'
-import { StatusBadgeCell } from '@/shared/components/cells'
+import { StatusBadgeCell, type CatalogStatus } from '@/shared/components/cells'
 import TaskActionFooter from '@/shared/components/TaskActionFooter'
-import WorkflowHistoryPanel from '@/shared/components/WorkflowHistoryPanel'
+import ProcessSheetShell from '@/shared/components/sheets/ProcessSheetShell'
 
 import type { WorkflowHistoryItem } from '@features/module-process-catalog/types/submitted-requests'
 import { ApproveModal } from '@/shared/components/modals/ApproveModal'
@@ -73,7 +69,7 @@ function ChangeAccordionItem({ change, itemId, taskId, canComment }: ChangeAccor
   const handleSubmitComment = () => {
     const trimmed = commentText.trim()
     if (!trimmed) return
-    addComment({ taskId, changeId, text: trimmed })
+    addComment({ taskId, fieldName: changeId, text: trimmed })
     setCommentText('')
     setShowCommentInput(false)
   }
@@ -199,8 +195,6 @@ interface TaskDetailsSheetProps {
 
 const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) => {
   const navigate = useNavigate()
-  const [showMore, setShowMore] = useState(false)
-  const [showWorkflowHistory, setShowWorkflowHistory] = useState(false)
   const [workflowHistory, setWorkflowHistory] = useState<WorkflowHistoryItem[]>([])
   const [approveOpen, setApproveOpen] = useState(false)
   const [returnOpen, setReturnOpen] = useState(false)
@@ -214,16 +208,13 @@ const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) =
 
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
-      setShowMore(false)
-      setShowWorkflowHistory(false)
       setWorkflowHistory([])
       setActionLoading(false)
     }
     onOpenChange(isOpen)
   }
 
-  const handleViewWorkflowHistory = () => {
-    setShowWorkflowHistory(true)
+  const handleWorkflowHistoryOpen = () => {
     if (task && workflowHistory.length === 0) {
       getTaskWorkflowHistory(task.id)
         .then(setWorkflowHistory)
@@ -233,210 +224,146 @@ const TaskDetailsSheet = ({ task, open, onOpenChange }: TaskDetailsSheetProps) =
 
   return (
     <>
-      <ActionSheet
+      <ProcessSheetShell
         title={task?.processName ?? ''}
         open={open}
         onOpenChange={handleOpenChange}
         large
-      >
-        {task ? (
-          <div className="relative flex-1 overflow-hidden">
-            {/* ── Main scrollable body ──────────────────────────────────────── */}
-            <div className={cn('h-full overflow-y-auto p-6', isApprover ? 'pb-28' : '')}>
-              {/* Action links */}
-              <div className="grid grid-cols-2 pe-2">
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-[#0047BB] hover:underline"
-                  onClick={() => {
-                    if (task.processId) {
-                      onOpenChange(false)
-                      navigate(`/assessment-data/process/${task.processId}`)
-                    }
-                  }}
-                >
-                  <ExternalLink className="size-4" />
-                  View full card
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-end gap-1.5 text-sm font-medium text-[#0047BB] hover:underline"
-                  onClick={handleViewWorkflowHistory}
-                >
-                  <Clock className="size-4" />
-                  View workflow history
-                </button>
-              </div>
-
-              {/* Stage card */}
-              <div className="mt-6 rounded-2xl border border-transparent bg-gradient-to-br from-[#E9EFFF] to-white p-4 shadow-[0_4px_8px_0_#d1d5df80]">
-                <div className="mb-4 flex items-center gap-2">
-                  <p className="text-foreground text-lg font-semibold">
-                    Stage {task.stageCurrent}/{task.stageTotal}
-                  </p>
-                  <StatusBadgeCell status={task.status} />
-                </div>
-
-                <WorkflowStepper steps={WORKFLOW_STEPS} />
-
-                <Separator className="my-4" />
-
-                <button
-                  type="button"
-                  className="text-primary mx-auto flex w-full items-center justify-center gap-1 text-sm font-medium"
-                  onClick={() => setShowMore((v) => !v)}
-                >
-                  {showMore ? (
-                    <>
-                      Hide <ChevronUp className="size-4" />
-                    </>
-                  ) : (
-                    <>
-                      More <ChevronDown className="size-4" />
-                    </>
-                  )}
-                </button>
-
-                {showMore && (
-                  <>
-                    <Separator className="my-4" />
-                    <section>
-                      <p className="text-muted-foreground mb-3 text-sm font-medium">
-                        Process details
-                      </p>
-                      <div className="grid grid-cols-2">
-                        <div className="border-border border-r border-b pe-4 pb-3">
-                          <p className="text-muted-foreground text-xs">Domain</p>
-                          <p className="text-foreground mt-0.5 font-semibold">
-                            {DOMAINS_DATA.find((d) => d.id === task.domain)?.name ??
-                              task.domain ??
-                              '—'}
-                          </p>
-                        </div>
-                        <div className="border-border border-b ps-4 pb-3">
-                          <p className="text-muted-foreground text-xs">Process Level</p>
-                          <p className="text-foreground mt-0.5 font-semibold">
-                            {task.level ?? '—'}
-                          </p>
-                        </div>
-                        <div className="border-border border-r pe-4 pt-3">
-                          <p className="text-muted-foreground text-xs">Level 1</p>
-                          <p className="text-foreground mt-0.5 font-semibold">
-                            {task.level1 ?? '—'}
-                          </p>
-                        </div>
-                        <div className="ps-4 pt-3">
-                          <p className="text-muted-foreground text-xs">Level 2</p>
-                          <p className="text-foreground mt-0.5 font-semibold">
-                            {task.level2 ?? '—'}
-                          </p>
-                        </div>
-                      </div>
-                    </section>
-
-                    <Separator className="my-4" />
-                    <section>
-                      <p className="text-muted-foreground mb-3 text-sm font-medium">
-                        People involved
-                      </p>
-                      <div className="grid grid-cols-2">
-                        <div className="border-border border-r border-b pe-4 pb-3">
-                          <p className="text-muted-foreground text-xs">Requester</p>
-                          <p className="text-foreground mt-0.5 font-semibold">
-                            {task.requester ?? '—'}
-                          </p>
-                        </div>
-                        <div className="border-border border-b ps-4 pb-3">
-                          <p className="text-muted-foreground text-xs">Business Focal Point</p>
-                          <p className="text-foreground mt-0.5 font-semibold">
-                            {task.businessFocalPoint ?? '—'}
-                          </p>
-                        </div>
-                        <div className="border-border border-r pe-4 pt-3">
-                          <p className="text-muted-foreground text-xs">Submitted On</p>
-                          <p className="text-foreground mt-0.5 font-semibold">
-                            {task.submittedOn ?? '—'}
-                          </p>
-                        </div>
-                        <div className="ps-4 pt-3">
-                          <p className="text-muted-foreground text-xs">Digital Focal Point</p>
-                          <p className="text-foreground mt-0.5 font-semibold">
-                            {task.digitalFocalPoint ?? '—'}
-                          </p>
-                        </div>
-                      </div>
-                    </section>
-                  </>
-                )}
-              </div>
-
-              {/* Change details section */}
-              {task.changes && task.changes.length > 0 && (
-                <section className="mt-6">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-foreground shrink-0 text-xl font-semibold">
-                      Change details
-                    </h3>
-                    <Separator className="flex-1" />
+        primaryLink={
+          <button
+            type="button"
+            className="text-brand-blue inline-flex items-center gap-1.5 text-sm font-medium hover:underline"
+            onClick={() => {
+              if (task?.processId) {
+                onOpenChange(false)
+                navigate(`/assessment-data/process/${task.processId}`)
+              }
+            }}
+          >
+            <ExternalLink className="size-4" />
+            View full card
+          </button>
+        }
+        stageCurrent={task?.stageCurrent}
+        stageTotal={task?.stageTotal}
+        stageBadge={
+          task ? (
+            <StatusBadgeCell
+              status={task.status as CatalogStatus}
+            />
+          ) : undefined
+        }
+        stepper={<WorkflowStepper steps={WORKFLOW_STEPS} />}
+        expandedContent={
+          task ? (
+            <>
+              <section>
+                <p className="text-muted-foreground mb-3 text-sm font-medium">Process details</p>
+                <div className="grid grid-cols-2">
+                  <div className="border-border border-r border-b pe-4 pb-3">
+                    <p className="text-muted-foreground text-xs">Domain</p>
+                    <p className="text-foreground mt-0.5 font-semibold">
+                      {DOMAINS_DATA.find((d) => d.id === task.domain)?.name ?? task.domain ?? '—'}
+                    </p>
                   </div>
-                  {/* Return reason box */}
-                  {task.returnComment && (
-                    <div className="mt-4 rounded-xl border border-[#F9D4E0] bg-[#FFF5F7] px-4 py-3">
-                      <p className="text-muted-foreground mb-1 text-xs font-medium">
-                        Reason for return
-                      </p>
-                      <p className="text-foreground text-sm">{task.returnComment}</p>
-                    </div>
-                  )}
-
-                  {/* Reject reason box */}
-                  {task.rejectComment && (
-                    <div className="mt-4 rounded-xl border border-[#F9D4E0] bg-[#FFF5F7] px-4 py-3">
-                      <p className="text-muted-foreground mb-1 text-xs font-medium">
-                        Reason for rejection
-                      </p>
-                      <p className="text-foreground text-sm">{task.rejectComment}</p>
-                    </div>
-                  )}
-
-                  <Accordion type="single" collapsible className="mt-3 w-full">
-                    {task.changes.map((change, index) => (
-                      <ChangeAccordionItem
-                        key={change.id ?? `change-${index}`}
-                        itemId={change.id ?? `change-${index}`}
-                        change={change}
-                        taskId={task.id}
-                        canComment={isApprover}
-                      />
-                    ))}
-                  </Accordion>
-                </section>
-              )}
-            </div>
-
-            {/* ── Approver sticky footer ────────────────────────────────────── */}
-            {isApprover && (
-              <div className="border-border bg-background absolute right-0 bottom-0 left-0 border-t p-6">
-                <TaskActionFooter
-                  disabled={actionLoading}
-                  onCancel={() => onOpenChange(false)}
-                  onReturn={() => setReturnOpen(true)}
-                  onReject={() => setRejectOpen(true)}
-                  onApprove={() => setApproveOpen(true)}
-                />
+                  <div className="border-border border-b ps-4 pb-3">
+                    <p className="text-muted-foreground text-xs">Process Level</p>
+                    <p className="text-foreground mt-0.5 font-semibold">{task.level ?? '—'}</p>
+                  </div>
+                  <div className="border-border border-r pe-4 pt-3">
+                    <p className="text-muted-foreground text-xs">Level 1</p>
+                    <p className="text-foreground mt-0.5 font-semibold">{task.level1 ?? '—'}</p>
+                  </div>
+                  <div className="ps-4 pt-3">
+                    <p className="text-muted-foreground text-xs">Level 2</p>
+                    <p className="text-foreground mt-0.5 font-semibold">{task.level2 ?? '—'}</p>
+                  </div>
+                </div>
+              </section>
+              <Separator className="my-4" />
+              <section>
+                <p className="text-muted-foreground mb-3 text-sm font-medium">People involved</p>
+                <div className="grid grid-cols-2">
+                  <div className="border-border border-r border-b pe-4 pb-3">
+                    <p className="text-muted-foreground text-xs">Requester</p>
+                    <p className="text-foreground mt-0.5 font-semibold">{task.requester ?? '—'}</p>
+                  </div>
+                  <div className="border-border border-b ps-4 pb-3">
+                    <p className="text-muted-foreground text-xs">Business Focal Point</p>
+                    <p className="text-foreground mt-0.5 font-semibold">
+                      {task.businessFocalPoint ?? '—'}
+                    </p>
+                  </div>
+                  <div className="border-border border-r pe-4 pt-3">
+                    <p className="text-muted-foreground text-xs">Submitted On</p>
+                    <p className="text-foreground mt-0.5 font-semibold">
+                      {task.submittedOn ?? '—'}
+                    </p>
+                  </div>
+                  <div className="ps-4 pt-3">
+                    <p className="text-muted-foreground text-xs">Digital Focal Point</p>
+                    <p className="text-foreground mt-0.5 font-semibold">
+                      {task.digitalFocalPoint ?? '—'}
+                    </p>
+                  </div>
+                </div>
+              </section>
+            </>
+          ) : null
+        }
+        changeSection={
+          task?.changes && task.changes.length > 0 ? (
+            <section className="mt-6">
+              <div className="flex items-center gap-3">
+                <h3 className="text-foreground shrink-0 text-xl font-semibold">Change details</h3>
+                <Separator className="flex-1" />
               </div>
-            )}
-
-            {/* ── Workflow history overlay ──────────────────────────────────── */}
-            {showWorkflowHistory && (
-              <WorkflowHistoryPanel
-                items={workflowHistory}
-                onClose={() => setShowWorkflowHistory(false)}
+              {task.returnComment && (
+                <div className="mt-4 rounded-xl border border-[#F9D4E0] bg-[#FFF5F7] px-4 py-3">
+                  <p className="text-muted-foreground mb-1 text-xs font-medium">
+                    Reason for return
+                  </p>
+                  <p className="text-foreground text-sm">{task.returnComment}</p>
+                </div>
+              )}
+              {task.rejectComment && (
+                <div className="mt-4 rounded-xl border border-[#F9D4E0] bg-[#FFF5F7] px-4 py-3">
+                  <p className="text-muted-foreground mb-1 text-xs font-medium">
+                    Reason for rejection
+                  </p>
+                  <p className="text-foreground text-sm">{task.rejectComment}</p>
+                </div>
+              )}
+              <Accordion type="single" collapsible className="mt-3 w-full">
+                {task.changes.map((change, index) => (
+                  <ChangeAccordionItem
+                    key={change.id ?? `change-${index}`}
+                    itemId={change.id ?? `change-${index}`}
+                    change={change}
+                    taskId={task.id}
+                    canComment={isApprover}
+                  />
+                ))}
+              </Accordion>
+            </section>
+          ) : undefined
+        }
+        workflowHistory={workflowHistory}
+        onWorkflowHistoryOpen={handleWorkflowHistoryOpen}
+        footer={
+          isApprover ? (
+            <div className="border-border bg-background absolute right-0 bottom-0 left-0 border-t p-6">
+              <TaskActionFooter
+                disabled={actionLoading}
+                onCancel={() => onOpenChange(false)}
+                onReturn={() => setReturnOpen(true)}
+                onReject={() => setRejectOpen(true)}
+                onApprove={() => setApproveOpen(true)}
               />
-            )}
-          </div>
-        ) : null}
-      </ActionSheet>
+            </div>
+          ) : undefined
+        }
+      />
 
       {/* Modals — rendered outside the sheet to avoid stacking context issues */}
       <ApproveModal
