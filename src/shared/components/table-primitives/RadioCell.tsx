@@ -2,12 +2,12 @@ import { useState } from 'react'
 import { cn } from '@/shared/lib/utils'
 
 const RadioCell = (props: any) => {
-  const { value, onValChange , disabled=false } = props
+  const { value, onValChange, disabled = false } = props
 
   const [enabled, setEnabled] = useState(value)
 
   const onChange = () => {
-    if(disabled) return;
+    if (disabled) return
     setEnabled((v: any) => !v)
     onValChange && onValChange(enabled ? 'no' : 'yes')
   }
@@ -21,7 +21,7 @@ const RadioCell = (props: any) => {
         onClick={onChange}
         className={cn(
           'focus-visible:ring-ring relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:ring-2 focus-visible:outline-none',
-          enabled ? 'bg-primary' : 'bg-input',
+          enabled ? 'bg-brand-blue' : 'bg-input',
         )}
       >
         <span

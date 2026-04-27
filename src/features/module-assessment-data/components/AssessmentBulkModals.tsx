@@ -15,6 +15,7 @@ import BaseModal from '@/shared/components/BaseModal'
 import { SuccessToast } from '@/shared/components/SuccessToast'
 import { Button } from '@/shared/components/ui/button'
 import { Select } from '@/shared/components/ui/select'
+import { Textarea } from '@/shared/components/ui/textarea'
 import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
 import BUSheet from './sidePanels/BUSheet'
 import SharedServicesSheet from './sidePanels/SharedServicesSheet'
@@ -229,7 +230,7 @@ export function BulkEditModal({
               </div>
             )}
             {selectedField?.type === 'textarea' && (
-              <textarea
+              <Textarea
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 rows={4}
@@ -259,11 +260,12 @@ export function BulkEditModal({
         />
       )}
       {fieldValue === 'sharedServices' && (
-        <SharedServicesSheet open={sheetOpen} 
-        handleOpenChange={(payload:any) => {
-        console.log('payload',payload)
-        }}
-        onClose={() => setSheetOpen(false)}
+        <SharedServicesSheet
+          open={sheetOpen}
+          handleOpenChange={(payload: any) => {
+            console.log('payload', payload)
+          }}
+          onClose={() => setSheetOpen(false)}
         />
       )}
       {fieldValue === 'responsibleDigitalTeam' && (
@@ -336,7 +338,7 @@ export function BulkCommentModal({
       >
         <div>
           <label className={fieldLabel}>Comment</label>
-          <textarea
+          <Textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows={4}
@@ -519,7 +521,7 @@ export function CopyAssessmentDataModal({
           <button
             type="button"
             onClick={closeDrawer}
-            className="mt-1 rounded-full p-1.5 text-[#687076] transition-colors hover:bg-accent"
+            className="hover:bg-accent mt-1 rounded-full p-1.5 text-[#687076] transition-colors"
             aria-label="Close"
           >
             <X className="size-5" />
@@ -613,7 +615,7 @@ export function CopyAssessmentDataModal({
         <>
           <div className="fixed inset-0 z-[60] bg-black/50" onClick={() => setConfirmOpen(false)} />
           <div className="fixed inset-0 z-[61] flex items-center justify-center p-4">
-            <div className="w-full max-w-[540px] rounded-2xl bg-accent p-8 shadow-2xl">
+            <div className="bg-accent w-full max-w-[540px] rounded-2xl p-8 shadow-2xl">
               <div className="flex items-start gap-2">
                 <div className="flex flex-1 flex-col gap-2">
                   <h3 className="text-[24px] leading-8 font-[500] text-[#151718]">
@@ -721,7 +723,7 @@ export function MarkAsReviewedModal({
           <label className={fieldLabel}>
             Comment <span className="text-destructive">*</span>
           </label>
-          <textarea
+          <Textarea
             value={comment}
             onChange={(e) => setComment(e.target.value.slice(0, MAX_REVIEW_CHARS))}
             rows={4}

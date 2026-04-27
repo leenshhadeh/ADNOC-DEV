@@ -5,12 +5,12 @@ import { Select } from '@/shared/components/ui/select'
 const EstimationAndPrioritization = () => {
   return (<>
   
-    <div className="flex w-full flex-col my-2">
+    <div className="flex w-full flex-col gap-2 my-2">
       <label className="text-muted-foreground text-sm">Proposed Priority</label>
       <Select options={[{ label: 'proprity1', value: 'proprity1' }]} value={'proprity1'} disabled={true} />
      </div> 
      
-     <div className="flex w-full flex-col">
+     <div className="flex w-full flex-col gap-2">
       <label className="text-muted-foreground text-sm my-2">
         Estimated Implementation Duration, months
       </label>

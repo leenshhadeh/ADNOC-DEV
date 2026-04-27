@@ -1,5 +1,6 @@
 import TagsSelect from '@/shared/components/table-primitives/TagsSelect'
 import { Input } from '@/shared/components/ui/input'
+import { Textarea } from '@/shared/components/ui/textarea'
 import { ASSESSMENT_APPLICATIONS } from '../../../constants/CurrentApplication'
 import { Select } from '@/shared/components/ui/select'
 import React, { useEffect, useState } from 'react'
@@ -88,7 +89,7 @@ const AutomationParameterForm = (props: any) => {
       <form className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {/* row 1 */}
         <CommentableField fieldId="processCriticality" fieldName="Process Criticality">
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">Process Criticality​</label>
             <Select
               options={PROCESS_CRITICALITY.map((option) => ({
@@ -104,7 +105,7 @@ const AutomationParameterForm = (props: any) => {
         </CommentableField>
 
         <CommentableField fieldId="numberOfPeopleInvolved" fieldName="Number of People Involved">
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">Number of People Involved</label>
             <Select
               options={NUMBER_OF_PEOPLE_IMPACTED.map((option) => ({
@@ -122,7 +123,7 @@ const AutomationParameterForm = (props: any) => {
         </CommentableField>
 
         <CommentableField fieldId="scaleOfProcess" fieldName="Scale of Process">
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">Scale of Process</label>
             <Select
               options={SCALE_OF_PROCESS.map((option) => ({
@@ -142,7 +143,7 @@ const AutomationParameterForm = (props: any) => {
           fieldId="automationMaturityLevel"
           fieldName="Process Automation Maturity Level"
         >
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">
               Process Automation Maturity Level ​
             </label>
@@ -166,7 +167,7 @@ const AutomationParameterForm = (props: any) => {
           </div>
         </CommentableField>
         <CommentableField fieldId="automationLevel" fieldName="Automation level (%)">
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">{'Automation level (%)'}​</label>
             <Input
               name="automationLevel"
@@ -185,7 +186,7 @@ const AutomationParameterForm = (props: any) => {
           fieldId="currentApplicationsSystems"
           fieldName="Current Applications / Systems"
         >
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">Current Applications / Systems</label>
             <div className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring/40 flex h-10 w-full min-w-0 rounded-md border p-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-3 disabled:cursor-not-allowed disabled:opacity-50">
               <TagsSelect
@@ -209,7 +210,7 @@ const AutomationParameterForm = (props: any) => {
           fieldId="businessRecommendationForAutomation"
           fieldName="Business Recommendation for Automation"
         >
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">
               {' '}
               Business Recommendation for Automation{' '}
@@ -232,7 +233,7 @@ const AutomationParameterForm = (props: any) => {
           fieldId="challengesAndNeeds"
           fieldName="Key Challenges & Automation Needs"
         >
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">
               Key Challenges & Automation Needs​
             </label>
@@ -249,13 +250,13 @@ const AutomationParameterForm = (props: any) => {
           fieldId="OngoingAutomationDigitalInitiatives"
           fieldName="Ongoing Digital Initiatives"
         >
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">Ongoing Digital Initiatives</label>
-            <textarea
+            <Textarea
               name="processDescription"
               value={formData.OngoingAutomationDigitalInitiatives}
               onChange={handleChange}
-              className="rounded-md border p-2 text-sm"
+              className="text-sm"
               disabled={!isEditable}
             />
           </div>
@@ -264,7 +265,7 @@ const AutomationParameterForm = (props: any) => {
         {/* row 4 , 2 radio */}
 
         <CommentableField fieldId="AIPowered" fieldName="AI-Powered">
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">AI-Powered​</label>
             <RadioCell
               value={formData.AIPowered}
@@ -277,7 +278,7 @@ const AutomationParameterForm = (props: any) => {
           fieldId="autonomousUseCaseEnabled"
           fieldName="Autonomous Use-case Enabled"
         >
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">Autonomous Use-case Enabled​</label>
             <RadioCell
               value={formData.autonomousUseCaseEnabled}
@@ -289,13 +290,13 @@ const AutomationParameterForm = (props: any) => {
 
         {/* row 5 textrea */}
         <CommentableField fieldId="AIPoweredUseCase" fieldName="AI-Powered Use-case">
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">AI-Powered Use-case</label>
-            <textarea
+            <Textarea
               name="processDescription"
               value={formData.AIPoweredUseCase}
               onChange={handleChange}
-              className="rounded-md border p-2 text-sm"
+              className="text-sm"
               disabled={!isEditable}
             />
           </div>

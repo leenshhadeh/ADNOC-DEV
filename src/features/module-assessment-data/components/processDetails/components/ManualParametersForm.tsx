@@ -32,7 +32,7 @@ const ManualParametersForm = (props: any) => {
           fieldId="numberOfPeopleInvolved"
           fieldName="How Often the Process Happens (Cycle)"
         >
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">
               {'How Often the Process Happens (Cycle)'}​
             </label>
@@ -55,7 +55,7 @@ const ManualParametersForm = (props: any) => {
           fieldId="processRepetitionWithinCycle"
           fieldName="Number of Times the Process is Repeated within Selected Cycle"
         >
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">
               Number of Times the Process is Repeated within Selected Cycle
             </label>
@@ -74,7 +74,7 @@ const ManualParametersForm = (props: any) => {
           fieldId="totalProcessDurationDays"
           fieldName="Total Process Duration (Days)"
         >
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">Total Process Duration (Days)</label>
             <Input
               value={formData.totalProcessDurationDays}
@@ -92,7 +92,7 @@ const ManualParametersForm = (props: any) => {
           fieldId="totalPersonnelExecutingFTE"
           fieldName="Total Personnel Executing the Process (FTE)"
         >
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">
               {' Total Personnel Executing the Process (FTE)'}
             </label>
@@ -110,7 +110,7 @@ const ManualParametersForm = (props: any) => {
           fieldId="timeSpentOnManualTasksPercent"
           fieldName="Time Spent on Manual Tasks (%)"
         >
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">
               {'Time Spent on Manual Tasks (%)'}​
             </label>
@@ -125,7 +125,7 @@ const ManualParametersForm = (props: any) => {
         </CommentableField>
 
         <CommentableField fieldId="dailyRateCard" fieldName="Daily Rate Card (AED)">
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">Daily Rate Card (AED)</label>
             <Input
               className="rounded-md border p-2"
@@ -139,7 +139,7 @@ const ManualParametersForm = (props: any) => {
 
         {/* row 3  */}
         <CommentableField fieldId="keyManualSteps" fieldName="Key Manual Steps">
-          <div className="col-span-2 flex w-full flex-col">
+          <div className="col-span-2 flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">Key Manual Steps​</label>
             <div className="">
               <RichTextEditor

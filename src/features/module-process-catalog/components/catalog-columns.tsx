@@ -15,6 +15,7 @@ import { includeListFilterFn, firstCharFilterFn } from '@/shared/components/data
 
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/components/ui/button'
+import { Textarea } from '@/shared/components/ui/textarea'
 import { Checkbox } from '@/shared/components/ui/checkbox'
 import {
   DropdownMenu,
@@ -115,7 +116,7 @@ const DraftDescriptionInput = ({
   const [value, setValue] = useState('')
   return (
     <div className="group/desc relative w-full">
-      <textarea
+      <Textarea
         rows={2}
         value={value}
         placeholder="Enter description"

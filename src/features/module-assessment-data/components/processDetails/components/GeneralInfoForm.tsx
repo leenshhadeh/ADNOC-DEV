@@ -1,12 +1,17 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import TagsSelect from '@/shared/components/table-primitives/TagsSelect'
 import { Input } from '@/shared/components/ui/input'
+import { Textarea } from '@/shared/components/ui/textarea'
 import { DIGITAL_FP_USERS } from '../../../constants/CurrentApplication'
 import { cn } from '@/shared/lib/utils'
 import CommentableField from '../CommentableField'
+import { useProcessDetailActionsStore } from '@/features/module-assessment-data/store/processDetailActionsStore'
+
+const FIRST_FIELD = { fieldId: 'customName', fieldName: 'Custom Name' } as const
 
 const GeneralInfoForm = (props: any) => {
   const { onFormSubmit, onFormChanged, initialData, isEditable } = props
+  const { isCommentMode, selectField } = useProcessDetailActionsStore()
 
   const [formData, setFormData] = useState({
     customName: initialData.customName || '',
@@ -23,6 +28,12 @@ const GeneralInfoForm = (props: any) => {
     onFormChanged(newChanges)
   }
 
+  useEffect(() => {
+    if (isCommentMode) {
+      selectField(FIRST_FIELD.fieldId, FIRST_FIELD.fieldName)
+    }
+  }, [isCommentMode, selectField])
+
   return (
     <div className="mt-[24px]">
       <form
@@ -30,7 +41,7 @@ const GeneralInfoForm = (props: any) => {
         onSubmit={onFormSubmit}
       >
         <CommentableField fieldId="customName" fieldName="Custom Name">
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">Custom Name</label>
             <Input
               name="customName"
@@ -43,26 +54,26 @@ const GeneralInfoForm = (props: any) => {
         </CommentableField>
 
         <CommentableField fieldId="customDescription" fieldName="Custom Description">
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">Custom Description</label>
-            <textarea
+            <Textarea
               name="customDescription"
               value={formData.customDescription}
               onChange={handleChange}
-              className="rounded-md border p-2 text-sm"
+              className="text-sm"
               disabled={!isEditable}
             />
           </div>
         </CommentableField>
 
         <CommentableField fieldId="processDescription" fieldName="Process Description">
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">Process Description</label>
-            <textarea
+            <Textarea
               name="processDescription"
               value={formData.processDescription}
               onChange={handleChange}
-              className="rounded-md border p-2 text-sm"
+              className="text-sm"
               disabled={!isEditable}
             />
           </div>
@@ -72,7 +83,7 @@ const GeneralInfoForm = (props: any) => {
           fieldId="responsibleBusinessFocalPoint"
           fieldName="Responsible Business Focal Point"
         >
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">
               Responsible Business Focal Point
             </label>
@@ -101,7 +112,7 @@ const GeneralInfoForm = (props: any) => {
           fieldId="responsibleDigitalFocalPoint"
           fieldName="Responsible Digital Focal Point"
         >
-          <div className="flex w-full flex-col">
+          <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">Responsible Digital Focal Point</label>
             <div
               className={cn(

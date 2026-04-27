@@ -9,6 +9,7 @@ import { Check, Search, X } from 'lucide-react'
 
 import BaseModal from '@/shared/components/BaseModal'
 import { Button } from '@/shared/components/ui/button'
+import { Textarea } from '@/shared/components/ui/textarea'
 
 // ── Shared styles (used by RequestEndorsementModal) ───────────────────────────
 
@@ -110,7 +111,7 @@ export const RequestEndorsementModal = ({
         <div className="relative">
           <div
             className={`flex min-h-[48px] flex-wrap items-center gap-1.5 rounded-xl border bg-white px-3 py-2 ${
-              isDropdownOpen ? 'border-brand-blue ring-2 ring-brand-blue/20' : 'border-border'
+              isDropdownOpen ? 'border-brand-blue ring-brand-blue/20 ring-2' : 'border-border'
             }`}
             onClick={() => setIsDropdownOpen(true)}
           >
@@ -166,7 +167,9 @@ export const RequestEndorsementModal = ({
                       >
                         <span
                           className={`flex size-4 shrink-0 items-center justify-center rounded border ${
-                            isSelected ? 'border-brand-blue bg-brand-blue' : 'border-border bg-white'
+                            isSelected
+                              ? 'border-brand-blue bg-brand-blue'
+                              : 'border-border bg-white'
                           }`}
                         >
                           {isSelected && <Check className="size-3 text-white" />}
@@ -189,7 +192,7 @@ export const RequestEndorsementModal = ({
         <label className={fieldLabel}>
           Reason for review <span className="text-[#EB3865]">*</span>
         </label>
-        <textarea
+        <Textarea
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           rows={4}

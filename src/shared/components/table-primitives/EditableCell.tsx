@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Textarea } from '@/shared/components/ui/textarea'
 
 /**
  * Click-to-edit text cell. Double-click or Enter to commit; Escape to cancel.
@@ -14,7 +15,7 @@ export interface EditableCellProps {
   type?: 'text' | 'textArea'
 }
 
-const EditableCell = ({ value, onChange , type }: EditableCellProps) => {
+const EditableCell = ({ value, onChange, type }: EditableCellProps) => {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(value)
 
@@ -24,37 +25,41 @@ const EditableCell = ({ value, onChange , type }: EditableCellProps) => {
   }
 
   if (editing) {
-    return (<>
-      {type !="textArea"?  <input
-        autoFocus
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={commit}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') commit()
-          if (e.key === 'Escape') {
-            setDraft(value)
-            setEditing(false)
-          }
-        }}
-        className="border-primary bg-background ring-primary/30 w-full rounded-md border px-2 py-1 text-sm ring-2 outline-none"
-      />:<>
-        <textarea
-          autoFocus
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onBlur={commit}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') commit()
-            if (e.key === 'Escape') {
-              setDraft(value)
-              setEditing(false)
-            }
-          }}
-          className="border-primary bg-background ring-primary/30 w-full rounded-md border px-2 py-1 text-sm ring-2 outline-none"
-
-        />
-      </>}
+    return (
+      <>
+        {type != 'textArea' ? (
+          <input
+            autoFocus
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commit}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') commit()
+              if (e.key === 'Escape') {
+                setDraft(value)
+                setEditing(false)
+              }
+            }}
+            className="border-primary bg-background ring-primary/30 w-full rounded-md border px-2 py-1 text-sm ring-2 outline-none"
+          />
+        ) : (
+          <>
+            <Textarea
+              autoFocus
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onBlur={commit}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') commit()
+                if (e.key === 'Escape') {
+                  setDraft(value)
+                  setEditing(false)
+                }
+              }}
+              className="border-primary bg-background ring-primary/30 mt-2 w-full rounded-md border px-2 py-1 text-sm ring-2 outline-none"
+            />
+          </>
+        )}
       </>
     )
   }

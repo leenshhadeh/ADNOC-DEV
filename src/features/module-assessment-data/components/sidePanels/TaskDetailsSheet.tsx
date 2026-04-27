@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom'
 import ActionSheet from '@/shared/components/ActionSheet'
 import { Accordion, AccordionContent, AccordionItem } from '@/shared/components/ui/accordion'
 import { Separator } from '@/shared/components/ui/separator'
+import { Textarea } from '@/shared/components/ui/textarea'
 import { cn } from '@/shared/lib/utils'
 import { hasPermission } from '@/shared/lib/permissions'
 import { useUserStore } from '@/shared/auth/useUserStore'
@@ -155,14 +156,14 @@ function ChangeAccordionItem({ change, itemId, taskId, canComment }: ChangeAccor
                 <div className="flex flex-col gap-2">
                   <p className="text-muted-foreground text-sm">Add your comment</p>
                   <div className="flex gap-4">
-                    <textarea
+                    <Textarea
                       value={commentText}
                       onChange={(e) => setCommentText(e.target.value)}
                       onKeyDown={handleKeyDown}
                       placeholder="Add your comment"
                       disabled={isAdding}
                       rows={3}
-                      className="flex-1 resize-none rounded-2xl border border-[#DFE3E6] bg-white px-6 py-4 text-base font-medium text-[#151718] outline-none placeholder:text-[#687076]"
+                      className="border-input bg-background text-foreground placeholder:text-muted-foreground flex-1 resize-none rounded-2xl px-6 py-4 text-base font-medium outline-none"
                     />
                     <button
                       type="button"
