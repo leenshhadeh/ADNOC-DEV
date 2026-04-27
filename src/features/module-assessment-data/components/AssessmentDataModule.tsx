@@ -337,6 +337,13 @@ const AssessmentDataModule = () => {
     setProcessView(option.id)
   }
 
+  const onSaveComplete=()=>{
+    setOnChangeMode(false); 
+    setShowEDataSavedToast(true);
+    setStartSaveing(false);
+    setIsValidateMode(false)
+  }
+
   return (
     <div className="flex h-full flex-col gap-0 overflow-hidden px-6">
       <Breadcrumb links={[{ title: 'Assessment Data Processes' }]} />
@@ -489,7 +496,7 @@ const AssessmentDataModule = () => {
               //  once user start edit the table , save and edit actions appears:
                 onChangeMode={setOnChangeMode}
                 startSaving={startSaving}
-                onSaveComplete={()=>{setOnChangeMode(false); setShowEDataSavedToast(true);setStartSaveing(false)}}
+                onSaveComplete={onSaveComplete}
               />
             )
           ) : activeTab == 'my-tasks' ? (
