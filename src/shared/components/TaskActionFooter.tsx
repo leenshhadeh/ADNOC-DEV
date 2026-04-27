@@ -19,7 +19,7 @@ const TaskActionFooter = ({
     <Button
       variant="ghost"
       disabled={disabled}
-      className="shrink-0 text-sm font-medium text-brand-blue hover:bg-transparent hover:text-brand-blue/80 disabled:opacity-50"
+      className="text-brand-blue hover:text-brand-blue/80 shrink-0 text-sm font-medium hover:bg-transparent disabled:opacity-50"
       onClick={onCancel}
     >
       Cancel
@@ -27,7 +27,7 @@ const TaskActionFooter = ({
     <button
       type="button"
       disabled={disabled}
-      className="flex flex-1 items-center justify-center rounded-[36px] bg-gradient-to-r from-[#EAEFFF] to-[#C7D6F9] px-6 py-3 text-sm font-medium text-[#151718] shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90 disabled:opacity-50"
+      className="flex flex-1 items-center justify-center rounded-[36px] bg-gradient-to-r from-[#EAEFFF] to-[#C7D6F9] px-6 py-3 text-sm font-medium text-[#151718] text-[#EB3865] shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)] transition-opacity hover:opacity-90 disabled:opacity-50"
       onClick={onReturn}
     >
       Return

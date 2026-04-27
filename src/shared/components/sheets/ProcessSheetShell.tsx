@@ -75,14 +75,14 @@ const ProcessSheetShell = ({
     <ActionSheet title={title} open={open} onOpenChange={handleOpenChange} large={large}>
       <div className="relative flex flex-1 flex-col overflow-hidden">
         {/* ── Scrollable body ──────────────────────────────────────────────── */}
-        <div className={cn('flex-1 overflow-y-auto p-6', footer ? 'pb-28' : '')}>
+        <div className={cn('flex-1 overflow-y-auto p-3 sm:p-4', footer ? 'pb-28' : '')}>
           {/* Action links */}
           {headerBadge && <div className="mb-3">{headerBadge}</div>}
-          <div className="grid grid-cols-2 pe-2">
+          <div className="flex flex-col gap-2 pe-2 sm:grid sm:grid-cols-2">
             {primaryLink}
             <button
               type="button"
-              className="text-brand-blue inline-flex items-center justify-end gap-1.5 text-sm font-medium hover:underline"
+              className="text-brand-blue inline-flex items-center gap-1.5 text-sm font-medium hover:underline sm:justify-end"
               onClick={handleViewWorkflowHistory}
             >
               <Clock className="size-4" />
@@ -100,7 +100,7 @@ const ProcessSheetShell = ({
           )}
 
           {/* Stage card */}
-          <div className={'mt-2 rounded-2xl p-3 px-4 shadow-[7px_8px_28px_0px_rgba(0,0,0,0.2)]'}>
+          <div className="mt-2 rounded-2xl p-3 px-3 shadow-[7px_8px_28px_0px_rgba(0,0,0,0.2)] sm:px-4">
             {stepper}
             <div className="mt-4 flex flex-col">
               <Separator />

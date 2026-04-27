@@ -33,8 +33,10 @@ const ActionSheet = ({
         large ? 'lg:max-w-[600px]' : 'lg:max-w-[500px]',
       )}
     >
-      <SheetHeader className="border-border shrink-0 px-6 py-5">
-        <SheetTitle className="text-foreground text-2xl font-semibold">{title}</SheetTitle>
+      <SheetHeader className="border-border shrink-0 px-4 pt-4 sm:px-6">
+        <SheetTitle className="text-foreground text-xl font-semibold sm:text-2xl">
+          {title}
+        </SheetTitle>
         {subTitle && <p className="text-muted-foreground text-[14px]">{subTitle}</p>}
       </SheetHeader>
       {children}
