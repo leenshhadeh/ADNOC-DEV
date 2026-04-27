@@ -106,7 +106,7 @@ const ExtractsAssessmentDataL3Page = () => {
             actions={[
               {
                 id: 'export',
-                label: 'Export full report',
+                label: 'Export',
                 icon: Download,
                 onClick: () => downloadCsv(filteredData),
               },

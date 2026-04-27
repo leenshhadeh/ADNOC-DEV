@@ -11,7 +11,7 @@ const accessCardItems = [
     title: 'BPA Help & Guidelines',
     description: 'Review guidance for completing assessment fields.',
     icon: BookOpen,
-    to: '/automation-targets',
+    to: '/bpa-help-and-guidelines',
   },
   {
     title: 'Reports & Extracts',

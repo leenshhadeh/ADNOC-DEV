@@ -132,12 +132,19 @@ export const router = createBrowserRouter([
           })),
       },
       {
+        path: 'bpa-help-and-guidelines',
+        lazy: () =>
+          import('@features/module-help-guidelines').then((m) => ({
+            Component: m.BpaHelpAndGuidelines,
+          })),
+      },
+      {
         path: 'settings',
         lazy: () =>
           import('@features/module-admin').then((m) => ({
             Component: () => (
               <PermissionGuard
-                allowedRoles={['Super Admin']}
+                allowedRoles={['Quality Manager']}
                 fallback={<Navigate to="/assessment-data" replace />}
               >
                 <m.AdminModule />

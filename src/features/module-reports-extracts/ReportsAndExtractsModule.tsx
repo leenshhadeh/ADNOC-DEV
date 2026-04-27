@@ -2,8 +2,8 @@ import Breadcrumb from '@/shared/components/Breadcrumb'
 import ModuleToolbar from '@/shared/components/ModuleToolbar'
 import { RE_TABS } from './constants'
 import { useState } from 'react'
-import Reports from './componenets/Reports'
-import Extracts from './componenets/Extracts'
+import Reports from './components/Reports'
+import Extracts from './components/Extracts'
 
 const ReportsAndExtracts = () => {
   const [activeTab, setActiveTab] = useState('reports')
