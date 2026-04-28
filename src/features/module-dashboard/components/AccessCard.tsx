@@ -28,11 +28,17 @@ const AccessCard = ({
   const isImage = typeof icon === 'string'
   const navigate = useNavigate()
 
+  const handleClick = () => {
+    if (to) {
+      navigate(to)
+    } else if (redirect) {
+      window.open(redirect, '_blank', 'noopener,noreferrer')
+    }
+  }
+
   return (
     <div
-      onClick={() => {
-        if (to) navigate(to)
-      }}
+      onClick={handleClick}
       className="h-full w-full cursor-pointer rounded-[24px] bg-gradient-to-r from-[#4EF1E4]/40 to-[#111827]/40 p-[0.5px] shadow-[0_4px_12px_0_#D1D5DF80]"
     >
       <div className="hover:bg-accent h-full rounded-[23px] bg-white px-5 py-5 md:px-8 md:py-7">
@@ -54,6 +60,7 @@ const AccessCard = ({
                 <h3 className="text-[15px] leading-none font-normal text-[#151718] md:text-[16px]">
                   {title}
                 </h3>
+
                 {redirect && (
                   <a
                     href={redirect}

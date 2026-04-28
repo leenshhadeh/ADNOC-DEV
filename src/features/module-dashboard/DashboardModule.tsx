@@ -5,30 +5,33 @@ import ProcessesSummary from './components/ProcessesSummary'
 import MyTasks from './components/MyTasks'
 import HeaderActions from './components/HeaderActions'
 import { useUserStore } from '@/shared/auth/useUserStore'
-
-const accessCardItems = [
-  {
-    title: 'BPA Help & Guidelines',
-    description: 'Review guidance for completing assessment fields.',
-    icon: BookOpen,
-    to: '/bpa-help-and-guidelines',
-  },
-  {
-    title: 'Reports & Extracts',
-    description: 'Download reports and data extracts from the system',
-    icon: cards,
-    to: '/reports-and-extracts',
-  },
-  {
-    title: 'Service Now Support ',
-    description: 'Track assessment progress for your domains.',
-    icon: FolderOpen,
-    redirect: '/assessment-data',
-  },
-]
+import { useAppConfig } from '@/shared/hooks/useAppConfig' // adjust path
 
 const DashboardModule = () => {
   const usr = useUserStore()
+  const config = useAppConfig()
+
+  const accessCardItems = [
+    {
+      title: 'BPA Help & Guidelines',
+      description: 'Review guidance for completing assessment fields.',
+      icon: BookOpen,
+      to: '/bpa-help-and-guidelines',
+    },
+    {
+      title: 'Reports & Extracts',
+      description: 'Download reports and data extracts from the system',
+      icon: cards,
+      to: '/reports-and-extracts',
+    },
+    {
+      title: 'Service Now Support',
+      description: 'Track assessment progress for your domains.',
+      icon: FolderOpen,
+      redirect: config?.SERVICENOW_URL,
+    },
+  ]
+
   return (
     <div className="flex min-h-full flex-col px-3 pb-3">
       <div className="flex w-full justify-between">
