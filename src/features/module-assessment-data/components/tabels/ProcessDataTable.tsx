@@ -258,7 +258,7 @@ const ProcessDataTable = ({
           return row
         }
 
-        return { ...row, [field]: value, readyForSave: true }
+        return { ...row, [field]: value, readyForSave: true } // , status: 'Draft'
       })
     })
     // set mode to onchange
@@ -272,8 +272,9 @@ const ProcessDataTable = ({
     }
 
   },[startSaving])
+
   // OnSave
-  const onSave=async ()=>{
+  const onSave = async ()=> {
     const recordsReadyForSave = updatedDataTable.filter((row) => row.readyForSave)
     console.log('save the changes records',recordsReadyForSave)
     await saveAssessmentDraftRowsMutation.mutateAsync(recordsReadyForSave)
@@ -283,14 +284,9 @@ const ProcessDataTable = ({
     setUpdatedDataTable((prev) =>
       prev.map((row) => (row.readyForSave ? { ...row, readyForSave: false } : row)),
     )
-  }
 
-  // onValidate
-  const onValidate=async ()=>{
-    const recordsReadyForSave = updatedDataTable.filter((row) => row.readyForSave)
-    console.log('validate the changes records')
+    
   }
-
 
   return (
     <div className="table-hierarchy">

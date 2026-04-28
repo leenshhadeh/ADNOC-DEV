@@ -120,7 +120,7 @@ const AssessmentDataModule = () => {
   const [showEDataSavedToast,setShowEDataSavedToast]= useState(false)
 
   // API:
-  const { data, isLoading, isError, error } = useGetAssessmentProcess(processView)
+  const { data, isLoading, isError } = useGetAssessmentProcess(processView)
 
   const userRole = useUserStore((s) => s.user.role)
   const canCommentOnField = hasPermission(userRole, 'COMMENT_ON_FIELD')
@@ -164,13 +164,31 @@ const AssessmentDataModule = () => {
   )
 
   // Global filters:-------------------------
-  const globalFilterIds = ['domain', 'status' , 'businessUnit']
+  const globalFilterIds = [
+    'domain',
+    'groupCompany',
+    'Site',
+    'status',
+    'centrallyGovernedProcess',
+    'sharedService',
+    'businessUnit',
+    'responsibleDigitalTeam',
+    'processCriticality',
+    'usersImpacted',
+    'scaleOfProcess',
+    'automationMaturityLevel',
+    'currentApplicationsSystems',
+    'businessRecommendationForAutomation',
+    'aiPowered',
+    'autonomousUseCaseEnabled',
+    'processCycle',
+  ]
   const filterDefs = useProcessFilterDefinitions(DOMAINS_DATA, searchedData)
   const { pending, applied, activePerSection, toggle, apply, reset } =
-    useProcessFilters(globalFilterIds)
-  const filteredData = useMemo(
-    () => applyProcessFilters(searchedData, applied),
-    [searchedData, applied],
+    useProcessFilters(globalFilterIds);
+
+  const filteredData = useMemo(() => applyProcessFilters(searchedData, applied)
+  ,[searchedData, applied],
   )
 
   // Export:-------------------------
@@ -220,7 +238,6 @@ const AssessmentDataModule = () => {
         onClick: ()=>{setIsValidateMode(true)},
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [onChangeMode],
   )
 
