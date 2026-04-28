@@ -14,8 +14,8 @@
    - 3.1 [GET /api/process-Assesssment/rows](#31-get-apiprocess-Assesssmentrows)
    - 3.2 [GET /api/process-Assesssment/my-tasks](#32-get-apiprocess-Assesssmentmy-tasks)
    - 3.3 [GET /api/process-Assesssment/submitted-requests](#33-get-apiprocess-Assesssmentsubmitted-requests)
-   - 3.4 [GET /api/process-Assesssment/process/:processDetails](#34-get-processDetails)
-   - 3.5 [GET /api/process-Assesssment/process/:processDetails/opportunities](#35-get-apiprocess-requests-opportunities)
+   - 3.4 [GET /api/process-Assesssment/process/:processId](#34-get-processDetails)
+   - 3.5 [GET /api/process-Assesssment/process/:processId/opportunities](#35-get-process-opportunities)
 
 
 ---
@@ -92,10 +92,7 @@ Returns the full process hierarchy (Domain → Level 1 → Level 2 → Level 3 �
                   "site": "A",
                   "description": "Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.",
                   "centrallyGovernedProcess": "Yes",
-                  "sharedService": {
-                    "services": 12,
-                    "shared": 3
-                  },
+                  "sharedService": {"services":["ADNOC Offshore"],"shared":[""]},
                   "businessUnit": ["Exploration"],
                   "ResponsibleDigitalTeam": ["Subsurface Digitalization"],
                   "processCriticality": "Standard",
@@ -141,10 +138,7 @@ Returns the full process hierarchy (Domain → Level 1 → Level 2 → Level 3 �
                       "site": "A",
                       "description": "Define the structural and strat.",
                       "centrallyGovernedProcess": "Yes",
-                      "sharedService": {
-                        "services": 12,
-                        "shared": 3
-                      },
+                     "sharedService": {"services":["ADNOC Offshore"],"shared":[""]},
                       "businessUnit": ["Exploration"],
                       "ResponsibleDigitalTeam": ["Subsurface Digitalization"],
                       "processCriticality": "Standard",
@@ -398,3 +392,7 @@ Returns change requests submitted by (or visible to) the current user.
 ]
 }
 ```
+
+### 3.5 GET Process Opportunitie
+`/api/process-Assesssment/process/:processId/opportunities`
+<!-- to be added after we have the opportunities modules -->
