@@ -167,7 +167,7 @@ export const SUBMITTED_REQUESTS: RequestItem[] = [
     processName: 'Establish fraud risk indicators',
     requestId: '9377354',
     requester: 'Ali Al Muhairi',
-    status: 'Rejected',
+    status: 'Returned draft',
     stageCurrent: 2,
     stageTotal: 4,
     stageText: 'Rejected',

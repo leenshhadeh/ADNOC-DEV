@@ -21,7 +21,7 @@ import {
   PROCESS_CYCLE,
   SCALE_OF_PROCESS,
 } from '@/constants/dropdownOptions'
-import { InfoTooltip } from '@/shared/components/InfoTooltip'
+// import { InfoTooltip } from '@/shared/components/InfoTooltip'
 
 export const getProcessTableColumns = ({
   onDescChanged,
@@ -183,23 +183,25 @@ export const getProcessTableColumns = ({
     size: 320,
     enableSorting: false,
     cell: (info) => {
-      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+     // const onUpdate = info.table.options.meta?.onUpdateDraftRow
       const val=info.getValue<string>()
-      const hasErr= isValidateMode && val=='' || val==undefined
-      return (
-        <div className={hasErr?'invalid-field flex justify-between':''}>
-          <EditableCell
-          value={val}
-          onChange={(newValue) => {
-            onDescChanged(newValue)
-            if (onUpdate) {
-              onUpdate(info.row.original.id, 'description', newValue)
-            }
-          }}
-        />
-        {hasErr && <InfoTooltip text={'this field is requied'} />}
-          </div>
-      )
+     // const hasErr= isValidateMode && val=='' || val==undefined
+    //note:  description is read only , coming from the catalog 
+      return(<div className=" text-wrap line-clamp-2">{val}</div>)
+      // return (
+      //   <div className={hasErr?'invalid-field flex justify-between':''}>
+      //     <EditableCell
+      //     value={val}
+      //     onChange={(newValue) => {
+      //       onDescChanged(newValue)
+      //       if (onUpdate) {
+      //         onUpdate(info.row.original.id, 'description', newValue)
+      //       }
+      //     }}
+      //   />
+      //   {hasErr && <InfoTooltip text={'this field is requied'} />}
+      //     </div>
+      // )
     },
   },
   {

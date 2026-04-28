@@ -70,7 +70,7 @@ const ASSESSMENT_COLUMNS: SheetColumn<FlatAssessmentRow>[] = [
   { header: 'Centrally Governed Process', key: 'centrallyGovernedProcess', width: 28 },
   {
     header: 'Shared Service',
-    key: 'sharedService',
+    key: 'SharedService',
     width: 22,
     getValue: (row) => resolveSharedService(row.SharedServiceDisply),
   },

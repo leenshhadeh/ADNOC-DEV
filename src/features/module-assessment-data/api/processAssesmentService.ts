@@ -19,10 +19,11 @@ export function getSubmittedRequests(): Promise<RequestItem[]> {
 
 //getAssessmentProcess
 export function getAssessmentProcess(processView: ProcessViewOptionId): Promise<DomainItem[]> {
+  void processView
   return new Promise((resolve) => setTimeout(() => resolve(ASSESSMENT_DATA), 500))
 }
 
-// Saves the changed assessment rows and returns the saved row ids.
+// Saves the changed assessment rows
 export function saveAssessmentDraftRows(
   rows: FlatAssessmentRow[],
 ): Promise<{ success: boolean; savedIds: string[]; message: string }> {
@@ -43,8 +44,10 @@ export function saveAssessmentDraftRows(
 
 // ── Process row actions (mock) ───────────────────────────────────────────────
 
-export function submitProcess(processId: string): Promise<{ success: boolean; message: string }> {
+export function submitProcess(processId: string , processData:any): Promise<{ success: boolean; message: string }> {
   void processId
+  void processData
+  console.log('[APICall - submitProcess] processId:'+processId,'processData:',processData)
   return new Promise((resolve) =>
     setTimeout(() => resolve({ success: true, message: 'Process submitted successfully.' }), 600),
   )
@@ -291,8 +294,5 @@ export function addFieldComment({
 // proces details - commets section
 export function getProcessCommentsByFiled(fieldId: string): Promise<any[]> {
   void fieldId
-  return new Promise((resolve) => setTimeout(() => resolve([]), 500))
-}
-export function getProcessComments(): Promise<any> {
   return new Promise((resolve) => setTimeout(() => resolve([]), 500))
 }
