@@ -68,7 +68,7 @@ import {
   applyProcessFilters,
 } from '@features/module-assessment-data/hooks/useProcessFilters'
 import { useProcessFilterDefinitions } from '../hooks/useProcessFilterDefinitions'
-import ProcessFilterSheet from '@/features/module-process-catalog/components/ProcessFilterSheet'
+import ProcessFilterSheet from '@/features/module-process-catalog/components/modals/ProcessFilterSheet'
 import { DOMAINS_DATA } from '@/features/module-process-catalog/constants/domains-data'
 import Breadcrumb from '@/shared/components/Breadcrumb'
 import ManageColumnsSheet from './ManageColumnsSheet'
@@ -101,7 +101,7 @@ const AssessmentDataModule = () => {
   const [managedColumnOrder, setManagedColumnOrder] = useState<string[]>([])
   const [search, setSearch] = useState('')
   const [isBulkMode, setIsBulkMode] = useState(false)
-  const [isValidateMode , setIsValidateMode] = useState(false)
+  const [isValidateMode, setIsValidateMode] = useState(false)
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const [l3Selection, setL3Selection] = useState<Set<string>>(new Set())
   const [isTaskBulkMode, setIsTaskBulkMode] = useState(false)
@@ -115,20 +115,21 @@ const AssessmentDataModule = () => {
   const [singleActionTask, setSingleActionTask] = useState<TaskItem | null>(null)
   const [processView, setProcessView] = useState<ProcessViewOptionId>('published')
   // save and validate data:
-  const [onChangeMode, setOnChangeMode]= useState(false)
-  const [startSaving, setStartSaveing]= useState(false)
-  const [showEDataSavedToast,setShowEDataSavedToast]= useState(false)
+  const [onChangeMode, setOnChangeMode] = useState(false)
+  const [startSaving, setStartSaveing] = useState(false)
+  const [showEDataSavedToast, setShowEDataSavedToast] = useState(false)
 
-  // API:
+  // API:-------------
   const { data, isLoading, isError } = useGetAssessmentProcess(processView)
-
+  
+  // Permissions -----
   const userRole = useUserStore((s) => s.user.role)
   const canCommentOnField = hasPermission(userRole, 'COMMENT_ON_FIELD')
   const canApprove = hasPermission(userRole, 'APPROVE_REQUEST')
   const canReturn = hasPermission(userRole, 'RETURN_REQUEST')
   const canReject = hasPermission(userRole, 'REJECT_REQUEST')
+  
   const hasTaskBulkActions = canApprove || canReturn || canReject
-
   const [isCommentMode, setIsCommentMode] = useState(false)
   const [commentSheetOpen, setCommentSheetOpen] = useState(false)
   const [commentSheetFieldName, setCommentSheetFieldName] = useState('')
@@ -151,9 +152,6 @@ const AssessmentDataModule = () => {
   useEffect(() => {
     if (data) {
       setDataSet(data)
-    }
-    if (isError) {
-      // Error is surfaced via React Query's isError state
     }
   }, [data])
 
@@ -183,6 +181,7 @@ const AssessmentDataModule = () => {
     'autonomousUseCaseEnabled',
     'processCycle',
   ]
+
   const filterDefs = useProcessFilterDefinitions(DOMAINS_DATA, searchedData)
   const { pending, applied, activePerSection, toggle, apply, reset } =
     useProcessFilters(globalFilterIds);
@@ -202,7 +201,7 @@ const AssessmentDataModule = () => {
   }
   const currentIsExporting = activeTab === 'my-tasks' ? isExportingTasks : isExporting
 
-// toolbar actions:-------------------------
+  // toolbar actions:-------------------------
   const defaultActions = useMemo<ToolbarAction[]>(
     () => [
       {
@@ -229,13 +228,15 @@ const AssessmentDataModule = () => {
         id: 'save',
         label: 'save',
         icon: Save,
-        onClick:()=>setStartSaveing(true),
+        onClick: () => setStartSaveing(true),
       },
       {
         id: 'validate',
         label: 'validate',
         icon: Check,
-        onClick: ()=>{setIsValidateMode(true)},
+        onClick: () => {
+          setIsValidateMode(true)
+        },
       },
     ],
     [onChangeMode],
@@ -354,10 +355,10 @@ const AssessmentDataModule = () => {
     setProcessView(option.id)
   }
 
-  const onSaveComplete=()=>{
-    setOnChangeMode(false); 
-    setShowEDataSavedToast(true);
-    setStartSaveing(false);
+  const onSaveComplete = () => {
+    setOnChangeMode(false)
+    setShowEDataSavedToast(true)
+    setStartSaveing(false)
     setIsValidateMode(false)
   }
 
@@ -423,7 +424,9 @@ const AssessmentDataModule = () => {
                     ]
                   : isBulkMode
                     ? ASSESSMENT_BULK_ACTIONS
-                    :  onChangeMode? onEditActions: defaultActions
+                    : onChangeMode
+                      ? onEditActions
+                      : defaultActions
             }
             showFilter={true}
             onFilterClick={() => setIsFilterOpen(true)}
@@ -482,17 +485,16 @@ const AssessmentDataModule = () => {
               onCancel={exitBulkMode}
             />
           )}
-          {activeTab == 'processes' ? (
+          {activeTab === 'processes' ? (
             activeView === 'report' ? (
-              <ProcessDataReport 
-              data={dataSet}/>
+              <ProcessDataReport data={dataSet} />
             ) : (
               <ProcessDataTable
                 data={filteredData}
                 isBulkMode={isBulkMode}
                 isValidateMode={isValidateMode}
                 rowSelection={rowSelection}
-                onRowSelectionChange={(updater: any) =>
+                onRowSelectionChange={(updater: RowSelectionState | ((prev: RowSelectionState) => RowSelectionState)) =>
                   setRowSelection((prev) =>
                     typeof updater === 'function' ? updater(prev) : updater,
                   )
@@ -501,7 +503,11 @@ const AssessmentDataModule = () => {
                 onL3SelectionChange={(id, checked) =>
                   setL3Selection((prev) => {
                     const next = new Set(prev)
-                    checked ? next.add(id) : next.delete(id)
+                    if (checked) {
+                      next.add(id)
+                    } else {
+                      next.delete(id)
+                    }
                     return next
                   })
                 }
@@ -510,13 +516,13 @@ const AssessmentDataModule = () => {
                 columnOrder={managedColumnOrder}
                 onColumnOrderChange={setManagedColumnOrder}
                 isLoading={isLoading}
-              //  once user start edit the table , save and edit actions appears:
+                //  once user start edit the table , save and edit actions appears:
                 onChangeMode={setOnChangeMode}
                 startSaving={startSaving}
                 onSaveComplete={onSaveComplete}
               />
             )
-          ) : activeTab == 'my-tasks' ? (
+          ) : activeTab === 'my-tasks' ? (
             <MyTasksTable
               isBulkMode={isTaskBulkMode}
               isCommentMode={isCommentMode}
@@ -538,7 +544,7 @@ const AssessmentDataModule = () => {
                 }
               }}
             />
-          ) : activeTab == 'submittedRequests' ? (
+          ) : activeTab === 'submittedRequests' ? (
             <SubmittedRequestsTable />
           ) : (
             <p className="text-foreground text-sm italic">No data found</p>
@@ -624,7 +630,7 @@ const AssessmentDataModule = () => {
         message="Assessment data exported successfully."
         onClose={() => setShowExportToast(false)}
       />
-       <SuccessToast
+      <SuccessToast
         open={showEDataSavedToast}
         message="Data Saved successfully"
         onClose={() => setShowEDataSavedToast(false)}

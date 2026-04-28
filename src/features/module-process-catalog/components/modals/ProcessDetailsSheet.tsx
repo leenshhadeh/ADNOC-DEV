@@ -1,13 +1,13 @@
-import * as AccordionPrimitive from '@radix-ui/react-accordion'
-import { ArrowRight, Check, ChevronDown, Eye } from 'lucide-react'
+import { Check, Eye } from 'lucide-react'
 
 import { StatusBadgeCell } from '@/shared/components/cells'
 import type { CatalogStatus } from '@/shared/components/cells'
 import ProcessSheetShell from '@/shared/components/sheets/ProcessSheetShell'
-import { Accordion, AccordionContent, AccordionItem } from '@/shared/components/ui/accordion'
+import { Accordion } from '@/shared/components/ui/accordion'
 import { Separator } from '@/shared/components/ui/separator'
 import type { WorkflowHistoryEntry } from '@/shared/components/WorkflowHistoryPanel'
 import { cn } from '@/shared/lib/utils'
+import ChangeAccordionItem from '@/shared/components/ChangeAccordionItem'
 
 // ── Step definitions ──────────────────────────────────────────────────────────
 
@@ -81,50 +81,6 @@ export interface ChangeItem {
   label: string
   oldValue: string
   newValue: string
-}
-
-function ChangeAccordionItem({ change }: { change: ChangeItem }) {
-  const truncate = (str: string, n = 18) => (str.length > n ? str.slice(0, n) + '…' : str)
-
-  return (
-    <AccordionItem value={change.id} className="border-border border-b">
-      <AccordionPrimitive.Header className="flex">
-        <AccordionPrimitive.Trigger
-          className={cn(
-            'group/ch flex flex-1 items-start gap-2 py-3 text-start outline-none',
-            'focus-visible:ring-ring focus-visible:rounded focus-visible:ring-2',
-          )}
-        >
-          <ChevronDown className="text-muted-foreground mt-0.5 size-5 shrink-0 transition-transform duration-200 group-data-[state=open]/ch:rotate-180" />
-          <div className="min-w-0 flex-1">
-            <p className="text-foreground text-base font-medium">{change.label}</p>
-            <p className="text-muted-foreground mt-0.5 flex items-center gap-1 text-sm font-light group-data-[state=open]/ch:hidden">
-              <span>Old: {truncate(change.oldValue || '—')}</span>
-              <ArrowRight className="size-3 shrink-0" />
-              <span>New: {truncate(change.newValue || '—')}</span>
-            </p>
-          </div>
-        </AccordionPrimitive.Trigger>
-      </AccordionPrimitive.Header>
-
-      <AccordionContent className="ps-7">
-        <div className="flex flex-col gap-6 pb-4">
-          <div>
-            <p className="text-muted-foreground mb-2 text-base font-normal">Old Value</p>
-            <div className="bg-accent text-muted-foreground border-border min-h-10 rounded-2xl border px-6 py-3 text-base font-medium">
-              {change.oldValue || '—'}
-            </div>
-          </div>
-          <div>
-            <p className="text-muted-foreground mb-2 text-base font-normal">New Value</p>
-            <div className="bg-accent text-muted-foreground border-border min-h-10 rounded-2xl border px-6 py-4 text-base leading-6 font-medium">
-              {change.newValue || '—'}
-            </div>
-          </div>
-        </div>
-      </AccordionContent>
-    </AccordionItem>
-  )
 }
 
 // ── ProcessDetailsSheet ───────────────────────────────────────────────────────
@@ -224,10 +180,16 @@ const ProcessDetailsSheet = ({
             <Accordion
               type="single"
               collapsible
-              className="[&>*:first-child]:border-border mt-3 w-full [&>*:first-child]:border-t"
+              className="[&>*:first-child]:border-border mt-3 w-full"
             >
               {changes.map((change) => (
-                <ChangeAccordionItem key={change.id} change={change} />
+                <ChangeAccordionItem
+                  key={change.id}
+                  id={change.id}
+                  label={change.label}
+                  oldValue={change.oldValue}
+                  newValue={change.newValue}
+                />
               ))}
             </Accordion>
           )}

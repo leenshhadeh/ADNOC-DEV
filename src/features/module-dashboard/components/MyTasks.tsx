@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Maximize2, ListFilter } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
-import ProcessFilterSheet from '../../module-process-catalog/components/ProcessFilterSheet'
+import ProcessFilterSheet from '../../module-process-catalog/components/modals/ProcessFilterSheet'
 import { useAssessmentNavStore } from '../../module-assessment-data/store/useAssessmentNavStore'
 import { useCatalogNavStore } from '../../module-process-catalog/store/useCatalogNavStore'
 import { useProcessFilters } from '@features/module-process-catalog/hooks/useProcessFilters'
@@ -91,7 +91,7 @@ const MyTasks = () => {
             <div className="flex items-center gap-3">
               <h2 className="text-[18px] leading-none font-semibold text-[#151718]">My tasks</h2>
 
-              <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-accent px-2 text-[12px] font-semibold text-[#151718]">
+              <span className="bg-accent flex h-6 min-w-6 items-center justify-center rounded-full px-2 text-[12px] font-semibold text-[#151718]">
                 {totalCount}
               </span>
 
@@ -107,7 +107,7 @@ const MyTasks = () => {
             <button
               type="button"
               onClick={() => setIsViewAllOpen(true)}
-              className="inline-flex items-center justify-center text-brand-blue transition hover:opacity-70"
+              className="text-brand-blue inline-flex items-center justify-center transition hover:opacity-70"
             >
               <Maximize2 className="h-4 w-4 cursor-pointer" strokeWidth={2} />
             </button>
@@ -126,14 +126,14 @@ const MyTasks = () => {
                       <h3 className="text-[14px] font-medium text-[#687076]">
                         {group.module.title}
                       </h3>
-                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1.5 text-[10px] font-medium text-[#687076]">
+                      <span className="bg-accent flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-medium text-[#687076]">
                         {group.items.length}
                       </span>
                     </div>
 
                     <button
                       type="button"
-                      className="cursor-pointer text-[14px] font-semibold text-brand-blue transition hover:opacity-70"
+                      className="text-brand-blue cursor-pointer text-[14px] font-semibold transition hover:opacity-70"
                       onClick={() => handleViewAll(group.module.title, group.module.url)}
                     >
                       View all
@@ -143,6 +143,7 @@ const MyTasks = () => {
                   <div className="flex flex-col gap-6">
                     {group.items.map((item, index) => {
                       return (
+                        // eslint-disable-next-line react/no-array-index-key
                         <div key={`${group.module}-${index}`} className="flex items-stretch gap-4">
                           <div className="flex flex-col items-center self-stretch">
                             <div className="mt-1 h-3 w-3 rounded-full bg-[#336CC8]" />

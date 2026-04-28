@@ -9,10 +9,10 @@ import type { CatalogView } from './CatalogHeader'
 import type { ProcessViewOption } from '@/shared/components/ProcessesMenu'
 import MyTasksTable from './tables/MyTasksTable'
 import SubmittedRequestsTable from './tables/SubmittedRequestsTable'
-import ProcessFilterSheet from './ProcessFilterSheet'
+import ProcessFilterSheet from './modals/ProcessFilterSheet'
 import AddLevel4sModal from './modals/AddLevel4sModal'
 import { EditLevel4sModal } from './modals/EditLevel4sModal'
-import RenameModal from './RenameModal'
+import RenameModal from './modals/RenameModal'
 import BulkActionBar, { type BulkAction } from './BulkActionBar'
 import ProcessBulkActionBar, { type ProcessBulkAction } from './ProcessBulkActionBar'
 import { ApproveModal, BulkEditModal, RejectModal, ReturnModal } from './modals'
@@ -237,7 +237,7 @@ const CatalogModule = () => {
     } finally {
       setIsExporting(false)
     }
-  }, [filteredData, groupCompanies])
+  }, [filteredData, groupCompanies, domains])
 
   const handleExport = useCallback(async () => {
     setIsExporting(true)
@@ -252,7 +252,7 @@ const CatalogModule = () => {
     } finally {
       setIsExporting(false)
     }
-  }, [filteredData, groupCompanies])
+  }, [filteredData, groupCompanies, domains])
 
   // Fetch existing L4s for the selected L3 row — only runs when Edit L4s modal is open
   const { data: existingL4s, isLoading: isLoadingL4s } = useGetLevel4s(
@@ -451,7 +451,7 @@ const CatalogModule = () => {
         behavior: 'smooth',
       })
     })
-  }, [targetItem, numberOfProcesses, tableData, addMode])
+  }, [targetItem, numberOfProcesses, tableData, addMode, domains])
 
   /** Updates a draft row field as the user types */
   const handleUpdateDraftRow = useCallback(
@@ -794,6 +794,7 @@ const CatalogModule = () => {
         initialRows={existingL4s?.map((l4) => ({
           processName: l4.name,
           processDescription: l4.description,
+          status: (l4.status as 'Published' | 'Draft') ?? 'Draft',
         }))}
         onSave={async (rows) => {
           if (!targetL3Item) return

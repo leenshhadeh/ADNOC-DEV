@@ -50,7 +50,7 @@ const BaseModal = ({
       onClick={onClose}
     >
       <div
-        className={`w-full ${maxWidth} rounded-2xl bg-accent p-6 shadow-2xl`}
+        className={`w-full ${maxWidth} bg-accent rounded-2xl p-6 shadow-2xl`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
