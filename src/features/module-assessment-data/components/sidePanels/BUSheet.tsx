@@ -1,28 +1,51 @@
 import ActionSheet from '@/shared/components/ActionSheet'
-import { TreeSelect } from '@/shared/components/TreeSelect'
+import { TreeSelect, type TreeNode } from '@/shared/components/TreeSelect'
 import { Button } from '@/shared/components/ui/button'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Search } from 'lucide-react'
 import { useProcessBU } from '../../hooks/useProcessBU'
+
+function filterTreeData(nodes: TreeNode[], query: string): TreeNode[] {
+  if (!query.trim()) return nodes
+  const lowerQuery = query.toLowerCase()
+  return nodes.reduce<TreeNode[]>((acc, node) => {
+    const label = node.label.toLowerCase()
+    const filteredChildren = filterTreeData(node.children ?? [], query)
+    if (label.includes(lowerQuery) || filteredChildren.length > 0) {
+      acc.push({ ...node, children: filteredChildren })
+    }
+    return acc
+  }, [])
+}
 
 interface BUSheetProps {
   open?: boolean
   title?: string
   selected?: string[]
   handleOpenChange: (value?: string[]) => void
-  onClose?:()=>void
+  onClose?: () => void
+  fieldValue?: string
 }
 
 // Renders the BU selection sheet and syncs its values with the process BU APIs.
-const BUSheet = ({ open = true, handleOpenChange, selected = [], title ,onClose}: BUSheetProps) => {
+const BUSheet = ({
+  open = true,
+  handleOpenChange,
+  selected = [],
+  title,
+  onClose,
+  fieldValue,
+}: BUSheetProps) => {
   const [selectedValues, setSelectedValues] = useState<string[]>(selected)
   const [search, setSearch] = useState('')
   const { businessUnits } = useProcessBU()
 
-  useEffect(()=>{
-    if(open)
-    setSelectedValues(selected)
-  },[selected , open])
+  // React's "adjusting state during render" pattern — resets selection when sheet opens
+  const [prevOpen, setPrevOpen] = useState(open)
+  if (prevOpen !== open) {
+    setPrevOpen(open)
+    if (open) setSelectedValues(selected)
+  }
 
   // Closes the sheet when the sheet component itself requests a close action.
   const handleSheetOpenChange = (isOpen: boolean) => {
@@ -36,40 +59,17 @@ const BUSheet = ({ open = true, handleOpenChange, selected = [], title ,onClose}
     handleOpenChange(selectedValues)
   }
 
-  const filterTreeData = (nodes: any[], query: string): any[] => {
-    if (!query.trim()) return nodes
-    const lowerQuery = query.toLowerCase()
-    return nodes.reduce((acc: any[], node: any) => {
-      const label =
-        node.label?.toLowerCase?.() ||
-        node.name?.toLowerCase?.() ||
-        node.title?.toLowerCase?.() ||
-        ''
-      const children = node.children || []
-      const filteredChildren = filterTreeData(children, query)
-      if (label.includes(lowerQuery) || filteredChildren.length > 0) {
-        acc.push({
-          ...node,
-          children: filteredChildren,
-        })
-      }
+  const filteredDTData = useMemo(
+    () => filterTreeData(businessUnits as TreeNode[], search),
+    [businessUnits, search],
+  )
 
-      return acc
-    }, [])
-  }
-
-
-    const filteredDTData = useMemo(() => {
-      return filterTreeData(businessUnits, search)
-    }, [search, open])
-  
+  const hasChanges = useMemo(() => {
+    return JSON.stringify([...selectedValues].sort()) !== JSON.stringify([...selected].sort())
+  }, [selectedValues, selected])
 
   return (
-    <ActionSheet
-      title={title || 'Business Unit'}
-      open={open}
-      onOpenChange={handleSheetOpenChange}
-    >
+    <ActionSheet title={title || 'Business Unit'} open={open} onOpenChange={handleSheetOpenChange}>
       {/* Search */}
       <div className="shrink-0 px-6 pt-4 pb-2">
         <div className="relative">
@@ -79,7 +79,7 @@ const BUSheet = ({ open = true, handleOpenChange, selected = [], title ,onClose}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search..."
-            className="ps-11 border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring/40 flex h-8 w-full min-w-0 rounded-md border pe-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-2"
+            className="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring/40 flex h-8 w-full min-w-0 rounded-md border ps-11 pe-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-2"
           />
         </div>
       </div>
@@ -87,7 +87,11 @@ const BUSheet = ({ open = true, handleOpenChange, selected = [], title ,onClose}
       {/* Tree */}
       <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-2">
         <div className="rounded-xl border p-4">
-          <TreeSelect data={filteredDTData} selected={selectedValues} onChange={setSelectedValues} />
+          <TreeSelect
+            data={filteredDTData}
+            selected={selectedValues}
+            onChange={setSelectedValues}
+          />
         </div>
       </div>
 
@@ -97,7 +101,7 @@ const BUSheet = ({ open = true, handleOpenChange, selected = [], title ,onClose}
           <Button
             type="button"
             variant="outline"
-            className="flex-1 rounded-full"
+            className="flex-1 rounded-full bg-[#C7D6F9]"
             onClick={onClose}
           >
             Cancel
@@ -106,8 +110,9 @@ const BUSheet = ({ open = true, handleOpenChange, selected = [], title ,onClose}
             type="button"
             className="flex-1 rounded-full"
             onClick={handleSave}
+            disabled={!hasChanges}
           >
-            Save
+            {fieldValue === 'businessUnit' ? 'Apply changes' : 'Save'}
           </Button>
         </div>
       </div>

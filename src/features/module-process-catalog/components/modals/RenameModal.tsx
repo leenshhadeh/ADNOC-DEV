@@ -15,16 +15,22 @@ const RenameModal = ({ open, onOpenChange, currentName, onRename }: RenameModalP
   const [name, setName] = useState(currentName)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Sync name when currentName changes (e.g. different row each time)
+  // React's "adjusting state during render" pattern — resets name when modal opens
+  const [prevOpen, setPrevOpen] = useState(open)
+  if (prevOpen !== open) {
+    setPrevOpen(open)
+    if (open) setName(currentName)
+  }
+
+  // Side effect only: focus/select the input after open transition
   useEffect(() => {
     if (open) {
-      setName(currentName)
       const t = setTimeout(() => {
         inputRef.current?.select()
       }, 50)
       return () => clearTimeout(t)
     }
-  }, [open, currentName])
+  }, [open])
 
   if (!open) return null
 

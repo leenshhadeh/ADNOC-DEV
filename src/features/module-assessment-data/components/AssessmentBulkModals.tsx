@@ -257,13 +257,14 @@ export function BulkEditModal({
           open={sheetOpen}
           selected={Array.isArray(value) ? value : []}
           handleOpenChange={handleSheetSave}
+          fieldValue={fieldValue}
         />
       )}
       {fieldValue === 'sharedServices' && (
         <SharedServicesSheet
           open={sheetOpen}
-          handleOpenChange={(payload: any) => {
-            console.log('payload', payload)
+          handleOpenChange={(_payload: unknown) => {
+            // TODO: persist SharedServices selection
           }}
           onClose={() => setSheetOpen(false)}
         />
@@ -342,7 +343,7 @@ export function BulkCommentModal({
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows={4}
-            placeholder="Enter comment…"
+            // placeholder="Enter comment…"
             className={`${fieldInput} resize-none`}
           />
         </div>
@@ -727,12 +728,12 @@ export function MarkAsReviewedModal({
             value={comment}
             onChange={(e) => setComment(e.target.value.slice(0, MAX_REVIEW_CHARS))}
             rows={4}
-            placeholder="Enter review comment…"
+            // placeholder="Enter review comment…"
             className={`${fieldInput} resize-none`}
           />
-          <p className="text-muted-foreground mt-1 text-right text-xs">
+          {/* <p className="text-muted-foreground mt-1 text-right text-xs">
             {comment.length} / {MAX_REVIEW_CHARS}
-          </p>
+          </p> */}
         </div>
       </BaseModal>
 

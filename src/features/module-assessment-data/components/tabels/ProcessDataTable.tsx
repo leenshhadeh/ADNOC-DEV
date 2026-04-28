@@ -6,9 +6,7 @@ import BUSheet from '../sidePanels/BUSheet'
 import DigitalTeamSheet from '../sidePanels/DigitalTeamSheet'
 import { getProcessTableColumns } from './process-table-columns'
 import type { RowSelectionState } from '@tanstack/react-table'
-import {
-  useSaveAssessmentDraftRows,
-} from '../../hooks/useProcessActions'
+import { useSaveAssessmentDraftRows } from '../../hooks/useProcessActions'
 
 const toText = (value: unknown): string => {
   if (value == null) return ''
@@ -17,17 +15,17 @@ const toText = (value: unknown): string => {
   return String(value)
 }
 
-const formatSharedService = (value: SharedService): any => {
+const formatSharedService = (value: SharedService): string | { services: string[] | undefined; shared: string[] } => {
   if (!value) return ''
   if (typeof value === 'string') return value
 
   return { services: value?.services, shared: value?.shared || [] }
 }
 
-
 const pickValue = <T,>(l4Value: T | undefined, l3Value: T | undefined): T | undefined =>
   l4Value ?? l3Value
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const flattenAssessmentData = (data: DomainItem[]): FlatAssessmentRow[] =>
   data.flatMap((domainItem) =>
     (domainItem.level1Items ?? []).flatMap((l1Item, l1Index) =>
@@ -66,7 +64,9 @@ export const flattenAssessmentData = (data: DomainItem[]): FlatAssessmentRow[] =
               centrallyGovernedProcess: toText(
                 pickValue(l4Item?.centrallyGovernedProcess, l3Item.centrallyGovernedProcess),
               ),
-              SharedServiceDisply: formatSharedService(l4Item?.sharedService || l3Item.sharedService),
+              SharedServiceDisply: formatSharedService(
+                l4Item?.sharedService || l3Item.sharedService,
+              ),
               SharedService: l4Item?.sharedService || l3Item.sharedService,
               businessUnit: l4Item?.businessUnit || l3Item.businessUnit || [],
               responsibleDigitalTeam:
@@ -189,10 +189,10 @@ interface ProcessDataTableProps {
   onColumnVisibilityChange?: (visibility: Record<string, boolean>) => void
   columnOrder?: string[]
   onColumnOrderChange?: (newOrder: string[]) => void
-  isLoading?: boolean,
-  onChangeMode:any,
-  startSaving?:boolean
-  onSaveComplete?:()=>void
+  isLoading?: boolean
+  onChangeMode: (value: boolean) => void
+  startSaving?: boolean
+  onSaveComplete?: () => void
 }
 
 const ProcessDataTable = ({
@@ -210,13 +210,14 @@ const ProcessDataTable = ({
   isLoading,
   onChangeMode,
   startSaving,
-  onSaveComplete
+  onSaveComplete,
 }: ProcessDataTableProps) => {
   const [isSharedServiceOpen, setIsSharedServiceOpen] = useState(false)
   const [isBUOpen, setIsBUOpen] = useState(false)
   const [isDigitalTeamOpen, setIsDigitalTeamOpen] = useState(false)
   const [selectedRowId, setSelectedRowId] = useState('')
-  const [selectedProcessSercives, setSelectedProcessSercives] = useState<any>({services:[],shared:[]})
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [selectedProcessSercives, setSelectedProcessSercives] = useState<any>(null)
   const saveAssessmentDraftRowsMutation = useSaveAssessmentDraftRows()
 
   const columns = useMemo(
@@ -232,7 +233,7 @@ const ProcessDataTable = ({
           setSelectedRowId(rowId)
           setIsDigitalTeamOpen(true)
         },
-        onExpandSharedServices: (rowId: string , sharedServiceList:string[]) => {
+        onExpandSharedServices: (rowId: string, sharedServiceList: string[]) => {
           setSelectedRowId(rowId)
           setSelectedProcessSercives(sharedServiceList)
           setIsSharedServiceOpen(true)
@@ -240,9 +241,9 @@ const ProcessDataTable = ({
         isBulkMode,
         selectedL3Ids,
         onL3SelectionChange,
-        isValidateMode
+        isValidateMode,
       }),
-    [isBulkMode, isValidateMode,selectedL3Ids, onL3SelectionChange],
+    [isBulkMode, isValidateMode, selectedL3Ids, onL3SelectionChange],
   )
   const [updatedDataTable, setUpdatedDataTable] = useState(data) // changed every time user edit table values
   useEffect(() => {
@@ -250,47 +251,41 @@ const ProcessDataTable = ({
   }, [data])
 
   /** Updates a draft row field as the user types */
-  const handleUpdateDraftRow = useCallback((id: string, field: string, value: any) => {
-    console.log('[ROW-CHANGED] field=[',field,'], value=[',value,']')
-    setUpdatedDataTable((prev: FlatAssessmentRow[]) => {
-      return prev.map((row) => {
-        if (row.id !== id) {
-          return row
-        }
+  const handleUpdateDraftRow = useCallback(
+    (id: string, field: string, value: unknown) => {
+      setUpdatedDataTable((prev: FlatAssessmentRow[]) => {
+        return prev.map((row) => {
+          if (row.id !== id) {
+            return row
+          }
 
-        return { ...row, [field]: value, readyForSave: true }
+          return { ...row, [field]: value, readyForSave: true }
+        })
       })
-    })
-    // set mode to onchange
-    onChangeMode(true)
-  }, [onChangeMode])
+      // set mode to onchange
+      onChangeMode(true)
+    },
+    [onChangeMode],
+  )
 
-
-  useEffect(()=>{
-    if(startSaving){
-      void onSave()
-    }
-
-  },[startSaving])
   // OnSave
-  const onSave=async ()=>{
+  const onSave = async () => {
     const recordsReadyForSave = updatedDataTable.filter((row) => row.readyForSave)
-    console.log('save the changes records',recordsReadyForSave)
     await saveAssessmentDraftRowsMutation.mutateAsync(recordsReadyForSave)
-    onSaveComplete && onSaveComplete();
-   
+    onSaveComplete?.()
+
     // reset readyForSave records
     setUpdatedDataTable((prev) =>
       prev.map((row) => (row.readyForSave ? { ...row, readyForSave: false } : row)),
     )
   }
 
-  // onValidate
-  const onValidate=async ()=>{
-    const recordsReadyForSave = updatedDataTable.filter((row) => row.readyForSave)
-    console.log('validate the changes records')
-  }
-
+  useEffect(() => {
+    if (startSaving) {
+      void onSave()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startSaving])
 
   return (
     <div className="table-hierarchy">
@@ -300,7 +295,7 @@ const ProcessDataTable = ({
         density="compact"
         rowSelection={isBulkMode ? rowSelection : undefined}
         onRowSelectionChange={isBulkMode ? onRowSelectionChange : undefined}
-        getRowId={(row: any) => row.id}
+        getRowId={(row: FlatAssessmentRow) => row.id}
         tableMeta={{
           onUpdateDraftRow: handleUpdateDraftRow,
         }}
@@ -315,10 +310,13 @@ const ProcessDataTable = ({
       <SharedServicesSheet
         open={isSharedServiceOpen}
         processId={selectedRowId}
-        handleOpenChange={(payload:any) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        handleOpenChange={(payload: any) => {
           setIsSharedServiceOpen(false)
           if (payload) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             handleUpdateDraftRow(selectedRowId, 'SharedService', payload as any)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             handleUpdateDraftRow(selectedRowId, 'SharedServiceDisply', payload as any)
           }
         }}
@@ -329,11 +327,12 @@ const ProcessDataTable = ({
       <BUSheet
         open={isBUOpen}
         selected={updatedDataTable.find((row) => row.id === selectedRowId)?.businessUnit ?? []}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         handleOpenChange={(newVal: any) => {
           setIsBUOpen(false)
           handleUpdateDraftRow(selectedRowId, 'businessUnit', newVal || [])
         }}
-        onClose={()=>setIsBUOpen(false)}
+        onClose={() => setIsBUOpen(false)}
       />
 
       <DigitalTeamSheet
@@ -341,6 +340,7 @@ const ProcessDataTable = ({
         selected={
           updatedDataTable.find((row) => row.id === selectedRowId)?.responsibleDigitalTeam ?? []
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         handleOpenChange={(newVal: any) => {
           setIsDigitalTeamOpen(false)
           handleUpdateDraftRow(selectedRowId, 'responsibleDigitalTeam', newVal || [])
