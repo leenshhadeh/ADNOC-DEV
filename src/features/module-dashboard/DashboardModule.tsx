@@ -5,11 +5,11 @@ import ProcessesSummary from './components/ProcessesSummary'
 import MyTasks from './components/MyTasks'
 import HeaderActions from './components/HeaderActions'
 import { useUserStore } from '@/shared/auth/useUserStore'
-import { useAppConfig } from '@/shared/hooks/useAppConfig' // adjust path
+import { getRuntimeConfig } from '@/shared/lib/runtimeConfig'
 
 const DashboardModule = () => {
   const usr = useUserStore()
-  const config = useAppConfig()
+  const { SERVICENOW_URL } = getRuntimeConfig()
 
   const accessCardItems = [
     {
@@ -28,7 +28,7 @@ const DashboardModule = () => {
       title: 'Service Now Support',
       description: 'Track assessment progress for your domains.',
       icon: FolderOpen,
-      redirect: config?.SERVICENOW_URL,
+      redirect: SERVICENOW_URL,
     },
   ]
 

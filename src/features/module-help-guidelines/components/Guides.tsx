@@ -6,7 +6,7 @@ import type { LucideProps } from 'lucide-react'
 import type { ComponentType } from 'react'
 import logoIcon from '../../../assets/logoicon.svg'
 import AboutBpaProgramDrawer from './AboutBpaProgramDrawer'
-import { useAppConfig } from '@/shared/hooks/useAppConfig'
+import { getRuntimeConfig } from '@/shared/lib/runtimeConfig'
 type IconType = ComponentType<LucideProps> | string
 type Types = 'normal' | 'read' | 'video' | 'both'
 
@@ -21,7 +21,7 @@ interface AccessCardItem {
 
 const Guides = () => {
   const [open, setOpen] = useState(false)
-  const config = useAppConfig()
+  const { SERVICENOW_URL } = getRuntimeConfig()
 
   const accessCardItems: AccessCardItem[] = [
     {
@@ -151,7 +151,7 @@ const Guides = () => {
             />
             <div
               className="flex min-w-0 cursor-pointer gap-4 md:gap-6"
-              onClick={() => window.open(config?.SERVICENOW_URL, '_blank', 'noopener,noreferrer')}
+              onClick={() => window.open(SERVICENOW_URL, '_blank', 'noopener,noreferrer')}
             >
               <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] bg-[#D9E8FF] md:h-16 md:w-16">
                 <Folder className="h-7 w-7 text-[#0047BA] md:h-8 md:w-8" />
