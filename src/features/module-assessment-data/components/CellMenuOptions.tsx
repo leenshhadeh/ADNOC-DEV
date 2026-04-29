@@ -26,7 +26,7 @@ const CellMenuOptions = (props: any) => {
   }
 
   const handleSubmit = async () => {
-    const response = await submitProcessMutation.mutateAsync({ processId: item.id })
+    const response = await submitProcessMutation.mutateAsync({ processId: item.id ,process:item})
     showToast(response.message)
   }
 
@@ -47,7 +47,7 @@ const CellMenuOptions = (props: any) => {
 
   const actions = useMemo(
     () => [
-      { label: 'View Details', icon: Eye, action: () => onViewItemDetails(item) },
+      { label: 'View Details', icon: Eye, action: () => onViewItemDetails(item.id) },
       { label: 'Switch to Draft version', icon: RotateCcw, action: handleSwitchToDraft },
       { label: 'Copy assessment data', icon: ClipboardCopy, action: () => {} },
       { label: 'Mark as reviewed', icon: BadgeCheck, action: handleMarkAsReviewed },
@@ -58,9 +58,8 @@ const CellMenuOptions = (props: any) => {
     [item],
   )
 
-  const onViewItemDetails = (item: any) => {
-    // Implement the logic to view item details, e.g., navigate to a details page or open a modal
-    navigate(`/assessment-data/process/${item.id}`)
+  const onViewItemDetails = (itemId: string) => {
+    navigate(`/assessment-data/process/${itemId}`)
   }
 
   return (

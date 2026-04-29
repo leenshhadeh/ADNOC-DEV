@@ -9,6 +9,7 @@ import CompanyFilterMenu from '../components/CompanyFilterMenu'
 import { exportToExcel } from '../utils/exportToExcel'
 import { formatPercentFromDecimal } from '../utils/exportFormatters'
 import excelSvg from '../../../assets/icons/excel.svg'
+
 type RawProgramAdoptionRow = {
   column_1: string | null
   GC: string | null
@@ -89,6 +90,41 @@ const getAdoptionBadgeStyles = (rate: number) => {
   return 'bg-[#FEF3F2] text-[#B42318]'
 }
 
+const aggregateProgramAdoption = (rows: ProgramAdoptionRow[]) => {
+  const totalTargetedDigital = rows.reduce((sum, row) => sum + row.targetedDigital, 0)
+  const totalEngagedDigital = rows.reduce((sum, row) => sum + row.engagedDigital, 0)
+
+  const totalTargetedBusiness = rows.reduce((sum, row) => sum + row.targetedBusiness, 0)
+  const totalEngagedBusiness = rows.reduce((sum, row) => sum + row.engagedBusiness, 0)
+
+  const avgDigitalEngagement = avg(rows.map((row) => row.digitalEngagementRate))
+  const avgBusinessEngagement = avg(rows.map((row) => row.businessEngagementRate))
+
+  const weightedDigitalEngagement =
+    totalTargetedDigital > 0 ? totalEngagedDigital / totalTargetedDigital : 0
+
+  const weightedBusinessEngagement =
+    totalTargetedBusiness > 0 ? totalEngagedBusiness / totalTargetedBusiness : 0
+
+  const totalTargeted = totalTargetedDigital + totalTargetedBusiness
+  const totalEngaged = totalEngagedDigital + totalEngagedBusiness
+  const weightedOverallEngagement = totalTargeted > 0 ? totalEngaged / totalTargeted : 0
+
+  return {
+    totalTargetedDigital,
+    totalEngagedDigital,
+    totalTargetedBusiness,
+    totalEngagedBusiness,
+    avgDigitalEngagement,
+    avgBusinessEngagement,
+    weightedDigitalEngagement,
+    weightedBusinessEngagement,
+    totalTargeted,
+    totalEngaged,
+    weightedOverallEngagement,
+  }
+}
+
 const ProgramAdoptionPage = () => {
   const navigate = useNavigate()
 
@@ -101,6 +137,17 @@ const ProgramAdoptionPage = () => {
     const unique = [...new Set(rows.map((item) => item.gc))].filter(Boolean)
     return ['All', ...unique]
   }, [rows])
+
+  const domains = useMemo(() => {
+    const scopedRows =
+      selectedCompany === 'All' ? rows : rows.filter((item) => item.gc === selectedCompany)
+
+    const unique = [...new Set(scopedRows.map((item) => item.domain))]
+      .filter(Boolean)
+      .filter((domain) => domain !== 'Aggregated')
+
+    return ['All', ...unique]
+  }, [rows, selectedCompany])
 
   const filteredRows = useMemo(() => {
     return rows.filter((item) => {
@@ -115,40 +162,7 @@ const ProgramAdoptionPage = () => {
     return filteredRows.filter((row) => row.domain !== 'Aggregated')
   }, [filteredRows])
 
-  const summary = useMemo(() => {
-    const totalTargetedDigital = filteredRows.reduce((sum, row) => sum + row.targetedDigital, 0)
-    const totalEngagedDigital = filteredRows.reduce((sum, row) => sum + row.engagedDigital, 0)
-
-    const totalTargetedBusiness = filteredRows.reduce((sum, row) => sum + row.targetedBusiness, 0)
-    const totalEngagedBusiness = filteredRows.reduce((sum, row) => sum + row.engagedBusiness, 0)
-
-    const avgDigitalEngagement = avg(filteredRows.map((row) => row.digitalEngagementRate))
-    const avgBusinessEngagement = avg(filteredRows.map((row) => row.businessEngagementRate))
-
-    const weightedDigitalEngagement =
-      totalTargetedDigital > 0 ? totalEngagedDigital / totalTargetedDigital : 0
-
-    const weightedBusinessEngagement =
-      totalTargetedBusiness > 0 ? totalEngagedBusiness / totalTargetedBusiness : 0
-
-    const totalTargeted = totalTargetedDigital + totalTargetedBusiness
-    const totalEngaged = totalEngagedDigital + totalEngagedBusiness
-    const weightedOverallEngagement = totalTargeted > 0 ? totalEngaged / totalTargeted : 0
-
-    return {
-      totalTargetedDigital,
-      totalEngagedDigital,
-      totalTargetedBusiness,
-      totalEngagedBusiness,
-      avgDigitalEngagement,
-      avgBusinessEngagement,
-      weightedDigitalEngagement,
-      weightedBusinessEngagement,
-      totalTargeted,
-      totalEngaged,
-      weightedOverallEngagement,
-    }
-  }, [filteredRows])
+  const summary = useMemo(() => aggregateProgramAdoption(filteredRows), [filteredRows])
 
   const topBusinessDomains = useMemo(() => {
     return [...detailRows]
@@ -159,9 +173,17 @@ const ProgramAdoptionPage = () => {
   const lowestAdoptionDomains = useMemo(() => {
     return [...detailRows]
       .sort((a, b) => {
-        const aAvg = (a.digitalEngagementRate + a.businessEngagementRate) / 2
-        const bAvg = (b.digitalEngagementRate + b.businessEngagementRate) / 2
-        return aAvg - bAvg
+        const aOverall =
+          a.targetedDigital + a.targetedBusiness > 0
+            ? (a.engagedDigital + a.engagedBusiness) / (a.targetedDigital + a.targetedBusiness)
+            : 0
+
+        const bOverall =
+          b.targetedDigital + b.targetedBusiness > 0
+            ? (b.engagedDigital + b.engagedBusiness) / (b.targetedDigital + b.targetedBusiness)
+            : 0
+
+        return aOverall - bOverall
       })
       .slice(0, 3)
   }, [detailRows])
@@ -195,8 +217,12 @@ const ProgramAdoptionPage = () => {
           header: 'Overall Engagement Rate',
           key: 'businessEngagementRate',
           width: 22,
-          formatter: (_, row) =>
-            formatPercentFromDecimal((row.digitalEngagementRate + row.businessEngagementRate) / 2),
+          formatter: (_, row) => {
+            const totalTargeted = row.targetedDigital + row.targetedBusiness
+            const totalEngaged = row.engagedDigital + row.engagedBusiness
+            const overallRate = totalTargeted > 0 ? totalEngaged / totalTargeted : 0
+            return formatPercentFromDecimal(overallRate)
+          },
         },
       ],
     })
@@ -206,21 +232,35 @@ const ProgramAdoptionPage = () => {
     <div className="min-h-screen p-6">
       <div className="align-center mx-auto max-w-[1440px]">
         <div className="mb-6 flex items-center justify-between">
-          <div className="mb-6 flex w-full items-center justify-between">
-            <div className="flex items-center justify-between gap-5">
-              <div className="flex items-center gap-3">
-                <button onClick={() => navigate('/reports-and-extracts')}>
-                  <ChevronLeft className="h-5 w-5 text-[#344054]" />
-                </button>
-                <h1 className="text-[24px] font-[700] tracking-[-0.5px] text-[#101828]">
-                  Program Adoption by Business and Digital Stakeholders
-                </h1>
+          <div className="mb-6 flex w-full items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <button onClick={() => navigate('/reports-and-extracts')}>
+                <ChevronLeft className="h-5 w-5 text-[#344054]" />
+              </button>
+
+              <h1 className="text-[24px] font-[700] tracking-[-0.5px] text-[#101828]">
+                Program Adoption by Business and Digital Stakeholders
+              </h1>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-[#667085]">GC</span>
                 <CompanyFilterMenu
                   options={companies}
                   value={selectedCompany}
                   onChange={(value) => {
                     setSelectedCompany(value)
                     setSelectedDomain('All')
+                  }}
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-[#667085]">Domain</span>
+                <CompanyFilterMenu
+                  options={domains}
+                  value={selectedDomain}
+                  onChange={(value) => {
+                    setSelectedDomain(value)
                   }}
                 />
               </div>
@@ -367,7 +407,9 @@ const ProgramAdoptionPage = () => {
                 </p>
                 <div className="space-y-3">
                   {lowestAdoptionDomains.map((item, index) => {
-                    const overall = (item.digitalEngagementRate + item.businessEngagementRate) / 2
+                    const totalTargeted = item.targetedDigital + item.targetedBusiness
+                    const totalEngaged = item.engagedDigital + item.engagedBusiness
+                    const overallRate = totalTargeted > 0 ? totalEngaged / totalTargeted : 0
 
                     return (
                       <div
@@ -385,7 +427,9 @@ const ProgramAdoptionPage = () => {
                         </div>
 
                         <div className="text-right">
-                          <p className="text-lg font-semibold text-[#101828]">{percent(overall)}</p>
+                          <p className="text-lg font-semibold text-[#101828]">
+                            {percent(overallRate)}
+                          </p>
                           <p className="text-sm text-[#98A2B3]">overall</p>
                         </div>
                       </div>
@@ -422,7 +466,9 @@ const ProgramAdoptionPage = () => {
 
               <tbody>
                 {filteredRows.map((row) => {
-                  const overallRate = (row.digitalEngagementRate + row.businessEngagementRate) / 2
+                  const totalTargeted = row.targetedDigital + row.targetedBusiness
+                  const totalEngaged = row.engagedDigital + row.engagedBusiness
+                  const overallRate = totalTargeted > 0 ? totalEngaged / totalTargeted : 0
 
                   return (
                     <tr

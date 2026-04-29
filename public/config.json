@@ -4,5 +4,5 @@
   "CLIENT_ID": "",
   "BACKEND_CLIENT_ID": "",
   "BPA_GUIDELINES_URL": "https://example.com/bpa-guidelines",
-  "SERVICENOW_URL": "https://example.service-now.com"
+  "SERVICENOW_URL": "https://adnoc.service-now.com/digital?id=sc_cat_item&sys_id=ed8405a18769ead48239653e8bbb3507"
 }

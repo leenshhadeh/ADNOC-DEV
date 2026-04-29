@@ -26,7 +26,6 @@ const ProcessDetailsPage = () => {
   const [processData, setProcessData] = useState([{}])
   const [processGeneralInfo, setProcessGeneralInfo] = useState([{}])
   const [disableSubmit, setDisableSubmit] = useState(true)
-  const [updatedData, setUpdatedData] = useState([{}])
   const [automationValidationTrigger, setAutomationValidationTrigger] = useState(0)
   const { role } = useCurrentUser()
   const { isCommentMode, setIsCommentMode, clearField, selectedField } =
@@ -84,9 +83,8 @@ const ProcessDetailsPage = () => {
     // TODO: call API to submit the new changes
   }
 
-  const handelDataChanged = (updatedData: any) => {
+  const handelDataChanged = () => {
     setDisableSubmit(false)
-    setUpdatedData(updatedData)
   }
 
   const handleValidate = () => {
@@ -189,8 +187,8 @@ const ProcessDetailsPage = () => {
                           processGeneralInfo={processGeneralInfo}
                           process={data[0]}
                           onFormSubmit={handelOnSubmit}
-                          onFormChanged={(data: any) => {
-                            handelDataChanged(data)
+                          onFormChanged={() => {
+                            handelDataChanged()
                           }}
                           isEditable={canEdit}
                         />

@@ -13,7 +13,7 @@ const TagsSelectCell = (peops: any) => {
         setCurrentTags(newTags)
         const newValue = newTags.map((tag) => tag.name)
         if (onUpdate) {
-          onUpdate
+          onUpdate(newValue)
         }
       }}
     />

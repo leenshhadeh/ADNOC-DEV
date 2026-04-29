@@ -85,6 +85,16 @@ const OpportunityCoveragePage = () => {
     const unique = [...new Set(rows.map((item) => item.gc))].filter(Boolean)
     return ['All', ...unique]
   }, [rows])
+  const domains = useMemo(() => {
+    const scopedRows =
+      selectedCompany === 'All' ? rows : rows.filter((item) => item.gc === selectedCompany)
+
+    const unique = [...new Set(scopedRows.map((item) => item.domain))]
+      .filter(Boolean)
+      .filter((domain) => domain !== 'Aggregated')
+
+    return ['All', ...unique]
+  }, [rows, selectedCompany])
 
   const filteredRows = useMemo(() => {
     return rows.filter((item) => {
@@ -183,6 +193,12 @@ const OpportunityCoveragePage = () => {
                     setSelectedCompany(value)
                     setSelectedDomain('All')
                   }}
+                />
+
+                <CompanyFilterMenu
+                  options={domains}
+                  value={selectedDomain}
+                  onChange={setSelectedDomain}
                 />
               </div>
             </div>
@@ -392,8 +408,17 @@ const OpportunityCoveragePage = () => {
                       <td className="px-6 py-4">{row.gc}</td>
                       <td className="px-6 py-4">{formatNumber(row.notFullyAutomated)}</td>
                       <td className="px-6 py-4">{formatNumber(row.coveredByOpportunities)}</td>
-                      <td className="px-6 py-4">{formatNumber(uncovered)}</td>
-
+                      <td className="px-6 py-4">
+                        {uncovered > 0 ? (
+                          <span className="rounded-full bg-[#FEF3F2] px-3 py-1 text-xs font-semibold text-[#B42318]">
+                            Gap: {formatNumber(uncovered)}
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-[#ECFDF3] px-3 py-1 text-xs font-semibold text-[#027A48]">
+                            Covered
+                          </span>
+                        )}
+                      </td>
                       <td className="px-6 py-4">
                         <div className="min-w-[180px]">
                           <div className="mb-1 text-xs text-[#667085]">

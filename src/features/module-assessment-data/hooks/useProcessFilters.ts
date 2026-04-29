@@ -37,14 +37,15 @@ export function useProcessFilters(sectionIds: readonly string[]): UseProcessFilt
   }, [])
 
   const apply = useCallback(() => {
-    setApplied((prev) => ({ ...prev, ...pending }))
+    setApplied({ ...pending })
   }, [pending])
 
   const reset = useCallback(() => {
-    const empty = makeEmpty(sectionIds)
+    const allIds = [...new Set([...sectionIds, ...Object.keys(pending), ...Object.keys(applied)])]
+    const empty = makeEmpty(allIds)
     setPending(empty)
     setApplied(empty)
-  }, [sectionIds])
+  }, [applied, pending, sectionIds])
 
   const activeCount = useMemo(
     () => Object.values(applied).reduce((sum, arr) => sum + arr.length, 0),
@@ -71,20 +72,58 @@ export function useProcessFilters(sectionIds: readonly string[]): UseProcessFilt
  * Draft rows are never hidden — they are unsaved local state.
  */
 export function applyProcessFilters(rows: any[], applied: ProcessFilters): any[] {
-  const status = applied['status'] ?? []
-  const domain = applied['domain'] ?? []
+  const activeFilters = Object.entries(applied).filter(([, values]) => values.length > 0)
 
-  if (!status.length && !domain.length) return rows
+  if (activeFilters.length === 0) return rows
+
+  const getFilterableValues = (row: any, sectionId: string): string[] => {
+    switch (sectionId) {
+      case 'domain':
+      case 'groupCompany':
+      case 'Site':
+      case 'status':
+      case 'centrallyGovernedProcess':
+      case 'processCriticality':
+      case 'usersImpacted':
+      case 'scaleOfProcess':
+      case 'automationMaturityLevel':
+      case 'businessRecommendationForAutomation':
+      case 'aiPowered':
+      case 'autonomousUseCaseEnabled':
+      case 'processCycle': {
+        const value = row?.[sectionId]
+        return typeof value === 'string' && value.trim() !== '' ? [value] : []
+      }
+      case 'sharedService': {
+        const sharedService = row?.SharedService
+        if (
+          sharedService &&
+          typeof sharedService === 'object' &&
+          Array.isArray(sharedService.shared)
+        ) {
+          return [sharedService.shared.length > 0 ? 'Yes' : 'No']
+        }
+        return []
+      }
+      case 'businessUnit':
+      case 'responsibleDigitalTeam': {
+        return Array.isArray(row?.[sectionId]) ? row[sectionId].filter(Boolean) : []
+      }
+      case 'currentApplicationsSystems': {
+        if (!Array.isArray(row?.currentApplicationsSystems)) return []
+        return row.currentApplicationsSystems
+          .map((item: any) => (typeof item === 'string' ? item : item?.name))
+          .filter(Boolean)
+      }
+      default:
+        return []
+    }
+  }
 
   return rows.filter((row) => {
-    // Draft rows bypass all filters — they are unsaved in-progress work
-    if (row.status === 'Draft') return true
-
-    if (status.length > 0 && !status.includes(row.status)) return false
-
-    // Domain: row's domain is in the selected set
-    if (domain.length > 0 && !domain.includes(row.domain)) return false
-
-    return true
+    return activeFilters.every(([sectionId, selectedValues]) => {
+      const rowValues = getFilterableValues(row, sectionId)
+      return rowValues.some((value) => selectedValues.includes(value))
+    })
   })
 }

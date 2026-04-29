@@ -21,7 +21,7 @@ export function useSubmitProcess() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ processId }: { processId: string }) => submitProcess(processId),
+    mutationFn: ({ processId , process}: { processId: string ,process:any}) => submitProcess(processId , process),
     onSuccess: () => {
       invalidateAssessmentProcessQueries(queryClient)
     },
