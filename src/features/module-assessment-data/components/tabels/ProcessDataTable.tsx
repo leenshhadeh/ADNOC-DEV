@@ -15,7 +15,9 @@ const toText = (value: unknown): string => {
   return String(value)
 }
 
-const formatSharedService = (value: SharedService): string | { services: string[] | undefined; shared: string[] } => {
+const formatSharedService = (
+  value: SharedService,
+): string | { services: string[] | undefined; shared: string[] } => {
   if (!value) return ''
   if (typeof value === 'string') return value
 
@@ -284,7 +286,7 @@ const ProcessDataTable = ({
     if (startSaving) {
       void onSave()
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startSaving])
 
   return (

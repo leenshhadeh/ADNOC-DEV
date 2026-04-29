@@ -1,22 +1,15 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import AddProcessesModal from './modals/AddProcessesModal'
 import type { RowSelectionState } from '@tanstack/react-table'
 import CatalogHeader from './CatalogHeader'
-import DataTable from '../../../shared/components/data-table/DataTable'
 import { buildCatalogColumns, type CatalogColumnActions } from './catalog-columns'
 import type { CatalogView } from './CatalogHeader'
 import type { ProcessViewOption } from '@/shared/components/ProcessesMenu'
 import MyTasksTable from './tables/MyTasksTable'
 import SubmittedRequestsTable from './tables/SubmittedRequestsTable'
-import ProcessFilterSheet from './modals/ProcessFilterSheet'
-import AddLevel4sModal from './modals/AddLevel4sModal'
-import { EditLevel4sModal } from './modals/EditLevel4sModal'
-import RenameModal from './modals/RenameModal'
+import ProcessesTable from './tables/ProcessesTable'
 import BulkActionBar, { type BulkAction } from './BulkActionBar'
-import ProcessBulkActionBar, { type ProcessBulkAction } from './ProcessBulkActionBar'
-import { ApproveModal, BulkEditModal, RejectModal, ReturnModal } from './modals'
-import { RequestEndorsementModal } from '@features/module-assessment-data/components/TaskBulkModals'
+import { type ProcessBulkAction } from './ProcessBulkActionBar'
 import { SuccessToast } from '@/shared/components/SuccessToast'
 import {
   bulkApproveTasks,
@@ -27,13 +20,16 @@ import {
   bulkEditProcesses,
   bulkSubmitProcesses,
 } from '@features/module-process-catalog/api/processBulkActionService'
-import { exportToExcel } from '@features/module-process-catalog/utils/exportToExcel'
 import {
   createProcess,
   renameProcess,
 } from '@features/module-process-catalog/api/processCatalogService'
 import { createLevel4s } from '@features/module-process-catalog/api/level4Service'
-import { requestEndorsement } from '@features/module-process-catalog/api/taskActionService'
+import {
+  requestEndorsement,
+  endorseApprove,
+  endorseReject,
+} from '@features/module-process-catalog/api/taskActionService'
 import { useGetDomains } from '@features/module-process-catalog/hooks/useGetDomains'
 import { Info, X } from 'lucide-react'
 import { FILTER_SECTION_IDS } from '@features/module-process-catalog/constants/filter-definitions'
@@ -52,6 +48,24 @@ import { useGetGroupCompanies } from '@features/module-process-catalog/hooks/use
 import { useCatalogNavStore } from '@features/module-process-catalog/store/useCatalogNavStore'
 import type { ProcessItem } from '@features/module-process-catalog/types'
 import { PROCESS_VIEW_OPTIONS } from '@/shared/components/ProcessesMenu'
+
+// Heavy modals are lazy-loaded so they never block the initial render.
+const AddProcessesModal = lazy(() => import('./modals/AddProcessesModal'))
+const ProcessFilterSheet = lazy(() => import('./modals/ProcessFilterSheet'))
+const AddLevel4sModal = lazy(() => import('./modals/AddLevel4sModal'))
+const EditLevel4sModal = lazy(() =>
+  import('./modals/EditLevel4sModal').then((m) => ({ default: m.EditLevel4sModal })),
+)
+const RenameModal = lazy(() => import('./modals/RenameModal'))
+const BulkEditModal = lazy(() => import('./modals').then((m) => ({ default: m.BulkEditModal })))
+const ApproveModal = lazy(() => import('./modals').then((m) => ({ default: m.ApproveModal })))
+const RejectModal = lazy(() => import('./modals').then((m) => ({ default: m.RejectModal })))
+const ReturnModal = lazy(() => import('./modals').then((m) => ({ default: m.ReturnModal })))
+const RequestEndorsementModal = lazy(() =>
+  import('@features/module-assessment-data/components/TaskBulkModals').then((m) => ({
+    default: m.RequestEndorsementModal,
+  })),
+)
 
 const CatalogModule = () => {
   const navigate = useNavigate()
@@ -123,6 +137,8 @@ const CatalogModule = () => {
   const [bulkReturnOpen, setBulkReturnOpen] = useState(false)
   const [bulkRejectOpen, setBulkRejectOpen] = useState(false)
   const [bulkEndorsementOpen, setBulkEndorsementOpen] = useState(false)
+  const [endorseApproveOpen, setEndorseApproveOpen] = useState(false)
+  const [endorseRejectOpen, setEndorseRejectOpen] = useState(false)
 
   const taskSelectedCount = Object.values(taskRowSelection).filter(Boolean).length
 
@@ -138,6 +154,8 @@ const CatalogModule = () => {
     else if (action === 'return') setBulkReturnOpen(true)
     else if (action === 'reject') setBulkRejectOpen(true)
     else if (action === 'request-endorsement') setBulkEndorsementOpen(true)
+    else if (action === 'endorse-approve') setEndorseApproveOpen(true)
+    else if (action === 'endorse-reject') setEndorseRejectOpen(true)
   }
 
   const handleBulkApprove = async () => {
@@ -227,6 +245,7 @@ const CatalogModule = () => {
   const handleExportFullReport = useCallback(async () => {
     setIsExporting(true)
     try {
+      const { exportToExcel } = await import('../utils/exportToExcel')
       await exportToExcel({
         rows: filteredData,
         groupCompanies: groupCompanies ?? [],
@@ -242,6 +261,7 @@ const CatalogModule = () => {
   const handleExport = useCallback(async () => {
     setIsExporting(true)
     try {
+      const { exportToExcel } = await import('../utils/exportToExcel')
       await exportToExcel({
         rows: filteredData,
         groupCompanies: groupCompanies ?? [],
@@ -612,35 +632,22 @@ const CatalogModule = () => {
       />
 
       {activeTab === 'processes' ? (
-        <div ref={tableContainerRef} className="overflow-auto">
-          {isBulkMode && selectedCount > 0 && (
-            <ProcessBulkActionBar
-              selectedCount={selectedCount}
-              onAction={handleProcessBulkAction}
-              onCancel={handleToggleBulkMode}
-            />
-          )}
-          <DataTable
-            columns={columns}
-            data={filteredData}
-            className="table-accent"
-            density="compact"
-            enableColumnDnd={false}
-            enableSorting={false}
-            rowSelection={rowSelection}
-            onRowSelectionChange={setRowSelection}
-            getRowId={(row) => row.id}
-            tableMeta={{
-              isBulkMode,
-              isFullReport: currentView === 'full-report',
-              rowDividers: true,
-              onUpdateDraftRow: handleUpdateDraftRow,
-              firstDraftRowId,
-              highlightedRowId: highlightedProcessId ?? undefined,
-              draftValidationErrors,
-            }}
-          />
-        </div>
+        <ProcessesTable
+          tableContainerRef={tableContainerRef}
+          isBulkMode={isBulkMode}
+          selectedCount={selectedCount}
+          onBulkAction={handleProcessBulkAction}
+          onCancelBulkMode={handleToggleBulkMode}
+          columns={columns}
+          data={filteredData}
+          rowSelection={rowSelection}
+          onRowSelectionChange={setRowSelection}
+          isFullReport={currentView === 'full-report'}
+          onUpdateDraftRow={handleUpdateDraftRow}
+          firstDraftRowId={firstDraftRowId}
+          highlightedRowId={highlightedProcessId ?? undefined}
+          draftValidationErrors={draftValidationErrors}
+        />
       ) : activeTab === 'myTasks' ? (
         <>
           {isTaskBulkMode && (
@@ -665,202 +672,274 @@ const CatalogModule = () => {
         </div>
       )}
 
-      <AddProcessesModal
-        open={isAddL2ModalOpen}
-        onOpenChange={setIsAddL2ModalOpen}
-        numberOfProcesses={numberOfProcesses}
-        onNumberOfProcessesChange={setNumberOfProcesses}
-        onAdd={handleAddProcesses}
-      />
+      <Suspense fallback={null}>
+        {isAddL2ModalOpen && (
+          <AddProcessesModal
+            open={isAddL2ModalOpen}
+            onOpenChange={setIsAddL2ModalOpen}
+            numberOfProcesses={numberOfProcesses}
+            onNumberOfProcessesChange={setNumberOfProcesses}
+            onAdd={handleAddProcesses}
+          />
+        )}
 
-      <ProcessFilterSheet
-        open={isFilterOpen}
-        onOpenChange={setIsFilterOpen}
-        filters={filterDefs}
-        pending={pending}
-        activePerSection={activePerSection}
-        onToggle={toggle}
-        onApply={apply}
-        onReset={reset}
-      />
+        {isFilterOpen && (
+          <ProcessFilterSheet
+            open={isFilterOpen}
+            onOpenChange={setIsFilterOpen}
+            filters={filterDefs}
+            pending={pending}
+            activePerSection={activePerSection}
+            onToggle={toggle}
+            onApply={apply}
+            onReset={reset}
+          />
+        )}
 
-      {/* ── Draft editing notification ── */}
-      {hasDraftRows && !draftNotificationDismissed && (
-        <div className="fixed bottom-6 left-1/2 z-50 w-[380px] -translate-x-1/2">
-          <div className="bg-accent flex items-start gap-2 rounded-2xl p-4 shadow-[0px_10px_30px_0px_rgba(0,0,0,0.2)]">
-            <Info className="text-foreground mt-0.5 size-6 shrink-0" />
-            <div className="flex flex-1 flex-col gap-2">
-              <p className="text-foreground text-base leading-6 font-semibold">
-                Now editing Draft version
-              </p>
-              <p className="text-foreground text-sm leading-6 font-normal">
-                A Draft was created from the Published version. The Published version remains
-                unchanged.
-              </p>
+        {/* ── Draft editing notification ── */}
+        {hasDraftRows && !draftNotificationDismissed && (
+          <div className="fixed bottom-6 left-1/2 z-50 w-[380px] -translate-x-1/2">
+            <div className="bg-accent flex items-start gap-2 rounded-2xl p-4 shadow-[0px_10px_30px_0px_rgba(0,0,0,0.2)]">
+              <Info className="text-foreground mt-0.5 size-6 shrink-0" />
+              <div className="flex flex-1 flex-col gap-2">
+                <p className="text-foreground text-base leading-6 font-semibold">
+                  Now editing Draft version
+                </p>
+                <p className="text-foreground text-sm leading-6 font-normal">
+                  A Draft was created from the Published version. The Published version remains
+                  unchanged.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDraftNotificationDismissed(true)}
+                className="flex size-8 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-black/10"
+                aria-label="Dismiss notification"
+              >
+                <X className="text-foreground size-6" />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => setDraftNotificationDismissed(true)}
-              className="flex size-8 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-black/10"
-              aria-label="Dismiss notification"
-            >
-              <X className="text-foreground size-6" />
-            </button>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* ── Exporting toast ── */}
-      {isExporting && (
-        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
-          <div className="bg-foreground text-background flex items-center gap-3 rounded-xl px-5 py-3 shadow-2xl">
-            <svg className="size-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-              />
-            </svg>
-            <span className="text-sm font-medium">Preparing download…</span>
+        {/* ── Exporting toast ── */}
+        {isExporting && (
+          <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
+            <div className="bg-foreground text-background flex items-center gap-3 rounded-xl px-5 py-3 shadow-2xl">
+              <svg
+                className="size-4 animate-spin"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                />
+              </svg>
+              <span className="text-sm font-medium">Preparing download…</span>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Entry A — triggered from L3 dropdown "Add L4s" */}
-      <AddLevel4sModal
-        open={isAddL4sModalOpen}
-        onOpenChange={setIsAddL4sModalOpen}
-        parentItem={
-          targetL3Item
-            ? { level3Name: targetL3Item.level3Name, level3Code: targetL3Item.level3Code }
-            : null
-        }
-        previousProcessNames={previousL4Names}
-        onSave={async (companySites, items) => {
-          if (!targetL3Item) return
-          try {
-            await createLevel4s(targetL3Item.id, companySites, items)
-            setSuccessToast('Level 4s added as draft. Submit Level 3s to publish.')
-          } catch {
-            setSuccessToast('Failed to add Level 4s.')
-          }
-          setIsAddL4sModalOpen(false)
-        }}
-      />
+        {/* Entry A — triggered from L3 dropdown "Add L4s" */}
+        {isAddL4sModalOpen && (
+          <AddLevel4sModal
+            open={isAddL4sModalOpen}
+            onOpenChange={setIsAddL4sModalOpen}
+            parentItem={
+              targetL3Item
+                ? { level3Name: targetL3Item.level3Name, level3Code: targetL3Item.level3Code }
+                : null
+            }
+            previousProcessNames={previousL4Names}
+            onSave={async (companySites, items) => {
+              if (!targetL3Item) return
+              try {
+                await createLevel4s(targetL3Item.id, companySites, items)
+                setSuccessToast('Level 4s added as draft. Submit Level 3s to publish.')
+              } catch {
+                setSuccessToast('Failed to add Level 4s.')
+              }
+              setIsAddL4sModalOpen(false)
+            }}
+          />
+        )}
 
-      <RenameModal
-        open={isRenameModalOpen}
-        onOpenChange={setIsRenameModalOpen}
-        currentName={
-          renameTarget?.level3Name ||
-          renameTarget?.level2Name ||
-          renameTarget?.level1Name ||
-          renameTarget?.domain ||
-          ''
-        }
-        onRename={async (newName) => {
-          if (!renameTarget) return
-          try {
-            await renameProcess(renameTarget.id, newName)
-            setTableData((prev) =>
-              prev.map((row) =>
-                row.id === renameTarget.id ? { ...row, level3Name: newName } : row,
-              ),
-            )
-            setSuccessToast('Process renamed successfully.')
-            setIsRenameModalOpen(false)
-          } catch {
-            setSuccessToast('Failed to rename process.')
-          }
-        }}
-      />
+        {isRenameModalOpen && (
+          <RenameModal
+            open={isRenameModalOpen}
+            onOpenChange={setIsRenameModalOpen}
+            currentName={
+              renameTarget?.level3Name ||
+              renameTarget?.level2Name ||
+              renameTarget?.level1Name ||
+              renameTarget?.domain ||
+              ''
+            }
+            onRename={async (newName) => {
+              if (!renameTarget) return
+              try {
+                await renameProcess(renameTarget.id, newName)
+                setTableData((prev) =>
+                  prev.map((row) =>
+                    row.id === renameTarget.id ? { ...row, level3Name: newName } : row,
+                  ),
+                )
+                setSuccessToast('Process renamed successfully.')
+                setIsRenameModalOpen(false)
+              } catch {
+                setSuccessToast('Failed to rename process.')
+              }
+            }}
+          />
+        )}
 
-      {/* Entry B — triggered from "Edit L4s" cell action; rows live only inside the modal */}
-      <EditLevel4sModal
-        open={isEditL4sModalOpen}
-        onOpenChange={setIsEditL4sModalOpen}
-        parentLabel={targetL3Item?.level3Name ?? ''}
-        parentCode={targetL3Item?.level3Code ?? ''}
-        isLoading={isLoadingL4s}
-        previousProcessNames={previousL4Names}
-        initialRows={existingL4s?.map((l4) => ({
-          processName: l4.name,
-          processDescription: l4.description,
-          status: (l4.status as 'Published' | 'Draft') ?? 'Draft',
-        }))}
-        onSave={async (rows) => {
-          if (!targetL3Item) return
-          try {
-            const result = await saveLevel4s(
-              targetL3Item.id,
-              rows.map((r) => ({
-                processName: r.processName,
-                processDescription: r.processDescription,
-                status: r.status,
-              })),
-            )
-            setSuccessToast(
-              `Level 4s saved — ${result.created} created, ${result.updated} updated, ${result.deleted} removed.`,
-            )
-          } catch {
-            setSuccessToast('Failed to save Level 4 changes.')
-          }
-        }}
-      />
+        {/* Entry B — triggered from "Edit L4s" cell action; rows live only inside the modal */}
+        {isEditL4sModalOpen && (
+          <EditLevel4sModal
+            open={isEditL4sModalOpen}
+            onOpenChange={setIsEditL4sModalOpen}
+            parentLabel={targetL3Item?.level3Name ?? ''}
+            parentCode={targetL3Item?.level3Code ?? ''}
+            isLoading={isLoadingL4s}
+            previousProcessNames={previousL4Names}
+            initialRows={existingL4s?.map((l4) => ({
+              processName: l4.name,
+              processDescription: l4.description,
+              status: (l4.status as 'Published' | 'Draft') ?? 'Draft',
+            }))}
+            onSave={async (rows) => {
+              if (!targetL3Item) return
+              try {
+                const result = await saveLevel4s(
+                  targetL3Item.id,
+                  rows.map((r) => ({
+                    processName: r.processName,
+                    processDescription: r.processDescription,
+                    status: r.status,
+                  })),
+                )
+                setSuccessToast(
+                  `Level 4s saved — ${result.created} created, ${result.updated} updated, ${result.deleted} removed.`,
+                )
+              } catch {
+                setSuccessToast('Failed to save Level 4 changes.')
+              }
+            }}
+          />
+        )}
 
-      {/* ── Bulk action modals ── */}
-      <BulkEditModal
-        open={bulkEditOpen}
-        onOpenChange={setBulkEditOpen}
-        selectedCount={selectedCount}
-        companySiteOptions={companySiteOptions}
-        onApply={handleBulkEditApply}
-      />
-      <ApproveModal
-        open={bulkApproveOpen}
-        onOpenChange={setBulkApproveOpen}
-        selectedCount={taskSelectedCount}
-        onConfirm={handleBulkApprove}
-      />
-      <RejectModal
-        open={bulkRejectOpen}
-        onOpenChange={setBulkRejectOpen}
-        selectedCount={taskSelectedCount}
-        onConfirm={handleBulkReject}
-      />
-      <ReturnModal
-        open={bulkReturnOpen}
-        onOpenChange={setBulkReturnOpen}
-        selectedCount={taskSelectedCount}
-        onConfirm={handleBulkReturn}
-      />
-      <RequestEndorsementModal
-        open={bulkEndorsementOpen}
-        onOpenChange={setBulkEndorsementOpen}
-        selectedCount={taskSelectedCount}
-        onConfirm={async (names, reason) => {
-          const selectedIds = Object.keys(taskRowSelection).filter((k) => taskRowSelection[k])
-          try {
-            await Promise.all(
-              selectedIds.map((taskId) => requestEndorsement(taskId, names, reason)),
-            )
-            setSuccessToast(`Endorsement requested for ${taskSelectedCount} request(s).`)
-          } catch {
-            setSuccessToast('Failed to request endorsements.')
-          }
-          setBulkEndorsementOpen(false)
-          setTaskRowSelection({})
-          setIsTaskBulkMode(false)
-        }}
-      />
+        {/* ── Bulk action modals ── */}
+        {bulkEditOpen && (
+          <BulkEditModal
+            open={bulkEditOpen}
+            onOpenChange={setBulkEditOpen}
+            selectedCount={selectedCount}
+            companySiteOptions={companySiteOptions}
+            onApply={handleBulkEditApply}
+          />
+        )}
+        {bulkApproveOpen && (
+          <ApproveModal
+            open={bulkApproveOpen}
+            onOpenChange={setBulkApproveOpen}
+            selectedCount={taskSelectedCount}
+            onConfirm={handleBulkApprove}
+          />
+        )}
+        {bulkRejectOpen && (
+          <RejectModal
+            open={bulkRejectOpen}
+            onOpenChange={setBulkRejectOpen}
+            selectedCount={taskSelectedCount}
+            onConfirm={handleBulkReject}
+          />
+        )}
+        {bulkReturnOpen && (
+          <ReturnModal
+            open={bulkReturnOpen}
+            onOpenChange={setBulkReturnOpen}
+            selectedCount={taskSelectedCount}
+            onConfirm={handleBulkReturn}
+          />
+        )}
+        {bulkEndorsementOpen && (
+          <RequestEndorsementModal
+            open={bulkEndorsementOpen}
+            onOpenChange={setBulkEndorsementOpen}
+            selectedCount={taskSelectedCount}
+            onConfirm={async (names, reason) => {
+              const selectedIds = Object.keys(taskRowSelection).filter((k) => taskRowSelection[k])
+              try {
+                await Promise.all(
+                  selectedIds.map((taskId) => requestEndorsement(taskId, names, reason)),
+                )
+                setSuccessToast(`Endorsement requested for ${taskSelectedCount} request(s).`)
+              } catch {
+                setSuccessToast('Failed to request endorsements.')
+              }
+              setBulkEndorsementOpen(false)
+              setTaskRowSelection({})
+              setIsTaskBulkMode(false)
+            }}
+          />
+        )}
+        {endorseApproveOpen && (
+          <ApproveModal
+            open={endorseApproveOpen}
+            onOpenChange={setEndorseApproveOpen}
+            selectedCount={taskSelectedCount}
+            title={`Endorse selected requests${taskSelectedCount ? ` (${taskSelectedCount})` : ''}`}
+            description="You are confirming your endorsement for the selected requests. This action notifies the submitter and moves the task forward."
+            onConfirm={async () => {
+              const selectedIds = Object.keys(taskRowSelection).filter((k) => taskRowSelection[k])
+              try {
+                await Promise.all(selectedIds.map((taskId) => endorseApprove(taskId)))
+                setSuccessToast(`${selectedIds.length} request(s) endorsed successfully.`)
+              } catch {
+                setSuccessToast('Failed to submit endorsement.')
+              }
+              setEndorseApproveOpen(false)
+              setTaskRowSelection({})
+              setIsTaskBulkMode(false)
+            }}
+          />
+        )}
+        {endorseRejectOpen && (
+          <RejectModal
+            open={endorseRejectOpen}
+            onOpenChange={setEndorseRejectOpen}
+            selectedCount={taskSelectedCount}
+            title={`Decline endorsement${taskSelectedCount ? ` (${taskSelectedCount})` : ''}`}
+            description="You are declining to endorse the selected requests. Please provide a reason for the record."
+            requireReason
+            onConfirm={async (reason) => {
+              const selectedIds = Object.keys(taskRowSelection).filter((k) => taskRowSelection[k])
+              try {
+                await Promise.all(
+                  selectedIds.map((taskId) => endorseReject(taskId, { reason: reason ?? '' })),
+                )
+                setSuccessToast(`Endorsement declined for ${selectedIds.length} request(s).`)
+              } catch {
+                setSuccessToast('Failed to decline endorsement.')
+              }
+              setEndorseRejectOpen(false)
+              setTaskRowSelection({})
+              setIsTaskBulkMode(false)
+            }}
+          />
+        )}
+      </Suspense>
 
       {/* ── Success toast ── */}
       <SuccessToast

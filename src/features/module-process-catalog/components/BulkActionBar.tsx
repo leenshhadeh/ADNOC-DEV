@@ -4,12 +4,18 @@
  * Matches Figma node 6349-325913: grey (#ECEDED) background, rounded top corners,
  * counter + Approve | Return | Reject | Go to affected record | Cancel actions.
  */
-import { Check, HandHelping, RotateCcw, X } from 'lucide-react'
+import { Check, HandHelping, RotateCcw, ThumbsDown, ThumbsUp, X } from 'lucide-react'
 
 import { Button } from '@/shared/components/ui/button'
 import { Separator } from '@/shared/components/ui/separator'
 
-export type BulkAction = 'approve' | 'return' | 'reject' | 'request-endorsement'
+export type BulkAction =
+  | 'approve'
+  | 'return'
+  | 'reject'
+  | 'request-endorsement'
+  | 'endorse-approve'
+  | 'endorse-reject'
 
 interface BulkActionBarProps {
   selectedCount: number
@@ -30,7 +36,7 @@ const BulkActionBar = ({ selectedCount, onAction, onCancel }: BulkActionBarProps
       <Button
         type="button"
         variant="ghost"
-        className="gap-1 text-sm font-medium text-brand-blue hover:bg-transparent hover:text-brand-blue/80"
+        className="text-brand-blue hover:text-brand-blue/80 gap-1 text-sm font-medium hover:bg-transparent"
         disabled={selectedCount === 0}
         onClick={() => onAction('approve')}
       >
@@ -43,7 +49,7 @@ const BulkActionBar = ({ selectedCount, onAction, onCancel }: BulkActionBarProps
       <Button
         type="button"
         variant="ghost"
-        className="gap-1 text-sm font-medium text-brand-blue hover:bg-transparent hover:text-brand-blue/80"
+        className="text-brand-blue hover:text-brand-blue/80 gap-1 text-sm font-medium hover:bg-transparent"
         disabled={selectedCount === 0}
         onClick={() => onAction('return')}
       >
@@ -69,12 +75,38 @@ const BulkActionBar = ({ selectedCount, onAction, onCancel }: BulkActionBarProps
       <Button
         type="button"
         variant="ghost"
-        className="gap-1 text-sm font-medium text-brand-blue hover:bg-transparent hover:text-brand-blue/80"
+        className="text-brand-blue hover:text-brand-blue/80 gap-1 text-sm font-medium hover:bg-transparent"
         disabled={selectedCount === 0}
         onClick={() => onAction('request-endorsement')}
       >
         <HandHelping className="size-4" />
         Request endorsement
+      </Button>
+
+      <Separator orientation="vertical" className="h-5 bg-[#DFE3E6]" />
+
+      <Button
+        type="button"
+        variant="ghost"
+        className="text-brand-blue hover:text-brand-blue/80 gap-1 text-sm font-medium hover:bg-transparent"
+        disabled={selectedCount === 0}
+        onClick={() => onAction('endorse-approve')}
+      >
+        <ThumbsUp className="size-4" />
+        Endorse
+      </Button>
+
+      <Separator orientation="vertical" className="h-5 bg-[#DFE3E6]" />
+
+      <Button
+        type="button"
+        variant="ghost"
+        className="gap-1 text-sm font-medium text-[#EB3865] hover:bg-transparent hover:text-[#EB3865]/80"
+        disabled={selectedCount === 0}
+        onClick={() => onAction('endorse-reject')}
+      >
+        <ThumbsDown className="size-4" />
+        Decline endorsement
       </Button>
 
       <Separator orientation="vertical" className="h-5 bg-[#DFE3E6]" />

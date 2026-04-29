@@ -1,6 +1,6 @@
 # Process Catalog — API Contract
 
-> **Version:** 1.2 &nbsp;|&nbsp; **Date:** 2026-04-23 &nbsp;|&nbsp; **Frontend Team**
+> **Version:** 1.2 &nbsp;|&nbsp; **Date:** 2026-04-29 &nbsp;|&nbsp; **Frontend Team**
 >
 > JSON contracts the frontend expects from the .NET backend for the **Process Catalog** module. All endpoints return the **ApiResponse** envelope.
 
@@ -37,6 +37,8 @@
    - 3.24 [POST /api/tasks/bulk-reject](#324-post-apitasksbulk-reject)
    - 3.25 [POST /api/tasks/:taskId/request-endorsement](#325-post-apitaskstaskidrequest-endorsement)
    - 3.26 [POST /api/tasks/bulk-request-endorsement](#326-post-apitasksbulk-request-endorsement)
+   - 3.27 [POST /api/tasks/:taskId/endorse-approve](#327-post-apitaskstaskidendorse-approve)
+   - 3.28 [POST /api/tasks/:taskId/endorse-reject](#328-post-apitaskstaskidendorse-reject)
 4. [Enums & Shared Types](#4-enums--shared-types)
 5. [Error Handling](#5-error-handling)
 
@@ -1056,6 +1058,82 @@ Returns `200 OK`.
 
 ---
 
+### 3.27 POST `/api/tasks/:taskId/endorse-approve`
+
+Called by the **endorser** to approve an endorsement request they received. This is distinct from the main task approval workflow ([3.19](#319-post-apitaskstaskidapprove)) — it represents the endorser's sign-off, not the approver's decision.
+
+**Path params:** `taskId` — UUID of the task the endorsement is attached to.
+
+**Request body:**
+
+```json
+{
+  "comment": "Reviewed and confirmed — process aligns with domain standards."
+}
+```
+
+| Field     | Type     | Required | Description                         |
+| --------- | -------- | -------- | ----------------------------------- |
+| `comment` | `string` | ❌       | Optional feedback from the endorser |
+
+> **Auth note:** The endorser's identity is resolved server-side from the JWT claim — no `endorserId` is needed in the body.
+
+**Response — `data: EndorsementActionResponse`**
+
+```json
+{
+  "taskId": "task-001",
+  "endorsementStatus": "endorsed",
+  "message": "Endorsement approved successfully."
+}
+```
+
+| Field               | Type     | Description                              |
+| ------------------- | -------- | ---------------------------------------- |
+| `taskId`            | `string` | The task this endorsement belongs to     |
+| `endorsementStatus` | `string` | `"endorsed"` \| `"endorsement-rejected"` |
+| `message`           | `string` | Human-readable result                    |
+
+Returns `200 OK`.
+
+---
+
+### 3.28 POST `/api/tasks/:taskId/endorse-reject`
+
+Called by the **endorser** to reject an endorsement request they received. Like [3.27](#327-post-apitaskstaskidendorse-approve), this is a separate flow from the main task rejection ([3.21](#321-post-apitaskstaskidreject)).
+
+**Path params:** `taskId` — UUID of the task the endorsement is attached to.
+
+**Request body:**
+
+```json
+{
+  "reason": "Process scope does not match the domain framework."
+}
+```
+
+| Field    | Type     | Required | Description                                           |
+| -------- | -------- | -------- | ----------------------------------------------------- |
+| `reason` | `string` | ✅       | Mandatory justification for the endorsement rejection |
+
+> **Auth note:** The endorser's identity is resolved server-side from the JWT claim — no `endorserId` is needed in the body.
+
+**Response — `data: EndorsementActionResponse`**
+
+```json
+{
+  "taskId": "task-001",
+  "endorsementStatus": "endorsement-rejected",
+  "message": "Endorsement rejected."
+}
+```
+
+Same shape as [3.27](#327-post-apitaskstaskidendorse-approve).
+
+Returns `200 OK`.
+
+---
+
 ## 4. Enums & Shared Types
 
 ### `ProcessStatus`
@@ -1064,6 +1142,16 @@ Returns `200 OK`.
 "Published" | "Pending approval" | "Draft" | "Ready for Submission" |
 "Quality Review" | "Digital VP Review" | "Returned" | "Rejected"
 ```
+
+### `EndorsementActionResponse`
+
+Returned by [3.27](#327-post-apitaskstaskidendorse-approve) and [3.28](#328-post-apitaskstaskidendorse-reject).
+
+| Field               | Type     | Description                              |
+| ------------------- | -------- | ---------------------------------------- |
+| `taskId`            | `string` | The task this endorsement belongs to     |
+| `endorsementStatus` | `string` | `"endorsed"` \| `"endorsement-rejected"` |
+| `message`           | `string` | Human-readable result                    |
 
 ### `YesNo`
 

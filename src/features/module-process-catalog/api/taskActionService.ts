@@ -30,6 +30,14 @@
  * │  POST /api/tasks/bulk-reject                                               │
  * │    Body:  { taskIds: string[], reason?: string }                           │
  * │    Resp:  { data: { processed: number, failed: number }, success, message }│
+ * │                                                                            │
+ * │  POST /api/tasks/:taskId/endorse-approve                                   │
+ * │    Body:  { comment?: string }                                             │
+ * │    Resp:  { data: { taskId, endorsementStatus, message }, success, message}│
+ * │                                                                            │
+ * │  POST /api/tasks/:taskId/endorse-reject                                    │
+ * │    Body:  { reason: string }                                               │
+ * │    Resp:  { data: { taskId, endorsementStatus, message }, success, message}│
  * └─────────────────────────────────────────────────────────────────────────────┘
  *
  * Real implementation example:
@@ -50,6 +58,12 @@ const SIMULATED_LATENCY_MS = 600
 export interface TaskActionResponse {
   taskId: string
   status: 'approved' | 'returned' | 'rejected'
+  message: string
+}
+
+export interface EndorsementActionResponse {
+  taskId: string
+  endorsementStatus: 'endorsed' | 'endorsement-rejected'
   message: string
 }
 
@@ -80,6 +94,14 @@ export interface BulkReturnRequest {
 export interface BulkRejectRequest {
   taskIds: string[]
   reason?: string
+}
+
+export interface EndorseApproveRequest {
+  comment?: string
+}
+
+export interface EndorseRejectRequest {
+  reason: string
 }
 
 // ── Single-row actions ────────────────────────────────────────────────────────
@@ -188,6 +210,44 @@ export function requestEndorsement(
           taskId,
           status: 'approved',
           message: 'Endorsement request has been sent.',
+        }),
+      SIMULATED_LATENCY_MS,
+    ),
+  )
+}
+
+/** POST /api/tasks/:taskId/endorse-approve — body: { comment? } */
+export function endorseApprove(
+  taskId: string,
+  body: EndorseApproveRequest = {},
+): Promise<EndorsementActionResponse> {
+  void body
+  return new Promise((resolve) =>
+    setTimeout(
+      () =>
+        resolve({
+          taskId,
+          endorsementStatus: 'endorsed',
+          message: 'Endorsement approved successfully.',
+        }),
+      SIMULATED_LATENCY_MS,
+    ),
+  )
+}
+
+/** POST /api/tasks/:taskId/endorse-reject — body: { reason } */
+export function endorseReject(
+  taskId: string,
+  body: EndorseRejectRequest,
+): Promise<EndorsementActionResponse> {
+  void body
+  return new Promise((resolve) =>
+    setTimeout(
+      () =>
+        resolve({
+          taskId,
+          endorsementStatus: 'endorsement-rejected',
+          message: 'Endorsement rejected.',
         }),
       SIMULATED_LATENCY_MS,
     ),

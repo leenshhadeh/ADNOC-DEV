@@ -475,7 +475,9 @@ const AssessmentDataModule = () => {
                 isBulkMode={isBulkMode}
                 isValidateMode={isValidateMode}
                 rowSelection={rowSelection}
-                onRowSelectionChange={(updater: RowSelectionState | ((prev: RowSelectionState) => RowSelectionState)) =>
+                onRowSelectionChange={(
+                  updater: RowSelectionState | ((prev: RowSelectionState) => RowSelectionState),
+                ) =>
                   setRowSelection((prev) =>
                     typeof updater === 'function' ? updater(prev) : updater,
                   )

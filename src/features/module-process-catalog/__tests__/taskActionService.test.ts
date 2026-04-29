@@ -8,6 +8,8 @@ import {
   bulkApproveTasks,
   bulkReturnTasks,
   bulkRejectTasks,
+  endorseApprove,
+  endorseReject,
 } from '../api/taskActionService'
 
 describe('taskActionService', () => {
@@ -89,5 +91,47 @@ describe('taskActionService', () => {
     const result = await promise
     expect(result.processed).toBe(2)
     expect(result.failed).toBe(0)
+  })
+
+  // ── Endorsement response actions ────────────────────────────────────────────
+
+  it('endorseApprove resolves with endorsed status and correct taskId', async () => {
+    const promise = endorseApprove('task-5')
+    vi.runAllTimers()
+    const result = await promise
+    expect(result.taskId).toBe('task-5')
+    expect(result.endorsementStatus).toBe('endorsed')
+    expect(result.message).toBeTruthy()
+  })
+
+  it('endorseApprove resolves when called with optional comment', async () => {
+    const promise = endorseApprove('task-6', { comment: 'Looks good' })
+    vi.runAllTimers()
+    const result = await promise
+    expect(result.taskId).toBe('task-6')
+    expect(result.endorsementStatus).toBe('endorsed')
+  })
+
+  it('endorseApprove resolves when called with no arguments for comment (default body)', async () => {
+    const promise = endorseApprove('task-7', {})
+    vi.runAllTimers()
+    const result = await promise
+    expect(result.endorsementStatus).toBe('endorsed')
+  })
+
+  it('endorseReject resolves with endorsement-rejected status and correct taskId', async () => {
+    const promise = endorseReject('task-8', { reason: 'Process scope mismatch' })
+    vi.runAllTimers()
+    const result = await promise
+    expect(result.taskId).toBe('task-8')
+    expect(result.endorsementStatus).toBe('endorsement-rejected')
+    expect(result.message).toBeTruthy()
+  })
+
+  it('endorseReject resolves with a non-empty rejection message', async () => {
+    const promise = endorseReject('task-9', { reason: 'Domain not aligned' })
+    vi.runAllTimers()
+    const result = await promise
+    expect(result.message.length).toBeGreaterThan(0)
   })
 })

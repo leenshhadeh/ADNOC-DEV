@@ -1,5 +1,4 @@
 import { useParams } from 'react-router-dom'
-
 import { useGetRecordedChanges } from '@features/module-process-catalog/hooks/useGetRecordedChanges'
 import { useGetProcessCatalogRows } from '@features/module-process-catalog/hooks/useGetProcessCatalogRows'
 import type { ChangeLogEntry } from '@features/module-process-catalog/types'
