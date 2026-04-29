@@ -1,13 +1,6 @@
-import { MoreHorizontal } from 'lucide-react'
-
-import { Button } from '@/shared/components/ui/button'
+import { Eye, RotateCcw, ClipboardCopy, BadgeCheck, Upload, Archive, Trash2 } from 'lucide-react'
 import { SuccessToast } from '@/shared/components/SuccessToast'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/shared/components/ui/dropdown-menu'
+import { RowActionsDropdown } from '@/shared/components/RowActionsDropdown'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -52,15 +45,15 @@ const CellMenuOptions = (props: any) => {
     showToast(response.message)
   }
 
-  const options = useMemo(
+  const actions = useMemo(
     () => [
-      { label: 'View Details', action: () => onViewItemDetails(item) },
-      { label: 'Switch to Draft version', action: handleSwitchToDraft },
-      { label: 'Copy assessment data', action: () => {} },
-      { label: 'Mark as reviewed', action: handleMarkAsReviewed },
-      { label: 'Submit', action: handleSubmit },
-      { label: 'Archive', action: handleArchive },
-      { label: 'Discard', action: () => {}, destructive: true },
+      { label: 'View Details', icon: Eye, action: () => onViewItemDetails(item) },
+      { label: 'Switch to Draft version', icon: RotateCcw, action: handleSwitchToDraft },
+      { label: 'Copy assessment data', icon: ClipboardCopy, action: () => {} },
+      { label: 'Mark as reviewed', icon: BadgeCheck, action: handleMarkAsReviewed },
+      { label: 'Submit', icon: Upload, action: handleSubmit },
+      { label: 'Archive', icon: Archive, action: handleArchive },
+      { label: 'Discard', icon: Trash2, action: () => {}, destructive: true },
     ],
     [item],
   )
@@ -72,35 +65,7 @@ const CellMenuOptions = (props: any) => {
 
   return (
     <>
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-xs"
-            className="text-muted-foreground shrink-0"
-          >
-            <MoreHorizontal className="size-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="end"
-          sideOffset={4}
-          className="bg-accent w-60 overflow-hidden rounded-xl border p-0 shadow-md"
-        >
-          {options.map((option) => (
-            <DropdownMenuItem
-              key={option.label}
-              className={`rounded-none border px-3 py-2 text-sm first:border-t-0 ${
-                option.destructive ? 'text-destructive focus:text-destructive' : ''
-              }`}
-              onSelect={option.action}
-            >
-              <div className="flex">{option.label}</div>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <RowActionsDropdown actions={actions} />
       <SuccessToast
         open={isToastOpen}
         message={toastMessage}
