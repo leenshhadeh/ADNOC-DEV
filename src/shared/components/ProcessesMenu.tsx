@@ -45,7 +45,7 @@ const ProcessesMenu = ({ options = PROCESS_VIEW_OPTIONS, value, onChange }: Proc
         <Button
           className={cn(
             'inline-flex items-center gap-1.5',
-            'bg-transparent text-brand-blue hover:bg-transparent',
+            'text-brand-blue bg-transparent hover:bg-transparent',
             'shadow-none outline-none',
           )}
         >
@@ -75,7 +75,7 @@ const ProcessesMenu = ({ options = PROCESS_VIEW_OPTIONS, value, onChange }: Proc
               )}
             >
               <span>{option.name}</span>
-              {isSelected && <Check className="size-4 text-brand-blue" />}
+              {isSelected && <Check className="text-brand-blue size-4" />}
             </DropdownMenuItem>
           )
         })}

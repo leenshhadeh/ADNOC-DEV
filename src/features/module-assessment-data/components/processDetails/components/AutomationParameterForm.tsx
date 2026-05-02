@@ -146,7 +146,7 @@ const AutomationParameterForm = (props: any) => {
         >
           <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">
-              Process Automation Maturity Level 
+              Process Automation Maturity Level
             </label>
             <Select
               name={'ProcessAutomationMaturityLevel'}

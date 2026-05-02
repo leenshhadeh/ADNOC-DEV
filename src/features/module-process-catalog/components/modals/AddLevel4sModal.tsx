@@ -46,7 +46,11 @@ const CompanySiteSelect = ({ groupCompanies, selected, onToggle }: SelectStepPro
   const toggleExpand = (id: string) =>
     setExpanded((prev) => {
       const next = new Set(prev)
-      if (next.has(id)) { next.delete(id) } else { next.add(id) }
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
       return next
     })
 
@@ -143,8 +147,8 @@ function ProcessNameSuggestions({ suggestions, onSelect }: ProcessNameSuggestion
   return (
     <div className="absolute top-full left-0 z-20 mt-1 w-full overflow-hidden rounded-2xl border border-[#DFE3E6] bg-white shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]">
       {/* Search row */}
-      <div className="flex items-center gap-2 border-b border-[#DFE3E6] bg-accent px-3 py-2">
-        <Search className="size-4 shrink-0 text-brand-blue" />
+      <div className="bg-accent flex items-center gap-2 border-b border-[#DFE3E6] px-3 py-2">
+        <Search className="text-brand-blue size-4 shrink-0" />
         <input
           ref={inputRef}
           value={search}
@@ -161,7 +165,7 @@ function ProcessNameSuggestions({ suggestions, onSelect }: ProcessNameSuggestion
             <button
               key={i}
               type="button"
-              className="flex w-full items-center border-b border-[#DFE3E6]/50 px-3 py-2 text-left text-sm font-normal text-[#687076] transition-colors last:border-b-0 hover:bg-accent"
+              className="hover:bg-accent flex w-full items-center border-b border-[#DFE3E6]/50 px-3 py-2 text-left text-sm font-normal text-[#687076] transition-colors last:border-b-0"
               onMouseDown={(e) => {
                 e.preventDefault()
                 onSelect(name)
@@ -351,7 +355,7 @@ const Level4FormTable = ({
           <button
             type="button"
             onClick={onAddRow}
-            className="flex items-center gap-1 text-sm font-medium text-brand-blue hover:underline focus-visible:underline focus-visible:outline-none"
+            className="text-brand-blue flex items-center gap-1 text-sm font-medium hover:underline focus-visible:underline focus-visible:outline-none"
           >
             <Plus className="size-4" />
             Add Level 4
@@ -404,9 +408,9 @@ const AddLevel4sModal = ({
     if (open) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setStep('select')
-       
+
       setSelected(new Set())
-       
+
       setShowDropdown(false)
       reset({
         groupCompany: '',
@@ -434,7 +438,11 @@ const AddLevel4sModal = ({
   const toggleSite = useCallback((key: string) => {
     setSelected((prev) => {
       const next = new Set(prev)
-      if (next.has(key)) { next.delete(key) } else { next.add(key) }
+      if (next.has(key)) {
+        next.delete(key)
+      } else {
+        next.add(key)
+      }
       return next
     })
   }, [])
@@ -512,7 +520,7 @@ const AddLevel4sModal = ({
     <div className="bg-foreground/40 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-[1px]">
       <div
         className={cn(
-          'flex flex-col rounded-2xl bg-accent p-8 shadow-2xl',
+          'bg-accent flex flex-col rounded-2xl p-8 shadow-2xl',
           step === 'select' ? 'max-h-[90vh] w-full max-w-xl' : 'h-[90vh] w-full max-w-5xl',
         )}
       >
