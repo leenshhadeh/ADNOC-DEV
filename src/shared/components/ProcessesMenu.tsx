@@ -16,6 +16,7 @@ export interface ProcessViewOption {
   name: string
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const PROCESS_VIEW_OPTIONS: ProcessViewOption[] = [
   { id: 'published', name: 'Published processes' },
   { id: 'latest', name: 'Latest processes' },

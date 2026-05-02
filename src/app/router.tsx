@@ -4,6 +4,7 @@ import { ProtectedRoute } from '@/shared/auth/ProtectedRoute'
 import { PermissionGuard } from '@/shared/components/PermissionGuard'
 import { LoginPage, HomePage } from '@/shared/auth/pages'
 
+// eslint-disable-next-line react-refresh/only-export-components
 const PlaceholderPage = ({ title }: { title: string }) => {
   return <h1 className="text-foreground text-2xl font-semibold">{title}</h1>
 }

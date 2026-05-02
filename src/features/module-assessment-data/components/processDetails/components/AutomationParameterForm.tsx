@@ -77,6 +77,7 @@ const AutomationParameterForm = (props: any) => {
 
   useEffect(() => {
     if (validateTrigger > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       validateAutomationLevel(
         String(formData.automationLevel ?? ''),
         String(formData.automationMaturityLevel ?? ''),
@@ -90,7 +91,7 @@ const AutomationParameterForm = (props: any) => {
         {/* row 1 */}
         <CommentableField fieldId="processCriticality" fieldName="Process Criticality">
           <div className="flex w-full flex-col gap-2">
-            <label className="text-muted-foreground text-sm">Process Criticality​</label>
+            <label className="text-muted-foreground text-sm">Process Criticality</label>
             <Select
               options={PROCESS_CRITICALITY.map((option) => ({
                 label: option,
@@ -145,7 +146,7 @@ const AutomationParameterForm = (props: any) => {
         >
           <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">
-              Process Automation Maturity Level ​
+              Process Automation Maturity Level 
             </label>
             <Select
               name={'ProcessAutomationMaturityLevel'}
@@ -168,7 +169,7 @@ const AutomationParameterForm = (props: any) => {
         </CommentableField>
         <CommentableField fieldId="automationLevel" fieldName="Automation level (%)">
           <div className="flex w-full flex-col gap-2">
-            <label className="text-muted-foreground text-sm">{'Automation level (%)'}​</label>
+            <label className="text-muted-foreground text-sm">{'Automation level (%)'}</label>
             <Input
               name="automationLevel"
               className="rounded-md border p-2"
@@ -235,7 +236,7 @@ const AutomationParameterForm = (props: any) => {
         >
           <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">
-              Key Challenges & Automation Needs​
+              Key Challenges & Automation Needs
             </label>
             <Input
               className="rounded-md border p-2"
@@ -266,7 +267,7 @@ const AutomationParameterForm = (props: any) => {
 
         <CommentableField fieldId="AIPowered" fieldName="AI-Powered">
           <div className="flex w-full flex-col gap-2">
-            <label className="text-muted-foreground text-sm">AI-Powered​</label>
+            <label className="text-muted-foreground text-sm">AI-Powered</label>
             <RadioCell
               value={formData.AIPowered}
               onValChange={(val: string) => handleRadioChange('AIPowered', val)}
@@ -279,7 +280,7 @@ const AutomationParameterForm = (props: any) => {
           fieldName="Autonomous Use-case Enabled"
         >
           <div className="flex w-full flex-col gap-2">
-            <label className="text-muted-foreground text-sm">Autonomous Use-case Enabled​</label>
+            <label className="text-muted-foreground text-sm">Autonomous Use-case Enabled</label>
             <RadioCell
               value={formData.autonomousUseCaseEnabled}
               onValChange={(val: string) => handleRadioChange('autonomousUseCaseEnabled', val)}

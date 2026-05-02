@@ -229,12 +229,10 @@ export const getProcessTableColumns = ({
     size: 250,
     enableSorting: false,
     cell: (info) => (
-      <>
-        <SharedServices
+      <SharedServices
           val={info.row.original.SharedServiceDisply}
           onExpand={(processSharedServices:any) => onExpandSharedServices(info.row.original.id,processSharedServices)}
         />
-      </>
     ),
   },
   {
@@ -330,7 +328,7 @@ export const getProcessTableColumns = ({
           defaultValue={info.getValue<string>()}
           options={SCALE_OF_PROCESS}
           onValueChange={(newValue: string) => {
-            onUpdate && onUpdate(info.row.original.id, 'scaleOfProcess', newValue)
+            if (onUpdate) onUpdate(info.row.original.id, 'scaleOfProcess', newValue)
           }}
         />
       )
@@ -349,7 +347,7 @@ export const getProcessTableColumns = ({
           defaultValue={info.getValue<string>()}
           options={AUTOMATION_MATURITY_LEVEL}
           onValueChange={(newValue: string) => {
-            onUpdate && onUpdate(info.row.original.id, 'scaleOfProcess', newValue)
+            if (onUpdate) onUpdate(info.row.original.id, 'scaleOfProcess', newValue)
           }}
         />
       )
@@ -369,7 +367,7 @@ export const getProcessTableColumns = ({
           defaultValue={info.getValue<string>()}
           options={AUTOMATION_LEVEL}
           onValueChange={(newValue: string) => {
-            onUpdate && onUpdate(info.row.original.id, 'automationLevel', newValue)
+            if (onUpdate) onUpdate(info.row.original.id, 'automationLevel', newValue)
           }}
         />
       )
@@ -690,7 +688,7 @@ export const getProcessTableColumns = ({
           defaultValue={info.getValue<string>()}
           options={NORTH_STAR_TARGET_AUTOMATION}
           onValueChange={(newValue: string) => {
-            onUpdate && onUpdate(info.row.original.id, 'northStarTargetAutomation', newValue || '')
+            if (onUpdate) onUpdate(info.row.original.id, 'northStarTargetAutomation', newValue || '')
           }}
         />
       )
@@ -709,7 +707,7 @@ export const getProcessTableColumns = ({
           defaultValue={info.getValue<string>()}
           options={['10%', '20%', '50%', '100%']}
           onValueChange={(newValue: string) => {
-            onUpdate &&
+            if (onUpdate)
               onUpdate(info.row.original.id, 'targetAutomationLevelPercent', newValue || '')
           }}
         />
@@ -729,7 +727,7 @@ export const getProcessTableColumns = ({
           value={info.getValue<string>()}
           onChange={(newValue) => {
             // Handle the change, e.g., update the data source or state
-            onUpdate && onUpdate(info.row.original.id, 'smeFeedback', newValue || '')
+            if (onUpdate) onUpdate(info.row.original.id, 'smeFeedback', newValue || '')
           }}
           type={'textArea'}
         />
@@ -753,7 +751,7 @@ export const getProcessTableColumns = ({
             { label: 'No', value: 'no' },
           ]}
           onChange={(newValue: any) => {
-            onUpdate && onUpdate(info.row.original.id, 'toBeAIPowered', newValue || '')
+            if (onUpdate) onUpdate(info.row.original.id, 'toBeAIPowered', newValue || '')
           }}
         />
       )
@@ -772,7 +770,7 @@ export const getProcessTableColumns = ({
           value={info.getValue<string>()}
           onChange={(newValue) => {
             // Handle the change, e.g., update the data source or state
-            onUpdate && onUpdate(info.row.original.id, 'toBeAIPoweredComments', newValue || '')
+            if (onUpdate) onUpdate(info.row.original.id, 'toBeAIPoweredComments', newValue || '')
           }}
           type={'textArea'}
         />

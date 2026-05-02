@@ -43,8 +43,7 @@ const EditableCell = ({ value, onChange, type }: EditableCellProps) => {
             className="border-primary bg-background ring-primary/30 w-full rounded-md border px-2 py-1 text-sm ring-2 outline-none"
           />
         ) : (
-          <>
-            <Textarea
+          <Textarea
               autoFocus
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
@@ -58,7 +57,6 @@ const EditableCell = ({ value, onChange, type }: EditableCellProps) => {
               }}
               className="border-primary bg-background ring-primary/30 mt-2 w-full rounded-md border px-2 py-1 text-sm ring-2 outline-none"
             />
-          </>
         )}
       </>
     )

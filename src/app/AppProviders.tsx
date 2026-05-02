@@ -4,6 +4,7 @@ import type { ApiError } from '@/shared/api'
 
 // ── QueryClient singleton ─────────────────────────────────────────────────────
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -55,6 +56,7 @@ export function AppProviders({ children }: AppProvidersProps) {
  * Type guard that narrows a TanStack Query error to ApiError.
  * Usage: if (isApiError(error)) { error.status }
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function isApiError(error: unknown): error is ApiError {
   return typeof error === 'object' && error !== null && 'status' in error && 'message' in error
 }

@@ -61,7 +61,7 @@ const { addedRows, mockWorkbook, mockCells } = vi.hoisted(() => {
 // ── Mock ExcelJS — Workbook must be a regular function to support `new` ────────
 vi.mock('exceljs', () => ({
   default: {
-    // eslint-disable-next-line prefer-arrow-callback
+     
     Workbook: vi.fn(function () {
       return mockWorkbook
     }),

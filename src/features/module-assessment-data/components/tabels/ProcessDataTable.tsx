@@ -281,7 +281,7 @@ const ProcessDataTable = ({
     const recordsReadyForSave = updatedDataTable.filter((row) => row.readyForSave)
     console.log('save the changes records', recordsReadyForSave)
     await saveAssessmentDraftRowsMutation.mutateAsync(recordsReadyForSave)
-    onSaveComplete && onSaveComplete()
+    if (onSaveComplete) onSaveComplete()
 
     // reset readyForSave records
     setUpdatedDataTable((prev) =>

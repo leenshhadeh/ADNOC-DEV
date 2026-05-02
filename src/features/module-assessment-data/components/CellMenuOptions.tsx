@@ -1,7 +1,7 @@
 import { Eye, RotateCcw, ClipboardCopy, BadgeCheck, Upload, Archive, Trash2 } from 'lucide-react'
 import { SuccessToast } from '@/shared/components/SuccessToast'
 import { RowActionsDropdown } from '@/shared/components/RowActionsDropdown'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   useArchiveProcess,
@@ -45,8 +45,7 @@ const CellMenuOptions = (props: any) => {
     showToast(response.message)
   }
 
-  const actions = useMemo(
-    () => [
+  const actions = [
       { label: 'View Details', icon: Eye, action: () => onViewItemDetails(item.id) },
       { label: 'Switch to Draft version', icon: RotateCcw, action: handleSwitchToDraft },
       { label: 'Copy assessment data', icon: ClipboardCopy, action: () => {} },
@@ -54,9 +53,7 @@ const CellMenuOptions = (props: any) => {
       { label: 'Submit', icon: Upload, action: handleSubmit },
       { label: 'Archive', icon: Archive, action: handleArchive },
       { label: 'Discard', icon: Trash2, action: () => {}, destructive: true },
-    ],
-    [item],
-  )
+  ]
 
   const onViewItemDetails = (itemId: string) => {
     navigate(`/assessment-data/process/${itemId}`)

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Eye } from 'lucide-react'
 import type { ColumnDef } from '@tanstack/react-table'
 import LevelsIcon from '@/assets/icons/Levels.svg?react'
@@ -38,8 +38,7 @@ const SubmittedRequestsTable = () => {
     setIsDetailsOpen(true)
   }
 
-  const columns = useMemo<ColumnDef<RequestItem, unknown>[]>(
-    () => [
+  const columns: ColumnDef<RequestItem, unknown>[] = [
       {
         id: 'processName',
         accessorKey: 'processName',
@@ -138,9 +137,7 @@ const SubmittedRequestsTable = () => {
           )
         },
       },
-    ],
-    [],
-  )
+  ]
 
   if (isError) {
     return (

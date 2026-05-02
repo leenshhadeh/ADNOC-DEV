@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 
 import DataTable from '@/shared/components/data-table/DataTable'
@@ -25,8 +25,7 @@ const SubmittedRequestsTable = () => {
     setIsDetailsOpen(true)
   }
 
-  const columns = useMemo<ColumnDef<RequestItem, unknown>[]>(
-    () => [
+  const columns: ColumnDef<RequestItem, unknown>[] = [
       {
         id: 'processName',
         accessorKey: 'processName',
@@ -100,9 +99,7 @@ const SubmittedRequestsTable = () => {
         header: 'Submitted On',
         size: 130,
       },
-    ],
-    [],
-  )
+  ]
 
   if (isError) {
     return (

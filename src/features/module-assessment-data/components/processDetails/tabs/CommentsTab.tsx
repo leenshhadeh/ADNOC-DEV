@@ -20,8 +20,7 @@ const CommentsTab = (props: any) => {
       {comments &&
         comments.length > 0 &&
         comments.map((comment: CommentType) => (
-          <>
-            <div key={comment.date} className="w-full border-b py-3 last:border-0">
+          <div key={comment.date} className="w-full border-b py-3 last:border-0">
               <div className="mb-5 inline-flex items-start gap-4">
                 {comment.userPrfileImg ? (
                   <img
@@ -44,7 +43,6 @@ const CommentsTab = (props: any) => {
                 </div>
               </div>
             </div>
-          </>
         ))}
 
       {/* input for the comment  */}

@@ -187,6 +187,7 @@ const ManageColumnsSheet = ({
 
   useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLocalOrder(columnOrder.length > 0 ? columnOrder : Object.keys(COLUMN_CONFIG))
     }
   }, [open, columnOrder])

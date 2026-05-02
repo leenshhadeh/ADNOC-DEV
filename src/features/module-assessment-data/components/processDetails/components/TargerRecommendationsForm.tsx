@@ -18,7 +18,7 @@ const TargerRecommendationsForm = (props: any) => {
       <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* row 1 */}
         <div className="flex w-full flex-col gap-2">
-          <label className="text-muted-foreground text-sm">“North Star” Target Automation​</label>
+          <label className="text-muted-foreground text-sm">“North Star” Target Automation</label>
           <Input
             className="rounded-md border p-2"
             value={formData.northStarTargetAutomation}

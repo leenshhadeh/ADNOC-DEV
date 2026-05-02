@@ -32,6 +32,7 @@ const SharedServicesSheet = ({
   useEffect(() => {
     if (open) {
       console.log(selected)
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSharedServices(selected)
     }
   }, [open])

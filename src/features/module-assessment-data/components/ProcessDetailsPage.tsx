@@ -39,6 +39,7 @@ const ProcessDetailsPage = () => {
   useEffect(() => {
     if (data) {
       const domainName = DOMAINS_DATA.find((d) => d.id === data[0]?.domain)?.name ?? data[0]?.domain
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProcessData([
         { label: 'Group Company', value: data[0]?.groupCompany },
         { label: 'Domain', value: domainName },
@@ -130,8 +131,7 @@ const ProcessDetailsPage = () => {
   )
 
   return (
-    <>
-      <div className="flex flex-col gap-0 overflow-hidden px-6">
+    <div className="flex flex-col gap-0 overflow-hidden px-6">
         <Breadcrumb links={breadcrumbLinks} />
 
         <div className="mb-[24px] flex items-center py-3">
@@ -147,7 +147,7 @@ const ProcessDetailsPage = () => {
             {data && (
               <>
                 <ProcessDetails data={processData} />
-                <div className="mb-[24px]"></div>
+                <div className="mb-[24px]" />
                 <ModuleToolbar
                   tabs={[
                     { label: 'General Info', value: 'GeneralInfo' },
@@ -235,7 +235,6 @@ const ProcessDetailsPage = () => {
           </>
         )}
       </div>
-    </>
   )
 }
 export default ProcessDetailsPage

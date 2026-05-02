@@ -586,6 +586,7 @@ const Level4DescriptionCell = ({ parentId }: { parentId: string }) => {
  * Returns the two extra columns (Level 4 + Level 4 Description) to append
  * when the full-report view is active.
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function buildFullReportColumns(): ColumnDef<ProcessItem, unknown>[] {
   const level4Col: ColumnDef<ProcessItem, unknown> = {
     id: 'level4',
@@ -627,6 +628,7 @@ function wrap<T>(leaf: ColumnDef<T, unknown>): ColumnDef<T, unknown> {
   }
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function buildCatalogColumns(
   rowActions?: CatalogColumnActions,
   groupCompanies: GroupCompany[] = [],

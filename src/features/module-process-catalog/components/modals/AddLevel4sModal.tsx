@@ -46,7 +46,7 @@ const CompanySiteSelect = ({ groupCompanies, selected, onToggle }: SelectStepPro
   const toggleExpand = (id: string) =>
     setExpanded((prev) => {
       const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
+      if (next.has(id)) { next.delete(id) } else { next.add(id) }
       return next
     })
 
@@ -402,8 +402,11 @@ const AddLevel4sModal = ({
   // Reset everything when modal opens/closes
   useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStep('select')
+       
       setSelected(new Set())
+       
       setShowDropdown(false)
       reset({
         groupCompany: '',
@@ -431,7 +434,7 @@ const AddLevel4sModal = ({
   const toggleSite = useCallback((key: string) => {
     setSelected((prev) => {
       const next = new Set(prev)
-      next.has(key) ? next.delete(key) : next.add(key)
+      if (next.has(key)) { next.delete(key) } else { next.add(key) }
       return next
     })
   }, [])

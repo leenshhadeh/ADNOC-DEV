@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ArrowLeftRight,
@@ -74,8 +74,7 @@ const MyTasksTable = ({
   const [selectedTask, setSelectedTask] = useState<TaskItem | null>(null)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
 
-  const columns = useMemo<ColumnDef<TaskItem, unknown>[]>(
-    () => [
+  const columns: ColumnDef<TaskItem, unknown>[] = [
       {
         id: 'processName',
         accessorKey: 'processName',
@@ -390,9 +389,7 @@ const MyTasksTable = ({
           )
         },
       },
-    ],
-    [canApprove, canReturn, isBulkMode, isCommentMode, navigateToRecord, onFieldClick, onRowAction],
-  )
+  ]
 
   if (isError) {
     return (
