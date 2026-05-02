@@ -252,36 +252,37 @@ const ProcessDataTable = ({
     setUpdatedDataTable(data)
   }, [data])
 
- 
   /** Updates a draft row field as the user types */
-  const handleUpdateDraftRow = useCallback((id: string, field: string, value: any) => {
-    console.log('[ROW-CHANGED] field=[',field,'], value=[',value,']')
-    setUpdatedDataTable((prev: FlatAssessmentRow[]) => {
-      return prev.map((row) => {
-        if (row.id !== id) {
-          return row
-        }
-        return { ...row, [field]: value, readyForSave: true } // , status: 'Draft'
+  const handleUpdateDraftRow = useCallback(
+    (id: string, field: string, value: any) => {
+      console.log('[ROW-CHANGED] field=[', field, '], value=[', value, ']')
+      setUpdatedDataTable((prev: FlatAssessmentRow[]) => {
+        return prev.map((row) => {
+          if (row.id !== id) {
+            return row
+          }
+          return { ...row, [field]: value, readyForSave: true } // , status: 'Draft'
+        })
       })
-    })
-    // set mode to onchange
-    onChangeMode(true)
-  }, [onChangeMode])
+      // set mode to onchange
+      onChangeMode(true)
+    },
+    [onChangeMode],
+  )
 
-
-  useEffect(()=>{
-    if(startSaving){
+  useEffect(() => {
+    if (startSaving) {
       void onSave()
     }
-  },[startSaving])
+  }, [startSaving])
 
   // OnSave
-  const onSave = async ()=> {
+  const onSave = async () => {
     const recordsReadyForSave = updatedDataTable.filter((row) => row.readyForSave)
-    console.log('save the changes records',recordsReadyForSave)
+    console.log('save the changes records', recordsReadyForSave)
     await saveAssessmentDraftRowsMutation.mutateAsync(recordsReadyForSave)
-    onSaveComplete && onSaveComplete();
-   
+    onSaveComplete && onSaveComplete()
+
     // reset readyForSave records
     setUpdatedDataTable((prev) =>
       prev.map((row) => (row.readyForSave ? { ...row, readyForSave: false } : row)),

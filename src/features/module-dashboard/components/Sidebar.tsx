@@ -7,15 +7,15 @@ import dashboardIcon from '@/assets/icons/dashboard.svg'
 import assessmentDataIcon from '@/assets/icons/assesment.svg'
 import automationTargetsIcon from '@/assets/icons/target.svg'
 import processCatalogIcon from '@/assets/icons/paper.svg'
+import opportunitiesIcon from '@/assets/icons/bag.svg'
 import { useUserStore } from '@/shared/auth/useUserStore'
-// import opportunitiesIcon from '@/assets/icons/bag.svg'
 
 const menuItems = [
   { to: '/dashboard', label: 'Dashboard', icon: dashboardIcon },
   { to: '/assessment-data', label: 'Assessment Data', icon: assessmentDataIcon },
   { to: '/automation-targets', label: 'Automation Targets', icon: automationTargetsIcon },
   { to: '/process-catalog', label: 'Process Catalog', icon: processCatalogIcon },
-  // { to: '/opportunities', label: 'Opportunities', icon: opportunitiesIcon },
+  { to: '/opportunities', label: 'Opportunities', icon: opportunitiesIcon },
 ]
 
 const bottomItems = [

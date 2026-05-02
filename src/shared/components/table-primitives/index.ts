@@ -3,8 +3,8 @@ export { default as ColHead } from './ColHead'
 export { default as HierarchyTd } from './HierarchyTd'
 export { default as EditableCell } from './EditableCell'
 export { default as RadioCell } from './RadioCell'
+export { default as NumericEditCell } from './NumericEditCell'
 
 export type { ColHeadProps } from './ColHead'
 export type { HierarchyTdProps } from './HierarchyTd'
 export type { EditableCellProps } from './EditableCell'
-

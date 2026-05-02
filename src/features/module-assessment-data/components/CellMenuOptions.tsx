@@ -26,7 +26,7 @@ const CellMenuOptions = (props: any) => {
   }
 
   const handleSubmit = async () => {
-    const response = await submitProcessMutation.mutateAsync({ processId: item.id ,process:item})
+    const response = await submitProcessMutation.mutateAsync({ processId: item.id, process: item })
     showToast(response.message)
   }
 

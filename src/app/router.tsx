@@ -80,7 +80,10 @@ export const router = createBrowserRouter([
       },
       {
         path: 'opportunities',
-        element: <PlaceholderPage title="Opportunities" />,
+        lazy: () =>
+          import('@features/module-opportunity-management').then((m) => ({
+            Component: m.OpportunityManagementModule,
+          })),
       },
       {
         path: 'reports-and-extracts',
