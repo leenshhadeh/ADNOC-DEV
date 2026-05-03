@@ -84,8 +84,6 @@ On **401 Unauthorized**, the frontend clears the token and redirects to `/login`
 
 ### 3.1 GET `/api/process-Assesssment/rows`
 
-Returns the full process hierarchy (Domain → Level 1 → Level 2 → Level 3 → level4) flattened into rows. Each row represents a unique Level 4 or Level 3 process.
-
 **Response — `data: ProcessItem[]`**
 
 ```json
@@ -199,7 +197,8 @@ Returns the full process hierarchy (Domain → Level 1 → Level 2 → Level 3 �
                       "digitalFocalPoint": ["name1", "name2", "name"],
                       "publishedDate": "2024-01-15",
                       "submittedBy": "John Doe",
-                      "submittedOn": "2024-01-10"
+                      "submittedOn": "2024-01-10",
+                      "draftVersion":{}
                     }
                   ]
                 }

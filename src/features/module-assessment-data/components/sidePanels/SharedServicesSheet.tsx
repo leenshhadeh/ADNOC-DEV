@@ -31,10 +31,9 @@ const SharedServicesSheet = ({
 
   useEffect(() => {
     if (open) {
-      console.log(selected)
       setSharedServices(selected)
     }
-  }, [open])
+  }, [open,selected])
 
 
   const handleSharedChange = (service: string, isShared: string) => {
