@@ -54,8 +54,7 @@ const CellMenuOptions = ({ item, onSwitchToDraft }: CellMenuOptionsProps) => {
     showToast(response.message)
   }
 
-  const actions = useMemo(
-    () => [
+  const actions = [
       { label: 'View Details', icon: Eye, action: () => onViewItemDetails(item.id) },
       { label: 'Switch to Draft version', icon: ArrowLeftRight, action: handleSwitchToDraft },
       { label: 'Copy assessment data', icon: ClipboardCopy, action: () => {} },
@@ -63,20 +62,15 @@ const CellMenuOptions = ({ item, onSwitchToDraft }: CellMenuOptionsProps) => {
       // { label: 'Submit', icon: Upload, action: handleSubmit }, // submit action is only for Draft items, so it's moved to DraftActions
       { label: 'Archive', icon: Archive, action: handleArchive },
       { label: 'Discard', icon: Trash2, action: () => {}, destructive: true },
-    ],
-    [item, handleSwitchToDraft],
-  )
-  const DraftActions = useMemo(
-    () => [
+    ]
+  const DraftActions = [
       { label: 'View Details', icon: Eye, action: () => onViewItemDetails(item.id) },
       { label: 'Copy assessment data', icon: ClipboardCopy, action: () => {} },
       { label: 'Mark as reviewed', icon: BadgeCheck, action: handleMarkAsReviewed },
       { label: 'Submit', icon: Upload, action: handleSubmit },
       { label: 'Archive', icon: Archive, action: handleArchive },
       { label: 'Discard', icon: Trash2, action: () => {}, destructive: true },
-    ],
-    [item],
-  )
+    ]
 
 
   const onViewItemDetails = (itemId: string) => {
