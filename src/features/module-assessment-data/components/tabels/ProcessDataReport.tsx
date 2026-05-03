@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import { flattenAssessmentData } from './ProcessDataTable'
 import type { FlatAssessmentRow } from '../../types/process'
 import { DOMAINS_DATA } from '@features/module-process-catalog/constants/domains-data'
@@ -30,7 +29,7 @@ const DATA_COLUMNS: DataColumn[] = [
     header: 'Shared Service',
     width: 140,
     render: (row) => {
-      const val:any = row.SharedServiceDisply
+      const val: any = row.SharedServiceDisply
       // const val2:any = row.SharedServiceDisply?.shared?.length
       if (!val) return null
       if (typeof val === 'object' && 'services' in val) {
@@ -38,7 +37,6 @@ const DATA_COLUMNS: DataColumn[] = [
           <span>
             {val.services ? `${val.services.length} services` : ''}
             {val.shared ? ` / ${val.shared.length} shared` : ''}
-            
           </span>
         )
       }
@@ -159,7 +157,7 @@ const TagsCell = ({ values }: { values: unknown[] }) => {
       {values.map((value, index) => (
         <span
           key={getTagKey(value, index)}
-          className="max-w-[200px] truncate rounded-full border border-[#DFE3E6] bg-accent  px-3 py-1 text-xs text-[#889096]"
+          className="bg-accent max-w-[200px] truncate rounded-full border border-[#DFE3E6] px-3 py-1 text-xs text-[#889096]"
         >
           {getTagLabel(value)}
           test
@@ -175,9 +173,9 @@ const domainMap = new Map(DOMAINS_DATA.map((d) => [d.id, d.name]))
 
 /* ─── Main Report Component ─────────────────────────────────────────── */
 
-const ProcessDataReport = (props:any) => {
-  const {data=[]} = props
-  const rows: FlatAssessmentRow[] = useMemo(() => flattenAssessmentData(data), [])
+const ProcessDataReport = (props: any) => {
+  const { data = [] } = props
+  const rows: FlatAssessmentRow[] = flattenAssessmentData(data)
 
   return (
     <div className="overflow-hidden rounded-3xl border border-[#DFE3E6] bg-white shadow-[0px_4px_8px_0px_rgba(209,213,223,0.5)]">
@@ -246,7 +244,7 @@ const ProcessDataReport = (props:any) => {
                 style={{ width: col.width ?? 180 }}
               >
                 {/* Header */}
-                <div className="flex h-[56px] items-center gap-2 border-b border-[#DFE3E6] bg-accent px-4 py-2">
+                <div className="bg-accent flex h-[56px] items-center gap-2 border-b border-[#DFE3E6] px-4 py-2">
                   <span className="text-xs leading-4 font-normal text-[#687076] uppercase">
                     {col.header}
                   </span>
@@ -299,7 +297,7 @@ const HierarchyColumn = ({
   return (
     <div className="shrink-0 border-r border-[#DFE3E6]" style={{ width }}>
       {/* Header */}
-      <div className="flex h-[56px] items-center gap-2 border-b border-[#DFE3E6] bg-accent px-4 py-2">
+      <div className="bg-accent flex h-[56px] items-center gap-2 border-b border-[#DFE3E6] px-4 py-2">
         <span className="text-xs leading-4 font-normal text-[#687076] uppercase">{header}</span>
       </div>
       {/* Cells */}

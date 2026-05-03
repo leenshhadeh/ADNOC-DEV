@@ -285,7 +285,7 @@ const AssessmentProgressDetailedL4Page = () => {
         <div className="mb-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
           <div className="rounded-3xl border border-[#E6EAF0] bg-white p-6 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-[#101828]">Workflow Status</h2>
+              <h2 className="text-xl font-semibold text-[#101828]">Lifecycle Stage</h2>
               <p className="text-sm text-[#667085]">
                 Target Avg: {Math.round(summary.avgTargetAutomationLevel * 100)}%
               </p>

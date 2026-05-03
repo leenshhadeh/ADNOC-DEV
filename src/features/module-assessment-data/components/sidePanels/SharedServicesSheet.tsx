@@ -3,16 +3,16 @@ import { RadioCell } from '@/shared/components/table-primitives'
 import { Button } from '@/shared/components/ui/button'
 import { useEffect, useState } from 'react'
 
-
 interface SharedServicesSheetProps {
   open?: boolean
   processId?: string
   process?: { id?: string; name?: string }
-  handleOpenChange: (value?: any ) => void
+  handleOpenChange: (value?: any) => void
   onClose: () => void
-  selected?:{
-    services:string[],
-    shared:string[] }
+  selected?: {
+    services: string[]
+    shared: string[]
+  }
 }
 
 // Renders the shared-services sheet and syncs its rows with the shared-services APIs.
@@ -23,7 +23,6 @@ const SharedServicesSheet = ({
   onClose,
   selected,
 }: SharedServicesSheetProps) => {
-
   const [sharedServices, setSharedServices] = useState<{
     services: string[]
     shared: string[]
@@ -34,7 +33,6 @@ const SharedServicesSheet = ({
       setSharedServices(selected)
     }
   }, [open,selected])
-
 
   const handleSharedChange = (service: string, isShared: string) => {
     // Updates the shared services state by adding or removing the service from the shared list.
@@ -59,13 +57,13 @@ const SharedServicesSheet = ({
 
   const handleSave = async () => {
     const summary = {
-      services: sharedServices?.services ||[],
-      shared: sharedServices?.shared ||[]
+      services: sharedServices?.services || [],
+      shared: sharedServices?.shared || [],
     }
     handleOpenChange(summary)
   }
 
-  const getIsSharedService=(service:string)=>{
+  const getIsSharedService = (service: string) => {
     return selected?.shared.includes(service)
   }
 
@@ -95,10 +93,7 @@ const SharedServicesSheet = ({
       <div className="min-h-0 flex-1 overflow-y-auto">
         {/* {isLoading && <div className='text-center p-5'>data loading...</div>} */}
         {sharedServices?.services?.map((service) => (
-          <div
-            key={service}
-            className="grid grid-cols-2 gap-4 border-b px-6 py-4 last:border-0"
-          >
+          <div key={service} className="grid grid-cols-2 gap-4 border-b px-6 py-4 last:border-0">
             <p className="text-foreground text-sm">{service}</p>
             <div>
               <RadioCell

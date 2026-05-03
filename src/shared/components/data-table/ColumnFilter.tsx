@@ -18,6 +18,7 @@ export interface ColumnFilterMeta {
 }
 
 /** Custom "include-list" filter function for TanStack Table. */
+// eslint-disable-next-line react-refresh/only-export-components
 export function includeListFilterFn<TData>(
   row: { getValue: (columnId: string) => unknown },
   columnId: string,
@@ -32,6 +33,7 @@ export function includeListFilterFn<TData>(
 includeListFilterFn.autoRemove = (val: unknown) => !val || (Array.isArray(val) && val.length === 0)
 
 /** Filter function that matches on first character of the cell value. */
+// eslint-disable-next-line react-refresh/only-export-components
 export function firstCharFilterFn<TData>(
   row: { getValue: (columnId: string) => unknown },
   columnId: string,

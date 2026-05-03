@@ -71,6 +71,7 @@
   --badge-warning-bg: #fffac7; /* rgba(255, 250, 199) */
   --badge-success-bg: #dcfce7; /* rgba(220, 252, 231) */
   --badge-error-bg: #ffe2e8; /* rgba(255, 255, 255) approx */
+  --status-positive: #008b80; /* content/status/positive/strong */
 
   /* ── Table cell selected ─────────────────────────── */
   --cell-selected: #f2f7ff; /* rgba(242, 247, 255) */
@@ -119,6 +120,7 @@
   --color-badge-warning-bg: var(--badge-warning-bg);
   --color-badge-success-bg: var(--badge-success-bg);
   --color-badge-error-bg: var(--badge-error-bg);
+  --color-status-positive: var(--status-positive);
   --color-cell-selected: var(--cell-selected);
   --color-background: var(--background);
 

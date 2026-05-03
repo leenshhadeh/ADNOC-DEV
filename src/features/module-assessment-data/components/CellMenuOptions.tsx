@@ -1,7 +1,7 @@
 import { Eye, ClipboardCopy, BadgeCheck, Upload, Archive, Trash2 ,ArrowLeftRight} from 'lucide-react'
 import { SuccessToast } from '@/shared/components/SuccessToast'
 import { RowActionsDropdown } from '@/shared/components/RowActionsDropdown'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   useArchiveProcess,
@@ -34,7 +34,7 @@ const CellMenuOptions = ({ item, onSwitchToDraft }: CellMenuOptionsProps) => {
   }
 
   const handleSubmit = async () => {
-    const response = await submitProcessMutation.mutateAsync({ processId: item.id ,process:item})
+    const response = await submitProcessMutation.mutateAsync({ processId: item.id, process: item })
     showToast(response.message)
   }
 
@@ -77,6 +77,7 @@ const CellMenuOptions = ({ item, onSwitchToDraft }: CellMenuOptionsProps) => {
     ],
     [item],
   )
+
 
   const onViewItemDetails = (itemId: string) => {
     navigate(`/assessment-data/process/${itemId}`)

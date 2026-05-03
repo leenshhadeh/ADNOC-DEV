@@ -276,7 +276,7 @@ const AssessmentProgressDetailedL3Page = () => {
 
         <div className="mb-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
           <div className="rounded-3xl border border-[#E6EAF0] bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-xl font-semibold text-[#101828]">Workflow Status</h2>
+            <h2 className="mb-4 text-xl font-semibold text-[#101828]">Lifecycle Stage</h2>
 
             <div className="space-y-4">
               <div className="rounded-2xl bg-[#F8FAFC] p-4">

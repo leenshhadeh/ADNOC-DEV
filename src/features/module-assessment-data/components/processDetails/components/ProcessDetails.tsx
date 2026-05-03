@@ -20,9 +20,7 @@ const ProcessDetails = (props: any) => {
             ) : item.label == 'Status' ? (
               <StatusBadgeCell status={item.value} />
             ) : item.isEditable ? (
-              <>
-                <RadioCell value={item.value} disabled={!isEditable} />
-              </>
+              <RadioCell value={item.value} disabled={!isEditable} />
             ) : item.label == 'Process stage' ? (
               <StageProgressCell
                 currentStep={item.stageCurrent}

@@ -20,7 +20,7 @@ const ManualParametersForm = (props: any) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
-  const handleKeyStepsChange = (val: String) => {
+  const handleKeyStepsChange = (val: string) => {
     setFormData((prev) => ({ ...prev, keyManualSteps: val }))
   }
 
@@ -34,7 +34,7 @@ const ManualParametersForm = (props: any) => {
         >
           <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">
-              {'How Often the Process Happens (Cycle)'}​
+              {'How Often the Process Happens (Cycle)'}
             </label>
             <Select
               options={PROCESS_CYCLE.map((option) => ({
@@ -112,7 +112,7 @@ const ManualParametersForm = (props: any) => {
         >
           <div className="flex w-full flex-col gap-2">
             <label className="text-muted-foreground text-sm">
-              {'Time Spent on Manual Tasks (%)'}​
+              {'Time Spent on Manual Tasks (%)'}
             </label>
             <Input
               name="automationLevel"
@@ -140,7 +140,7 @@ const ManualParametersForm = (props: any) => {
         {/* row 3  */}
         <CommentableField fieldId="keyManualSteps" fieldName="Key Manual Steps">
           <div className="col-span-2 flex w-full flex-col gap-2">
-            <label className="text-muted-foreground text-sm">Key Manual Steps​</label>
+            <label className="text-muted-foreground text-sm">Key Manual Steps</label>
             <div className="">
               <RichTextEditor
                 value={formData.keyManualSteps}

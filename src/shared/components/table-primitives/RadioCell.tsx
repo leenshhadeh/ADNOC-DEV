@@ -9,7 +9,7 @@ const RadioCell = (props: any) => {
   const onChange = () => {
     if (disabled) return
     setEnabled((v: any) => !v)
-    onValChange && onValChange(enabled ? 'no' : 'yes')
+    if (onValChange) onValChange(enabled ? 'no' : 'yes')
   }
 
   return (

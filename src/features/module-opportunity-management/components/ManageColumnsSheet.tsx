@@ -23,61 +23,27 @@ import { Eye, EyeOff, GripVertical, Search, X } from 'lucide-react'
 // ── Column config ─────────────────────────────────────────────────────────────
 
 const COLUMN_CONFIG: Record<string, { label: string; type: string; locked?: boolean }> = {
-  domain: { label: 'Business Domain', type: 'Read-only', locked: true },
-  l1: { label: 'Level 1 Name', type: 'Read-only', locked: true },
-  l2: { label: 'Level 2 Name', type: 'Read-only', locked: true },
-  l3: { label: 'Process Name + Code', type: 'Read-only', locked: true },
-  l4: { label: 'Level 4 Name + Code', type: 'Read-only', locked: true },
-  groupCompany: { label: 'Group Company', type: 'Input text' },
-  Site: { label: 'Site', type: 'Input text' },
+  name: { label: 'Name + Code', type: 'Read-only', locked: true },
+  domain: { label: 'Domain', type: 'Read-only' },
+  gcOwner: { label: 'GC Owner', type: 'Read-only' },
+  applicability: { label: 'Opportunity Applicability', type: 'Read-only' },
   status: { label: 'Status', type: 'Read-only' },
+  workflowStatus: { label: 'Lifecycle Stage', type: 'Read-only' },
   description: { label: 'Description', type: 'Input text' },
-  centrallyGovernedProcess: { label: 'Centrally Governed Process', type: 'Radio' },
-  sharedService: { label: 'Shared Service', type: 'Input text' },
-  businessUnit: { label: 'Business Unit', type: 'Tags' },
-  responsibleDigitalTeam: { label: 'Responsible Digital Team', type: 'Tags' },
-  processCriticality: { label: 'Process Criticality', type: 'Dropdown' },
-  usersImpacted: { label: 'Number of People/Users Impacted', type: 'Dropdown' },
-  scaleOfProcess: { label: 'Scale of the Process', type: 'Dropdown' },
-  automationMaturityLevel: { label: 'Automation Maturity Level', type: 'Dropdown' },
-  automationLevel: { label: 'Automation Level (%)', type: 'Dropdown' },
-  currentApplicationsSystems: { label: 'Current Applications/Systems', type: 'Tags' },
-  ongoingAutomationDigitalInitiatives: {
-    label: 'Ongoing Automation / Digital Initiatives',
-    type: 'Input text',
-  },
-  businessRecommendationForAutomation: {
-    label: 'Business Recommendation for Automation',
-    type: 'Dropdown',
-  },
-  keyChallengesAutomationNeeds: { label: 'Key Challenges & Automation Needs', type: 'Input text' },
-  aiPowered: { label: 'AI-Powered - Y/N', type: 'Radio' },
-  aiPoweredUseCase: { label: 'AI-Powered Use Case', type: 'Input text' },
-  autonomousUseCaseEnabled: { label: 'Autonomous Use Case Enabled', type: 'Radio' },
-  autonomousUseCaseDescriptionComment: {
-    label: 'Autonomous Use Case Description',
-    type: 'Input text',
-  },
-  processCycle: { label: 'Process Cycle', type: 'Dropdown' },
-  processRepetitionWithinCycle: { label: 'Process Repetition Within Cycle', type: 'Input text' },
-  totalPersonnelExecutingFTE: { label: 'Total Personnel Executing (FTE)', type: 'Input text' },
-  totalProcessDurationDays: { label: 'Total Process Duration (Days)', type: 'Input text' },
-  timeSpentOnManualTasksPercent: { label: 'Time Spent on Manual Tasks (%)', type: 'Input text' },
-  keyManualSteps: { label: 'Key Manual Steps', type: 'Input text' },
-  northStarTargetAutomation: { label: 'North Star Target Automation', type: 'Input text' },
-  targetAutomationLevelPercent: { label: 'Target Automation Level (%)', type: 'Input text' },
-  smeFeedback: { label: 'SME Feedback', type: 'Input text' },
-  toBeAIPowered: { label: 'To Be AI-Powered', type: 'Input text' },
-  toBeAIPoweredComments: { label: 'To Be AI-Powered Comments', type: 'Input text' },
-  rateCardAED: { label: 'Rate Card (AED)', type: 'Input text' },
-  costOfManualEffortAED: { label: 'Cost of Manual Effort (AED)', type: 'Input text' },
-  markedAsReviewed: { label: 'Marked As Reviewed', type: 'Read-only' },
-  reviewedOn: { label: 'Reviewed On', type: 'Read-only' },
-  businessFocalPoint: { label: 'Business Focal Point', type: 'Tags' },
-  digitalFocalPoint: { label: 'Digital Focal Point', type: 'Tags' },
-  publishedDate: { label: 'Published Date', type: 'Read-only' },
-  submittedBy: { label: 'Submitted By', type: 'Read-only' },
-  submittedOn: { label: 'Submitted On', type: 'Read-only' },
+  aiOpportunity: { label: 'AI Opportunity', type: 'Input text' },
+  businessValue: { label: 'Business Value', type: 'Dropdown' },
+  estimatedEffort: { label: 'Estimated Effort', type: 'Dropdown' },
+  priorityScore: { label: 'Priority Score', type: 'Input text' },
+  implementationComplexity: { label: 'Implementation Complexity', type: 'Dropdown' },
+  timeToValue: { label: 'Time to Value', type: 'Dropdown' },
+  estimatedFteSavings: { label: 'Estimated FTE Savings', type: 'Input text' },
+  estimatedCostSavingsAed: { label: 'Estimated Cost Savings (AED)', type: 'Input text' },
+  estimatedRevenueImpactAed: { label: 'Estimated Revenue Impact (AED)', type: 'Input text' },
+  riskLevel: { label: 'Risk Level', type: 'Dropdown' },
+  technologyEnabler: { label: 'Technology Enabler', type: 'Tags' },
+  owner: { label: 'Owner', type: 'Input text' },
+  createdOn: { label: 'Created On', type: 'Read-only' },
+  lastUpdated: { label: 'Last Updated', type: 'Read-only' },
 }
 
 // ── Sortable column item ──────────────────────────────────────────────────────
@@ -145,7 +111,7 @@ const SortableColumnItem = ({
   )
 }
 
-// ── Locked (read-only) column item ────────────────────────────────────────────
+// ── Locked column item ────────────────────────────────────────────────────────
 
 interface LockedColumnItemProps {
   label: string
@@ -250,26 +216,22 @@ const ManageColumnsSheet = ({
               <X className="text-muted-foreground size-5" />
             </button>
           </div>
-        </div>
 
-        {/* Body */}
-        <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-6 py-6">
-          {/* Section label */}
-          <p className="text-foreground text-[16px] font-[500]">Available Fields</p>
-
-          {/* Search input */}
-          <div className="relative">
-            <Search className="text-muted-foreground absolute start-4 top-1/2 size-4 -translate-y-1/2" />
+          {/* Search */}
+          <div className="relative mt-6 mb-4">
+            <Search className="text-muted-foreground pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2" />
             <input
               type="text"
+              placeholder="Search columns…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search columns…"
-              className="border-border text-foreground placeholder:text-muted-foreground focus:ring-primary/30 w-full rounded-2xl border bg-white py-3 ps-11 pe-4 text-[14px] outline-none focus:ring-2"
+              className="border-border text-foreground placeholder:text-muted-foreground w-full rounded-2xl border bg-white py-2.5 ps-9 pe-3 text-[14px] outline-none focus:ring-1 focus:ring-[var(--primary)]"
             />
           </div>
+        </div>
 
-          {/* Column list */}
+        {/* Scrollable list */}
+        <div className="flex-1 overflow-y-auto px-6 pb-6">
           <div className="flex flex-col gap-3">
             <DndContext
               sensors={sensors}

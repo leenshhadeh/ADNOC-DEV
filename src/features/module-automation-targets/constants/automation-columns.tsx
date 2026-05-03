@@ -117,7 +117,7 @@ export const automationTargetColumns = [
     size: 160,
     cell: ({ row }) => {
       // L4 row: keep GC empty (site is shown instead)
-      if (!!row.original.level4Code) return null
+      if (row.original.level4Code) return null
       // L3 group header (has L4 children) and leaf L3: show GC
       return <span className="text-sm">{row.original.groupCompany}</span>
     },

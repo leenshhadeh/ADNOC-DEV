@@ -126,10 +126,10 @@ const OrgMappingSheet = (props: any) => {
         <div>
           <div className="m-4 flex items-center gap-2">
             <div className="h-2 w-full rounded-full bg-gray-200">
-              <div className="bg-brand-blue h-2 rounded-full"></div>
+              <div className="bg-brand-blue h-2 rounded-full" />
             </div>
             <div className="h-2 w-full rounded-full bg-gray-200">
-              {activeStep === 'team' && <div className="bg-brand-blue h-2 rounded-full"></div>}
+              {activeStep === 'team' && <div className="bg-brand-blue h-2 rounded-full" />}
             </div>
             <span className="text-foreground text-sm">
               <span className="text-primary text-[14px] font-bold">

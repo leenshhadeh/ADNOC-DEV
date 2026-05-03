@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ArrowLeftRight,
@@ -74,325 +74,322 @@ const MyTasksTable = ({
   const [selectedTask, setSelectedTask] = useState<TaskItem | null>(null)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
 
-  const columns = useMemo<ColumnDef<TaskItem, unknown>[]>(
-    () => [
-      {
-        id: 'processName',
-        accessorKey: 'processName',
-        header: 'Process Name',
-        size: 320,
-        meta: { isDivider: true },
-        cell: (info) => {
-          if (info.row.depth > 0) return null
-          const row = info.row.original
-          return (
-            <div className="flex w-full items-center gap-2">
-              <button
-                type="button"
-                className="min-w-0 flex-1 text-start"
-                onClick={() => {
-                  setSelectedTask(row)
-                  setIsSheetOpen(true)
-                }}
-              >
-                <ProcessInfoCell
-                  processName={row.processName}
-                  requestId={row.requestId}
-                  processCode={row.processCode}
-                />
-              </button>
-              {isBulkMode ? (
-                <Checkbox
-                  className="shrink-0"
-                  checked={info.row.getIsSelected()}
-                  onCheckedChange={info.row.getToggleSelectedHandler()}
-                  aria-label={`Select ${row.processName}`}
-                />
-              ) : (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon-sm"
-                      className="text-muted-foreground shrink-0 rounded-full"
-                      aria-label="Row actions"
-                    >
-                      <MoreVertical className="size-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="end"
-                    className="w-56 rounded-2xl bg-accent p-0 shadow-[0px_10px_30px_rgba(0,0,0,0.2)]"
+  const columns: ColumnDef<TaskItem, unknown>[] = [
+    {
+      id: 'processName',
+      accessorKey: 'processName',
+      header: 'Process Name',
+      size: 320,
+      meta: { isDivider: true },
+      cell: (info) => {
+        if (info.row.depth > 0) return null
+        const row = info.row.original
+        return (
+          <div className="flex w-full items-center gap-2">
+            <button
+              type="button"
+              className="min-w-0 flex-1 text-start"
+              onClick={() => {
+                setSelectedTask(row)
+                setIsSheetOpen(true)
+              }}
+            >
+              <ProcessInfoCell
+                processName={row.processName}
+                requestId={row.requestId}
+                processCode={row.processCode}
+              />
+            </button>
+            {isBulkMode ? (
+              <Checkbox
+                className="shrink-0"
+                checked={info.row.getIsSelected()}
+                onCheckedChange={info.row.getToggleSelectedHandler()}
+                aria-label={`Select ${row.processName}`}
+              />
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    className="text-muted-foreground shrink-0 rounded-full"
+                    aria-label="Row actions"
                   >
-                    <DropdownMenuItem
-                      className="gap-4 px-4 py-2"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setSelectedTask(row)
-                        setIsSheetOpen(true)
-                      }}
-                    >
-                      <Eye className="size-4 shrink-0" />
-                      View change details
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator className="my-0" />
-                    <DropdownMenuItem
-                      className="gap-4 px-4 py-2"
-                      disabled={!row.processId}
-                      onClick={() => row.processId && navigateToRecord(row.processId)}
-                    >
-                      <ExternalLink className="size-4 shrink-0" />
-                      Go to record
-                    </DropdownMenuItem>
-                    {canApprove && (
-                      <>
-                        <DropdownMenuSeparator className="my-0" />
-                        <DropdownMenuItem
-                          className="gap-4 px-4 py-2"
-                          onClick={() => onRowAction?.(row, 'request-endorsement')}
-                        >
-                          <UserRoundCog className="size-4 shrink-0" />
-                          Request endorsement
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator className="my-0" />
-                        <DropdownMenuItem
-                          className="gap-4 px-4 py-2"
-                          onClick={() => onRowAction?.(row, 'approve')}
-                        >
-                          <Check className="size-4 shrink-0" />
-                          Approve
-                        </DropdownMenuItem>
-                      </>
-                    )}
-                    {canReturn && (
-                      <>
-                        <DropdownMenuSeparator className="my-0" />
-                        <DropdownMenuItem
-                          className="gap-4 px-4 py-2"
-                          onClick={() => onRowAction?.(row, 'return')}
-                        >
-                          <ArrowLeftRight className="size-4 shrink-0" />
-                          Return
-                        </DropdownMenuItem>
-                      </>
-                    )}
-                    {canReject && (
-                      <>
-                        <DropdownMenuSeparator className="my-0" />
-                        <DropdownMenuItem
-                          className="gap-4 px-4 py-2 text-[#EB3865]"
-                          onClick={() => onRowAction?.(row, 'reject')}
-                        >
-                          <X className="size-4 shrink-0" />
-                          Reject
-                        </DropdownMenuItem>
-                      </>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
-            </div>
-          )
-        },
+                    <MoreVertical className="size-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="bg-accent w-56 rounded-2xl p-0 shadow-[0px_10px_30px_rgba(0,0,0,0.2)]"
+                >
+                  <DropdownMenuItem
+                    className="gap-4 px-4 py-2"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setSelectedTask(row)
+                      setIsSheetOpen(true)
+                    }}
+                  >
+                    <Eye className="size-4 shrink-0" />
+                    View change details
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="my-0" />
+                  <DropdownMenuItem
+                    className="gap-4 px-4 py-2"
+                    disabled={!row.processId}
+                    onClick={() => row.processId && navigateToRecord(row.processId)}
+                  >
+                    <ExternalLink className="size-4 shrink-0" />
+                    Go to record
+                  </DropdownMenuItem>
+                  {canApprove && (
+                    <>
+                      <DropdownMenuSeparator className="my-0" />
+                      <DropdownMenuItem
+                        className="gap-4 px-4 py-2"
+                        onClick={() => onRowAction?.(row, 'request-endorsement')}
+                      >
+                        <UserRoundCog className="size-4 shrink-0" />
+                        Request endorsement
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="my-0" />
+                      <DropdownMenuItem
+                        className="gap-4 px-4 py-2"
+                        onClick={() => onRowAction?.(row, 'approve')}
+                      >
+                        <Check className="size-4 shrink-0" />
+                        Approve
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  {canReturn && (
+                    <>
+                      <DropdownMenuSeparator className="my-0" />
+                      <DropdownMenuItem
+                        className="gap-4 px-4 py-2"
+                        onClick={() => onRowAction?.(row, 'return')}
+                      >
+                        <ArrowLeftRight className="size-4 shrink-0" />
+                        Return
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  {canReject && (
+                    <>
+                      <DropdownMenuSeparator className="my-0" />
+                      <DropdownMenuItem
+                        className="gap-4 px-4 py-2 text-[#EB3865]"
+                        onClick={() => onRowAction?.(row, 'reject')}
+                      >
+                        <X className="size-4 shrink-0" />
+                        Reject
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
+        )
       },
+    },
 
-      {
-        id: 'domain',
-        accessorKey: 'domain',
-        header: 'Domain',
-        size: 150,
-        cell: (info) => {
-          if (info.row.depth > 0) return null
-          const domainId = String(info.getValue())
-          const domainName = DOMAINS_DATA.find((d) => d.id === domainId)?.name ?? domainId
+    {
+      id: 'domain',
+      accessorKey: 'domain',
+      header: 'Domain',
+      size: 150,
+      cell: (info) => {
+        if (info.row.depth > 0) return null
+        const domainId = String(info.getValue())
+        const domainName = DOMAINS_DATA.find((d) => d.id === domainId)?.name ?? domainId
+        return (
+          <div className="flex min-h-[40px] flex-col justify-center">
+            <span className="block max-w-[120px] font-normal break-words whitespace-normal text-[#687076]">
+              {domainName}
+            </span>
+          </div>
+        )
+      },
+    },
+    {
+      id: 'groupCompany',
+      accessorKey: 'groupCompany',
+      header: 'Group Company',
+      size: 180,
+      cell: (info) => {
+        if (info.row.depth > 0) return null
+        const row = info.row.original
+        return <span className="text-foreground text-sm">{row.groupCompany}</span>
+      },
+    },
+    {
+      id: 'requester',
+      accessorKey: 'requester',
+      header: 'Requester',
+      size: 160,
+      cell: (info) => {
+        if (info.row.depth > 0) return null
+        return <UserBadgeCell name={String(info.getValue())} />
+      },
+    },
+    {
+      id: 'status',
+      accessorKey: 'status',
+      header: 'Status',
+      size: 150,
+      cell: (info) => {
+        if (info.row.depth > 0) return null
+        return <StatusBadgeCell status={info.getValue() as CatalogStatus} />
+      },
+    },
+    {
+      id: 'returnComment',
+      accessorKey: 'returnComment',
+      header: 'Return Comment',
+      size: 180,
+      cell: (info) => {
+        if (info.row.depth > 0) return null
+        return <span className="text-foreground text-sm">{String(info.getValue() ?? '—')}</span>
+      },
+    },
+    {
+      id: 'stage',
+      header: 'Process Stage',
+      size: 280,
+      cell: (info) => {
+        if (info.row.depth > 0) return null
+        const row = info.row.original
+        return (
+          <StageProgressCell
+            currentStep={row.stageCurrent}
+            totalSteps={row.stageTotal}
+            statusText={row.stageText}
+            active
+          />
+        )
+      },
+    },
+    {
+      id: 'changeName',
+      header: 'FIELD Name',
+      size: 180,
+      cell: (info) => {
+        if (info.row.depth === 0) return null
+        const change = info.row.original.changes?.[0]
+        const name = change?.name ?? '—'
+        if (isCommentMode && change) {
+          const parentRow = info.row.getParentRow()
+          const parentTask = parentRow?.original
           return (
-            <div className="flex min-h-[40px] flex-col justify-center">
-              <span className="block max-w-[120px] font-normal break-words whitespace-normal text-[#687076]">
-                {domainName}
+            <button
+              type="button"
+              className="flex items-center gap-1.5 text-sm font-medium"
+              onClick={() => onFieldClick?.(change, name, parentTask)}
+              aria-label="Comment on field"
+            >
+              <span>{name}</span>
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full border border-[#DADDE0] bg-[#EDEDED]">
+                <CommentIcon className="size-3.5" />
               </span>
-            </div>
+            </button>
           )
-        },
+        }
+        return <span className="text-foreground block text-center text-sm">{name}</span>
       },
-      {
-        id: 'groupCompany',
-        accessorKey: 'groupCompany',
-        header: 'Group Company',
-        size: 180,
-        cell: (info) => {
-          if (info.row.depth > 0) return null
-          const row = info.row.original
-          return <span className="text-foreground text-sm">{row.groupCompany}</span>
-        },
-      },
-      {
-        id: 'requester',
-        accessorKey: 'requester',
-        header: 'Requester',
-        size: 160,
-        cell: (info) => {
-          if (info.row.depth > 0) return null
-          return <UserBadgeCell name={String(info.getValue())} />
-        },
-      },
-      {
-        id: 'status',
-        accessorKey: 'status',
-        header: 'Status',
-        size: 150,
-        cell: (info) => {
-          if (info.row.depth > 0) return null
-          return <StatusBadgeCell status={info.getValue() as CatalogStatus} />
-        },
-      },
-      {
-        id: 'returnComment',
-        accessorKey: 'returnComment',
-        header: 'Return Comment',
-        size: 180,
-        cell: (info) => {
-          if (info.row.depth > 0) return null
-          return <span className="text-foreground text-sm">{String(info.getValue() ?? '—')}</span>
-        },
-      },
-      {
-        id: 'stage',
-        header: 'Process Stage',
-        size: 280,
-        cell: (info) => {
-          if (info.row.depth > 0) return null
-          const row = info.row.original
-          return (
-            <StageProgressCell
-              currentStep={row.stageCurrent}
-              totalSteps={row.stageTotal}
-              statusText={row.stageText}
-              active
-            />
-          )
-        },
-      },
-      {
-        id: 'changeName',
-        header: 'FIELD Name',
-        size: 180,
-        cell: (info) => {
-          if (info.row.depth === 0) return null
-          const change = info.row.original.changes?.[0]
-          const name = change?.name ?? '—'
-          if (isCommentMode && change) {
-            const parentRow = info.row.getParentRow()
-            const parentTask = parentRow?.original
-            return (
-              <button
-                type="button"
-                className="flex items-center gap-1.5 text-sm font-medium"
-                onClick={() => onFieldClick?.(change, name, parentTask)}
-                aria-label="Comment on field"
-              >
-                <span>{name}</span>
-                <span className="flex size-6 shrink-0 items-center justify-center rounded-full border border-[#DADDE0] bg-[#EDEDED]">
-                  <CommentIcon className="size-3.5" />
-                </span>
-              </button>
-            )
-          }
-          return <span className="text-foreground block text-center text-sm">{name}</span>
-        },
-      },
+    },
 
-      {
-        id: 'oldValue',
-        header: 'Old Value',
-        size: 100,
-        cell: (info) => {
-          if (info.row.depth === 0) return null
-          const change = info.row.original.changes?.[0]
-          return (
-            <span className="text-muted-foreground block text-center text-sm">
-              {change?.oldValue ?? '—'}
-            </span>
-          )
-        },
+    {
+      id: 'oldValue',
+      header: 'Old Value',
+      size: 100,
+      cell: (info) => {
+        if (info.row.depth === 0) return null
+        const change = info.row.original.changes?.[0]
+        return (
+          <span className="text-muted-foreground block text-center text-sm">
+            {change?.oldValue ?? '—'}
+          </span>
+        )
       },
-      {
-        id: 'newValue',
-        header: 'New Value',
-        size: 100,
-        cell: (info) => {
-          if (info.row.depth === 0) return null
-          const change = info.row.original.changes?.[0]
-          return (
-            <span className="text-foreground block text-center text-sm">
-              {change?.newValue ?? '—'}
-            </span>
-          )
-        },
+    },
+    {
+      id: 'newValue',
+      header: 'New Value',
+      size: 100,
+      cell: (info) => {
+        if (info.row.depth === 0) return null
+        const change = info.row.original.changes?.[0]
+        return (
+          <span className="text-foreground block text-center text-sm">
+            {change?.newValue ?? '—'}
+          </span>
+        )
       },
-      {
-        id: 'comment',
-        header: 'field Comment',
-        size: 240,
-        cell: (info) => {
-          if (info.row.depth === 0) return null
-          const change = info.row.original.changes?.[0]
-          const comment = change?.comment ?? '—'
-          return (
-            <span className="text-foreground block truncate text-center text-sm" title={comment}>
-              {comment}
-            </span>
-          )
-        },
+    },
+    {
+      id: 'comment',
+      header: 'field Comment',
+      size: 240,
+      cell: (info) => {
+        if (info.row.depth === 0) return null
+        const change = info.row.original.changes?.[0]
+        const comment = change?.comment ?? '—'
+        return (
+          <span className="text-foreground block truncate text-center text-sm" title={comment}>
+            {comment}
+          </span>
+        )
       },
-      {
-        id: 'actionRequired',
-        accessorKey: 'actionRequired',
-        header: 'Action Required',
-        size: 180,
-        cell: (info) => {
-          if (info.row.depth > 0) return null
-          return <span className="text-foreground text-sm">{String(info.getValue() ?? '—')}</span>
-        },
+    },
+    {
+      id: 'actionRequired',
+      accessorKey: 'actionRequired',
+      header: 'Action Required',
+      size: 180,
+      cell: (info) => {
+        if (info.row.depth > 0) return null
+        return <span className="text-foreground text-sm">{String(info.getValue() ?? '—')}</span>
       },
-      {
-        id: 'submittedOn',
-        accessorKey: 'submittedOn',
-        header: 'Submitted On',
-        size: 130,
-        cell: (info) => {
-          if (info.row.depth > 0) return null
-          return <span className="text-foreground text-sm">{String(info.getValue() ?? '—')}</span>
-        },
+    },
+    {
+      id: 'submittedOn',
+      accessorKey: 'submittedOn',
+      header: 'Submitted On',
+      size: 130,
+      cell: (info) => {
+        if (info.row.depth > 0) return null
+        return <span className="text-foreground text-sm">{String(info.getValue() ?? '—')}</span>
       },
-      {
-        id: 'goToRecord',
-        header: 'Go To Record',
-        size: 120,
-        meta: { multiline: true },
-        cell: (info) => {
-          if (info.row.depth > 0) return null
-          const row = info.row.original
-          return (
-            <div className="flex justify-center">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="text-muted-foreground rounded-full"
-                disabled={!row.processId}
-                aria-label="Go to record"
-                onClick={() => row.processId && navigateToRecord(row.processId)}
-              >
-                <Eye className="size-4" />
-              </Button>
-            </div>
-          )
-        },
+    },
+    {
+      id: 'goToRecord',
+      header: 'Go To Record',
+      size: 120,
+      meta: { multiline: true },
+      cell: (info) => {
+        if (info.row.depth > 0) return null
+        const row = info.row.original
+        return (
+          <div className="flex justify-center">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              className="text-muted-foreground rounded-full"
+              disabled={!row.processId}
+              aria-label="Go to record"
+              onClick={() => row.processId && navigateToRecord(row.processId)}
+            >
+              <Eye className="size-4" />
+            </Button>
+          </div>
+        )
       },
-    ],
-    [canApprove, canReturn, isBulkMode, isCommentMode, navigateToRecord, onFieldClick, onRowAction],
-  )
+    },
+  ]
 
   if (isError) {
     return (

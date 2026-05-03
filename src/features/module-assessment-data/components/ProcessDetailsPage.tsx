@@ -39,6 +39,7 @@ const ProcessDetailsPage = () => {
   useEffect(() => {
     if (data) {
       const domainName = DOMAINS_DATA.find((d) => d.id === data[0]?.domain)?.name ?? data[0]?.domain
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProcessData([
         { label: 'Group Company', value: data[0]?.groupCompany },
         { label: 'Domain', value: domainName },
@@ -130,112 +131,110 @@ const ProcessDetailsPage = () => {
   )
 
   return (
-    <>
-      <div className="flex flex-col gap-0 overflow-hidden px-6">
-        <Breadcrumb links={breadcrumbLinks} />
+    <div className="flex flex-col gap-0 overflow-hidden px-6">
+      <Breadcrumb links={breadcrumbLinks} />
 
-        <div className="mb-[24px] flex items-center py-3">
-          {!isLoading && data && (
-            <h1 className="text-foreground text-2xl font-bold">{data[0].name}</h1>
-          )}
-        </div>
-
-        {isLoading ? (
-          <>Loading data...</>
-        ) : (
-          <>
-            {data && (
-              <>
-                <ProcessDetails data={processData} />
-                <div className="mb-[24px]"></div>
-                <ModuleToolbar
-                  tabs={[
-                    { label: 'General Info', value: 'GeneralInfo' },
-                    { label: 'Automation Parameters', value: 'AutomationParameters' },
-                    {
-                      label: 'Manual operations volume parameters',
-                      value: 'ManualParameters',
-                    },
-                  ]}
-                  moreOptions={[
-                    { label: 'Target Recommendations​', value: 'TargetRecommendations​​' },
-                    { label: 'Opportunities', value: 'Opportunities' },
-                    { label: 'Recorded changes', value: 'RecordedChanges' },
-                    { label: 'Comments', value: 'Comments' },
-                  ]}
-                  activeTab={activeTab}
-                  onTabChange={(newActiveTab) => {
-                    setActiveTab(newActiveTab)
-                    setDisableSubmit(true)
-                  }}
-                  showFilter={false}
-                  showSearch={false}
-                  actions={canEdit ? mainActions : ApproveRejectActions}
-                />
-
-                <div className="flex min-h-0 flex-1 gap-4 py-1">
-                  {/* forms and data */}
-                  <div
-                    className={cn(
-                      activeTab == 'RecordedChanges' ? 'overflow-x-auto' : '',
-                      'mt-[24px] flex-1 rounded-2xl bg-[linear-gradient(90.49deg,rgba(78,241,228,0.1)_0.03%,rgba(17,24,39,0.1)_99.89%)] p-[1px]',
-                    )}
-                  >
-                    <div className="relative rounded-2xl bg-white p-[24px]">
-                      {activeTab == 'GeneralInfo' && (
-                        <GeneralInfoTab
-                          processGeneralInfo={processGeneralInfo}
-                          process={data[0]}
-                          onFormSubmit={handelOnSubmit}
-                          onFormChanged={() => {
-                            handelDataChanged()
-                          }}
-                          isEditable={canEdit}
-                        />
-                      )}
-                      {activeTab == 'AutomationParameters' && (
-                        <AutomationParameterTab
-                          process={data[0]}
-                          isEditable={canEdit}
-                          validateTrigger={automationValidationTrigger}
-                        />
-                      )}
-                      {activeTab == 'ManualParameters' && (
-                        <ManualParametersTab process={data[0]} isEditable={canEdit} />
-                      )}
-                      {activeTab == 'TargetRecommendations​​' && (
-                        <TargerRecommendationsTab process={data[0]} />
-                      )}
-                      {activeTab == 'Opportunities' && <OpprtunitiesTab process={data[0]} />}
-                      {activeTab == 'RecordedChanges' && <RecordedChangesTab process={data[0]} />}
-                      {activeTab == 'Comments' && <CommentsTab comments={data[0].comments} />}
-                    </div>
-                  </div>
-
-                  {/* Field comment panel */}
-                  {isCommentMode && (
-                    <FieldCommentSheet
-                      open
-                      onOpenChange={(open) => {
-                        if (!open) {
-                          clearField()
-                          setIsCommentMode(false)
-                        }
-                      }}
-                      fieldName={selectedField?.fieldName ?? ''}
-                      taskId={processId}
-                    />
-                  )}
-                </div>
-              </>
-            )}
-
-            {/* TODO: add frindly message and add button for reload the page, or go home */}
-            {isError && <> Somthing went wrong</>}
-          </>
+      <div className="mb-[24px] flex items-center py-3">
+        {!isLoading && data && (
+          <h1 className="text-foreground text-2xl font-bold">{data[0].name}</h1>
         )}
       </div>
-    </>
+
+      {isLoading ? (
+        <>Loading data...</>
+      ) : (
+        <>
+          {data && (
+            <>
+              <ProcessDetails data={processData} />
+              <div className="mb-[24px]" />
+              <ModuleToolbar
+                tabs={[
+                  { label: 'General Info', value: 'GeneralInfo' },
+                  { label: 'Automation Parameters', value: 'AutomationParameters' },
+                  {
+                    label: 'Manual operations volume parameters',
+                    value: 'ManualParameters',
+                  },
+                ]}
+                moreOptions={[
+                  { label: 'Target Recommendations​', value: 'TargetRecommendations​​' },
+                  { label: 'Opportunities', value: 'Opportunities' },
+                  { label: 'Recorded changes', value: 'RecordedChanges' },
+                  { label: 'Comments', value: 'Comments' },
+                ]}
+                activeTab={activeTab}
+                onTabChange={(newActiveTab) => {
+                  setActiveTab(newActiveTab)
+                  setDisableSubmit(true)
+                }}
+                showFilter={false}
+                showSearch={false}
+                actions={canEdit ? mainActions : ApproveRejectActions}
+              />
+
+              <div className="flex min-h-0 flex-1 gap-4 py-1">
+                {/* forms and data */}
+                <div
+                  className={cn(
+                    activeTab == 'RecordedChanges' ? 'overflow-x-auto' : '',
+                    'mt-[24px] flex-1 rounded-2xl bg-[linear-gradient(90.49deg,rgba(78,241,228,0.1)_0.03%,rgba(17,24,39,0.1)_99.89%)] p-[1px]',
+                  )}
+                >
+                  <div className="relative rounded-2xl bg-white p-[24px]">
+                    {activeTab == 'GeneralInfo' && (
+                      <GeneralInfoTab
+                        processGeneralInfo={processGeneralInfo}
+                        process={data[0]}
+                        onFormSubmit={handelOnSubmit}
+                        onFormChanged={() => {
+                          handelDataChanged()
+                        }}
+                        isEditable={canEdit}
+                      />
+                    )}
+                    {activeTab == 'AutomationParameters' && (
+                      <AutomationParameterTab
+                        process={data[0]}
+                        isEditable={canEdit}
+                        validateTrigger={automationValidationTrigger}
+                      />
+                    )}
+                    {activeTab == 'ManualParameters' && (
+                      <ManualParametersTab process={data[0]} isEditable={canEdit} />
+                    )}
+                    {activeTab == 'TargetRecommendations​​' && (
+                      <TargerRecommendationsTab process={data[0]} />
+                    )}
+                    {activeTab == 'Opportunities' && <OpprtunitiesTab process={data[0]} />}
+                    {activeTab == 'RecordedChanges' && <RecordedChangesTab process={data[0]} />}
+                    {activeTab == 'Comments' && <CommentsTab comments={data[0].comments} />}
+                  </div>
+                </div>
+
+                {/* Field comment panel */}
+                {isCommentMode && (
+                  <FieldCommentSheet
+                    open
+                    onOpenChange={(open) => {
+                      if (!open) {
+                        clearField()
+                        setIsCommentMode(false)
+                      }
+                    }}
+                    fieldName={selectedField?.fieldName ?? ''}
+                    taskId={processId}
+                  />
+                )}
+              </div>
+            </>
+          )}
+
+          {/* TODO: add frindly message and add button for reload the page, or go home */}
+          {isError && <> Somthing went wrong</>}
+        </>
+      )}
+    </div>
   )
 }
 export default ProcessDetailsPage

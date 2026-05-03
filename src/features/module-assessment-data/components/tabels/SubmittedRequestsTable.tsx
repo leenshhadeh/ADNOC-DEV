@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 
 import DataTable from '@/shared/components/data-table/DataTable'
@@ -25,84 +25,85 @@ const SubmittedRequestsTable = () => {
     setIsDetailsOpen(true)
   }
 
-  const columns = useMemo<ColumnDef<RequestItem, unknown>[]>(
-    () => [
-      {
-        id: 'processName',
-        accessorKey: 'processName',
-        header: 'Process Name',
-        size: 330,
-        meta: { isDivider: true },
-        cell: (info) => {
-          const row = info.row.original
-          return (
-            <button
-              type="button"
-              className="focus-visible:ring-ring w-full cursor-pointer text-start outline-none focus-visible:ring-2"
-              onClick={() => handleOpenDetails(row)}
-            >
-              <ProcessInfoCell processName={row.processName} requestId={row.requestId} processCode={row.processCode} />
-            </button>
-          )
-        },
-      },
-      {
-        id: 'domain',
-        accessorKey: 'domain',
-        header: 'Domain',
-        size: 150,
-        cell: (info) => {
-          if (info.row.depth > 0) return null
-          const domainId = String(info.getValue())
-          const domainName = DOMAINS_DATA.find((d) => d.id === domainId)?.name ?? domainId
-          return (
-            <div className="flex min-h-[40px] flex-col justify-center">
-              <span className="block max-w-[120px] font-normal break-words whitespace-normal text-[#687076]">
-                {domainName}
-              </span>
-            </div>
-          )
-        },
-      },
-      {
-        id: 'requester',
-        accessorKey: 'requester',
-        header: 'Requester',
-        size: 160,
-        cell: (info) => <UserBadgeCell name={String(info.getValue())} />,
-      },
-      {
-        id: 'status',
-        accessorKey: 'status',
-        header: 'Status',
-        size: 155,
-        cell: (info) => <StatusBadgeCell status={info.getValue() as CatalogStatus} />,
-      },
-      {
-        id: 'stage',
-        header: 'Process Stage',
-        size: 280,
-        cell: (info) => {
-          const row = info.row.original
-          return (
-            <StageProgressCell
-              currentStep={row.stageCurrent}
-              totalSteps={row.stageTotal}
-              statusText={row.stageText}
-              active={row.status === 'Published'}
+  const columns: ColumnDef<RequestItem, unknown>[] = [
+    {
+      id: 'processName',
+      accessorKey: 'processName',
+      header: 'Process Name',
+      size: 330,
+      meta: { isDivider: true },
+      cell: (info) => {
+        const row = info.row.original
+        return (
+          <button
+            type="button"
+            className="focus-visible:ring-ring w-full cursor-pointer text-start outline-none focus-visible:ring-2"
+            onClick={() => handleOpenDetails(row)}
+          >
+            <ProcessInfoCell
+              processName={row.processName}
+              requestId={row.requestId}
+              processCode={row.processCode}
             />
-          )
-        },
+          </button>
+        )
       },
-      {
-        id: 'submittedOn',
-        accessorKey: 'submittedOn',
-        header: 'Submitted On',
-        size: 130,
+    },
+    {
+      id: 'domain',
+      accessorKey: 'domain',
+      header: 'Domain',
+      size: 150,
+      cell: (info) => {
+        if (info.row.depth > 0) return null
+        const domainId = String(info.getValue())
+        const domainName = DOMAINS_DATA.find((d) => d.id === domainId)?.name ?? domainId
+        return (
+          <div className="flex min-h-[40px] flex-col justify-center">
+            <span className="block max-w-[120px] font-normal break-words whitespace-normal text-[#687076]">
+              {domainName}
+            </span>
+          </div>
+        )
       },
-    ],
-    [],
-  )
+    },
+    {
+      id: 'requester',
+      accessorKey: 'requester',
+      header: 'Requester',
+      size: 160,
+      cell: (info) => <UserBadgeCell name={String(info.getValue())} />,
+    },
+    {
+      id: 'status',
+      accessorKey: 'status',
+      header: 'Status',
+      size: 155,
+      cell: (info) => <StatusBadgeCell status={info.getValue() as CatalogStatus} />,
+    },
+    {
+      id: 'stage',
+      header: 'Process Stage',
+      size: 280,
+      cell: (info) => {
+        const row = info.row.original
+        return (
+          <StageProgressCell
+            currentStep={row.stageCurrent}
+            totalSteps={row.stageTotal}
+            statusText={row.stageText}
+            active={row.status === 'Published'}
+          />
+        )
+      },
+    },
+    {
+      id: 'submittedOn',
+      accessorKey: 'submittedOn',
+      header: 'Submitted On',
+      size: 130,
+    },
+  ]
 
   if (isError) {
     return (
