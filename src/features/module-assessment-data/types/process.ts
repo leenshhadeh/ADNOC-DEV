@@ -7,6 +7,55 @@ export type SharedService =
   | null
   | undefined
 
+export type DraftVersionData = {
+  id?: string
+  level3Name?: string
+  level3Code?: string
+  level4Name?: string
+  level4Code?: string
+  status?: string
+  site?: string
+  groupCompany?: string
+  description?: string
+  centrallyGovernedProcess?: string
+  sharedService?: SharedService
+  businessUnit?: string[]
+  ResponsibleDigitalTeam?: string[]
+  processCriticality?: string
+  UsersImpacted?: string
+  scaleOfProcess?: string
+  automationMaturityLevel?: string
+  automationLevel?: string
+  currentApplicationsSystems?: currentApplicationsSystems[]
+  OngoingAutomationDigitalInitiatives?: string
+  businessRecommendationForAutomation?: string
+  keyChallengesAutomationNeeds?: string
+  AIPowered?: string
+  AIPoweredUseCase?: string
+  autonomousUseCaseEnabled?: string
+  AutonomousUseCaseDescriptionComment?: string
+  ProcessCycle?: string
+  processRepetitionWithinCycle?: string
+  totalPersonnelExecutingFTE?: string
+  totalProcessDurationDays?: string
+  timeSpentOnManualTasksPercent?: string
+  keyManualSteps?: string
+  northStarTargetAutomation?: string
+  targetAutomationLevelPercent?: string
+  SMEFeedback?: string
+  toBeAIPowered?: string
+  toBeAIPoweredComments?: string
+  rateCardAED?: string
+  costOfManualEffortAED?: string
+  markedAsReviewed?: string
+  reviewedOn?: string
+  businessFocalPoint?: string[]
+  digitalFocalPoint?: string[]
+  publishedDate?: string
+  submittedBy?: string
+  submittedOn?: string
+}
+
 export type currentApplicationsSystems = {
   id: string
   name: string
@@ -57,6 +106,7 @@ export type Level4Item = {
   publishedDate?: string
   submittedBy?: string
   submittedOn?: string
+  draftVersion?: DraftVersionData
 }
 
 export type Level3Item = Level4Item & {
@@ -64,6 +114,7 @@ export type Level3Item = Level4Item & {
   level3Name?: string
   level3Code?: string
   groupCompany?: string
+  draftVersion?: DraftVersionData
   level4Items?: Level4Item[]
 }
 
@@ -151,6 +202,7 @@ export type FlatAssessmentRow = {
   submittedBy: string
   submittedOn: string
   readyForSave?: boolean
+  draftVersion?: DraftVersionData
 }
 
 // ── Bulk Cell Operations ──────────────────────────────────────────────────────

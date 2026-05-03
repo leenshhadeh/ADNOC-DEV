@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import DataTable from '@/shared/components/data-table/DataTable'
-import type { DomainItem, FlatAssessmentRow, SharedService } from '../../types/process'
+import type {
+  DomainItem,
+  FlatAssessmentRow,
+  SharedService,
+} from '../../types/process'
 import SharedServicesSheet from '../sidePanels/SharedServicesSheet'
 import BUSheet from '../sidePanels/BUSheet'
 import DigitalTeamSheet from '../sidePanels/DigitalTeamSheet'
@@ -59,6 +63,9 @@ export const flattenAssessmentData = (data: DomainItem[]): FlatAssessmentRow[] =
               displayL3: l4Index === 0 ? (l3Item.level3Name ?? '') : '',
 
               l4Code: l4Item?.level4Code,
+              l1Code: l1Item?.level1Code,
+              l2Code: l2Item?.level2Code,
+              l3Code: l3Item?.level3Code,
               groupCompany: toText(pickValue(l4Item?.groupCompany, l3Item.groupCompany)),
               Site: toText(pickValue(l4Item?.site, l3Item.site)),
               status: l4Item?.status || l3Item.status || '',
@@ -163,6 +170,7 @@ export const flattenAssessmentData = (data: DomainItem[]): FlatAssessmentRow[] =
               publishedDate: toText(pickValue(l4Item?.publishedDate, l3Item.publishedDate)),
               submittedBy: toText(pickValue(l4Item?.submittedBy, l3Item.submittedBy)),
               submittedOn: toText(pickValue(l4Item?.submittedOn, l3Item.submittedOn)),
+              draftVersion: l4Item?.draftVersion || l3Item.draftVersion,
             }),
           ),
         ),
@@ -180,6 +188,7 @@ export type DisplayAssessmentRow = FlatAssessmentRow & {
 interface ProcessDataTableProps {
   data: FlatAssessmentRow[]
   isBulkMode?: boolean
+  isDraftMode?: boolean
   isValidateMode?: boolean
   rowSelection?: RowSelectionState
   onRowSelectionChange?: (
@@ -221,12 +230,12 @@ const ProcessDataTable = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedProcessSercives, setSelectedProcessSercives] = useState<any>(null)
   const saveAssessmentDraftRowsMutation = useSaveAssessmentDraftRows()
+  const [isDraftMode, setIsDraftMode] = useState(false)
 
   const columns = useMemo(
     () =>
       getProcessTableColumns({
         onDescChanged: () => {},
-        onCentrallyGovernedProcessChanged: () => {},
         onBUExpand: (rowId: string) => {
           setIsBUOpen(true)
           setSelectedRowId(rowId)
@@ -240,19 +249,59 @@ const ProcessDataTable = ({
           setSelectedProcessSercives(sharedServiceList)
           setIsSharedServiceOpen(true)
         },
+        onSwitchToDraft: (item: FlatAssessmentRow) => {
+          handleSwitchToDraftRow(item)
+        },
         isBulkMode,
+        isDraftMode,
         selectedL3Ids,
         onL3SelectionChange,
         isValidateMode,
       }),
-    [isBulkMode, isValidateMode, selectedL3Ids, onL3SelectionChange],
+    [
+      isBulkMode,
+      isDraftMode,
+      isValidateMode,
+      onChangeMode,
+      selectedL3Ids,
+      onL3SelectionChange,
+    ],
   )
   const [updatedDataTable, setUpdatedDataTable] = useState(data) // changed every time user edit table values
   useEffect(() => {
     setUpdatedDataTable(data)
   }, [data])
 
+  /** Builds the row shape that should be shown when switching a record to its draft version. */
+  const getDraftRow = useCallback((row: FlatAssessmentRow): FlatAssessmentRow => {
+    if (!row.draftVersion) {
+      return row
+    }
+    return {
+      ...row,
+      ...row.draftVersion,
+    }
+  }, [])
+
+  /** Switches a single visible table row to its draft version when one exists. */
+  const handleSwitchToDraftRow = useCallback(
+    (selectedRow: FlatAssessmentRow) => {
+      setUpdatedDataTable((prev: FlatAssessmentRow[]) =>
+        prev.map((row) => {
+          if (row.id !== selectedRow.id) {
+            return row
+          }
+          return getDraftRow(row)
+        }),
+      )
+      onChangeMode(true)
+    },
+    [getDraftRow],
+  )
+
   /** Updates a draft row field as the user types */
+/** Once the user edits a "published" record, a draft is automatically created. If a draft already exists? the record switches to that draft */
+
   const handleUpdateDraftRow = useCallback(
     (id: string, field: string, value: any) => {
       console.log('[ROW-CHANGED] field=[', field, '], value=[', value, ']')
@@ -261,40 +310,40 @@ const ProcessDataTable = ({
           if (row.id !== id) {
             return row
           }
-          return { ...row, [field]: value, readyForSave: true } // , status: 'Draft'
+          return {
+            ...getDraftRow(row),
+            [field]: value,
+            readyForSave: true
+          }
         })
       })
-      // set mode to onchange
+
       onChangeMode(true)
     },
     [onChangeMode],
   )
 
   useEffect(() => {
+        // startSaving is props from parent true/false , triggers when the user click on he global "Save" button (startSaving=true) from the toolbar,
     if (startSaving) {
       void onSave()
     }
-  }, [startSaving])
+    setIsDraftMode(isBulkMode)
+  }, [startSaving, isBulkMode])
 
-  // OnSave
+  // Call API to save draft records
   const onSave = async () => {
     const recordsReadyForSave = updatedDataTable.filter((row) => row.readyForSave)
-    console.log('save the changes records', recordsReadyForSave)
     await saveAssessmentDraftRowsMutation.mutateAsync(recordsReadyForSave)
-    if (onSaveComplete) onSaveComplete()
+    onSaveComplete && onSaveComplete()
 
     // reset readyForSave records
     setUpdatedDataTable((prev) =>
       prev.map((row) => (row.readyForSave ? { ...row, readyForSave: false } : row)),
     )
+    setIsDraftMode(false)
   }
 
-  useEffect(() => {
-    if (startSaving) {
-      void onSave()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startSaving])
 
   return (
     <div className="table-hierarchy">

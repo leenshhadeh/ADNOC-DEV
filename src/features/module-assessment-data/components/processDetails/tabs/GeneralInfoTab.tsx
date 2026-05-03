@@ -92,8 +92,6 @@ const GeneralInfoTab = (props: any) => {
     ],
     [],
   )
-  console.log('dsdsd')
-
   const formChangeHandler = (data: any, hasOrgData?: boolean) => {
     const formData = hasOrgData ? data : { ...data, dataorgMapping: orgData }
     setDataToSubmit(formData)

@@ -1,6 +1,6 @@
 import TagsSelect from '@/shared/components/table-primitives/TagsSelect'
 import React from 'react'
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const TagsSelectCell = (peops: any) => {
   const { list, onUpdate, allTags, isUsers } = peops
   const [currentTags, setCurrentTags] = React.useState(list)
@@ -11,9 +11,8 @@ const TagsSelectCell = (peops: any) => {
       isUsers={isUsers}
       onChange={(newTags) => {
         setCurrentTags(newTags)
-        const newValue = newTags.map((tag) => tag.name)
         if (onUpdate) {
-          onUpdate(newValue)
+          onUpdate(newTags)
         }
       }}
     />

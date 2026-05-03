@@ -4,7 +4,7 @@ import type { RequestItem, WorkflowHistoryItem } from '../types/submitted-reques
 import { MY_TASKS } from '../constants/my-tasks'
 import { SUBMITTED_REQUESTS } from '../constants/submitted-requests'
 import { PROESS_DETAILS } from '../constants/process-details'
-import { ASSESSMENT_DATA } from '../constants/assessment-data'
+import { ASSESSMENT_DATA ,ASSESSMENT_DATA_Draft} from '../constants/assessment-data'
 import type { DomainItem, FlatAssessmentRow } from '../types/process'
 import type { ProcessViewOptionId } from '@/shared/components/ProcessesMenu'
 
@@ -20,10 +20,13 @@ export function getSubmittedRequests(): Promise<RequestItem[]> {
 //getAssessmentProcess
 export function getAssessmentProcess(processView: ProcessViewOptionId): Promise<DomainItem[]> {
   void processView
+  if(processView==='latest'){
+    return new Promise((resolve) => setTimeout(() => resolve(ASSESSMENT_DATA_Draft), 500))
+  }
   return new Promise((resolve) => setTimeout(() => resolve(ASSESSMENT_DATA), 500))
 }
 
-// Saves the changed assessment rows
+// Saves the changed assessment rows (create draft version or update existing draft). Returns the list of successfully saved row IDs.
 export function saveAssessmentDraftRows(
   rows: FlatAssessmentRow[],
 ): Promise<{ success: boolean; savedIds: string[]; message: string }> {
@@ -47,7 +50,7 @@ export function saveAssessmentDraftRows(
 export function submitProcess(processId: string , processData:any): Promise<{ success: boolean; message: string }> {
   void processId
   void processData
-  console.log('[APICall - submitProcess] processId:'+processId,'processData:',processData)
+  //console.log('[APICall - submitProcess] processId:'+processId,'processData:',processData)
   return new Promise((resolve) =>
     setTimeout(() => resolve({ success: true, message: 'Process submitted successfully.' }), 600),
   )

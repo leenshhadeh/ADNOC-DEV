@@ -20,7 +20,7 @@ export const ASSESSMENT_DATA:DomainItem[] = [ // keep type any until we finalize
                 level3Name: 'Basin Modeling',
                 level3Code: 'EXP.1.1.3',
                 groupCompany: 'ADNOC SA',
-                status:'Pending approval',
+                status:'Published',
                 site: 'A',
                 description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                 centrallyGovernedProcess: 'Yes',
@@ -72,6 +72,18 @@ export const ASSESSMENT_DATA:DomainItem[] = [ // keep type any until we finalize
                     sharedService: {services:['ADNOC Offshore','ADNOC HQ','ADNOC Drilling'],shared:['ADNOC HQ']},
                     businessUnit: ['Internal Audit Department (Operations)','Exploration'],
                     processCriticality: 'High',
+                    draftVersion:
+                    { id: 'l4-1-1',
+                      level4Name: 'Define basin framework',
+                      level4Code: 'EXP.1.1.3.1',
+                      status:'Draft',
+                      site: 'C',
+                      description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
+                      centrallyGovernedProcess: 'yes',
+                      sharedService: {services:['ADNOC Offshore'],shared:['ADNOC HQ']},
+                      businessUnit: ['Exploration'],
+                      processCriticality: 'low'
+                    },
                      
                   },
                  
@@ -86,6 +98,7 @@ export const ASSESSMENT_DATA:DomainItem[] = [ // keep type any until we finalize
                     sharedService: {services:['ADNOC Offshore','ADNOC HQ','ADNOC Drilling'],shared:['ADNOC Offshore','ADNOC HQ']},
                     businessUnit: ['Exploration','testing'],
                     processCriticality: 'High',
+                    
                   },
                   {
                     id: 'l4-1-4',
@@ -100,7 +113,8 @@ export const ASSESSMENT_DATA:DomainItem[] = [ // keep type any until we finalize
                     markedAsReviewed:'true',
                     reviewedOn:'2024-02-01',
                     processCriticality: 'High',
-                    currentApplicationsSystems:[{id:'excel' , name:'Microsoft 365 - Excel'}]
+                    currentApplicationsSystems:[{id:'excel' , name:'Microsoft 365 - Excel'}],
+                    
                    
                   },
                 ],
@@ -110,7 +124,7 @@ export const ASSESSMENT_DATA:DomainItem[] = [ // keep type any until we finalize
                 level3Name: 'Geophysical Data Interpretation',
                 level3Code: 'EXP.1.1.4',
                 groupCompany: 'ADNOC SA',
-                status:'Pending approval',
+                status:'Published',
                 site: 'A',
                 description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                 centrallyGovernedProcess: 'Yes',
@@ -120,6 +134,7 @@ export const ASSESSMENT_DATA:DomainItem[] = [ // keep type any until we finalize
                 processCriticality: 'High',
                 UsersImpacted:'Small (1-50)',
                 level4Items: [],
+                
               },
             ],
           },
@@ -173,7 +188,8 @@ export const ASSESSMENT_DATA:DomainItem[] = [ // keep type any until we finalize
                 publishedDate:'2024-01-15',
                 submittedBy:'John Doe',
                 submittedOn:'2024-01-10',
-                level4Items:[]
+                level4Items:[],
+                
               },
               {
                 id: 'l3-4',
@@ -185,7 +201,7 @@ export const ASSESSMENT_DATA:DomainItem[] = [ // keep type any until we finalize
                 description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                 centrallyGovernedProcess: 'Yes',
                 sharedService:  {services:['ADNOC Offshore'],shared:['ADNOC Offshore']},
-                businessUnit: ['Exploration'],
+                businessUnit: [],
                 ResponsibleDigitalTeam : ['Data Analytics'],
                 processCriticality: 'High',
                 currentApplicationsSystems:[{id:'excel' , name:'Microsoft 365 - Excel'}],
@@ -196,6 +212,19 @@ export const ASSESSMENT_DATA:DomainItem[] = [ // keep type any until we finalize
                     id: 'l4-4-1',
                     level4Name: 'Define exploration KPIs',
                     level4Code: 'EXP.1.2.2.1',
+                    draftVersion:
+                    { id: 'l4-4-1',
+                      level4Name: 'Define exploration KPIs',
+                      level4Code: 'EXP.1.1.3.1',
+                      status:'Draft',
+                      site: 'C',
+                      description: 'Define the structural and stratigraphic framework',
+                      centrallyGovernedProcess: 'yes',
+                      sharedService: {services:['ADNOC Offshore'],shared:['ADNOC HQ']},
+                      businessUnit: [],
+                      processCriticality: 'low'
+                    },
+                    
                   },
                 ],
               },
@@ -219,11 +248,13 @@ export const ASSESSMENT_DATA:DomainItem[] = [ // keep type any until we finalize
                     id: 'l4-5-1',
                     level4Name: 'Seismic data conditioning',
                     level4Code: 'EXP.1.2.3.1',
+                    
                   },
                   {
                     id: 'l4-5-2',
                     level4Name: 'Regional seismic interpretation',
                     level4Code: 'EXP.1.2.3.2',
+                    
                   },
                 ],
               },
@@ -252,6 +283,7 @@ export const ASSESSMENT_DATA:DomainItem[] = [ // keep type any until we finalize
                     sharedService:  {services:['ADNOC Offshore'],shared:['ADNOC Offshore']},
                     businessUnit: ['Exploration'],
                     processCriticality: 'High',
+                    
                      
                   }],
               },
@@ -274,7 +306,7 @@ export const ASSESSMENT_DATA:DomainItem[] = [ // keep type any until we finalize
                 level3Name: 'Static Model Construction',
                 level3Code: 'EXP.2.1.1',
                 groupCompany: 'ADNOC SA',
-                status:'Pending approval',
+                status:'Published',
                 site: 'A',
                 description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
                 centrallyGovernedProcess: 'Yes',
@@ -304,4 +336,105 @@ export const ASSESSMENT_DATA:DomainItem[] = [ // keep type any until we finalize
     ],
   },
 
+]
+
+export const ASSESSMENT_DATA_Draft:DomainItem[] = [ // keep type any until we finalize the data structure
+  {
+    id: 'd1',
+    domain: 'dom-005',
+    level1Items: [
+      {
+        id: 'l1-1',
+        level1Name: 'Exploration',
+        level1Code: 'EXP.1',
+        level2Items: [
+          {
+            id: 'l2-1',
+            level2Name: 'Regional Studies',
+            level2Code: 'EXP.1.1',
+            level3Items: [
+              {
+                id: 'l3-1',
+                level3Name: 'Basin Modeling',
+                level3Code: 'EXP.1.1.3',
+                groupCompany: 'ADNOC SA',
+                status:'Draft',
+                site: 'A',
+                description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
+                centrallyGovernedProcess: 'Yes',
+                sharedService: {services:['ADNOC Offshore'],shared:['ADNOC Offshore']},
+                businessUnit: ['Exploration'],
+                ResponsibleDigitalTeam : ['Data Analytics'],
+                processCriticality: 'Standard',
+                UsersImpacted:'Small (1-50)',
+                scaleOfProcess:'Medium: (bigger team within one department)',
+                automationMaturityLevel:'Fully Automated',
+                automationLevel:'10%',
+                currentApplicationsSystems:[{id:'excel' , name:'Microsoft 365 - Excel'}],
+                OngoingAutomationDigitalInitiatives:'N/A',
+                businessRecommendationForAutomation:'Should be kept as is',
+                keyChallengesAutomationNeeds:'none',
+                AIPowered:'No',
+                AIPoweredUseCase:'N/A',
+                autonomousUseCaseEnabled:'No',
+                AutonomousUseCaseDescriptionComment:'N/A',
+                ProcessCycle:'Annually',
+                processRepetitionWithinCycle:'1',
+                totalPersonnelExecutingFTE:'5',
+                totalProcessDurationDays:'30',
+                timeSpentOnManualTasksPercent:'80%',
+                keyManualSteps:'1.Data collection, model setup, result interpretation',
+                northStarTargetAutomation:'Keep as is',
+                targetAutomationLevelPercent:'60%',
+                SMEFeedback:'Significant time spent on manual data collection and model setup. Automation could free up time for more value-added analysis.',
+                toBeAIPowered:'Yes',
+                toBeAIPoweredComments:'AI could be used to assist with result interpretation and identify patterns in the data.',
+                rateCardAED:'500 AED',
+                costOfManualEffortAED:'120000 AED',
+                markedAsReviewed:'false',
+                reviewedOn:'',
+                businessFocalPoint:['John Doe'],
+                digitalFocalPoint:['Jane Smith'],
+                publishedDate:'2024-01-15',
+                submittedBy:'John Doe',
+                submittedOn:'2024-01-10',
+                level4Items: [
+                  {
+                    id: 'l4-1-1',
+                    level4Name: 'Define basin framework',
+                    level4Code: 'EXP.1.1.3.1',
+                    status:'Draft',
+                    site: 'C',
+                    description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
+                    centrallyGovernedProcess: 'no',
+                    sharedService: {services:['ADNOC Offshore','ADNOC HQ','ADNOC Drilling'],shared:['ADNOC HQ']},
+                    businessUnit: ['Internal Audit Department (Operations)','Exploration'],
+                    processCriticality: 'High',
+                     
+                  },
+                  {
+                    id: 'l4-1-2',
+                    level4Name: 'Define seconday recovery potential',
+                    level4Code: 'EXP.1.1.4,1',
+                    status:'Draft',
+                    site: 'C',
+                    description: 'Define the structural and stratigraphic framework of the basin, including major faults, horizons, and depositional environments.',
+                    centrallyGovernedProcess: 'no',
+                    sharedService: {services:['ADNOC Offshore','ADNOC HQ','ADNOC Drilling'],shared:['ADNOC HQ']},
+                    businessUnit: ['Internal Audit Department (Operations)','Exploration'],
+                    processCriticality: 'Low',
+                     
+                  },
+               
+                ],
+              },
+           
+            ],
+          },
+        
+        ],
+      },
+     
+    ],
+  },
 ]

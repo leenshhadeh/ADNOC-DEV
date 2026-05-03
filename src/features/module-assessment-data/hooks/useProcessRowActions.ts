@@ -28,15 +28,10 @@ export function useSubmitProcess() {
   })
 }
 
-// Calls the switch-to-draft API and refreshes process lists on success.
+// Calls the switch-to-draft API. The table updates the visible row locally.
 export function useSwitchProcessToDraft() {
-  const queryClient = useQueryClient()
-
   return useMutation({
     mutationFn: ({ processId }: { processId: string }) => switchProcessToDraft(processId),
-    onSuccess: () => {
-      invalidateAssessmentProcessQueries(queryClient)
-    },
   })
 }
 

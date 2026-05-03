@@ -1,5 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table'
-import type { FlatAssessmentRow } from '../../types/process'
+import type { DraftVersionData, FlatAssessmentRow } from '../../types/process'
 import CellMenuOptions from '../CellMenuOptions'
 import { Checkbox } from '@/shared/components/ui/checkbox'
 import { StatusBadgeCell } from '@/shared/components/cells'
@@ -21,25 +21,41 @@ import {
   PROCESS_CYCLE,
   SCALE_OF_PROCESS,
 } from '@/constants/dropdownOptions'
-// import { InfoTooltip } from '@/shared/components/InfoTooltip'
+import { InfoTooltip } from '@/shared/components/InfoTooltip'
+
+export function getDraftVersion(row: any, field: keyof FlatAssessmentRow) {
+  return row.draftVersion ? row.draftVersion[field] || row[field] : row[field]
+}
+
+const getResolvedValue = <T,>(
+  row: FlatAssessmentRow,
+  field: keyof FlatAssessmentRow,
+  isDraftMode: boolean,
+  draftField?: keyof DraftVersionData,
+) => {
+  if (!isDraftMode || !row.draftVersion) return row[field] as T
+  if (draftField) return (row.draftVersion[draftField] as T | undefined) ?? (row[field] as T)
+  return getDraftVersion(row, field) as T
+}
 
 export const getProcessTableColumns = ({
-  onDescChanged,
-  onCentrallyGovernedProcessChanged,
   onBUExpand,
   onDigitalTeamExpand,
   onExpandSharedServices,
+  onSwitchToDraft,
   isBulkMode = false,
   isValidateMode = false,
+  isDraftMode = false,
   selectedL3Ids,
   onL3SelectionChange,
 }: {
   onDescChanged: (v: string) => void
-  onCentrallyGovernedProcessChanged: (v: string) => void
   onBUExpand: (rowId: string) => void
   onDigitalTeamExpand: (rowId: string) => void
-  onExpandSharedServices: (rowId: string , list:string[]) => void
+  onExpandSharedServices: (rowId: string, list: string[]) => void
+  onSwitchToDraft: (item: FlatAssessmentRow) => void
   isBulkMode?: boolean
+  isDraftMode?: boolean
   isValidateMode?: boolean
   selectedL3Ids?: Set<string>
   onL3SelectionChange?: (l3GroupId: string, checked: boolean) => void
@@ -67,7 +83,7 @@ export const getProcessTableColumns = ({
       <div className={info.row.original.displayL1 ? 'flex flex-col gap-0.5' : 'rowspan'}>
         <span className="text-foreground text-sm font-medium">{info.row.original.displayL1}</span>
         <span className="text-muted-foreground text-xs">
-          {info.getValue<string>() ? info.row.original.l1Code : ''}
+          {info.row.original.displayL1 ? info.row.original.l1Code : ''}
         </span>
       </div>
     ),
@@ -82,7 +98,7 @@ export const getProcessTableColumns = ({
       <div className={info.row.original.displayL2 ? 'flex flex-col gap-0.5' : 'rowspan'}>
         <span className="text-foreground text-sm font-medium">{info.row.original.displayL2}</span>
         <span className="text-muted-foreground text-xs">
-          {info.getValue<string>() ? info.row.original.l2Code : ''}
+          {info.row.original.displayL2 ? info.row.original.l2Code : ''}
         </span>
       </div>
     ),
@@ -103,7 +119,7 @@ export const getProcessTableColumns = ({
         <div className="flex min-w-0 flex-col gap-0.5">
           <span className="text-foreground text-sm font-medium">{info.row.original.displayL3}</span>
           <span className="text-muted-foreground text-xs">
-            {info.getValue<string>() ? info.row.original.l3Code : ''}
+            {info.row.original.displayL3 ? info.row.original.l3Code : ''}
           </span>
         </div>
         {isBulkMode && info.row.original.displayL3 ? (
@@ -117,7 +133,10 @@ export const getProcessTableColumns = ({
           />
         ) : (
           /* if there is l4, remove the menu actions */
-          !info.row.original.l4Code && !isBulkMode && <CellMenuOptions item={info.row.original} />
+          !info.row.original.l4Code &&
+          !isBulkMode && (
+            <CellMenuOptions item={info.row.original} onSwitchToDraft={onSwitchToDraft} />
+          )
         )}
       </div>
     ),
@@ -147,7 +166,10 @@ export const getProcessTableColumns = ({
             aria-label={`Select ${info.row.original.l4}`}
           />
         ) : (
-          info.getValue<string>() && !isBulkMode && <CellMenuOptions item={info.row.original} />
+          info.getValue<string>() &&
+          !isBulkMode && (
+            <CellMenuOptions item={info.row.original} onSwitchToDraft={onSwitchToDraft} />
+          )
         )}
       </div>
     ),
@@ -158,7 +180,7 @@ export const getProcessTableColumns = ({
     header: 'Group Company',
     size: 250,
     enableSorting: false,
-    cell: (info) => <p>{info.getValue<string>()}</p>,
+    cell: (info) => <p>{info.row.original.groupCompany}</p>,
   },
   {
     id: 'Site',
@@ -166,7 +188,7 @@ export const getProcessTableColumns = ({
     header: 'Site',
     size: 120,
     enableSorting: false,
-    cell: (info) => <p>{info.getValue<string>()}</p>,
+    cell: (info) => <p>{info.row.original.Site}</p>,
   },
   {
     id: 'status',
@@ -174,7 +196,12 @@ export const getProcessTableColumns = ({
     header: 'Status',
     size: 180,
     enableSorting: false,
-    cell: (info) => <StatusBadgeCell status={info.getValue<any>()} />,
+    cell: (info) => {
+      const val = isDraftMode
+        ? getDraftVersion(info.row.original, 'status')
+        : info.getValue<string>()
+      return <StatusBadgeCell status={val} />
+    },
   },
   {
     id: 'description',
@@ -183,25 +210,8 @@ export const getProcessTableColumns = ({
     size: 320,
     enableSorting: false,
     cell: (info) => {
-     // const onUpdate = info.table.options.meta?.onUpdateDraftRow
-      const val=info.getValue<string>()
-     // const hasErr= isValidateMode && val=='' || val==undefined
-    //note:  description is read only , coming from the catalog 
-      return(<div className=" text-wrap line-clamp-2">{val}</div>)
-      // return (
-      //   <div className={hasErr?'invalid-field flex justify-between':''}>
-      //     <EditableCell
-      //     value={val}
-      //     onChange={(newValue) => {
-      //       onDescChanged(newValue)
-      //       if (onUpdate) {
-      //         onUpdate(info.row.original.id, 'description', newValue)
-      //       }
-      //     }}
-      //   />
-      //   {hasErr && <InfoTooltip text={'this field is requied'} />}
-      //     </div>
-      // )
+      const val = info.row.original.description
+      return <div className="line-clamp-2 text-wrap">{val}</div>
     },
   },
   {
@@ -210,17 +220,27 @@ export const getProcessTableColumns = ({
     header: 'Centrally Governed Process',
     size: 250,
     enableSorting: false,
-    cell: (info) => (
-      <RadioCell
-        name={`${info.row.original.l4Code}__centrallyGovernedProcess`}
-        value={info.getValue<string>() ? true : false}
-        options={[
-          { label: 'Yes', value: 'yes' },
-          { label: 'No', value: 'no' },
-        ]}
-        onChange={onCentrallyGovernedProcessChanged}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'centrallyGovernedProcess',
+        isDraftMode,
+      )
+      return (
+        <RadioCell
+          name={`${info.row.original.l4Code}__centrallyGovernedProcess`}
+          value={value == 'yes' ? true : false}
+          options={[
+            { label: 'Yes', value: 'yes' },
+            { label: 'No', value: 'no' },
+          ]}
+          onValChange={(newValue: string) =>
+            onUpdate && onUpdate(info.row.original.id, 'centrallyGovernedProcess', newValue)
+          }
+        />
+      )
+    },
   },
   {
     id: 'sharedService',
@@ -228,12 +248,21 @@ export const getProcessTableColumns = ({
     header: 'Shared Service',
     size: 250,
     enableSorting: false,
-    cell: (info) => (
-      <SharedServices
-          val={info.row.original.SharedServiceDisply}
-          onExpand={(processSharedServices:any) => onExpandSharedServices(info.row.original.id,processSharedServices)}
-        />
-    ),
+    cell: (info) => {
+      const value = isDraftMode
+        ? (info.row.original.draftVersion?.sharedService ?? info.row.original.SharedServiceDisply)
+        : info.row.original.SharedServiceDisply
+      return (
+        <>
+          <SharedServices
+            val={value}
+            onExpand={(processSharedServices: any) =>
+              onExpandSharedServices(info.row.original.id, processSharedServices)
+            }
+          />
+        </>
+      )
+    },
   },
   {
     id: 'businessUnit',
@@ -241,19 +270,35 @@ export const getProcessTableColumns = ({
     header: 'Business Unit',
     size: 250,
     enableSorting: false,
-    cell: (info) => (
-      <div className="max-w-[290px] overflow-hidden">
-        <TagsList
-          tags={(info.row.original.businessUnit || []).map((bu: string, index: number) => ({
-            id: `${info.row.original.l4Code || info.row.original.l3Code}__businessUnit__${index}`,
-            text: bu,
-          }))}
-          onExpand={() => {
-            onBUExpand(info.row.original.id)
-          }}
-        />
-      </div>
-    ),
+    cell: (info) => {
+      const value = getResolvedValue<string[]>(
+        info.row.original,
+        'businessUnit',
+        isDraftMode,
+        'businessUnit',
+      )
+      if (isValidateMode) {
+        debugger
+      }
+      const hasErr = (isValidateMode && value == undefined) || value.length < 1
+
+      return (
+        <div className={hasErr ? 'invalid-field flex justify-between' : ''}>
+          <div className="max-w-[290px] overflow-hidden">
+            <TagsList
+              tags={(value || []).map((bu: string, index: number) => ({
+                id: `${info.row.original.l4Code || info.row.original.l3Code}__businessUnit__${index}`,
+                text: bu,
+              }))}
+              onExpand={() => {
+                onBUExpand(info.row.original.id)
+              }}
+            />
+          </div>
+          {hasErr && <InfoTooltip text={'this field is requied'} />}
+        </div>
+      )
+    },
   },
   {
     id: 'responsibleDigitalTeam',
@@ -261,19 +306,28 @@ export const getProcessTableColumns = ({
     header: 'Responsible Digital Team',
     size: 250,
     enableSorting: false,
-    cell: (info) => (
-      <div className="max-w-[290px] overflow-hidden">
-        <TagsList
-          tags={info.row.original.responsibleDigitalTeam.map((team: string, index: number) => ({
-            id: `${info.row.original.l4Code || info.row.original.l3Code}_responsibleDigitalTeam${index}`,
-            text: team,
-          }))}
-          onExpand={() => {
-            onDigitalTeamExpand(info.row.original.id)
-          }}
-        />
-      </div>
-    ),
+    cell: (info) => {
+      const value = getResolvedValue<string[]>(
+        info.row.original,
+        'responsibleDigitalTeam',
+        isDraftMode,
+        'ResponsibleDigitalTeam',
+      )
+
+      return (
+        <div className="max-w-[290px] overflow-hidden">
+          <TagsList
+            tags={(value || []).map((team: string, index: number) => ({
+              id: `${info.row.original.l4Code || info.row.original.l3Code}_responsibleDigitalTeam${index}`,
+              text: team,
+            }))}
+            onExpand={() => {
+              onDigitalTeamExpand(info.row.original.id)
+            }}
+          />
+        </div>
+      )
+    },
   },
   {
     id: 'processCriticality',
@@ -283,9 +337,10 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(info.row.original, 'processCriticality', isDraftMode)
       return (
         <SelectCell
-          defaultValue={info.getValue<string>()}
+          defaultValue={value}
           options={PROCESS_CRITICALITY}
           onValueChange={(newValue: string) => {
             if (onUpdate) {
@@ -304,9 +359,10 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(info.row.original, 'usersImpacted', isDraftMode)
       return (
         <SelectCell
-          defaultValue={info.getValue<string>()}
+          defaultValue={value}
           options={NUMBER_OF_PEOPLE_IMPACTED}
           onValueChange={(newValue: string) => {
             if (onUpdate) onUpdate(info.row.original.id, 'usersImpacted', newValue)
@@ -323,9 +379,10 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(info.row.original, 'scaleOfProcess', isDraftMode)
       return (
         <SelectCell
-          defaultValue={info.getValue<string>()}
+          defaultValue={value}
           options={SCALE_OF_PROCESS}
           onValueChange={(newValue: string) => {
             if (onUpdate) onUpdate(info.row.original.id, 'scaleOfProcess', newValue)
@@ -342,9 +399,14 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'automationMaturityLevel',
+        isDraftMode,
+      )
       return (
         <SelectCell
-          defaultValue={info.getValue<string>()}
+          defaultValue={value}
           options={AUTOMATION_MATURITY_LEVEL}
           onValueChange={(newValue: string) => {
             if (onUpdate) onUpdate(info.row.original.id, 'scaleOfProcess', newValue)
@@ -361,10 +423,11 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(info.row.original, 'automationLevel', isDraftMode)
 
       return (
         <SelectCell
-          defaultValue={info.getValue<string>()}
+          defaultValue={value}
           options={AUTOMATION_LEVEL}
           onValueChange={(newValue: string) => {
             if (onUpdate) onUpdate(info.row.original.id, 'automationLevel', newValue)
@@ -381,9 +444,15 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<any[]>(
+        info.row.original,
+        'currentApplicationsSystems',
+        isDraftMode,
+        'currentApplicationsSystems',
+      )
       return (
         <TagsSelectCell
-          list={info.row.original.currentApplicationsSystems}
+          list={value}
           allTags={ASSESSMENT_APPLICATIONS}
           isUsers={false}
           onUpdate={(newTags: any) => {
@@ -404,10 +473,16 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'ongoingAutomationDigitalInitiatives',
+        isDraftMode,
+        'OngoingAutomationDigitalInitiatives',
+      )
 
       return (
         <EditableCell
-          value={info.getValue<string>()}
+          value={value}
           onChange={(newValue) => {
             if (onUpdate) {
               onUpdate(info.row.original.id, 'ongoingAutomationDigitalInitiatives', newValue || '')
@@ -426,9 +501,14 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'businessRecommendationForAutomation',
+        isDraftMode,
+      )
       return (
         <SelectCell
-          defaultValue={info.getValue<string>()}
+          defaultValue={value}
           options={BUSINESS_RECOMMENDATION_FOR_AUTOMATION}
           onValueChange={(newValue: string) => {
             if (onUpdate) {
@@ -447,9 +527,14 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'keyChallengesAutomationNeeds',
+        isDraftMode,
+      )
       return (
         <EditableCell
-          value={info.getValue<string>()}
+          value={value}
           onChange={(newValue) => {
             if (onUpdate) {
               onUpdate(info.row.original.id, 'keyChallengesAutomationNeeds', newValue || '')
@@ -466,17 +551,31 @@ export const getProcessTableColumns = ({
     header: 'AI-Powered - Y/N',
     size: 160,
     enableSorting: false,
-    cell: (info) => (
-      <RadioCell
-        name={`${info.row.original.l4Code}__aiPowered`}
-        value={info.getValue<string>() ? true : false}
-        options={[
-          { label: 'Yes', value: 'yes' },
-          { label: 'No', value: 'no' },
-        ]}
-        onChange={() => {}}
-      />
-    ),
+    cell: (info) => {
+      const onUpdate = info.table.options.meta?.onUpdateDraftRow
+
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'aiPowered',
+        isDraftMode,
+        'AIPowered',
+      )
+      return (
+        <RadioCell
+          name={`${info.row.original.l4Code}__aiPowered`}
+          value={value ? true : false}
+          options={[
+            { label: 'Yes', value: 'yes' },
+            { label: 'No', value: 'no' },
+          ]}
+          onValChange={(newValue: string) => {
+            if (onUpdate) {
+              onUpdate(info.row.original.id, 'aiPowered', newValue || '')
+            }
+          }}
+        />
+      )
+    },
   },
   {
     id: 'aiPoweredUseCase',
@@ -486,9 +585,15 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'aiPoweredUseCase',
+        isDraftMode,
+        'AIPoweredUseCase',
+      )
       return (
         <EditableCell
-          value={info.getValue<string>()}
+          value={value}
           onChange={(newValue) => {
             if (onUpdate) {
               onUpdate(info.row.original.id, 'aiPoweredUseCase', newValue || '')
@@ -507,10 +612,15 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'autonomousUseCaseEnabled',
+        isDraftMode,
+      )
       return (
         <RadioCell
           name={`${info.row.original.l4Code}__autonomousUseCaseEnabled`}
-          value={info.getValue<string>() ? true : false}
+          value={value ? true : false}
           options={[
             { label: 'Yes', value: 'yes' },
             { label: 'No', value: 'no' },
@@ -532,9 +642,15 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'autonomousUseCaseDescriptionComment',
+        isDraftMode,
+        'AutonomousUseCaseDescriptionComment',
+      )
       return (
         <EditableCell
-          value={info.getValue<string>()}
+          value={value}
           onChange={(newValue) => {
             if (onUpdate) {
               onUpdate(info.row.original.id, 'autonomousUseCaseDescriptionComment', newValue || '')
@@ -553,9 +669,15 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'processCycle',
+        isDraftMode,
+        'ProcessCycle',
+      )
       return (
         <SelectCell
-          defaultValue={info.getValue<string>()}
+          defaultValue={value}
           options={PROCESS_CYCLE}
           onValueChange={(newValue: string) => {
             if (onUpdate) {
@@ -574,9 +696,14 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'processRepetitionWithinCycle',
+        isDraftMode,
+      )
       return (
         <SelectCell
-          defaultValue={info.getValue<string>()}
+          defaultValue={value}
           options={['1-5 times', '6-10 times', '11-20 times', 'More than 20 times']}
           onValueChange={(newValue: string) => {
             if (onUpdate) {
@@ -595,9 +722,14 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'totalPersonnelExecutingFTE',
+        isDraftMode,
+      )
       return (
         <SelectCell
-          defaultValue={info.getValue<string>()}
+          defaultValue={value}
           options={['10', '20', '50', '100', 'More than 100']}
           onValueChange={(newValue: string) => {
             if (onUpdate) {
@@ -617,9 +749,14 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'totalProcessDurationDays',
+        isDraftMode,
+      )
       return (
         <SelectCell
-          defaultValue={info.getValue<string>()}
+          defaultValue={value}
           options={['10', '20', '50', '100', 'More than 100']}
           onValueChange={(newValue: string) => {
             if (onUpdate) {
@@ -638,10 +775,15 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'timeSpentOnManualTasksPercent',
+        isDraftMode,
+      )
 
       return (
         <SelectCell
-          defaultValue={info.getValue<string>()}
+          defaultValue={value}
           options={['10%', '20%', '50%', '100%']}
           onValueChange={(newValue: string) => {
             if (onUpdate) {
@@ -660,10 +802,11 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(info.row.original, 'keyManualSteps', isDraftMode)
 
       return (
         <EditableCell
-          value={info.getValue<string>()}
+          value={value}
           onChange={(newValue) => {
             // Handle the change, e.g., update the data source or state
             if (onUpdate) {
@@ -683,9 +826,14 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'northStarTargetAutomation',
+        isDraftMode,
+      )
       return (
         <SelectCell
-          defaultValue={info.getValue<string>()}
+          defaultValue={value}
           options={NORTH_STAR_TARGET_AUTOMATION}
           onValueChange={(newValue: string) => {
             if (onUpdate) onUpdate(info.row.original.id, 'northStarTargetAutomation', newValue || '')
@@ -702,9 +850,14 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'targetAutomationLevelPercent',
+        isDraftMode,
+      )
       return (
         <SelectCell
-          defaultValue={info.getValue<string>()}
+          defaultValue={value}
           options={['10%', '20%', '50%', '100%']}
           onValueChange={(newValue: string) => {
             if (onUpdate)
@@ -722,9 +875,15 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'smeFeedback',
+        isDraftMode,
+        'SMEFeedback',
+      )
       return (
         <EditableCell
-          value={info.getValue<string>()}
+          value={value}
           onChange={(newValue) => {
             // Handle the change, e.g., update the data source or state
             if (onUpdate) onUpdate(info.row.original.id, 'smeFeedback', newValue || '')
@@ -742,10 +901,11 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(info.row.original, 'toBeAIPowered', isDraftMode)
       return (
         <RadioCell
-          name={`${info.getValue<string>()}__toBeAIPowered`}
-          value={info.getValue<string>()}
+          name={`${value}__toBeAIPowered`}
+          value={value}
           options={[
             { label: 'Yes', value: 'yes' },
             { label: 'No', value: 'no' },
@@ -765,9 +925,14 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string>(
+        info.row.original,
+        'toBeAIPoweredComments',
+        isDraftMode,
+      )
       return (
         <EditableCell
-          value={info.getValue<string>()}
+          value={value}
           onChange={(newValue) => {
             // Handle the change, e.g., update the data source or state
             if (onUpdate) onUpdate(info.row.original.id, 'toBeAIPoweredComments', newValue || '')
@@ -783,7 +948,9 @@ export const getProcessTableColumns = ({
     header: 'Rate Card (AED)',
     size: 180,
     enableSorting: false,
-    cell: (info) => <p>{info.getValue<string>()}</p>,
+    cell: (info) => (
+      <p>{getResolvedValue<string>(info.row.original, 'rateCardAED', isDraftMode)}</p>
+    ),
   },
   {
     id: 'costOfManualEffortAED',
@@ -791,7 +958,9 @@ export const getProcessTableColumns = ({
     header: 'Cost of Manual Effort (AED)',
     size: 220,
     enableSorting: false,
-    cell: (info) => <p>{info.getValue<string>()}</p>,
+    cell: (info) => (
+      <p>{getResolvedValue<string>(info.row.original, 'costOfManualEffortAED', isDraftMode)}</p>
+    ),
   },
   {
     id: 'markedAsReviewed',
@@ -804,7 +973,7 @@ export const getProcessTableColumns = ({
 
       return (
         <MarkedAsReviewCell
-          date={info.row.original.reviewedOn}
+          date={getResolvedValue<string>(info.row.original, 'reviewedOn', isDraftMode)}
           id={info.row.original.id}
           handleMarkAsReviewed={(rowId) => {
             if (onUpdate) {
@@ -824,11 +993,12 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string[]>(info.row.original, 'businessFocalPoint', isDraftMode)
       return (
         <TagsSelectCell
-          list={info.row.original.businessFocalPoint?.map((app: string) => ({
-            id: `${app.trim()}`,
-            name: app.trim(),
+          list={value?.map((app: string) => ({
+            id: `${app?.trim()}`,
+            name: app?.trim(),
           }))}
           allTags={DIGITAL_FP_USERS}
           isUsers={false}
@@ -850,11 +1020,12 @@ export const getProcessTableColumns = ({
     enableSorting: false,
     cell: (info) => {
       const onUpdate = info.table.options.meta?.onUpdateDraftRow
+      const value = getResolvedValue<string[]>(info.row.original, 'digitalFocalPoint', isDraftMode)
       return (
         <TagsSelectCell
-          list={info.row.original.digitalFocalPoint?.map((app: string) => ({
-            id: `${app.trim()}`,
-            name: app.trim(),
+          list={value?.map((app: string) => ({
+            id: `${app?.trim()}`,
+            name: app?.trim(),
           }))}
           allTags={DIGITAL_FP_USERS}
           isUsers={true}

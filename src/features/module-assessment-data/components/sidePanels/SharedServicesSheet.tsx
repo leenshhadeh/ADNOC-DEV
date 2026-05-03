@@ -30,11 +30,9 @@ const SharedServicesSheet = ({
 
   useEffect(() => {
     if (open) {
-      console.log(selected)
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSharedServices(selected)
     }
-  }, [open])
+  }, [open,selected])
 
   const handleSharedChange = (service: string, isShared: string) => {
     // Updates the shared services state by adding or removing the service from the shared list.

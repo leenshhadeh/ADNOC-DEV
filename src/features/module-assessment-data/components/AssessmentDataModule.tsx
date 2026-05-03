@@ -76,6 +76,7 @@ import { useAssessmentNavStore, type AssessmentTabValue } from '../store/useAsse
 import { useGetAssessmentProcess } from '@features/module-assessment-data/hooks/useGetAssessmentProcess'
 import type { DomainItem } from '../types/process'
 import type { FlatAssessmentRow } from '../types/process'
+import DiscardAssessmentChangesModal from './DiscardAssessmentChangesModal'
 
 type ActiveModal = 'edit' | 'comment' | 'copy' | 'review' | null
 type TaskModal = 'approve' | 'return' | 'reject' | 'request-endorsement' | null
@@ -118,9 +119,11 @@ const AssessmentDataModule = () => {
   const [onChangeMode, setOnChangeMode] = useState(false)
   const [startSaving, setStartSaveing] = useState(false)
   const [showEDataSavedToast, setShowEDataSavedToast] = useState(false)
+  const [discardChangesModalOpen, setDiscardChangesModalOpen] = useState(false)
+  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null)
 
   // API:-------------
-  const { data, isLoading, isError } = useGetAssessmentProcess(processView)
+  const { data, isLoading } = useGetAssessmentProcess(processView)
   
   // Permissions -----
   const userRole = useUserStore((s) => s.user.role)
@@ -189,6 +192,7 @@ const AssessmentDataModule = () => {
   const filteredData = useMemo(() => applyProcessFilters(searchedData, applied)
   ,[searchedData, applied],
   )
+  const hasUnsavedChanges = onChangeMode || startSaving
 
   // Export:-------------------------
   const handleExport = async () => {
@@ -350,9 +354,58 @@ const AssessmentDataModule = () => {
     setSingleActionTask(null)
   }
 
-  // on change view "pyblished/lateset/archived"
+  const clearUnsavedAssessmentState = useCallback(() => {
+    setOnChangeMode(false)
+    setStartSaveing(false)
+    setIsValidateMode(false)
+  }, [])
+
+  const closeDiscardChangesModal = useCallback(() => {
+    setDiscardChangesModalOpen(false)
+    setPendingNavigation(null)
+  }, [])
+
+  const runOrConfirmNavigation = useCallback(
+    (navigationAction: () => void) => {
+      if (!hasUnsavedChanges) {
+        navigationAction()
+        return
+      }
+
+      setPendingNavigation(() => navigationAction)
+      setDiscardChangesModalOpen(true)
+    },
+    [hasUnsavedChanges],
+  )
+
+  const confirmDiscardChanges = useCallback(() => {
+    clearUnsavedAssessmentState()
+    setDiscardChangesModalOpen(false)
+    pendingNavigation?.()
+    setPendingNavigation(null)
+  }, [clearUnsavedAssessmentState, pendingNavigation])
+
+  useEffect(() => {
+    if (!hasUnsavedChanges) return
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault()
+      event.returnValue = ''
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [hasUnsavedChanges])
+
+  // on change view "published/latest/archived"
   const onChangeView = (option: ProcessViewOption) => {
-    setProcessView(option.id)
+    if (option.id === processView) return
+
+    runOrConfirmNavigation(() => {
+      setProcessView(option.id)
+    })
   }
 
   const onSaveComplete = () => {
@@ -380,8 +433,12 @@ const AssessmentDataModule = () => {
             tabs={ASSESSMENT_TABS}
             activeTab={activeTab}
             onTabChange={(tab) => {
-              setActiveTab(tab as AssessmentTabValue)
-              exitBulkMode()
+              if (tab === activeTab) return
+
+              runOrConfirmNavigation(() => {
+                setActiveTab(tab as AssessmentTabValue)
+                exitBulkMode()
+              })
             }}
             searchValue={search}
             onSearchChange={setSearch}
@@ -441,7 +498,13 @@ const AssessmentDataModule = () => {
               { value: 'report', icon: FileText, label: 'Report view' },
             ]}
             value={activeView}
-            onChange={(v) => setActiveView(v as 'table' | 'report')}
+            onChange={(v) => {
+              if (v === activeView) return
+
+              runOrConfirmNavigation(() => {
+                setActiveView(v as 'table' | 'report')
+              })
+            }}
           />
         )}
       </div>
@@ -497,9 +560,10 @@ const AssessmentDataModule = () => {
                 onRowSelectionChange={(
                   updater: RowSelectionState | ((prev: RowSelectionState) => RowSelectionState),
                 ) =>
-                  setRowSelection((prev) =>
+                 { setRowSelection((prev) =>
                     typeof updater === 'function' ? updater(prev) : updater,
-                  )
+                  )}
+                  
                 }
                 selectedL3Ids={l3Selection}
                 onL3SelectionChange={(id, checked) =>
@@ -634,7 +698,7 @@ const AssessmentDataModule = () => {
       />
       <SuccessToast
         open={showEDataSavedToast}
-        message="Data Saved successfully"
+        message="A Draft was created from the Published version. The Published version remains unchanged. "
         onClose={() => setShowEDataSavedToast(false)}
       />
 
@@ -828,6 +892,11 @@ const AssessmentDataModule = () => {
         columnVisibility={columnVisibility}
         onColumnOrderChange={setManagedColumnOrder}
         onColumnVisibilityChange={setColumnVisibility}
+      />
+      <DiscardAssessmentChangesModal
+        open={discardChangesModalOpen}
+        onClose={closeDiscardChangesModal}
+        onConfirm={confirmDiscardChanges}
       />
     </div>
   )
