@@ -123,7 +123,7 @@ const AssessmentDataModule = () => {
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null)
 
   // API:-------------
-  const { data, isLoading, isError } = useGetAssessmentProcess(processView)
+  const { data, isLoading } = useGetAssessmentProcess(processView)
   
   // Permissions -----
   const userRole = useUserStore((s) => s.user.role)
