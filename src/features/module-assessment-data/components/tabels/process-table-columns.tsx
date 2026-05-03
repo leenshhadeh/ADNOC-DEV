@@ -253,14 +253,12 @@ export const getProcessTableColumns = ({
         ? (info.row.original.draftVersion?.sharedService ?? info.row.original.SharedServiceDisply)
         : info.row.original.SharedServiceDisply
       return (
-        <>
-          <SharedServices
+        <SharedServices
             val={value}
             onExpand={(processSharedServices: any) =>
               onExpandSharedServices(info.row.original.id, processSharedServices)
             }
           />
-        </>
       )
     },
   },
@@ -277,11 +275,7 @@ export const getProcessTableColumns = ({
         isDraftMode,
         'businessUnit',
       )
-      if (isValidateMode) {
-        debugger
-      }
-      const hasErr = (isValidateMode && value == undefined) || value.length < 1
-
+      const hasErr = isValidateMode && (value == undefined|| value.length < 1)
       return (
         <div className={hasErr ? 'invalid-field flex justify-between' : ''}>
           <div className="max-w-[290px] overflow-hidden">
